@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Example Ad Integration</title>
+  <!-- Load local video.js -->
+  <link rel="stylesheet" href="../libs/video-js-4.1.0/video-js.min.css">
+  <script src="../libs/video-js-4.1.0/video.js"></script>
+  <!-- Load local ads plugin. -->
+  <link rel="stylesheet" href="../src/videojs.ads.css">
+  <script src="../src/videojs.ads.js"></script>
+  <!-- Load example ads integraiton. -->
+  <script src="example-integration.js"></script>
+</head>
+<body>
+  
+  <h1>Example Ad Integration</h1>
+  
+  <video
+    id="examplePlayer"
+    class="video-js vjs-default-skin"
+    width="640"
+    height="264"
+    poster="http://video-js.zencoder.com/oceans-clip.png"
+    controls>
+    <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4' />
+    <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
+    <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
+  </video>
+
+<script>
+videojs('examplePlayer', {}, function(){
+  // initalize example ads integration for this player
+  this.exampleAds(); 
+});
+</script>
+</body>
+</html>
