@@ -180,7 +180,11 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 ## Release History
 
-_(Nothing yet)_
+A short list of features, fixes and changes for each release.
+
+### v0.1.0
+
+ * Initial release.
 
 ## License
 
