@@ -37,12 +37,12 @@ Once you call `player.ads()` to initialize the plugin, it provides five interact
 
 Here are the events that communicate information to your integration from the ads plugin:
 
- * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory.
+ * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. (_NOTE: this does not actually fire due to the [contentupdate event not firing](issues/2) issue_)
  * `readyforpreroll` (EVENT) — Fires the when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
 
 And here are the interaction points you use to send information to the ads plugin:
 
- * `adsready` (EVENT) — Trigger this event after `contentupdate` to signal that your integration is ready to play ads.
+ * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
  * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad.
  * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume.
 
@@ -53,6 +53,8 @@ For example, the `ended` event signals that the content video has played to comp
 
 Here's an outline of what a basic ad integration might look like.
 It only plays a single preroll ad before each content video, but does demonstrate the interaction points offered by the ads plugin.
+
+This is not actually a runnable example, as it needs more information as specified in the code comments.
 
 ```js
 videojs('video', {}, function() {
@@ -71,14 +73,20 @@ videojs('video', {}, function() {
   
   player.on('readyforpreroll', function() {
     player.ads.startLinearAdMode();
-    // play your linear ad content, then when it's finished ...
-    player.ads.endLinearAdMode();
+    // play your linear ad content
+    player.src('http://url/to/your/ad.content');
+    player.one('durationchange', function(){
+      player.play();
+    });
+    // when all your linear ads have finished...
+    player.one('ended', function() {
+      player.ads.endLinearAdMode();
+    });
   });
-  
 });
 ```
 
-Your actual integration will probably be significantly more complex.
+Your actual integration will be significantly more complex.
 To implement midroll ads, you'd want to listen to `timeupdate` events to monitor the progress of the content video's playback.
 
 For a more involved example that plays both prerolls and midrolls, see the [example directory](example) in this project.
