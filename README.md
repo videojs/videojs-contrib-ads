@@ -98,7 +98,7 @@ Here's a state diagram which shows the states of the ads plugin and how it trans
 
 ![](ad-states.png)
 
-The timeline at right shows how the ads plugin (labeled "Ads Framework" on the left) communicates with your integration (labeled "Ads Plugin" on the right).
+The timeline at right shows how the ads plugin communicates with your integration.
 
 ## Plugin Options
 
