@@ -407,6 +407,31 @@ var
       'adend',    // endLinearAdMode()
     ]), fsmHandler);
     
+    // implement 'contentupdate' event.
+    (function(){
+      var
+        // keep track of last src
+        lastSrc,
+        // check if a new src has been set, if so, trigger contentupdate
+        checkSrc = function() {
+          if (player.ads.state !== 'ad-playback') {
+            var src = player.currentSrc();
+            if (src !== lastSrc) {
+              player.trigger({
+                type: 'contentupdate',
+                oldValue: lastSrc,
+                newValue: src
+              });
+              lastSrc = src;
+            }
+          }
+        };
+      // loadstart reliably indicates a new src has been set
+      player.on('loadstart', checkSrc);
+      // check immediately in case we missed the loadstart
+      setImmediate(checkSrc);
+    })();
+    
     // kick off the fsm
     if (!player.paused()) {
       // simulate a play event if we're autoplaying
