@@ -28,6 +28,8 @@
     <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
   </video>
   
+  <h2>Set Src programmatically</h2>
+  
   <form>
     <p>
       <label>
@@ -38,13 +40,20 @@
     </p>
   </form>
   
+  <h2>Events</h2>
+  
+  <pre></pre>
+  
 <script>
 videojs('examplePlayer', {}, function(){
   // initalize example ads integration for this player
   var player = this;
   player.exampleAds();
   player.on('contentupdate', function(event) {
-    console.log(["contentupdate", event.oldValue, event.newValue]);
+    document.querySelector('pre').innerHTML +=
+      "contentupdate: \n" + 
+      "  oldValue: " + event.oldValue + "\n" +
+      "  newValue: " + event.newValue + "\n";
   });
 });
 document.querySelector('form').addEventListener('submit', function(event) {
