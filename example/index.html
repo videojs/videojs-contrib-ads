@@ -49,11 +49,14 @@ videojs('examplePlayer', {}, function(){
   // initalize example ads integration for this player
   var player = this;
   player.exampleAds();
+  
+  var pre = document.querySelector('pre');
   player.on('contentupdate', function(event) {
-    document.querySelector('pre').innerHTML +=
+    pre.innerHTML = '[' + (+new Date) + '] ' +
       "contentupdate: \n" + 
       "  oldValue: " + event.oldValue + "\n" +
-      "  newValue: " + event.newValue + "\n";
+      "  newValue: " + event.newValue + "\n" +
+      pre.innerHTML;
   });
 });
 document.querySelector('form').addEventListener('submit', function(event) {
