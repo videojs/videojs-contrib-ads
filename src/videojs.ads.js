@@ -354,6 +354,13 @@ var
                 } else {
                   this.state = 'preroll?';
                 }
+              },
+              'contentupdate': function() {
+                if (player.paused()) {
+                  this.state = 'content-set';
+                } else {
+                  this.state = 'ads-ready?';
+                }
               }
             }
           },
@@ -375,6 +382,13 @@ var
 
                 // remove the poster so it doesn't flash between videos
                 removeNativePoster(player);
+              },
+              'contentupdate': function() {
+                if (player.paused()) {
+                  this.state = 'content-set';
+                } else {
+                  this.state = 'ads-ready?';
+                }
               }
             }
           }
@@ -401,6 +415,7 @@ var
     on(player, vjs.Html5.Events.concat([
       // events emitted by ad plugin
       'adtimeout',
+      'contentupdate',
       // events emitted by third party ad implementors
       'adsready',
       'adstart',  // startLinearAdMode()
