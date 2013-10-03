@@ -65,8 +65,8 @@
         state.adPlaying = true;
         
         // tell videojs to load the ad
-        var url = state.inventory[Math.floor(Math.random() * state.inventory.length)];
-        player.src(url);
+        var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
+        player.src(media);
         
         // when the video metadata is loaded, play it!
         player.one('durationchange', function() {
