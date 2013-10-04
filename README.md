@@ -58,18 +58,15 @@ This is not actually a runnable example, as it needs more information as specifi
 
 ```js
 videojs('video', {}, function() {
+  
   var player = this;
   player.ads(); // initialize the ad framework
   
-  var requestAds = function(){
+  // request ads whenever there's new video content
+  player.on('contentupdate', function(){
     // fetch ad inventory asynchronously, then ...
     player.trigger('adsready');
-  };
-  
-  if (player.currentSrc()) {
-    requestAds();
-  }
-  player.on('contentupdate', requestAds);
+  });
   
   player.on('readyforpreroll', function() {
     player.ads.startLinearAdMode();
@@ -83,6 +80,7 @@ videojs('video', {}, function() {
       player.ads.endLinearAdMode();
     });
   });
+  
 });
 ```
 
