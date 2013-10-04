@@ -429,8 +429,9 @@ var
         lastSrc,
         // check if a new src has been set, if so, trigger contentupdate
         checkSrc = function() {
+          var src;
           if (player.ads.state !== 'ad-playback') {
-            var src = player.currentSrc();
+            src = player.currentSrc();
             if (src !== lastSrc) {
               player.trigger({
                 type: 'contentupdate',
