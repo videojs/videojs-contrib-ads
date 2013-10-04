@@ -27,11 +27,41 @@
     <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
     <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
   </video>
-
+  
+  <h2>Set Src programmatically</h2>
+  
+  <form>
+    <p>
+      <label>
+        <span>src: </span>
+        <input type="url" name="src" value="http://media.w3.org/2010/05/sintel/trailer.mp4" />
+      </label>
+      <button type="submit">set src</button>
+    </p>
+  </form>
+  
+  <h2>Events</h2>
+  
+  <pre></pre>
+  
 <script>
 videojs('examplePlayer', {}, function(){
   // initalize example ads integration for this player
-  this.exampleAds(); 
+  var player = this;
+  player.exampleAds();
+  
+  var pre = document.querySelector('pre');
+  player.on('contentupdate', function(event) {
+    pre.innerHTML = '[' + (+new Date) + '] ' +
+      "contentupdate: \n" + 
+      "  oldValue: " + event.oldValue + "\n" +
+      "  newValue: " + event.newValue + "\n" +
+      pre.innerHTML;
+  });
+});
+document.querySelector('form').addEventListener('submit', function(event) {
+  event.preventDefault();
+  videojs('examplePlayer').src(document.querySelector('input[type="url"]').value);
 });
 </script>
 </body>

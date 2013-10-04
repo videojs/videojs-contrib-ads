@@ -37,7 +37,7 @@ Once you call `player.ads()` to initialize the plugin, it provides five interact
 
 Here are the events that communicate information to your integration from the ads plugin:
 
- * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: this does not actually fire due to the [contentupdate event not firing](https://github.com/brightcove/videojs-ads/issues/2) issue_
+ * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
  * `readyforpreroll` (EVENT) — Fires the when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
 
 And here are the interaction points you use to send information to the ads plugin:
@@ -58,18 +58,15 @@ This is not actually a runnable example, as it needs more information as specifi
 
 ```js
 videojs('video', {}, function() {
+  
   var player = this;
   player.ads(); // initialize the ad framework
   
-  var requestAds = function(){
+  // request ads whenever there's new video content
+  player.on('contentupdate', function(){
     // fetch ad inventory asynchronously, then ...
     player.trigger('adsready');
-  };
-  
-  if (player.currentSrc()) {
-    requestAds();
-  }
-  player.on('contentupdate', requestAds);
+  });
   
   player.on('readyforpreroll', function() {
     player.ads.startLinearAdMode();
@@ -83,6 +80,7 @@ videojs('video', {}, function() {
       player.ads.endLinearAdMode();
     });
   });
+  
 });
 ```
 

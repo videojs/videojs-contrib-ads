@@ -230,6 +230,48 @@ test('restores the poster attribute after ads have ended', function() {
   ok(video.poster, 'the poster is restored');
 });
 
+test('changing the src triggers contentupdate', function() {
+  
+  // track contentupdate events
+  var contentupdates = 0;
+  player.on('contentupdate', function(){
+    contentupdates++;
+  });
+  
+  // set src and trigger synthetic 'loadstart'
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+
+  // confirm one contentupdate event
+  equal(contentupdates, 1, 'one contentupdate event fired');
+  
+});
+
+test('changing src does not trigger contentupdate during ad playback', function() {
+  
+  // track contentupdate events
+  var contentupdates = 0;
+  player.on('contentupdate', function(){
+    contentupdates++;
+  });
+  
+  // enter ad playback mode
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  
+  // set src and trigger synthetic 'loadstart'
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+  
+  // finish playing ad
+  player.trigger('adend');
+  
+  // confirm one contentupdate event
+  equal(contentupdates, 0, 'no contentupdate events fired');
+  
+});
+
 module('Ad Framework - Video Snapshot', {
   setup: function() {
     var noop = function() {};

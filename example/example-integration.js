@@ -65,8 +65,8 @@
         state.adPlaying = true;
         
         // tell videojs to load the ad
-        var url = state.inventory[Math.floor(Math.random() * state.inventory.length)];
-        player.src(url);
+        var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
+        player.src(media);
         
         // when the video metadata is loaded, play it!
         player.one('durationchange', function() {
@@ -85,11 +85,7 @@
     // initialize the ads plugin, passing in any relevant options
     player.ads(options);
     
-    // request ad inventory immediately,
-    // or whenever the player gets new content to play
-    if (player.currentSrc()) {
-      requestAds();
-    }
+    // request ad inventory whenever the player gets new content to play
     player.on('contentupdate', requestAds);
     
     // play an ad the first time there's a preroll opportunity
