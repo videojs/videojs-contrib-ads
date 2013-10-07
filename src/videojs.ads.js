@@ -354,6 +354,13 @@ var
                 } else {
                   this.state = 'preroll?';
                 }
+              },
+              'contentupdate': function() {
+                if (player.paused()) {
+                  this.state = 'content-set';
+                } else {
+                  this.state = 'ads-ready?';
+                }
               }
             }
           },
@@ -375,6 +382,13 @@ var
 
                 // remove the poster so it doesn't flash between videos
                 removeNativePoster(player);
+              },
+              'contentupdate': function() {
+                if (player.paused()) {
+                  this.state = 'content-set';
+                } else {
+                  this.state = 'ads-ready?';
+                }
               }
             }
           }
@@ -401,11 +415,38 @@ var
     on(player, vjs.Html5.Events.concat([
       // events emitted by ad plugin
       'adtimeout',
+      'contentupdate',
       // events emitted by third party ad implementors
       'adsready',
       'adstart',  // startLinearAdMode()
       'adend',    // endLinearAdMode()
     ]), fsmHandler);
+    
+    // implement 'contentupdate' event.
+    (function(){
+      var
+        // keep track of last src
+        lastSrc,
+        // check if a new src has been set, if so, trigger contentupdate
+        checkSrc = function() {
+          var src;
+          if (player.ads.state !== 'ad-playback') {
+            src = player.currentSrc();
+            if (src !== lastSrc) {
+              player.trigger({
+                type: 'contentupdate',
+                oldValue: lastSrc,
+                newValue: src
+              });
+              lastSrc = src;
+            }
+          }
+        };
+      // loadstart reliably indicates a new src has been set
+      player.on('loadstart', checkSrc);
+      // check immediately in case we missed the loadstart
+      setImmediate(checkSrc);
+    })();
     
     // kick off the fsm
     if (!player.paused()) {
