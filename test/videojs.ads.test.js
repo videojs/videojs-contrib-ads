@@ -1,6 +1,7 @@
 var
   video,
   oldSetTimeout,
+  oldClearImmediate,
   player;
 
 module('Ad Framework', {
@@ -22,6 +23,12 @@ module('Ad Framework', {
     window.setImmediate = function(callback) {
       callback.call(window);
     };
+
+    // save clearImmediate so it can be restored after tests run
+    oldClearImmediate = window.clearImmediate;
+  },
+  teardown: function() {
+    window.clearImmediate = oldClearImmediate;
   }
 });
 
@@ -65,24 +72,26 @@ test('pauses to wait for prerolls when the plugin loads after play', function() 
 });
 
 test('stops canceling play events when an ad is playing', function() {
-  var callback, pauses = 0;
+  var callback;
+  expect(3);
   // capture setImmediate callbacks to manipulate invocation order
   window.setImmediate = function(cb) {
     callback = cb;
+    return 1;
   };
-  player.paused = function() {
-    return false;
-  };
-  player.pause = function() {
-    pauses++;
+  window.clearImmediate = function(id) {
+    callback = null;
+    equal(player.ads.cancelPlayTimeout,
+          id,
+          'the cancel-play timeout is cancelled');
   };
 
   player.trigger('play');
   player.trigger('adsready');
+  equal(1, player.ads.cancelPlayTimeout, 'a cancel-play is scheduled');
+
   player.trigger('adstart');
-  callback();
   equal(player.ads.state, 'ad-playback', 'ads are playing');
-  equal(0, pauses, 'the delayed pause is cancelled');
 });
 
 test('adstart is fired before a preroll', function() {
@@ -270,6 +279,34 @@ test('changing src does not trigger contentupdate during ad playback', function(
   // confirm one contentupdate event
   equal(contentupdates, 0, 'no contentupdate events fired');
   
+});
+
+
+test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
+  var callbacks = [];
+  expect(3);
+
+  // capture setImmediate callbacks to manipulate invocation order
+  window.setImmediate = function(callback) {
+    callbacks.push(callback);
+    return callbacks.length;
+  };
+
+  player.trigger('adsready');
+  player.trigger('play');
+
+  equal('preroll?', player.ads.state, 'the player is waiting for prerolls');
+
+  player.trigger('play');
+  equal(1, callbacks.length, 'a single cancel-play is registered');
+
+  callbacks[0](); // run the cancel-play
+  callbacks.length = 0;
+
+  player.trigger('play');
+  player.trigger('play');
+  player.trigger('play');
+  equal(1, callbacks.length, 'a single cancel-play is registered');
 });
 
 module('Ad Framework - Video Snapshot', {
