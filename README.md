@@ -1,6 +1,6 @@
-# videojs-ads
+# videojs-contrib-ads
 
-The `videojs-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
+The `videojs-contrib-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
 It takes care of a number of concerns for you, reducing the code you have to write for your ad integration.
 
 ## Getting Started
