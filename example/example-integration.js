@@ -1,5 +1,5 @@
 /**
- * Example ad integration using the videojs-ads plugin.
+ * Example ad integration using the videojs-contrib-ads plugin.
  *
  * For each content video, this plugin plays one preroll and one midroll.
  * Ad content is chosen randomly from the URLs listed in inventory.json.
