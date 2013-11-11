@@ -21,8 +21,8 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['src/videojs.ads.js'],
-        dest: 'dist/videojs.ads.js'
+        src: ['src/videojs.contrib.ads.js'],
+        dest: 'dist/videojs.contrib.ads.js'
       },
     },
     uglify: {
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: '<%= concat.dist.dest %>',
-        dest: 'dist/videojs.ads.min.js'
+        dest: 'dist/videojs.contrib.ads.min.js'
       },
     },
     qunit: {

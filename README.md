@@ -1,17 +1,17 @@
-# videojs-ads
+# videojs-contrib-ads
 
-The `videojs-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
+The `videojs-contrib-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
 It takes care of a number of concerns for you, reducing the code you have to write for your ad integration.
 
 ## Getting Started
 
-In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`.
+In addition to the video.js library, you'll need two files from this project: `videojs.contrib.ads.js` and `videojs.contrib.ads.css`.
 Both are in the `src/` directory.
 
 For development, include the CSS in your HTML's `<head>` section with a `<link>` tag:
 
 ```html
-<link rel="stylesheet" href="videojs.ads.css">
+<link rel="stylesheet" href="videojs.contrib.ads.css">
 ```
 
 Then, include the JavaScript file after video.js, but before your integration code:
@@ -19,7 +19,7 @@ Then, include the JavaScript file after video.js, but before your integration co
 ```html
 <video id="video" src="movie.mp4" controls></video>
 <script src="video.js"></script>
-<script src="videojs.ads.js"></script>
+<script src="videojs.contrib.ads.js"></script>
 <script>
 videojs('video', {}, function() {
   var player = this;
@@ -154,7 +154,7 @@ Ideally, your ad integration should already know if it wants to play a preroll b
 
 ## Building
 
-You can use the `videojs.ads.js` file as it is in the `src/` directory, or you can use a minified version.
+You can use the `videojs.contrib.ads.js` file as it is in the `src/` directory, or you can use a minified version.
 
 The ads plugin is designed to be built with `npm` and `grunt`.
 
@@ -174,7 +174,7 @@ $ grunt
 ```
 
 grunt will run a suite of unit tests and code formatting checks, then create a `dist/` directory.
-Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
+Inside you'll find the minified ads plugin file `videojs-contrib-ads.min.js`.
 
 ## Release History
 
