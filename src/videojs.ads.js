@@ -93,6 +93,18 @@ var
   },
 
   /**
+   * Clears a callback previously registered with `setImmediate`.
+   * @param {id} id The identifier of the callback to abort
+   */
+  clearImmediate = function(id) {
+    return (window.clearImmediate ||
+            window.cancelAnimationFrame ||
+            window.webkitCancelAnimationFrame ||
+            window.mozCancelAnimationFrame ||
+            window.clearTimeout)(id);
+  },
+
+  /**
    * If ads are not playing, pauses the player at the next available
    * opportunity. Has no effect if ads have started. This function is necessary
    * because pausing a video element while processing a `play` event on iOS can
@@ -102,8 +114,17 @@ var
    * @param {object} player The video player
    */
   cancelContentPlay = function(player) {
-    setImmediate(function() {
-      if (!player.paused() && player.ads.state !== 'ad-playback') {
+    if (player.ads.cancelPlayTimeout) {
+      // another cancellation is already in flight, so do nothing
+      return;
+    }
+
+    player.ads.cancelPlayTimeout = setImmediate(function() {
+
+      // deregister the cancel timeout so subsequent cancels are scheduled
+      player.ads.cancelPlayTimeout = null;
+
+      if (!player.paused()) { // TODO
         player.pause();
       }
     });
@@ -304,6 +325,10 @@ var
             },
             leave: function() {
               window.clearTimeout(player.ads.timeout);
+
+              clearImmediate(player.ads.cancelPlayTimeout);
+              player.ads.cancelPlayTimeout = null;
+
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
