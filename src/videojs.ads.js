@@ -124,7 +124,7 @@ var
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
 
-      if (!player.paused()) { // TODO
+      if (!player.paused()) {
         player.pause();
       }
     });
