@@ -170,7 +170,8 @@ var
   },
 
   /**
-   * Attempts to modify the specified player so that its state is equivalent to the state of the snapshot.
+   * Attempts to modify the specified player so that its state is equivalent to
+   * the state of the snapshot.
    * @param {object} snapshot - the player state to apply
    */
   restorePlayerSnapshot = function(player, snapshot) {
@@ -213,6 +214,14 @@ var
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
     }
+
+    // with a custom ad display or burned-in ads, the content player state
+    // hasn't been modified and so no restoration is required
+    if (player.currentSrc() === snapshot.src) {
+      player.play();
+      return;
+    }
+
     player.src(snapshot.src);
     // safari requires a call to `load` to pick up a changed source
     player.load();

@@ -328,6 +328,19 @@ module('Ad Framework - Video Snapshot', {
   }
 });
 
+test('restores the original video src after ads', function() {
+  var originalSrc = player.currentSrc();
+
+  player.trigger('adsready');
+  player.trigger('play');
+
+  player.trigger('adstart');
+  player.src('//example.com/ad.mp4');
+  player.trigger('adend');
+
+  equal(originalSrc, player.currentSrc(), 'the original src is restored');
+});
+
 test('waits for the video to become seekable before restoring the time', function() {
   expect(2);
 
@@ -346,6 +359,7 @@ test('waits for the video to become seekable before restoring the time', functio
   timeouts = 0;
   video.currentTime = 100;
   player.trigger('adstart');
+  player.src('//example.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
@@ -376,6 +390,7 @@ test('tries to restore the play state up to 20 times', function() {
   timeouts = 0;
   video.currentTime = 100;
   player.trigger('adstart');
+  player.src('//example.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
@@ -394,6 +409,7 @@ test('the current time is restored at the end of an ad', function() {
 
   // the video plays to time 100
   player.trigger('adstart');
+  player.src('//exampe.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
@@ -401,4 +417,42 @@ test('the current time is restored at the end of an ad', function() {
   player.trigger('loadedmetadata');
 
   equal(100, video.currentTime, 'currentTime was restored');
+});
+
+test('only restores the player snapshot if the src changed', function() {
+  var
+    playCalled = false,
+    srcModified = false,
+    currentTimeModified = false;
+
+  player.trigger('adsready');
+  player.trigger('play');
+
+  // spy on relevant player methods
+  player.play = function() {
+    playCalled = true;
+  };
+  player.src = function(url) {
+    if (url === undefined) {
+      return video.src;
+    }
+    srcModified = true;
+  };
+  player.currentTime = function() {
+    currentTimeModified = true;
+  };
+
+  // with a separate video display or server-side ad insertion, ads play but
+  // the src never changes. Modifying the src or currentTime would introduce
+  // unnecessary seeking and rebuffering
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  ok(!srcModified, 'the src was not set');
+  ok(playCalled, 'content playback resumed');
+
+  // the src wasn't changed, so we shouldn't be waiting on loadedmetadata to
+  // update the currentTime
+  player.trigger('loadedmetadata');
+  ok(!currentTimeModified, 'no seeking occurred');
 });
