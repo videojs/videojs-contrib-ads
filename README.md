@@ -96,6 +96,9 @@ Here's a state diagram which shows the states of the ads plugin and how it trans
 
 ![](ad-states.png)
 
+The ads plugin starts in the `init` state and immediately transitions to `content-set` if a video is loaded.
+Transitions with solid arrows are traversed when an event with the appropriate type is triggered on the player.
+Dotted-line arrows indicate a transition that occurs when a timeout expires.
 The timeline at right shows how the ads plugin communicates with your integration.
 
 ## Plugin Options
@@ -108,7 +111,7 @@ player.ads({
 });
 ```
 
-Two options are currently available: `timeout` and `prerollTimeout`.
+The current set of options are described in detail below.
 
 ### timeout
 
@@ -151,6 +154,14 @@ Once the ad plugin fires `readyforpreroll`, one of these things will happen:
 The prerollTimout should be as short as possible so that the viewer does not have to wait unnecessarily if no preroll is scheduled for a video.
 Make this longer if your ad integration needs a long time to decide whether it has preroll inventory to play or not.
 Ideally, your ad integration should already know if it wants to play a preroll before the `readyforpreroll` event.
+
+### debug
+
+Type: `boolean`
+Default Value: false
+
+If debug is set to true, the ads plugin will output additional information about its current state during playback.
+This can be handy for diagnosing issues or unexpected behavior in an ad integration.
 
 ## Building
 

@@ -249,7 +249,12 @@ var
     // maximum amount of time in ms to wait for the ad implementation to start
     // linear ad mode after `readyforpreroll` has fired. This is in addition to
     // the standard timeout.
-    prerollTimeout: 100
+    prerollTimeout: 100,
+
+    // when truthy, instructs the plugin to output additional information about
+    // plugin state to the video.js log. On most devices, the video.js log is
+    // the same as the developer console.
+    debug: false
   },
 
   adFramework = function(options) {
@@ -430,6 +435,10 @@ var
         if (state !== player.ads.state) {
           (fsm[state].leave || noop).apply(player.ads);
           (fsm[player.ads.state].enter || noop).apply(player.ads);
+
+          if (settings.debug) {
+            videojs.log('ads', state + ' -> ' + player.ads.state);
+          }
         }
         
       })(player.ads.state);
