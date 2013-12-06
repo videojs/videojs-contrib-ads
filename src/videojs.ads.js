@@ -89,7 +89,7 @@ var
       window.mozRequestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
       window.setTimeout
-    ).call(window, callback, 0);
+    )(callback, 0);
   },
 
   /**
