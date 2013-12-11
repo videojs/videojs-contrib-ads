@@ -89,7 +89,7 @@ var
       window.mozRequestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
       window.setTimeout
-    ).call(window, callback, 0);
+    )(callback, 0);
   },
 
   /**
@@ -124,7 +124,7 @@ var
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
 
-      if (!player.paused()) { // TODO
+      if (!player.paused()) {
         player.pause();
       }
     });
@@ -170,7 +170,8 @@ var
   },
 
   /**
-   * Attempts to modify the specified player so that its state is equivalent to the state of the snapshot.
+   * Attempts to modify the specified player so that its state is equivalent to
+   * the state of the snapshot.
    * @param {object} snapshot - the player state to apply
    */
   restorePlayerSnapshot = function(player, snapshot) {
@@ -213,6 +214,14 @@ var
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
     }
+
+    // with a custom ad display or burned-in ads, the content player state
+    // hasn't been modified and so no restoration is required
+    if (player.currentSrc() === snapshot.src) {
+      player.play();
+      return;
+    }
+
     player.src(snapshot.src);
     // safari requires a call to `load` to pick up a changed source
     player.load();
@@ -249,7 +258,12 @@ var
     // maximum amount of time in ms to wait for the ad implementation to start
     // linear ad mode after `readyforpreroll` has fired. This is in addition to
     // the standard timeout.
-    prerollTimeout: 100
+    prerollTimeout: 100,
+
+    // when truthy, instructs the plugin to output additional information about
+    // plugin state to the video.js log. On most devices, the video.js log is
+    // the same as the developer console.
+    debug: false
   },
 
   adFramework = function(options) {
@@ -430,6 +444,10 @@ var
         if (state !== player.ads.state) {
           (fsm[state].leave || noop).apply(player.ads);
           (fsm[player.ads.state].enter || noop).apply(player.ads);
+
+          if (settings.debug) {
+            videojs.log('ads', state + ' -> ' + player.ads.state);
+          }
         }
         
       })(player.ads.state);
