@@ -139,10 +139,10 @@ var
    */
   getPlayerSnapshot = function(player) {
     var
-      tech = player.el().querySelector('.vjs-tech'),
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
+        nativePoster: player.poster(),
 
         // on slow connections, player.paused() may be true when starting and
         // stopping ads even though play has been requested. Hard-coding the
@@ -150,9 +150,7 @@ var
         // an inaccurate snapshot.
         play: true
       };
-    if (tech) {
-      snapshot.nativePoster = tech.poster;
-    }
+
     return snapshot;
   },
 
@@ -237,10 +235,7 @@ var
    * @param {object} player The videojs player object
    */
   removeNativePoster = function(player) {
-    var tech = player.el().querySelector('.vjs-tech');
-    if (tech) {
-      tech.poster = null;
-    }
+    player.poster('');
   },
 
   // ---------------------------------------------------------------------------
