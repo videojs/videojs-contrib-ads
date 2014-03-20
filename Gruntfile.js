@@ -57,6 +57,14 @@ module.exports = function(grunt) {
         src: ['test/**/*.js']
       },
     },
+    connect: {
+      dev: {
+        options: {
+          port: 9999,
+          keepalive: true
+        }
+      }
+    },
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -74,6 +82,7 @@ module.exports = function(grunt) {
   });
 
   // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');

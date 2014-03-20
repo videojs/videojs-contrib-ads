@@ -222,12 +222,12 @@ test('starts the content video if there is no preroll', function() {
 });
 
 test('removes the poster attribute so it doesn\t flash between videos', function() {
-  ok(video.poster, 'the poster is present initially');
+  ok(player.poster(), 'the poster is present initially');
 
   player.trigger('adsready');
   player.trigger('play');
 
-  ok(!video.poster, 'the poster is removed');
+  ok(!player.poster(), 'the poster is removed');
 });
 
 test('restores the poster attribute after ads have ended', function() {
@@ -236,7 +236,7 @@ test('restores the poster attribute after ads have ended', function() {
   player.trigger('adstart');
   player.trigger('adend');
 
-  ok(video.poster, 'the poster is restored');
+  ok(player.poster(), 'the poster is restored');
 });
 
 test('changing the src triggers contentupdate', function() {
