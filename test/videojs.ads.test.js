@@ -236,8 +236,6 @@ test('restores the poster attribute after ads have ended', function() {
   player.trigger('adstart');
   player.trigger('adend');
 
-  console.log('hello', video);
-
   ok(player.poster(), 'the poster is restored');
 });
 
