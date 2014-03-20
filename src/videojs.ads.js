@@ -210,7 +210,7 @@ var
       };
 
     if (snapshot.nativePoster) {
-      tech.poster = snapshot.nativePoster;
+      player.poster(snapshot.nativePoster);
     }
 
     // with a custom ad display or burned-in ads, the content player state

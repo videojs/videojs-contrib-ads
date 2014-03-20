@@ -236,7 +236,9 @@ test('restores the poster attribute after ads have ended', function() {
   player.trigger('adstart');
   player.trigger('adend');
 
-  ok(video.poster, 'the poster is restored');
+  console.log('hello', video);
+
+  ok(player.poster(), 'the poster is restored');
 });
 
 test('changing the src triggers contentupdate', function() {
