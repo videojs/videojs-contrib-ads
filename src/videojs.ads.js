@@ -235,7 +235,7 @@ var
    * @param {object} player The videojs player object
    */
   removeNativePoster = function(player) {
-    player.poster('');
+    player.poster(null);
   },
 
   // ---------------------------------------------------------------------------
