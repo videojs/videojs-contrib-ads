@@ -1,0 +1,7 @@
+language: node_js
+before_script:
+- npm install -g grunt-cli
+notifications:
+  hipchat:
+    rooms:
+      secure: ArHYBMb+hpidkzfmABUtQoHQpcbBWMqbcCuBtGLLEMTWaOpOKe1KMD5dvu6wLrpXELU4Fafml8Rs1/E/QiK7YE0cB2hiI5T1LBXiGzm3Qa+l/5A0/ktoSGuI3PP9GtNcUwIbYxZF3kV70TOTb0kVZ29QSGjtw8n+m1JGSknAzmE=

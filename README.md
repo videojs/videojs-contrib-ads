@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.png)](https://travis-ci.org/videojs/videojs-contrib-ads)
+
 # videojs-contrib-ads
 
 The `videojs-contrib-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
