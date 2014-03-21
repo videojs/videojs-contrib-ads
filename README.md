@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BCjwhisenant/videojs-contrib-ads.svg?branch=feature/travis)](https://travis-ci.org/BCjwhisenant/videojs-contrib-ads)
+[![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.svg)](https://travis-ci.org/videojs/videojs-contrib-ads)
 
 # videojs-contrib-ads
 
