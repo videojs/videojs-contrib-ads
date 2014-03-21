@@ -15,8 +15,20 @@ module('Ad Framework', {
     video.poster = '//example.com/poster.jpg';
     video.load = function() {};
     video.play = function() {};
+
+    // phantom has a non-functional version of removeAttribute
+    if (/phantom/i.test(window.navigator.userAgent)) {
+      video.removeAttribute = function(attr) {
+        video[attr] = '';
+      };
+    }
+
     document.getElementById('qunit-fixture').appendChild(video);
     player = videojs(video);
+    player.buffered = function() {
+      return videojs.createTimeRange(0, 0);
+    };
+    video = player.el().querySelector('.vjs-tech');
     player.ads();
 
     // make setImmediate synchronous
@@ -139,7 +151,7 @@ test('waits for adsready if play is received first', function() {
   equal(player.ads.state, 'preroll?', 'the state is preroll?');
 });
 
-test('moves to ad-timeout-playback if a plugin doesn\'t finish initializing', function() {
+test('moves to ad-timeout-playback if a plugin does not finish initializing', function() {
   player.trigger('play');
   player.trigger('adtimeout');
   equal(player.ads.state,
@@ -221,13 +233,13 @@ test('starts the content video if there is no preroll', function() {
   equal(1, playCount, 'play is called once');
 });
 
-test('removes the poster attribute so it doesn\t flash between videos', function() {
+test('removes the poster attribute so it does not flash between videos', function() {
   ok(video.poster, 'the poster is present initially');
 
   player.trigger('adsready');
   player.trigger('play');
 
-  ok(!video.poster, 'the poster is removed');
+  equal(video.poster, '', 'poster is removed');
 });
 
 test('restores the poster attribute after ads have ended', function() {
@@ -314,6 +326,9 @@ module('Ad Framework - Video Snapshot', {
     var noop = function() {};
     video = document.createElement('div');
     player = videojs(video);
+    player.buffered = function() {
+      return videojs.createTimeRange(0, 0);
+    };
 
     video.load = noop;
     video.play = noop;

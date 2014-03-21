@@ -191,6 +191,12 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 A short list of features, fixes and changes for each release.
 
+### v0.2.0
+
+ * Upgrade to video.js 4.4.3
+ * Added support for burned-in or out-of-band linear ad playback
+ * Debug mode
+
 ### v0.1.0
 
  * Initial release.
