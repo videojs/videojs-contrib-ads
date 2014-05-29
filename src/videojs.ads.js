@@ -467,13 +467,13 @@ var
       'adend',    // endLinearAdMode()
     ]), fsmHandler);
     
+    // keep track of last src
     // lastSrc should be editable to allow changing resolutions without triggering an ad
     player.ads.lastSrc = undefined;
     
     // implement 'contentupdate' event.
     (function(){
       var
-        // keep track of last src
         // check if a new src has been set, if so, trigger contentupdate
         checkSrc = function() {
           var src;
