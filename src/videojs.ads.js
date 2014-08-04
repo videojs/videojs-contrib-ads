@@ -220,7 +220,11 @@ var
     // with a custom ad display or burned-in ads, the content player state
     // hasn't been modified and so no restoration is required
     if (player.currentSrc() === snapshot.src) {
-      player.play();
+      //this will always be true unless specifically overriden in the
+      //client implementation.  For instance, when playing a post-roll.
+      if (snapshot.play) {
+        player.play();
+      }
       return;
     }
 
