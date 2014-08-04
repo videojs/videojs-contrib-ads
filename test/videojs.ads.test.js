@@ -293,6 +293,35 @@ test('changing src does not trigger contentupdate during ad playback', function(
   
 });
 
+test('snapshot on resume without src change checks play property', function() {
+  var playCalled = 0;
+  player.on('play', function(){
+    playCalled++;
+  });
+  // enter ad playback mode
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  
+  // set src and trigger synthetic 'loadstart'
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+  
+  // finish playing ad
+  player.trigger('adend');
+  
+  // confirm one play event is triggered
+  equal(playCalled, 1, 'one play event should have been triggered');
+  
+  playCalled = 0;
+  player.trigger('adstart');
+  player.ads.snapshot.play = false;
+  player.trigger('adend');
+
+  // confirm no play events are triggered
+  equal(playCalled, 0, 'no play events should have been triggered');
+});
+
 
 test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
   var callbacks = [];
