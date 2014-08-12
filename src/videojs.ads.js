@@ -177,6 +177,7 @@ var
    * @param {object} snapshot - the player state to apply
    */
   restorePlayerSnapshot = function(player, snapshot) {
+    console.log('restore snapshot');
     var
       // the playback tech
       tech = player.el().querySelector('.vjs-tech'),
@@ -186,8 +187,12 @@ var
 
       // finish restoring the playback state
       resume = function() {
+        console.log('resuming');
         player.currentTime(snapshot.currentTime);
-        if (snapshot.play) {
+        console.log('play: ', snapshot.play);
+        console.log('contentEnded: ', player.ads.contentEnded);
+        if (snapshot.play && !player.ads.contentEnded) {
+          console.log('calling play');
           player.play();
         }
       },
@@ -195,6 +200,7 @@ var
       // determine if the video element has loaded enough of the snapshot source
       // to be ready to apply the rest of the state
       tryToResume = function() {
+        console.log('try to resume');
         if (tech.seekable === undefined) {
           // if the tech doesn't expose the seekable time ranges, try to
           // resume playback immediately
@@ -220,10 +226,14 @@ var
     // with a custom ad display or burned-in ads, the content player state
     // hasn't been modified and so no restoration is required
     if (player.currentSrc() === snapshot.src) {
-      player.play();
+      //this will always be true unless specifically overriden in the
+      //client implementation.  For instance, when playing a post-roll.
+      if (snapshot.play && !player.ads.contentEnded) {
+        player.play();
+      }
       return;
     }
-
+    console.log('src changed');
     player.src(snapshot.src);
     // safari requires a call to `load` to pick up a changed source
     player.load();
@@ -478,6 +488,8 @@ var
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
             if (src !== lastSrc) {
+              console.log('setting contentEnded false');
+              player.ads.contentEnded = false;
               player.trigger({
                 type: 'contentupdate',
                 oldValue: lastSrc,
@@ -489,6 +501,14 @@ var
         };
       // loadstart reliably indicates a new src has been set
       player.on('loadstart', checkSrc);
+      player.on('ended', function() {
+        if (player.ads.state === 'content-playback') {
+          //this property is checked when restoring the snapshot to
+          //prevent the player from calling play() after post-rolls.
+          console.log('setting contentEnded true');
+          player.ads.contentEnded = true;
+        }
+      });
       // check immediately in case we missed the loadstart
       setImmediate(checkSrc);
     })();
