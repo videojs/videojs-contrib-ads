@@ -534,7 +534,7 @@ test('snapshot does not resume after burned-in post-roll', function() {
   // stopLinearAdMode fires next we should not hit play() since we have reached
   // the end of the stream
   playCalled = false;
-  player.trigger('ended');
+  player.trigger('contentend');
   //trigger a post-roll
   player.trigger('adstart');
   player.trigger('adend');
@@ -567,7 +567,7 @@ test('snapshot does not resume after multiple post-rolls', function() {
   // stopLinearAdMode fires next we should not hit play() since we have reached
   // the end of the stream
   playCalled = false;
-  player.trigger('contentend');
+  player.trigger('ended');
   //trigger a lots o post-rolls
   player.trigger('adstart');
   player.src('//exampe.com/ad1.mp4');
@@ -588,7 +588,7 @@ test('contentupdate after content has ended should reset ads for preroll', funct
   player.trigger('loadstart');
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('contentend');
+  player.trigger('ended');
   player.trigger('content-update');
 
   ok(player.ads.state, 'content-set');
@@ -599,7 +599,7 @@ test('play event after content has ended should reset ads for preroll', function
   player.trigger('loadstart');
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('contentend');
+  player.trigger('ended');
   player.trigger('play');
 
   ok(player.ads.state, 'ads-ready?');

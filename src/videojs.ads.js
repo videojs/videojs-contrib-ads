@@ -447,7 +447,7 @@ var
               'adstart': function() {
                 this.state = 'ad-playback';
                 this.snapshot = getPlayerSnapshot(player);
-                this.snapshot.contentend = true;
+                this.snapshot.contentended = true;
                 player.el().className += ' vjs-ad-playing';
               },
               'contentupdate': function() {
@@ -537,7 +537,7 @@ var
       // themselves prior to playing post-rolls.
       player.on('contentend', function() {
         player.ads.state = 'content-ended';
-      })
+      });
 
       // check immediately in case we missed the loadstart
       setImmediate(checkSrc);
