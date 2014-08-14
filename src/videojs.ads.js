@@ -145,12 +145,7 @@ var
         currentTime: player.currentTime(),
         // this should be set true only when the main content has been
         // played through.
-        contentended: false,
-        // on slow connections, player.paused() may be true when starting and
-        // stopping ads even though play has been requested. Hard-coding the
-        // playback state works for the purposes of ad playback but makes this
-        // an inaccurate snapshot.
-        play: true
+        contentended: false
       };
 
     if (tech) {
@@ -189,10 +184,9 @@ var
       // finish restoring the playback state
       resume = function() {
         player.currentTime(snapshot.currentTime);
-        // snapshot.play is always true by default.
         // snapshot.contentended should only be true
         // when the main content has completed.
-        if (snapshot.play && !snapshot.contentended) {
+        if (!snapshot.contentended) {
           player.play();
         }
       },
@@ -224,15 +218,13 @@ var
 
     // with a custom ad display or burned-in ads, the content player state
     // hasn't been modified and so no restoration is required
-    if (player.currentSrc() === snapshot.src) {
-      // snapshot.play is always true by default.
-      // snapshot.contentended should only be true
-      // when the main content has completed.
-      if (snapshot.play && !snapshot.contentended) {
-        player.play();
-      }
+    // snapshot.contentended should only be true
+    // when the main content has completed.
+    if (player.currentSrc() === snapshot.src && !snapshot.contentended) {
+      player.play();
       return;
     }
+    
     player.src(snapshot.src);
     // safari requires a call to `load` to pick up a changed source
     player.load();
