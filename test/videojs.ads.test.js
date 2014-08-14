@@ -293,10 +293,6 @@ test('changing src does not trigger contentupdate during ad playback', function(
   
 });
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
   var callbacks = [];
   expect(3);
@@ -475,7 +471,7 @@ test('only restores the player snapshot if the src changed', function() {
   ok(!currentTimeModified, 'no seeking occurred');
 });
 
-test('snapshot resume only calls play if ended has not fired', function() {
+test('snapshot does not resume after post-roll', function() {
   var playCalled = false;
 
   // start playback
@@ -515,11 +511,11 @@ test('snapshot resume only calls play if ended has not fired', function() {
   player.trigger('loadedmetadata');
   player.trigger('adend');
 
-  ok(player.ads.contentEnded, 'contentEnded property should be true');
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
 });
 
-test('snapshot resume only calls play if ended has not fired even if src does not change', function() {
+test('snapshot does not resume after burned-in post-roll', function() {
   var playCalled = false;
 
   player.trigger('adsready');
@@ -543,12 +539,11 @@ test('snapshot resume only calls play if ended has not fired even if src does no
   player.trigger('adstart');
   player.trigger('adend');
 
-  ok(player.ads.contentEnded, 'contentEnded property should be true');
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
-
 });
 
-test('snapshot resume only calls play if ended has not fired after multiple post-rolls', function() {
+test('snapshot does not resume after multiple post-rolls', function() {
   var playCalled = false;
 
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
@@ -571,8 +566,8 @@ test('snapshot resume only calls play if ended has not fired after multiple post
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
   // the end of the stream
-  playCalled = false,
-  player.trigger('ended');
+  playCalled = false;
+  player.trigger('contentend');
   //trigger a lots o post-rolls
   player.trigger('adstart');
   player.src('//exampe.com/ad1.mp4');
@@ -582,69 +577,30 @@ test('snapshot resume only calls play if ended has not fired after multiple post
   player.src('//exampe.com/ad2.mp4');
   player.trigger('loadstart');
   player.trigger('adend');
-  player.trigger('adstart');
-  player.src('//exampe.com/ad3.mp4');
-  player.trigger('loadstart');
-  player.trigger('adend');
-  player.trigger('adstart');
-  player.src('//exampe.com/ad4.mp4');
-  player.trigger('loadstart');
-  player.trigger('adend');
-  player.trigger('adstart');
-  player.src('//exampe.com/ad5.mp4');
-  player.trigger('loadstart');
-  player.trigger('adend');
 
-  ok(player.ads.contentEnded, 'contentEnded property should be true');
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not resume');
 
 });
 
-test('contentEnded is reset to false when content changes', function() {
-  var srcModified = false;
-
-  player.src = function(url) {
-    if (url === undefined) {
-      return video.src;
-    }
-    srcModified = true;
-  };
-
-  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+test('contentupdate after content has ended should reset ads for preroll', function() {
+  player.src('http://media.w3.org/2010/05/sintel/trailer1.mp4');
   player.trigger('loadstart');
   player.trigger('adsready');
   player.trigger('play');
-  
-  ok(player.ads.contentEnded, 'contentEnded property should be false');
+  player.trigger('contentend');
+  player.trigger('content-update');
 
-  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
-  player.trigger('loadstart');
-
-  ok(srcModified, 'the src should be modified');
-  ok(player.ads.contentEnded, 'contentEnded should be reset when content changes.');
+  ok(player.ads.state, 'content-set');
 });
 
-test('contentEnded is not reset when content changes during ads', function() {
-  var srcModified = false;
-
-  player.src = function(url) {
-    if (url === undefined) {
-      return video.src;
-    }
-    srcModified = true;
-  };
-
-  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+test('play event after content has ended should reset ads for preroll', function() {
+  player.src('http://media.w3.org/2010/05/sintel/trailer1.mp4');
   player.trigger('loadstart');
   player.trigger('adsready');
   player.trigger('play');
-  
-  ok(!player.ads.contentEnded, 'contentEnded should be false by default.');
-  
-  player.trigger('adstart');
-  player.src('//exampe.com/ad1.mp4');
-  player.trigger('loadstart');
-  player.trigger('adend');
-  
-  ok(!player.ads.contentEnded, 'contentEnded should be false even if the src changes during an ad.');
+  player.trigger('contentend');
+  player.trigger('play');
+
+  ok(player.ads.state, 'ads-ready?');
 });

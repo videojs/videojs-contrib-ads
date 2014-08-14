@@ -7,7 +7,7 @@
 "use strict";
 
 var
-  
+
   /**
    * Copies properties from one or more objects onto an original.
    */
@@ -23,7 +23,7 @@ var
     }
     return obj;
   },
-  
+
   /**
    * Add a handler for multiple listeners to an object that supports addEventListener() or on().
    *
@@ -34,11 +34,11 @@ var
    * @return {object} obj The object passed in.
    */
   on = function(obj, events, handler) {
-    
+
     var
-      
+
       type = Object.prototype.toString.call(events),
-      
+
       register = function(obj, event, handler) {
         if (obj.addEventListener) {
           obj.addEventListener(event, handler);
@@ -50,10 +50,10 @@ var
           throw new Error('object has no mechanism for adding event listeners');
         }
       },
-      
+
       i,
       ii;
-    
+
     switch (type) {
       case '[object String]':
         register(obj, events, handler);
@@ -73,11 +73,11 @@ var
       default:
         throw new Error('Unrecognized events parameter type: ' + type);
     }
-    
+
     return obj;
-    
+
   },
-  
+
   /**
    * Runs the callback at the next available opportunity.
    * @see https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate
@@ -129,7 +129,7 @@ var
       }
     });
   },
-  
+
   /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
@@ -143,7 +143,9 @@ var
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
-
+        // this should be set true only when the main content has been
+        // played through.
+        contentended: false,
         // on slow connections, player.paused() may be true when starting and
         // stopping ads even though play has been requested. Hard-coding the
         // playback state works for the purposes of ad playback but makes this
@@ -177,7 +179,6 @@ var
    * @param {object} snapshot - the player state to apply
    */
   restorePlayerSnapshot = function(player, snapshot) {
-    console.log('restore snapshot');
     var
       // the playback tech
       tech = player.el().querySelector('.vjs-tech'),
@@ -187,12 +188,11 @@ var
 
       // finish restoring the playback state
       resume = function() {
-        console.log('resuming');
         player.currentTime(snapshot.currentTime);
-        console.log('play: ', snapshot.play);
-        console.log('contentEnded: ', player.ads.contentEnded);
-        if (snapshot.play && !player.ads.contentEnded) {
-          console.log('calling play');
+        // snapshot.play is always true by default.
+        // snapshot.contentended should only be true
+        // when the main content has completed.
+        if (snapshot.play && !snapshot.contentended) {
           player.play();
         }
       },
@@ -200,7 +200,6 @@ var
       // determine if the video element has loaded enough of the snapshot source
       // to be ready to apply the rest of the state
       tryToResume = function() {
-        console.log('try to resume');
         if (tech.seekable === undefined) {
           // if the tech doesn't expose the seekable time ranges, try to
           // resume playback immediately
@@ -212,7 +211,7 @@ var
           resume();
           return;
         }
-        
+
         // delay a bit and then check again unless we're out of attempts
         if (attempts--) {
           setTimeout(tryToResume, 50);
@@ -226,14 +225,14 @@ var
     // with a custom ad display or burned-in ads, the content player state
     // hasn't been modified and so no restoration is required
     if (player.currentSrc() === snapshot.src) {
-      //this will always be true unless specifically overriden in the
-      //client implementation.  For instance, when playing a post-roll.
-      if (snapshot.play && !player.ads.contentEnded) {
+      // snapshot.play is always true by default.
+      // snapshot.contentended should only be true
+      // when the main content has completed.
+      if (snapshot.play && !snapshot.contentended) {
         player.play();
       }
       return;
     }
-    console.log('src changed');
     player.src(snapshot.src);
     // safari requires a call to `load` to pick up a changed source
     player.load();
@@ -284,9 +283,9 @@ var
 
       // merge options and defaults
       settings = extend({}, defaults, options || {}),
-      
+
       fsmHandler;
-    
+
     // replace the ad initializer with the ad namespace
     player.ads = {
       state: 'content-set',
@@ -299,7 +298,7 @@ var
         player.trigger('adend');
       }
     };
-    
+
     fsmHandler = function(event) {
 
       // Ad Playback State Machine
@@ -330,24 +329,24 @@ var
           },
           'preroll?': {
             enter: function() {
-              
+
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
 
               // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
-              
+
               // change class to show that we're waiting on ads
               player.el().className += ' vjs-ad-loading';
-              
+
               // schedule an adtimeout event to fire if we waited too long
               player.ads.timeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.prerollTimeout);
-              
+
               // signal to ad plugin that it's their opportunity to play a preroll
               player.trigger('readyforpreroll');
-              
+
             },
             leave: function() {
               window.clearTimeout(player.ads.timeout);
@@ -442,16 +441,37 @@ var
                 }
               }
             }
+          },
+          'content-ended': {
+            events: {
+              'adstart': function() {
+                this.state = 'ad-playback';
+                this.snapshot = getPlayerSnapshot(player);
+                this.snapshot.contentend = true;
+                player.el().className += ' vjs-ad-playing';
+              },
+              'contentupdate': function() {
+                if (player.paused()) {
+                  this.state = 'content-set';
+                } else {
+                  this.state = 'ads-ready?';
+                }
+              },
+              'play': function() {
+                cancelContentPlay(player);
+                this.state = 'ads-ready?';
+              }
+            }
           }
         };
 
       (function(state) {
-        
+
         var noop = function() {};
-        
+
         // process the current event with a noop default handler
         (fsm[state].events[event.type] || noop).apply(player.ads);
-        
+
         // execute leave/enter callbacks if present
         if (state !== player.ads.state) {
           (fsm[state].leave || noop).apply(player.ads);
@@ -461,7 +481,7 @@ var
             videojs.log('ads', state + ' -> ' + player.ads.state);
           }
         }
-        
+
       })(player.ads.state);
 
     };
@@ -475,8 +495,9 @@ var
       'adsready',
       'adstart',  // startLinearAdMode()
       'adend',    // endLinearAdMode()
+      'contentend'
     ]), fsmHandler);
-    
+
     // implement 'contentupdate' event.
     (function(){
       var
@@ -488,8 +509,6 @@ var
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
             if (src !== lastSrc) {
-              console.log('setting contentEnded false');
-              player.ads.contentEnded = false;
               player.trigger({
                 type: 'contentupdate',
                 oldValue: lastSrc,
@@ -501,24 +520,35 @@ var
         };
       // loadstart reliably indicates a new src has been set
       player.on('loadstart', checkSrc);
+
+      // since we need to handle burned-in ads and standard
+      // ads, there is a need for a unique event other than
+      // ended to signal that we've finished playing through
+      // the main content.
       player.on('ended', function() {
         if (player.ads.state === 'content-playback') {
-          //this property is checked when restoring the snapshot to
-          //prevent the player from calling play() after post-rolls.
-          console.log('setting contentEnded true');
-          player.ads.contentEnded = true;
+          player.trigger('contentend');
         }
       });
+
+      // burned-in ad integrators and ad implementations that
+      // support older devices and browsers that don't trigger
+      // the ended event must fire the 'content-end' event
+      // themselves prior to playing post-rolls.
+      player.on('contentend', function() {
+        player.ads.state = 'content-ended';
+      })
+
       // check immediately in case we missed the loadstart
       setImmediate(checkSrc);
     })();
-    
+
     // kick off the fsm
     if (!player.paused()) {
       // simulate a play event if we're autoplaying
       fsmHandler({type:'play'});
     }
-    
+
   };
 
   // register the ad plugin framework
