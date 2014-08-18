@@ -142,13 +142,7 @@ var
       tech = player.el().querySelector('.vjs-tech'),
       snapshot = {
         src: player.currentSrc(),
-        currentTime: player.currentTime(),
-
-        // on slow connections, player.paused() may be true when starting and
-        // stopping ads even though play has been requested. Hard-coding the
-        // playback state works for the purposes of ad playback but makes this
-        // an inaccurate snapshot.
-        play: true
+        currentTime: player.currentTime()
       };
 
     if (tech) {
@@ -187,7 +181,7 @@ var
       // finish restoring the playback state
       resume = function() {
         player.currentTime(snapshot.currentTime);
-        if (snapshot.play) {
+        if (!player.ended()) {
           player.play();
         }
       },
@@ -219,7 +213,7 @@ var
 
     // with a custom ad display or burned-in ads, the content player state
     // hasn't been modified and so no restoration is required
-    if (player.currentSrc() === snapshot.src) {
+    if (player.currentSrc() === snapshot.src && !player.ended()) {
       player.play();
       return;
     }
