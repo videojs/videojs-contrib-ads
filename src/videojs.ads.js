@@ -143,6 +143,7 @@ var
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
+        type: player.currentType(),
 
         // on slow connections, player.paused() may be true when starting and
         // stopping ads even though play has been requested. Hard-coding the
@@ -465,7 +466,7 @@ var
       // events emitted by third party ad implementors
       'adsready',
       'adstart',  // startLinearAdMode()
-      'adend',    // endLinearAdMode()
+      'adend'     // endLinearAdMode()
     ]), fsmHandler);
     
     // implement 'contentupdate' event.
