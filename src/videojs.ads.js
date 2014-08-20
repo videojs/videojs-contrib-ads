@@ -216,8 +216,9 @@ var
     // hasn't been modified and so no restoration is required
     var src = player.src(),
         sameSrc = src === snapshot.src,
-        sameCurrentSrc = player.currentSrc() === snapshot.src;
-    if (!player.ended() && src ? sameSrc : sameCurrentSrc) {
+        sameCurrentSrc = player.currentSrc() === snapshot.src,
+        unchanged = src ? sameSrc : sameCurrentSrc;
+    if (unchanged && !player.ended()) {
       player.play();
     } else {
         player.src({src: snapshot.src, type: snapshot.type});
