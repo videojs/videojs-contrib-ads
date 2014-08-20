@@ -5,5 +5,7 @@ notifications:
   hipchat:
     rooms:
       secure: LFKhoG+dqdOWwAc6jAo7mY8Jz9/QOkwzJ96mruLHAbsBmIPJcgdiofd6UhZtEYQm8YbdgwDFV3GxsVd74euEXMT8Z60VEufH0LS3fqAO1DeyIteeewhWoD6WuGGRmFmwD3jOJyTJf0ZAnzfaTi7OjjTX25lwB/4cWMtSJMwHQ7I=
-  irc: "chat.freenode.net#videojs"
-
+  irc:
+    channels:
+      - "chat.freenode.net#videojs"
+    use_notice: true

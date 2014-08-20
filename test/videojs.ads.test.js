@@ -329,7 +329,9 @@ module('Ad Framework - Video Snapshot', {
     player.buffered = function() {
       return videojs.createTimeRange(0, 0);
     };
-
+    player.ended = function() {
+      return false;
+    };
     video.load = noop;
     video.play = noop;
     player.ads();
@@ -463,11 +465,132 @@ test('only restores the player snapshot if the src changed', function() {
   player.trigger('adstart');
   player.trigger('adend');
 
-  ok(!srcModified, 'the src was not set');
+  ok(!srcModified, 'the src was reset');
   ok(playCalled, 'content playback resumed');
 
   // the src wasn't changed, so we shouldn't be waiting on loadedmetadata to
   // update the currentTime
   player.trigger('loadedmetadata');
   ok(!currentTimeModified, 'no seeking occurred');
+});
+
+test('snapshot does not resume after post-roll', function() {
+  var playCalled = false;
+
+  // start playback
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+  player.trigger('loadedmetadata');
+  player.trigger('adsready');
+  player.trigger('play');
+
+  // spy on relevant player methods
+  player.play = function() {
+    playCalled = true;
+  };
+
+  //trigger an ad
+  player.trigger('adstart');
+  player.src('//example.com/ad.mp4');
+  player.trigger('loadstart');
+  player.trigger('loadedmetadata');
+  player.trigger('adend');
+
+  //resume playback
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+  player.trigger('loadedmetadata');
+  ok(playCalled, 'content playback resumed');
+
+  // if the video ends (regardless of burned in post-roll or otherwise) when
+  // stopLinearAdMode fires next we should not hit play() since we have reached
+  // the end of the stream
+  playCalled = false;
+  player.ended = function() {
+    return true;
+  };
+  player.trigger('ended');
+  //trigger a post-roll
+  player.trigger('adstart');
+  player.src('//example.com/ad.mp4');
+  player.trigger('loadstart');
+  player.trigger('loadedmetadata');
+  player.trigger('adend');
+
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  ok(!playCalled, 'content playback should not have been resumed');
+});
+
+test('snapshot does not resume after burned-in post-roll', function() {
+  var playCalled = false;
+
+  player.trigger('adsready');
+  player.trigger('play');
+
+  // spy on relevant player methods
+  player.play = function() {
+    playCalled = true;
+  };
+
+  player.trigger('adstart');
+  player.trigger('adend');
+  ok(playCalled, 'content playback resumed');
+
+  // if the video ends (regardless of burned in post-roll or otherwise) when
+  // stopLinearAdMode fires next we should not hit play() since we have reached
+  // the end of the stream
+  playCalled = false;
+  player.trigger('ended');
+  player.ended = function() {
+    return true;
+  };
+  //trigger a post-roll
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  ok(!playCalled, 'content playback should not have been resumed');
+});
+
+test('snapshot does not resume after multiple post-rolls', function() {
+  var playCalled = false;
+
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+  player.trigger('adsready');
+  player.trigger('play');
+
+  // spy on relevant player methods
+  player.play = function() {
+    playCalled = true;
+  };
+
+  // with a separate video display or server-side ad insertion, ads play but
+  // the src never changes. Modifying the src or currentTime would introduce
+  // unnecessary seeking and rebuffering
+  player.trigger('adstart');
+  player.trigger('adend');
+  ok(playCalled, 'content playback resumed');
+
+  // if the video ends (regardless of burned in post-roll or otherwise) when
+  // stopLinearAdMode fires next we should not hit play() since we have reached
+  // the end of the stream
+  playCalled = false;
+  player.ended = function() {
+    return true;
+  };
+  player.trigger('ended');
+  //trigger a lots o post-rolls
+  player.trigger('adstart');
+  player.src('//exampe.com/ad1.mp4');
+  player.trigger('loadstart');
+  player.trigger('adend');
+  player.trigger('adstart');
+  player.src('//exampe.com/ad2.mp4');
+  player.trigger('loadstart');
+  player.trigger('adend');
+
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  ok(!playCalled, 'content playback should not resume');
+
 });

@@ -143,13 +143,7 @@ var
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
-        type: player.currentType(),
-
-        // on slow connections, player.paused() may be true when starting and
-        // stopping ads even though play has been requested. Hard-coding the
-        // playback state works for the purposes of ad playback but makes this
-        // an inaccurate snapshot.
-        play: true
+        type: player.currentType()
       };
 
     if (tech) {
@@ -188,7 +182,7 @@ var
       // finish restoring the playback state
       resume = function() {
         player.currentTime(snapshot.currentTime);
-        if (snapshot.play) {
+        if (!player.ended()) {
           player.play();
         }
       },
@@ -223,7 +217,7 @@ var
     var src = player.src(),
         sameSrc = src === snapshot.src,
         sameCurrentSrc = player.currentSrc() === snapshot.src;
-    if (src ? sameSrc : sameCurrentSrc) {
+    if (!player.ended() && src ? sameSrc : sameCurrentSrc) {
       player.play();
     } else {
         player.src({src: snapshot.src, type: snapshot.type});
