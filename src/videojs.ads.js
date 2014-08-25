@@ -296,7 +296,6 @@ var
               },
               'play': function() {
                 this.state = 'ads-ready?';
-                this.snapshot = getPlayerSnapshot(player);
                 cancelContentPlay(player);
 
                 // remove the poster so it doesn't flash between videos
@@ -314,13 +313,6 @@ var
           },
           'preroll?': {
             enter: function() {
-              
-              // capture current player state snapshot (playing, currentTime, src)
-              this.snapshot = getPlayerSnapshot(player);
-
-              // remove the poster so it doesn't flash between videos
-              removeNativePoster(player);
-              
               // change class to show that we're waiting on ads
               player.el().className += ' vjs-ad-loading';
               
@@ -379,9 +371,6 @@ var
             }
           },
           'ad-timeout-playback': {
-            enter: function() {
-              restorePlayerSnapshot(player, this.snapshot);
-            },
             events: {
               'adsready': function() {
                 if (player.paused()) {
@@ -400,11 +389,20 @@ var
             }
           },
           'ad-playback': {
+            enter: function() {
+              // capture current player state snapshot (playing, currentTime, src)
+              this.snapshot = getPlayerSnapshot(player);
+
+              // remove the poster so it doesn't flash between videos
+              removeNativePoster(player);
+            },
+            leave: function() {
+              removeClass(player.el(), 'vjs-ad-playing');
+              restorePlayerSnapshot(player, this.snapshot);
+            },
             events: {
               'adend': function() {
                 this.state = 'content-playback';
-                removeClass(player.el(), 'vjs-ad-playing');
-                restorePlayerSnapshot(player, this.snapshot);
               }
             }
           },
@@ -412,7 +410,6 @@ var
             events: {
               'adstart': function() {
                 this.state = 'ad-playback';
-                this.snapshot = getPlayerSnapshot(player);
                 player.el().className += ' vjs-ad-playing';
 
                 // remove the poster so it doesn't flash between videos
