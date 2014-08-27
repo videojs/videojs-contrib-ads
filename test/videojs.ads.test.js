@@ -238,6 +238,7 @@ test('removes the poster attribute so it does not flash between videos', functio
 
   player.trigger('adsready');
   player.trigger('play');
+  player.trigger('adstart');
 
   equal(video.poster, '', 'poster is removed');
 });
@@ -455,8 +456,10 @@ test('only restores the player snapshot if the src changed', function() {
     }
     srcModified = true;
   };
-  player.currentTime = function() {
-    currentTimeModified = true;
+  player.currentTime = function(time) {
+    if (time !== undefined) {
+      currentTimeModified = true;
+    }
   };
 
   // with a separate video display or server-side ad insertion, ads play but
@@ -582,15 +585,41 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.trigger('ended');
   //trigger a lots o post-rolls
   player.trigger('adstart');
-  player.src('//exampe.com/ad1.mp4');
+  player.src('http://example.com/ad1.mp4');
   player.trigger('loadstart');
   player.trigger('adend');
   player.trigger('adstart');
-  player.src('//exampe.com/ad2.mp4');
+  player.src('http://example.com/ad2.mp4');
   player.trigger('loadstart');
   player.trigger('adend');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not resume');
 
+});
+
+test('changing the source and then timing out does not restore a snapshot', function() {
+  player.paused = function() {
+    return false;
+  };
+  // load and play the initial video
+  player.src('http://example.com/movie.mp4');
+  player.trigger('loadstart');
+  player.trigger('play');
+  player.trigger('adsready');
+  // preroll
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  // change the content and timeout the new ad response
+  player.src('http://example.com/movie2.mp4');
+  player.trigger('loadstart');
+  player.trigger('adtimeout');
+
+  equal(player.ads.state,
+        'ad-timeout-playback',
+        'playing the new content video after the ad timeout');
+  equal('http://example.com/movie2.mp4',
+        player.currentSrc(),
+        'playing the second video');
 });
