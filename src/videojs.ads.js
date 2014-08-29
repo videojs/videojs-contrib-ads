@@ -142,7 +142,8 @@ var
       tech = player.el().querySelector('.vjs-tech'),
       snapshot = {
         src: player.currentSrc(),
-        currentTime: player.currentTime()
+        currentTime: player.currentTime(),
+        type: player.currentType()
       };
 
     if (tech) {
@@ -210,19 +211,21 @@ var
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
     }
-
+    
     // with a custom ad display or burned-in ads, the content player state
     // hasn't been modified and so no restoration is required
-    if (player.currentSrc() === snapshot.src && !player.ended()) {
+    var src = player.src(),
+        sameSrc = src === snapshot.src,
+        sameCurrentSrc = player.currentSrc() === snapshot.src,
+        unchanged = src ? sameSrc : sameCurrentSrc;
+    if (unchanged && !player.ended()) {
       player.play();
-      return;
+    } else {
+        player.src({src: snapshot.src, type: snapshot.type});
+        // safari requires a call to `load` to pick up a changed source
+        player.load();
+        player.one('loadedmetadata', tryToResume);
     }
-
-    player.src(snapshot.src);
-    // safari requires a call to `load` to pick up a changed source
-    player.load();
-
-    player.one('loadedmetadata', tryToResume);
   },
 
   /**
@@ -455,7 +458,7 @@ var
       // events emitted by third party ad implementors
       'adsready',
       'adstart',  // startLinearAdMode()
-      'adend',    // endLinearAdMode()
+      'adend'     // endLinearAdMode()
     ]), fsmHandler);
     
     // implement 'contentupdate' event.

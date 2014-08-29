@@ -23,6 +23,6 @@
     "grunt-contrib-watch": "~0.4.0",
     "grunt-contrib-clean": "~0.4.0",
     "grunt": "~0.4.1",
-    "video.js": "4.4"
+    "video.js": "4.7.2"
   }
 }
