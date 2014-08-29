@@ -44,8 +44,8 @@ Here are the events that communicate information to your integration from the ad
 And here are the interaction points you use to send information to the ads plugin:
 
  * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
- * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad.
- * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume.
+ * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
+ * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
 
 In addition, video.js provides a number of events and APIs that might be useful to you.
 For example, the `ended` event signals that the content video has played to completion.
@@ -163,6 +163,18 @@ Default Value: false
 
 If debug is set to true, the ads plugin will output additional information about its current state during playback.
 This can be handy for diagnosing issues or unexpected behavior in an ad integration.
+
+## Plugin Events
+The plugin triggers a number of custom events on the player during its operation. As an ad provider, you can listen for them to trigger behavior in your implementation. They may also be useful for other plugins to track advertisement playback.
+
+### adstart
+The player has entered linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. This event only indicates that an ad break has begun; the start and end of individual ads must be signalled through some other mechanism.
+
+### adend
+The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. Note that multiple ads may have played back between `adstart` and `adend`.
+
+### adtimeout
+A timeout managed by the plugin has expired and regular video content has begun to play. Ad integrations have a fixed amount of time to inform the plugin of their intent during playback. If the ad integration is blocked by network conditions or an error, this event will fire and regular playback resumes rather than stalling the player indefinitely.
 
 ## Building
 
