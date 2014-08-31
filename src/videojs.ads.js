@@ -206,22 +206,37 @@ var
         if (attempts--) {
           setTimeout(tryToResume, 50);
         }
-      };
+      },
+
+      // whether the video element has been modified since the
+      // snapshot was taken
+      unchanged;
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
     }
 
-    // with a custom ad display or burned-in ads, the content player state
-    // hasn't been modified and so no restoration is required
-    var src = player.src(),
-        sameSrc = src === snapshot.src,
-        sameCurrentSrc = player.currentSrc() === snapshot.src,
-        unchanged = src ? sameSrc : sameCurrentSrc;
+    // Determine whether the player needs to be restored to its state
+    // before ad playback began. With a custom ad display or burned-in
+    // ads, the content player state hasn't been modified and so no
+    // restoration is required
+
+    if (player.src()) {
+      // the player was in src attribute mode before the ad and the
+      // src attribute has not been modified, no restoration is required
+      // to resume playback
+      unchanged = player.src() === snapshot.src;
+    } else {
+      // the player was configured through source element children
+      // and the currentSrc hasn't changed, no restoration is required
+      // to resume playback
+      unchanged = player.currentSrc() === snapshot.src;
+    }
+
     if (unchanged && !player.ended()) {
       player.play();
     } else {
-        player.src({src: snapshot.src, type: snapshot.type});
+        player.src({ src: snapshot.src, type: snapshot.type });
         // safari requires a call to `load` to pick up a changed source
         player.load();
         player.one('loadedmetadata', tryToResume);

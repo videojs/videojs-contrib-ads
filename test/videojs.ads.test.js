@@ -237,7 +237,7 @@ test('starts the content video if there is no preroll', function() {
 });
 
 test('removes the poster attribute so it does not flash between videos', function() {
-  video.poster = 'http://www.videojs.com/img/poster.jpg'
+  video.poster = 'http://www.videojs.com/img/poster.jpg';
   ok(video.poster, 'the poster is present initially');
 
   player.trigger('adsready');
