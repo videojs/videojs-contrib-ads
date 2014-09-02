@@ -1,8 +1,13 @@
 var
   video,
   oldSetTimeout,
+  oldSetImmediate,
   oldClearImmediate,
   player;
+
+test('the environment is sane', function() {
+  ok(true, 'true is ok');
+});
 
 module('Ad Framework', {
   setup: function() {
@@ -12,7 +17,6 @@ module('Ad Framework', {
     };
 
     video = document.createElement('video');
-    video.poster = '//example.com/poster.jpg';
     video.load = function() {};
     video.play = function() {};
 
@@ -25,6 +29,7 @@ module('Ad Framework', {
 
     document.getElementById('qunit-fixture').appendChild(video);
     player = videojs(video);
+
     player.buffered = function() {
       return videojs.createTimeRange(0, 0);
     };
@@ -32,6 +37,7 @@ module('Ad Framework', {
     player.ads();
 
     // make setImmediate synchronous
+    oldSetImmediate = window.setImmediate;
     window.setImmediate = function(callback) {
       callback.call(window);
     };
@@ -40,12 +46,9 @@ module('Ad Framework', {
     oldClearImmediate = window.clearImmediate;
   },
   teardown: function() {
+    window.setImmediate = oldSetImmediate;
     window.clearImmediate = oldClearImmediate;
   }
-});
-
-test('the environment is sane', function() {
-  ok(true, 'true is ok');
 });
 
 test('begins in content-set', function() {
@@ -234,6 +237,7 @@ test('starts the content video if there is no preroll', function() {
 });
 
 test('removes the poster attribute so it does not flash between videos', function() {
+  video.poster = 'http://www.videojs.com/img/poster.jpg';
   ok(video.poster, 'the poster is present initially');
 
   player.trigger('adsready');
@@ -244,6 +248,7 @@ test('removes the poster attribute so it does not flash between videos', functio
 });
 
 test('restores the poster attribute after ads have ended', function() {
+  video.poster = 'http://www.videojs.com/img/poster.jpg';
   player.trigger('adsready');
   player.trigger('play');
   player.trigger('adstart');
@@ -622,4 +627,34 @@ test('changing the source and then timing out does not restore a snapshot', func
   equal('http://example.com/movie2.mp4',
         player.currentSrc(),
         'playing the second video');
+});
+
+// changing the src attribute to a URL that AdBlocker is intercepting
+// doesn't update currentSrc, so when restoring the snapshot we
+// should check for src attribute modifications as well
+test('checks for a src attribute change that isn\'t reflected in currentSrc', function() {
+  var updatedSrc;
+  player.currentSrc = function() {
+    return 'content.mp4';
+  };
+  player.currentType = function() {
+    return 'video/mp4';
+  };
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+
+  player.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+  player.trigger('adend');
+
+  deepEqual(updatedSrc, {
+    src: 'content.mp4',
+    type: 'video/mp4'
+  }, 'restored src attribute');
 });
