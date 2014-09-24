@@ -530,7 +530,9 @@ test('snapshot does not resume after post-roll', function() {
 });
 
 test('snapshot does not resume after burned-in post-roll', function() {
-  var playCalled = false;
+  var 
+    playCalled = false,
+    loadCalled = false;
 
   player.trigger('adsready');
   player.trigger('play');
@@ -540,10 +542,13 @@ test('snapshot does not resume after burned-in post-roll', function() {
     playCalled = true;
   };
 
+  player.load = function() {
+    loadCalled = true;
+  };
+
   player.trigger('adstart');
   player.trigger('adend');
   ok(playCalled, 'content playback resumed');
-
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
   // the end of the stream
@@ -553,10 +558,14 @@ test('snapshot does not resume after burned-in post-roll', function() {
     return true;
   };
   //trigger a post-roll
+  player.currentTime(30);
   player.trigger('adstart');
+  player.currentTime(50);
   player.trigger('adend');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  equal(player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
+  ok(!loadCalled, 'player.load() should not be called if the player is ended.');
   ok(!playCalled, 'content playback should not have been resumed');
 });
 
