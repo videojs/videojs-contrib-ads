@@ -181,9 +181,9 @@ var
 
       // finish restoring the playback state
       resume = function() {
+        player.currentTime(snapshot.currentTime);
         //If this wasn't a postroll resume
         if (!player.ended()) {
-          player.currentTime(snapshot.currentTime);
           player.play();
         }
       },
