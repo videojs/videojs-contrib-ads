@@ -181,8 +181,9 @@ var
 
       // finish restoring the playback state
       resume = function() {
-        player.currentTime(snapshot.currentTime);
+        //If this wasn't a postroll resume
         if (!player.ended()) {
+          player.currentTime(snapshot.currentTime);
           player.play();
         }
       },
@@ -233,8 +234,11 @@ var
       unchanged = player.currentSrc() === snapshot.src;
     }
 
-    if (unchanged && !player.ended()) {
-      player.play();
+    if (unchanged) {
+      //If this wasn't a postroll, resume playback.
+      if (!player.ended()) {
+        player.play();
+      }
     } else {
         player.src({ src: snapshot.src, type: snapshot.type });
         // safari requires a call to `load` to pick up a changed source
