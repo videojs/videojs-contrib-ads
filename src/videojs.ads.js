@@ -211,7 +211,7 @@ var
 
       // whether the video element has been modified since the
       // snapshot was taken
-      unchanged;
+      srcChanged;
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
@@ -226,24 +226,25 @@ var
       // the player was in src attribute mode before the ad and the
       // src attribute has not been modified, no restoration is required
       // to resume playback
-      unchanged = player.src() === snapshot.src;
+      srcChanged = player.src() !== snapshot.src;
     } else {
       // the player was configured through source element children
       // and the currentSrc hasn't changed, no restoration is required
       // to resume playback
-      unchanged = player.currentSrc() === snapshot.src;
+      srcChanged = player.currentSrc() !== snapshot.src;
     }
 
-    if (unchanged) {
-      //If this wasn't a postroll, resume playback.
-      if (!player.ended()) {
-        player.play();
-      }
-    } else {
-        player.src({ src: snapshot.src, type: snapshot.type });
-        // safari requires a call to `load` to pick up a changed source
-        player.load();
-        player.one('loadedmetadata', tryToResume);
+    if (srcChanged) {
+      // if the src changed for ad playback, reset it
+      player.src({ src: snapshot.src, type: snapshot.type });
+      // safari requires a call to `load` to pick up a changed source
+      player.load();
+      // and then resume from the snapshots time once the original src has loaded
+      player.one('loadedmetadata', tryToResume);
+    } else if (!player.ended()) {
+      // the src didn't change and this wasn't a postroll
+      // just resume playback at the current time.
+      player.play();
     }
   },
 
