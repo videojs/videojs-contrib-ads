@@ -176,6 +176,30 @@ The player has returned from linear ad playback mode. This event is fired direct
 ### adtimeout
 A timeout managed by the plugin has expired and regular video content has begun to play. Ad integrations have a fixed amount of time to inform the plugin of their intent during playback. If the ad integration is blocked by network conditions or an error, this event will fire and regular playback resumes rather than stalling the player indefinitely.
 
+## Runtime Settings
+Once the plugin is initialized, there are a couple properties you can
+access to inspect the plugin's state and modify its behavior.
+
+### contentSrc
+In order to detect changes to the content video, videojs-contrib-ads
+monitors the src attribute of the player. If you need to make a change
+to the src attribute during content playback that should *not* be
+interpreted as loading a new video, you can update this property with
+the new source you will be loading:
+
+```js
+// you might want to switch from a low bitrate version of a video to a
+// higher quality one at the user's request without forcing them to
+// re-watch all the ad breaks they've already viewed
+
+// first, you'd update contentSrc on the ads plugin to the URL of the
+// higher bitrate rendition:
+player.ads.contentSrc = 'movie-high.mp4';
+
+// then, modify the src attribute as usual
+player.src('movie-high.mp4');
+```
+
 ## Building
 
 You can use the `videojs.ads.js` file as it is in the `src/` directory, or you can use a minified version.

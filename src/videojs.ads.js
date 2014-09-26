@@ -481,9 +481,11 @@ var
       'adend'     // endLinearAdMode()
     ]), fsmHandler);
     
-    // keep track of last src
-    // lastSrc should be editable to allow changing resolutions without triggering an ad
-    player.ads.lastSrc = undefined;
+    // keep track of the current content source
+    // if you want to change the src of the video without triggering
+    // the ad workflow to restart, you can update this variable before
+    // modifying the player's source
+    player.ads.contentSrc = player.currentSrc();
     
     // implement 'contentupdate' event.
     (function(){
@@ -493,13 +495,13 @@ var
           var src;
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
-            if (src !== player.ads.lastSrc) {
+            if (src !== player.ads.contentSrc) {
               player.trigger({
                 type: 'contentupdate',
-                oldValue: player.ads.lastSrc,
+                oldValue: player.ads.contentSrc,
                 newValue: src
               });
-              player.ads.lastSrc = src;
+              player.ads.contentSrc = src;
             }
           }
         };
