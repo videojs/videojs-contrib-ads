@@ -228,6 +228,12 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 A short list of features, fixes and changes for each release.
 
+### v0.4.0
+
+ * Ad blocker snapshot restoration fixes
+ * Post-roll fixes
+ * Allow content source updates without restarting ad workflow
+
 ### v0.3.0
 
  * Post-roll support
