@@ -11,5 +11,5 @@
   "boss": true,
   "eqnull": true,
   "browser": true,
-  "predef": ["videojs"]
+  "predef": ["videojs", "define", "require"]
 }
