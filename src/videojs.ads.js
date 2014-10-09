@@ -3,7 +3,7 @@
     if (typeof define === 'function' && define.amd) {
         define(['./video'], function(vjs){factory(window, document, vjs);});
     } else if (typeof exports === 'object' && typeof module === 'object') {
-        factory(window, document, require('video'));
+        factory(window, document, require('video.js'));
     } else {
         factory(window, document, videojs);
     }
