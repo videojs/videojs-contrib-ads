@@ -1,8 +1,9 @@
 (function(factory){
+    "use strict";
     if (typeof define === 'function' && define.amd) {
-        define(['./videojs'], function(vjs){factory(window, document, vjs);});
+        define(['./video'], function(vjs){factory(window, document, vjs);});
     } else if (typeof exports === 'object' && typeof module === 'object') {
-        factory(window, document, require('videojs'));
+        factory(window, document, require('video'));
     } else {
         factory(window, document, videojs);
     }
