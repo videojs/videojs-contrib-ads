@@ -193,7 +193,7 @@ test('removes the ad-mode class when a preroll finishes', function() {
 
 test('adds a class while waiting for an ad plugin to load', function() {
   player.trigger('play');
-  
+
   ok(player.el().className.indexOf('vjs-ad-loading') >= 0,
      'the ad loading class should be in "' + player.el().className + '"');
 });
@@ -201,7 +201,7 @@ test('adds a class while waiting for an ad plugin to load', function() {
 test('adds a class while waiting for a preroll', function() {
   player.trigger('adsready');
   player.trigger('play');
-  
+
   ok(player.el().className.indexOf('vjs-ad-loading') >= 0,
      'the ad loading class should be in "' + player.el().className + '"');
 });
@@ -258,79 +258,47 @@ test('restores the poster attribute after ads have ended', function() {
 });
 
 test('changing the src triggers contentupdate', function() {
-  
+
   // track contentupdate events
   var contentupdates = 0;
   player.on('contentupdate', function(){
     contentupdates++;
   });
-  
+
   // set src and trigger synthetic 'loadstart'
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   player.trigger('loadstart');
 
   // confirm one contentupdate event
   equal(contentupdates, 1, 'one contentupdate event fired');
-  
+
 });
 
 test('changing src does not trigger contentupdate during ad playback', function() {
-  
+
   // track contentupdate events
   var contentupdates = 0;
   player.on('contentupdate', function(){
     contentupdates++;
   });
-  
+
   // enter ad playback mode
   player.trigger('adsready');
   player.trigger('play');
   player.trigger('adstart');
-  
+
   // set src and trigger synthetic 'loadstart'
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   player.trigger('loadstart');
-  
+
   // finish playing ad
   player.trigger('adend');
-  
+
   // confirm one contentupdate event
   equal(contentupdates, 0, 'no contentupdate events fired');
-  
+
 });
 
-test('contentSrc can be modified to avoid src changes triggering contentupdate', function() {
-  var contentupdates = 0;
-
-  // load a low bitrate rendition
-  player.src('http://example.com/movie-low.mp4');
-  player.trigger('loadstart');
-  equal(player.ads.contentSrc,
-        player.currentSrc(),
-        'captures the current content src');
-
-  // track contentupdate events
-  player.on('contentupdate', function(){
-    contentupdates++;
-  });
-
-  // play an ad
-  player.trigger('adsready');
-  player.trigger('play');
-  player.trigger('adstart');
-  player.trigger('adend');
-
-  // notify ads that the contentSrc is changing
-  player.ads.contentSrc = 'http://example.com/movie-high.mp4';
-  player.src('http://example.com/movie-high.mp4');
-  player.trigger('loadstart');
-
-  equal(contentupdates, 0, 'no contentupdate was generated');
-  equal(player.ads.state, 'content-playback', 'did not reset ad state');
-  equal(player.ads.contentSrc,
-        player.currentSrc(),
-        'captures the current content src');
-});
 
 test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
   var callbacks = [];
@@ -361,8 +329,17 @@ test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
 
 module('Ad Framework - Video Snapshot', {
   setup: function() {
+    var captionTrack = document.createElement('track'),
+        otherTrack = document.createElement('track');
+    captionTrack.setAttribute('kind', 'captions');
+    captionTrack.setAttribute('src', 'testcaption.vtt');
+    otherTrack.setAttribute('src', 'testcaption.vtt');
+
     var noop = function() {};
     video = document.createElement('div');
+    video.appendChild(captionTrack);
+    video.appendChild(otherTrack);
+
     player = videojs(video);
     player.buffered = function() {
       return videojs.createTimeRange(0, 0);
@@ -562,7 +539,7 @@ test('snapshot does not resume after post-roll', function() {
 });
 
 test('snapshot does not resume after burned-in post-roll', function() {
-  var 
+  var
     playCalled = false,
     loadCalled = false;
 
@@ -731,4 +708,34 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   player.trigger('adscanceled');
   equal(player.ads.state, 'content-playback');
   equal(callback, null);
+});
+
+test('When captions are enabled, the video\'s caption tracks will be disabled during the ad', function() {
+  var tracks = player.textTracks(),
+      originalState = [];
+
+  ok(tracks.length > 0, 'No tracks detected');
+
+  player.trigger('adsready');
+  player.trigger('play');
+
+  originalState = tracks.map(function(track) {
+    return track.mode();
+  });
+
+  player.trigger('adstart');
+
+  tracks.forEach(function(track) {
+    if (track.kind() === 'captions') {
+      ok(track.mode() === 0, 'Caption is not disabled');
+    }
+  });
+
+  player.trigger('adend');
+
+  for (var i = 0; i < tracks.length; i++) {
+    if (tracks[i].kind() === 'captions') {
+      ok(tracks[i].mode() === originalState[i], 'Caption is disabled');
+    }
+  }
 });
