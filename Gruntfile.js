@@ -25,6 +25,13 @@ module.exports = function(grunt) {
         dest: 'dist/videojs.ads.js'
       },
     },
+    connect: {
+      server: {
+        options: {
+          keepalive: true
+        }
+      }
+    },
     uglify: {
       options: {
         banner: '<%= banner %>'
@@ -80,6 +87,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'concat', 'uglify']);
