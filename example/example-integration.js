@@ -87,6 +87,10 @@
     
     // request ad inventory whenever the player gets new content to play
     player.on('contentupdate', requestAds);
+    // if there's already content loaded, request an add immediately
+    if (player.currentSrc()) {
+      requestAds();
+    }
     
     // play an ad the first time there's a preroll opportunity
     player.on('readyforpreroll', function() {
