@@ -140,6 +140,9 @@ var
   getPlayerSnapshot = function(player) {
     var
       tech = player.el().querySelector('.vjs-tech'),
+      tracks = player.textTracks(),
+      trackMethods = ['disable', 'hidden', 'show'],
+      suppressedTracks = {},
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
@@ -149,6 +152,15 @@ var
     if (tech) {
       snapshot.nativePoster = tech.poster;
     }
+
+    for (var i = 0; i < tracks.length; i++) {
+      var track = tracks[i];
+      if (track.kind() === 'captions') {
+        suppressedTracks[track.id()] = trackMethods[track.id()];
+        track.disable();
+      }
+    }
+    snapshot.suppressedTracks = suppressedTracks;
 
     return snapshot;
   },
@@ -178,6 +190,8 @@ var
 
       // the number of remaining attempts to restore the snapshot
       attempts = 20,
+
+      tracks = player.textTracks(),
 
       // finish restoring the playback state
       resume = function() {
@@ -245,6 +259,14 @@ var
       // the src didn't change and this wasn't a postroll
       // just resume playback at the current time.
       player.play();
+    }
+
+    for (var i = 0; i < tracks.length; i++) {
+      var track = tracks[i],
+          oldState = snapshot.suppressedTracks[track.id()];
+      if (oldState) {
+        track[oldState]();
+      }
     }
   },
 
@@ -480,28 +502,24 @@ var
       'adstart',  // startLinearAdMode()
       'adend'     // endLinearAdMode()
     ]), fsmHandler);
-    
-    // keep track of the current content source
-    // if you want to change the src of the video without triggering
-    // the ad workflow to restart, you can update this variable before
-    // modifying the player's source
-    player.ads.contentSrc = player.currentSrc();
-    
+
     // implement 'contentupdate' event.
     (function(){
       var
+        // keep track of last src
+        lastSrc,
         // check if a new src has been set, if so, trigger contentupdate
         checkSrc = function() {
           var src;
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
-            if (src !== player.ads.contentSrc) {
+            if (src !== lastSrc) {
               player.trigger({
                 type: 'contentupdate',
-                oldValue: player.ads.contentSrc,
+                oldValue: lastSrc,
                 newValue: src
               });
-              player.ads.contentSrc = src;
+              lastSrc = src;
             }
           }
         };
