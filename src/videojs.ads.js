@@ -314,6 +314,9 @@ var
         fsm = {
           'content-set': {
             events: {
+              'adscanceled': function() {
+                this.state = 'content-playback';
+              },
               'adsready': function() {
                 this.state = 'ads-ready';
               },
@@ -384,6 +387,13 @@ var
             events: {
               'play': function() {
                 cancelContentPlay(player);
+              },
+              'adscanceled': function() {
+                this.state = 'content-playback';
+
+                clearImmediate(player.ads.cancelPlayTimeout);
+                player.ads.cancelPlayTimeout = null;
+                player.play();
               },
               'adsready': function() {
                 this.state = 'preroll?';
@@ -477,6 +487,7 @@ var
       'contentupdate',
       // events emitted by third party ad implementors
       'adsready',
+      'adscanceled',
       'adstart',  // startLinearAdMode()
       'adend'     // endLinearAdMode()
     ]), fsmHandler);
