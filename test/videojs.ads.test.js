@@ -699,3 +699,36 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
     type: 'video/mp4'
   }, 'restored src attribute');
 });
+
+test('adscanceled allows us to transition from content-set to content-playback', function() {
+  equal(player.ads.state, 'content-set');
+  player.trigger('adscanceled');
+
+  equal(player.ads.state, 'content-playback');
+});
+
+test('adscanceled allows us to transition from ads-ready? to content-playback', function() {
+  var callback;
+  expect(6);
+  // capture setImmediate callbacks to manipulate invocation order
+  window.setImmediate = function(cb) {
+    callback = cb;
+    return 1;
+  };
+  window.clearImmediate = function(id) {
+    callback = null;
+    equal(player.ads.cancelPlayTimeout,
+          id,
+          'the cancel-play timeout is cancelled');
+  };
+
+  equal(player.ads.state, 'content-set');
+
+  player.trigger('play');
+  equal(player.ads.state, 'ads-ready?');
+  equal(player.ads.cancelPlayTimeout, 1);
+
+  player.trigger('adscanceled');
+  equal(player.ads.state, 'content-playback');
+  equal(callback, null);
+});

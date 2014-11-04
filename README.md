@@ -34,7 +34,7 @@ With this basic structure in place, you're ready to develop an ad integration.
 
 ## Developing an Integration
 
-Once you call `player.ads()` to initialize the plugin, it provides five interaction points (three events and two methods) which you should use in your integration.
+Once you call `player.ads()` to initialize the plugin, it provides six interaction points (four events and two methods) which you can use in your integration.
 
 Here are the events that communicate information to your integration from the ads plugin:
 
@@ -44,6 +44,7 @@ Here are the events that communicate information to your integration from the ad
 And here are the interaction points you use to send information to the ads plugin:
 
  * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
+ * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
  * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
  * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
 
