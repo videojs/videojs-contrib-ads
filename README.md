@@ -229,6 +229,10 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 A short list of features, fixes and changes for each release.
 
+### v0.5.0
+
+ * Make the ad workflow cancelable through the `adscanceled` event
+
 ### v0.4.0
 
  * Ad blocker snapshot restoration fixes
