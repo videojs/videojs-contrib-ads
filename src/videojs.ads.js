@@ -249,6 +249,19 @@ var
   },
 
   /**
+   * Remove all element level styles from the tech element. Some Adblockers
+   * use !important element level styles to hide the tech when they detect
+   * an advert as the src.
+   * @param {object} player The videojs player object
+   */
+  removeAdblockStyles = function(player) {
+    var tech = player.el().querySelector('.vjs-tech');
+    if (tech) {
+      tech.setAttribute('style', '');
+    }
+  },
+
+  /**
    * Remove the poster attribute from the video element tech, if present. When
    * reusing a video element for multiple videos, the poster image will briefly
    * reappear while the new source loads. Removing the attribute ahead of time
@@ -431,6 +444,7 @@ var
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
+              removeAdblockStyles(player);
               restorePlayerSnapshot(player, this.snapshot);
             },
             events: {
