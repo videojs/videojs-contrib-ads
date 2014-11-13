@@ -732,3 +732,19 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   equal(player.ads.state, 'content-playback');
   equal(callback, null);
 });
+
+test('check whether content playing event gets triggered when content is about to play', function() {
+  var contentPlayTriggered = false;
+
+  player.on('content-playing', function() {
+    contentPlayTriggered = true;
+  });
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  ok(contentPlayTriggered, 'content play gets triggered');
+  equal(player.ads.state, 'content-playback', 'player ad state should be content playback');
+});
