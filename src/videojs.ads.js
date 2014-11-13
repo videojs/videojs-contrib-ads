@@ -440,6 +440,9 @@ var
             }
           },
           'content-playback': {
+            enter: function() {
+              player.trigger('content-playing');
+            },
             events: {
               'adstart': function() {
                 this.state = 'ad-playback';
