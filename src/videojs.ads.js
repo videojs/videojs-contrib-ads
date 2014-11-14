@@ -441,7 +441,7 @@ var
           },
           'content-playback': {
             enter: function() {
-              player.trigger('content-playing');
+              player.trigger('content-playback');
             },
             events: {
               'adstart': function() {
