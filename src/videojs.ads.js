@@ -256,9 +256,19 @@ var
    * @param {object} player The videojs player object
    */
   removeNativePoster = function(player) {
-    var tech = player.el().querySelector('.vjs-tech');
+    var
+      poster = player.el().querySelector('.vjs-poster'),
+      bigplaybutton = player.el().querySelector('.vjs-big-play-button'),
+      tech = player.el().querySelector('.vjs-tech');
+
     if (tech) {
       tech.removeAttribute('poster');
+    }
+    if (poster) {
+      poster.style.display = 'none';
+    }
+    if (bigplaybutton) {
+      bigplaybutton.style.display = 'none';
     }
   },
 
