@@ -3,7 +3,9 @@ var
   oldSetTimeout,
   oldSetImmediate,
   oldClearImmediate,
-  player;
+  player,
+  showPosters,
+  postersRemoved;
 
 test('the environment is sane', function() {
   ok(true, 'true is ok');
@@ -44,6 +46,23 @@ module('Ad Framework', {
 
     // save clearImmediate so it can be restored after tests run
     oldClearImmediate = window.clearImmediate;
+
+    //some helper functions related to testing poster display handling
+    showPosters = function() {
+      video.poster = 'http://www.videojs.com/img/poster.jpg';
+      player.el().querySelector('.vjs-poster').style.display = 'block';
+      player.el().querySelector('.vjs-big-play-button').style.display = 'block';
+    };
+    postersRemoved = function() {
+      if (video.poster ||
+          player.el().querySelector('.vjs-poster').style.display !== 'none' ||
+          player.el().querySelector('.vjs-big-play-button').style.display !== 'none') {
+        return false;
+      } else {
+        return true;
+      }
+    };
+
   },
   teardown: function() {
     window.setImmediate = oldSetImmediate;
@@ -731,4 +750,30 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   player.trigger('adscanceled');
   equal(player.ads.state, 'content-playback');
   equal(callback, null);
+});
+
+test('posters removed when going from content-set to play', function() {
+  ok(!postersRemoved(), 'Poster elements should be visible');
+  player.trigger('play');
+  ok(postersRemoved(), 'All poster elements should have been removed');
+});
+
+test('posters removed when entering ad-playback to adstart', function() {
+  ok(!postersRemoved(), 'Poster elements should be visible');
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  ok(postersRemoved(), 'All poster elements should have been removed');
+});
+
+test('posters removed when going from content-playback to ad-start', function() {
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  equal(player.ads.state,
+        'content-playback',
+        'the state is content-playback');
+  ok(!postersRemoved(), 'Poster elements should be visible');
+  player.trigger('adstart');
+  ok(postersRemoved(), 'All poster elements should have been removed');
 });
