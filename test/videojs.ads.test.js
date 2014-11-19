@@ -155,11 +155,17 @@ test('waits for adsready if play is received first', function() {
 });
 
 test('moves to ad-timeout-playback if a plugin does not finish initializing', function() {
+  var contentPlayTriggered = false;
+  player.on('content-playback', function() {
+    contentPlayTriggered = true;
+  });
+
   player.trigger('play');
   player.trigger('adtimeout');
   equal(player.ads.state,
         'ad-timeout-playback',
         'the state is ad-timeout-playback');
+  ok(contentPlayTriggered, 'content-playback should have triggered');
 });
 
 test('calls start immediately on play when ads are ready', function() {

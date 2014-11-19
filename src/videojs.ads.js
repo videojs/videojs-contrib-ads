@@ -404,6 +404,9 @@ var
             }
           },
           'ad-timeout-playback': {
+            enter: function() {
+              player.trigger('content-playback');
+            },
             events: {
               'adsready': function() {
                 if (player.paused()) {
