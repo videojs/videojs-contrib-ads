@@ -40,7 +40,7 @@ Here are the events that communicate information to your integration from the ad
 
  * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
  * `readyforpreroll` (EVENT) — Fires when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
- * `contentplayback` (EVENT) — Fires when an ad plugin is in `content-playback` state. _NOTE: This could be triggered twice if we enter ad timeout playback `ad-timeout-playback', then get `adsready`, then go into regular content mode `content-playback`._
+ * `contentplayback` (EVENT) — Fires when an ad plugin is in `content-playback` state. _NOTE: This could be triggered twice if we enter ad timeout playback `ad-timeout-playback`, then get `adsready`, then go into regular content mode `content-playback`._
  * `adtimeout` (EVENT) — Fires when a timeout managed by the plugin has expired and regular video content has begun to play.
 
 And here are the interaction points you use to send information to the ads plugin:
