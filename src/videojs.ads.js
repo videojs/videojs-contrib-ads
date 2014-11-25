@@ -405,7 +405,7 @@ var
           },
           'ad-timeout-playback': {
             enter: function() {
-              player.trigger('content-playback');
+              player.trigger('contentplayback');
             },
             events: {
               'adsready': function() {
@@ -444,7 +444,7 @@ var
           },
           'content-playback': {
             enter: function() {
-              player.trigger('content-playback');
+              player.trigger('contentplayback');
             },
             events: {
               'adstart': function() {
@@ -491,6 +491,8 @@ var
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
+      'readyforpreroll',
+      'contentplayback',
       // events emitted by third party ad implementors
       'adsready',
       'adscanceled',

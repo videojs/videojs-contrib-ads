@@ -156,7 +156,7 @@ test('waits for adsready if play is received first', function() {
 
 test('moves to ad-timeout-playback if a plugin does not finish initializing', function() {
   var contentPlayTriggered = false;
-  player.on('content-playback', function() {
+  player.on('contentplayback', function() {
     contentPlayTriggered = true;
   });
 
@@ -742,7 +742,7 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
 test('check whether content playing event gets triggered when content is about to play', function() {
   var contentPlayTriggered = false;
 
-  player.on('content-playback', function() {
+  player.on('contentplayback', function() {
     contentPlayTriggered = true;
   });
 
