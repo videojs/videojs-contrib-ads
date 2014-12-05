@@ -739,18 +739,35 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   equal(callback, null);
 });
 
-test('check whether content playing event gets triggered when content is about to play', function() {
+test('contentplayback should trigger once per video ', function() {
   var contentPlayTriggered = false;
 
   player.on('contentplayback', function() {
     contentPlayTriggered = true;
   });
 
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
   player.trigger('adsready');
   player.trigger('play');
+
   player.trigger('adstart');
   player.trigger('adend');
-
   ok(contentPlayTriggered, 'content play gets triggered');
   equal(player.ads.state, 'content-playback', 'player ad state should be content playback');
+
+  //trigger mid roll
+  player.trigger('adstart');
+  equal(player.ads.state, 'ad-playback', 'player ad state should be ad playback');
+  player.trigger('adend');
+
+  contentPlayTriggered = false;
+  player.ended = function() {
+    return true;
+  };
+  player.trigger('ended');
+
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a mid-roll');
+  ok(!contentPlayTriggered, 'content playback should not get triggered again');
+
 });
