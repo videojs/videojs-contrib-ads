@@ -148,6 +148,7 @@ var
 
     if (tech) {
       snapshot.nativePoster = tech.poster;
+      snapshot.style = tech.getAttribute('style');
     }
 
     return snapshot;
@@ -215,6 +216,11 @@ var
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
+    }
+    
+    if ('style' in snapshot) {
+      // overwrite all css style properties to restore state precisely
+      tech.setAttribute('style', snapshot.style || '');
     }
 
     // Determine whether the player needs to be restored to its state
