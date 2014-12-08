@@ -289,6 +289,10 @@ var
     var
       player = this,
 
+      // boolean to prevent `contentplayback` triggered twice
+      // if we go from state ad-timeout-playback to content-playback 
+      hasContentPlaybackTriggered = false,
+
       // merge options and defaults
       settings = extend({}, defaults, options || {}),
 
@@ -405,7 +409,10 @@ var
           },
           'ad-timeout-playback': {
             enter: function() {
-              player.trigger('contentplayback');
+              if (!hasContentPlaybackTriggered) {
+                hasContentPlaybackTriggered = true;
+                player.trigger('contentplayback');
+              }
             },
             events: {
               'adsready': function() {
@@ -444,7 +451,10 @@ var
           },
           'content-playback': {
             enter: function() {
-              player.trigger('contentplayback');
+              if (!hasContentPlaybackTriggered) {
+                player.trigger('contentplayback');
+                hasContentPlaybackTriggered = true;
+              }
             },
             events: {
               'adstart': function() {

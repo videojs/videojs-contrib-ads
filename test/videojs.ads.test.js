@@ -753,7 +753,7 @@ test('contentplayback should trigger once per video ', function() {
 
   player.trigger('adstart');
   player.trigger('adend');
-  ok(contentPlayTriggered, 'content play gets triggered');
+  ok(contentPlayTriggered, 'contentplayback gets triggered');
   equal(player.ads.state, 'content-playback', 'player ad state should be content playback');
 
   //trigger mid roll
@@ -768,6 +768,33 @@ test('contentplayback should trigger once per video ', function() {
   player.trigger('ended');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a mid-roll');
-  ok(!contentPlayTriggered, 'content playback should not get triggered again');
+  ok(!contentPlayTriggered, 'contentplayback should not get triggered again');
+});
 
+test('contentplayback should triggered only once per video when trasitioned from adtimeout playback state eventually to contentplayback state' , function() {
+  var 
+    contentPlayTriggered = false,
+    count = 0;
+
+  player.on('contentplayback', function() {
+    contentPlayTriggered = true;
+    count++;
+  });
+
+  player.trigger('play');
+  player.trigger('adtimeout');
+  equal(player.ads.state, 'ad-timeout-playback', 'the state is ad-timeout-playback');
+  equal(count, 1, 'contentplayback should triggered once');
+  ok(contentPlayTriggered, 'contentplayback gets triggered');
+
+  contentPlayTriggered = false;
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  ok(!contentPlayTriggered, 'contentplayback should not get triggered');
+  equal(player.ads.state, 'content-playback', 'player ad state should be content-playback');
+  equal(count, 1, 'contentplayback only triggerd once');
 });
