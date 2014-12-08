@@ -525,6 +525,7 @@ var
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
             if (src !== player.ads.contentSrc) {
+              hasContentPlaybackTriggered = false;
               player.trigger({
                 type: 'contentupdate',
                 oldValue: player.ads.contentSrc,
