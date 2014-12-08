@@ -155,11 +155,17 @@ test('waits for adsready if play is received first', function() {
 });
 
 test('moves to ad-timeout-playback if a plugin does not finish initializing', function() {
+  var contentPlayTriggered = false;
+  player.on('contentplayback', function() {
+    contentPlayTriggered = true;
+  });
+
   player.trigger('play');
   player.trigger('adtimeout');
   equal(player.ads.state,
         'ad-timeout-playback',
         'the state is ad-timeout-playback');
+  ok(contentPlayTriggered, 'content-playback should have triggered');
 });
 
 test('calls start immediately on play when ads are ready', function() {
@@ -731,4 +737,64 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   player.trigger('adscanceled');
   equal(player.ads.state, 'content-playback');
   equal(callback, null);
+});
+
+test('contentplayback should trigger once per video ', function() {
+  var contentPlayTriggered = false;
+
+  player.on('contentplayback', function() {
+    contentPlayTriggered = true;
+  });
+
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+  player.trigger('adsready');
+  player.trigger('play');
+
+  player.trigger('adstart');
+  player.trigger('adend');
+  ok(contentPlayTriggered, 'contentplayback gets triggered');
+  equal(player.ads.state, 'content-playback', 'player ad state should be content playback');
+
+  //trigger mid roll
+  player.trigger('adstart');
+  equal(player.ads.state, 'ad-playback', 'player ad state should be ad playback');
+  player.trigger('adend');
+
+  contentPlayTriggered = false;
+  player.ended = function() {
+    return true;
+  };
+  player.trigger('ended');
+
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a mid-roll');
+  ok(!contentPlayTriggered, 'contentplayback should not get triggered again');
+});
+
+test('contentplayback should triggered only once per video when trasitioned from adtimeout playback state eventually to contentplayback state' , function() {
+  var 
+    contentPlayTriggered = false,
+    count = 0;
+
+  player.on('contentplayback', function() {
+    contentPlayTriggered = true;
+    count++;
+  });
+
+  player.trigger('play');
+  player.trigger('adtimeout');
+  equal(player.ads.state, 'ad-timeout-playback', 'the state is ad-timeout-playback');
+  equal(count, 1, 'contentplayback should triggered once');
+  ok(contentPlayTriggered, 'contentplayback gets triggered');
+
+  contentPlayTriggered = false;
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  ok(!contentPlayTriggered, 'contentplayback should not get triggered');
+  equal(player.ads.state, 'content-playback', 'player ad state should be content-playback');
+  equal(count, 1, 'contentplayback only triggerd once');
 });

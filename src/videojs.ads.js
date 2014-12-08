@@ -295,6 +295,10 @@ var
     var
       player = this,
 
+      // boolean to prevent `contentplayback` triggered twice
+      // if we go from state ad-timeout-playback to content-playback 
+      hasContentPlaybackTriggered = false,
+
       // merge options and defaults
       settings = extend({}, defaults, options || {}),
 
@@ -410,6 +414,12 @@ var
             }
           },
           'ad-timeout-playback': {
+            enter: function() {
+              if (!hasContentPlaybackTriggered) {
+                hasContentPlaybackTriggered = true;
+                player.trigger('contentplayback');
+              }
+            },
             events: {
               'adsready': function() {
                 if (player.paused()) {
@@ -446,6 +456,12 @@ var
             }
           },
           'content-playback': {
+            enter: function() {
+              if (!hasContentPlaybackTriggered) {
+                player.trigger('contentplayback');
+                hasContentPlaybackTriggered = true;
+              }
+            },
             events: {
               'adstart': function() {
                 this.state = 'ad-playback';
@@ -491,6 +507,8 @@ var
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
+      'readyforpreroll',
+      'contentplayback',
       // events emitted by third party ad implementors
       'adsready',
       'adscanceled',
@@ -513,6 +531,7 @@ var
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
             if (src !== player.ads.contentSrc) {
+              hasContentPlaybackTriggered = false;
               player.trigger({
                 type: 'contentupdate',
                 oldValue: player.ads.contentSrc,
