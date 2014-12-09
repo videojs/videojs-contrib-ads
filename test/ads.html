@@ -3,14 +3,22 @@
 <head>
   <meta charset="utf-8">
   <title>ads Test Suite</title>
-  <!-- Load local video.js -->
+  <!-- Load local video.js css-->
   <link rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.min.css" media="screen">
-  <script src="../node_modules/video.js/dist/video-js/video.js"></script>
   <!-- Load local QUnit. -->
   <link rel="stylesheet" href="../libs/qunit/qunit.css" media="screen">
   <script src="../libs/qunit/qunit.js"></script>
+  <!-- Load blanket (code coverage) -->
+  <script src="../node_modules/blanket/dist/qunit/blanket.min.js"></script>
+  <script>
+    if (location.href.match(/(\?|&)gruntReport($|&|=)/)) {
+       blanket.options("reporter", "../node_modules/grunt-blanket-qunit/reporter/grunt-reporter.js");
+    }
+  </script>
+  <!-- Load local video.js js-->
+  <script src="../node_modules/video.js/dist/video-js/video.js"></script>
   <!-- Load local lib and tests. -->
-  <script src="../src/videojs.ads.js"></script>
+  <script src="../src/videojs.ads.js" data-cover></script>
   <script src="videojs.ads.test.js"></script>
 </head>
 <body>
