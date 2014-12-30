@@ -155,11 +155,11 @@ var
       snapshot.style = tech.getAttribute('style');
     }
 
-    for (i = 0; i < tracks.length; i++) {
+    i = tracks.length;
+    while (i--) {
       track = tracks[i];
       suppressedTracks.addTrack_(track);
       player.removeRemoteTextTrack(track);
-
     }
     snapshot.suppressedTracks = suppressedTracks;
 
@@ -271,10 +271,15 @@ var
       player.play();
     }
 
-    for (i = 0; i < suppressedTracks.length; i++) {
+    i = suppressedTracks.length;
+    while (i--) {
       track = suppressedTracks[i];
       tracks.addTrack_(track);
       remoteTextTracks.addTrack_(track);
+      if (track.mode === 'showing') {
+        track.mode = 'disabled';
+        track.mode = 'showing';
+      }
     }
   },
 
