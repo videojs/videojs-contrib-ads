@@ -348,32 +348,23 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
   }, 'restored src attribute');
 });
 
-test('When captions are enabled, the video\'s caption tracks will be disabled during the ad', function() {
-  var tracks = player.textTracks(),
-      originalState = [];
+test('When captions are enabled, the video\'s tracks will be removed during the ad', function() {
+  var tracks = player.remoteTextTracks(),
+      originalState;
 
   ok(tracks.length > 0, 'No tracks detected');
 
   player.trigger('adsready');
   player.trigger('play');
 
-  originalState = tracks.map(function(track) {
-    return track.mode();
-  });
+  originalState = tracks.length;
 
   player.trigger('adstart');
 
-  tracks.forEach(function(track) {
-    if (track.kind() === 'captions') {
-      ok(track.mode() === 0, 'Caption is not disabled');
-    }
-  });
+  notEqual(tracks.length, originalState, 'new length and original length is not equal');
+  equal(tracks.length, 0, 'tracks should be empty');
 
   player.trigger('adend');
 
-  for (var i = 0; i < tracks.length; i++) {
-    if (tracks[i].kind() === 'captions') {
-      ok(tracks[i].mode() === originalState[i], 'Caption is disabled');
-    }
-  }
+  equal(tracks.length, originalState, 'new length and original length is should be equal after ad');
 });
