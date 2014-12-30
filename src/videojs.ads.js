@@ -140,9 +140,10 @@ var
   getPlayerSnapshot = function(player) {
     var
       tech = player.el().querySelector('.vjs-tech'),
-      tracks = player.textTracks(),
-      trackMethods = ['disable', 'hidden', 'show'],
-      suppressedTracks = {},
+      tracks = player.remoteTextTracks(),
+      track,
+      i,
+      suppressedTracks = new vjs.TextTrackList(),
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
@@ -154,12 +155,11 @@ var
       snapshot.style = tech.getAttribute('style');
     }
 
-    for (var i = 0; i < tracks.length; i++) {
-      var track = tracks[i];
-      if (track.kind() === 'captions') {
-        suppressedTracks[track.id()] = trackMethods[track.id()];
-        track.disable();
-      }
+    for (i = 0; i < tracks.length; i++) {
+      track = tracks[i];
+      suppressedTracks.addTrack_(track);
+      player.removeRemoteTextTrack(track);
+
     }
     snapshot.suppressedTracks = suppressedTracks;
 
@@ -192,7 +192,11 @@ var
       // the number of remaining attempts to restore the snapshot
       attempts = 20,
 
+      suppressedTracks = snapshot.suppressedTracks,
       tracks = player.textTracks(),
+      remoteTextTracks = player.remoteTextTracks(),
+      track,
+      i,
 
       // finish restoring the playback state
       resume = function() {
@@ -267,12 +271,10 @@ var
       player.play();
     }
 
-    for (var i = 0; i < tracks.length; i++) {
-      var track = tracks[i],
-          oldState = snapshot.suppressedTracks[track.id()];
-      if (oldState) {
-        track[oldState]();
-      }
+    for (i = 0; i < suppressedTracks.length; i++) {
+      track = suppressedTracks[i];
+      tracks.addTrack_(track);
+      remoteTextTracks.addTrack_(track);
     }
   },
 
