@@ -11,10 +11,21 @@ module('Ad Framework - Video Snapshot', {
     otherTrack.setAttribute('src', 'testcaption.vtt');
 
     var noop = function() {};
-    video = document.createElement('div');
+    video = document.createElement('video');
+    video.load = function() {};
+    video.play = function() {};
+
+    // phantom has a non-functional version of removeAttribute
+    if (/phantom/i.test(window.navigator.userAgent)) {
+      video.removeAttribute = function(attr) {
+        video[attr] = '';
+      };
+    }
+
     video.appendChild(captionTrack);
     video.appendChild(otherTrack);
 
+    document.getElementById('qunit-fixture').appendChild(video);
     player = videojs(video);
     player.buffered = function() {
       return videojs.createTimeRange(0, 0);
