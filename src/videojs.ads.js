@@ -143,7 +143,9 @@ var
       tracks = player.remoteTextTracks(),
       track,
       i,
-      suppressedTracks = new vjs.TextTrackList(),
+      suppressedTracks = {
+        list: new vjs.TextTrackList()
+      },
       snapshot = {
         src: player.currentSrc(),
         currentTime: player.currentTime(),
@@ -152,12 +154,14 @@ var
 
     if (tech) {
       snapshot.nativePoster = tech.poster;
+
+      suppressedTracks.elements = Array.prototype.slice.call(tech.querySelectorAll('track'));
     }
 
     i = tracks.length;
     while (i--) {
       track = tracks[i];
-      suppressedTracks.addTrack_(track);
+      suppressedTracks.list.addTrack_(track);
       player.removeRemoteTextTrack(track);
     }
     snapshot.suppressedTracks = suppressedTracks;
@@ -265,14 +269,35 @@ var
       player.play();
     }
 
-    i = suppressedTracks.length;
-    while (i--) {
-      track = suppressedTracks[i];
-      tracks.addTrack_(track);
-      remoteTextTracks.addTrack_(track);
-      if (track.mode === 'showing') {
-        track.mode = 'disabled';
-        track.mode = 'showing';
+    i = suppressedTracks.list.length;
+    if (tracks.addTrack_) {
+      while (i--) {
+        track = suppressedTracks.list[i];
+        tracks.addTrack_(track);
+        remoteTextTracks.addTrack_(track);
+        if (track.mode === 'showing') {
+          track.mode = 'disabled';
+          track.mode = 'showing';
+        }
+      }
+    } else if (suppressedTracks.elements) {
+      tracks = suppressedTracks.elements;
+      var modeChanger = function(trackEl, textTrack) {
+        return function() {
+          console.log(track.label, textTrack.label);
+          track.mode = textTrack.mode;
+        };
+      };
+      i = tracks.length;
+      while (i--) {
+        track = tracks[i]
+      }
+      for (i = 0; i < tracks.length; i++) {
+        track = tracks[i];
+        track = player.addRemoteTextTrack(tracks[i]);
+        // we want to add the tracks back in the same order
+        // but the text track list is in reverse order
+        track.onload = modeChanger(track, suppressedTracks.list[tracks.length - 1 - i]);
       }
     }
   },
