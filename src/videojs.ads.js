@@ -284,7 +284,6 @@ var
       tracks = suppressedTracks.elements;
       var modeChanger = function(trackEl, textTrack) {
         return function() {
-          console.log(track.label, textTrack.label);
           track.mode = textTrack.mode;
         };
       };
