@@ -534,11 +534,11 @@ var
       'adend'     // endLinearAdMode()
     ]), fsmHandler);
 
-     // keep track of the current content source
-     // if you want to change the src of the video without triggering
-     // the ad workflow to restart, you can update this variable before
-     // modifying the player's source
-     player.ads.contentSrc = player.currentSrc();
+    // keep track of the current content source
+    // if you want to change the src of the video without triggering
+    // the ad workflow to restart, you can update this variable before
+    // modifying the player's source
+    player.ads.contentSrc = player.currentSrc();
 
     // implement 'contentupdate' event.
     (function(){
