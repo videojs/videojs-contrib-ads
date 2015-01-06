@@ -359,8 +359,11 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
   }, 'restored src attribute');
 });
 
-test('When captions are enabled, the video\'s tracks will be removed during the ad', function() {
+test('When captions are enabled, the video\'s tracks will be disabled during the ad', function() {
   var tracks = player.remoteTextTracks(),
+      showing = 0,
+      disabled = 0,
+      i,
       originalState;
 
   ok(tracks.length > 0, 'No tracks detected');
@@ -368,14 +371,37 @@ test('When captions are enabled, the video\'s tracks will be removed during the 
   player.trigger('adsready');
   player.trigger('play');
 
-  originalState = tracks.length;
+  // set all modes to 'showing'
+  for (i = 0; i < tracks.length; i++) {
+    tracks[i].mode = 'showing';
+  }
+
+  for (i = 0; i < tracks.length; i++) {
+    if (tracks[i].mode === 'showing') {
+      showing++;
+    }
+  }
+
+  equal(showing, tracks.length, 'all tracks should be showing');
+  showing = 0;
 
   player.trigger('adstart');
 
-  notEqual(tracks.length, originalState, 'new length and original length is not equal');
-  equal(tracks.length, 0, 'tracks should be empty');
+  for (i = 0; i < tracks.length; i++) {
+    if (tracks[i].mode === 'disabled') {
+      disabled++;
+    }
+  }
+
+  equal(disabled, tracks.length, 'all tracks should be disabled');
 
   player.trigger('adend');
 
-  equal(tracks.length, originalState, 'new length and original length is should be equal after ad');
+  for (i = 0; i < tracks.length; i++) {
+    if (tracks[i].mode === 'showing') {
+      showing++;
+    }
+  }
+
+  equal(showing, tracks.length, 'all tracks should be showing');
 });
