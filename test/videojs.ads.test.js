@@ -376,10 +376,14 @@ module('Ad Framework - Video Snapshot', {
 
     // save the original setTimeout
     oldSetTimeout = window.setTimeout;
+
+    // save clearImmediate so it can be restored after tests run
+    oldClearImmediate = window.clearImmediate;
   },
 
   teardown: function() {
     window.setTimeout = oldSetTimeout;
+    window.clearImmediate = oldClearImmediate;
   }
 });
 
