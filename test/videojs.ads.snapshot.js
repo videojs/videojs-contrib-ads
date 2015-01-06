@@ -1,17 +1,24 @@
 var
   video,
+  oldTimeout,
   player;
 
 module('Ad Framework - Video Snapshot', {
   setup: function() {
+    videojs.Html5.isSupported = function() {
+      return true;
+    };
+    delete videojs.Html5.prototype.setSource;
+
     var captionTrack = document.createElement('track'),
         otherTrack = document.createElement('track');
+
     captionTrack.setAttribute('kind', 'captions');
     captionTrack.setAttribute('src', 'testcaption.vtt');
     otherTrack.setAttribute('src', 'testcaption.vtt');
 
     var noop = function() {};
-    video = document.createElement('video');
+    video = document.createElement('div');
     video.load = function() {};
     video.play = function() {};
 
@@ -36,9 +43,12 @@ module('Ad Framework - Video Snapshot', {
     video.load = noop;
     video.play = noop;
     player.ads();
+
+    oldTimeout = window.setTimeout;
   },
 
   teardown: function() {
+    window.setTimeout = oldTimeout;
   }
 });
 
@@ -123,14 +133,14 @@ test('the current time is restored at the end of an ad', function() {
 
   // the video plays to time 100
   player.trigger('adstart');
-  player.src('//exampe.com/ad.mp4');
+  player.src('//example.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
   player.trigger('adend');
   player.trigger('loadedmetadata');
 
-  equal(100, video.currentTime, 'currentTime was restored');
+  equal(video.currentTime, 100, 'currentTime was restored');
 });
 
 test('only restores the player snapshot if the src changed', function() {
@@ -363,8 +373,7 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
   var tracks = player.remoteTextTracks(),
       showing = 0,
       disabled = 0,
-      i,
-      originalState;
+      i;
 
   ok(tracks.length > 0, 'No tracks detected');
 

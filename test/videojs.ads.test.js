@@ -14,6 +14,7 @@ module('Ad Framework', {
     videojs.Html5.isSupported = function() {
       return true;
     };
+    delete videojs.Html5.prototype.setSource;
 
     video = document.createElement('video');
     video.load = function() {};
