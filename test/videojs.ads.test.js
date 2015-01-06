@@ -87,16 +87,21 @@ test('pauses to wait for prerolls when the plugin loads after play', function() 
 });
 
 test('stops canceling play events when an ad is playing', function() {
-  var callback;
+  var
+    clearImmediateCallCount = 0, 
+    callback;
 
-  expect(3);
+  expect(4);
   // capture setImmediate callbacks to manipulate invocation order
   window.setImmediate = function(cb) {
     callback = cb;
     return 1;
   };
-  window.clearImmediate = function() {
+  window.clearImmediate = function(id) {
     callback = null;
+    if (id === player.ads.cancelPlayTimeout) {
+      clearImmediateCallCount++;
+    }
   };
 
   player.trigger('play');
@@ -106,6 +111,7 @@ test('stops canceling play events when an ad is playing', function() {
   player.trigger('adstart');
   equal(player.ads.state, 'ad-playback', 'ads are playing');
   equal(null, player.ads.cancelPlayTimeout, 'the cancel-play timeout is cancelled');
+  equal(clearImmediateCallCount, 1, 'clearImmediate() should have been called with cancelPlayTimeout only once.');
 });
 
 test('adstart is fired before a preroll', function() {
@@ -707,15 +713,21 @@ test('adscanceled allows us to transition from content-set to content-playback',
 });
 
 test('adscanceled allows us to transition from ads-ready? to content-playback', function() {
-  var callback;
+  var
+    clearImmediateCallCount = 0,
+    callback;
+
   expect(5);
   // capture setImmediate callbacks to manipulate invocation order
   window.setImmediate = function(cb) {
     callback = cb;
     return 1;
   };
-  window.clearImmediate = function() {
+  window.clearImmediate = function(id) {
     callback = null;
+    if (id === player.ads.cancelPlayTimeout) {
+      clearImmediateCallCount++;
+    }
   };
 
   equal(player.ads.state, 'content-set');
@@ -726,5 +738,5 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
 
   player.trigger('adscanceled');
   equal(player.ads.state, 'content-playback');
-  equal(callback, null, 'the cancel-play timeout is cancelled');
+  equal(clearImmediateCallCount, 1, 'clearImmediate() should have been called with cancelPlayTimeout only once.');
 });
