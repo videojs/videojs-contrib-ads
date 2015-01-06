@@ -87,11 +87,8 @@ test('pauses to wait for prerolls when the plugin loads after play', function() 
 });
 
 test('stops canceling play events when an ad is playing', function() {
-  var
-    clearImmediateCallCount = 0, 
-    callback;
-
-  expect(4);
+  var callback;
+  expect(3);
   // capture setImmediate callbacks to manipulate invocation order
   window.setImmediate = function(cb) {
     callback = cb;
@@ -99,9 +96,9 @@ test('stops canceling play events when an ad is playing', function() {
   };
   window.clearImmediate = function(id) {
     callback = null;
-    if (id === player.ads.cancelPlayTimeout) {
-      clearImmediateCallCount++;
-    }
+    equal(player.ads.cancelPlayTimeout,
+          id,
+          'the cancel-play timeout is cancelled');
   };
 
   player.trigger('play');
@@ -110,8 +107,6 @@ test('stops canceling play events when an ad is playing', function() {
 
   player.trigger('adstart');
   equal(player.ads.state, 'ad-playback', 'ads are playing');
-  equal(null, player.ads.cancelPlayTimeout, 'the cancel-play timeout is cancelled');
-  equal(clearImmediateCallCount, 1, 'clearImmediate() should have been called with cancelPlayTimeout only once.');
 });
 
 test('adstart is fired before a preroll', function() {
@@ -381,10 +376,14 @@ module('Ad Framework - Video Snapshot', {
 
     // save the original setTimeout
     oldSetTimeout = window.setTimeout;
+
+    // save clearImmediate so it can be restored after tests run
+    oldClearImmediate = window.clearImmediate;
   },
 
   teardown: function() {
     window.setTimeout = oldSetTimeout;
+    window.clearImmediate = oldClearImmediate;
   }
 });
 
@@ -713,11 +712,8 @@ test('adscanceled allows us to transition from content-set to content-playback',
 });
 
 test('adscanceled allows us to transition from ads-ready? to content-playback', function() {
-  var
-    clearImmediateCallCount = 0,
-    callback;
-
-  expect(5);
+  var callback;
+  expect(6);
   // capture setImmediate callbacks to manipulate invocation order
   window.setImmediate = function(cb) {
     callback = cb;
@@ -725,9 +721,9 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   };
   window.clearImmediate = function(id) {
     callback = null;
-    if (id === player.ads.cancelPlayTimeout) {
-      clearImmediateCallCount++;
-    }
+    equal(player.ads.cancelPlayTimeout,
+          id,
+          'the cancel-play timeout is cancelled');
   };
 
   equal(player.ads.state, 'content-set');
@@ -738,5 +734,5 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
 
   player.trigger('adscanceled');
   equal(player.ads.state, 'content-playback');
-  equal(clearImmediateCallCount, 1, 'clearImmediate() should have been called with cancelPlayTimeout only once.');
+  equal(callback, null);
 });
