@@ -197,7 +197,13 @@ var
 
       suppressedTracks = snapshot.suppressedTracks,
       trackSnapshot,
-      i,
+      restoreTracks =  function() {
+        var i = suppressedTracks.length;
+        while (i--) {
+          trackSnapshot = suppressedTracks[i];
+          trackSnapshot.track.mode = trackSnapshot.mode;
+        }
+      },
 
       // finish restoring the playback state
       resume = function() {
@@ -260,6 +266,9 @@ var
     }
 
     if (srcChanged) {
+      // on ios7, fiddling with textTracks too early will cause it safari to crash
+      player.one('loadedmetadata', restoreTracks);
+
       // if the src changed for ad playback, reset it
       player.src({ src: snapshot.src, type: snapshot.type });
       // safari requires a call to `load` to pick up a changed source
@@ -267,15 +276,12 @@ var
       // and then resume from the snapshots time once the original src has loaded
       player.one('loadedmetadata', tryToResume);
     } else if (!player.ended()) {
+      // if we didn't change the src, just restore the tracks
+      restoreTracks();
+
       // the src didn't change and this wasn't a postroll
       // just resume playback at the current time.
       player.play();
-    }
-
-    i = suppressedTracks.length;
-    while (i--) {
-      trackSnapshot = suppressedTracks[i];
-      trackSnapshot.track.mode = trackSnapshot.mode;
     }
   },
 
