@@ -229,6 +229,11 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 A short list of features, fixes and changes for each release.
 
+### v0.6.0
+
+ * Disable and re-enable text tracks automatically around ads
+ * Snapshot styles to fix damage caused by ad blockers
+
 ### v0.5.0
 
  * Make the ad workflow cancelable through the `adscanceled` event
