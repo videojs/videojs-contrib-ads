@@ -538,20 +538,18 @@ var
     // implement 'contentupdate' event.
     (function(){
       var
-        // keep track of last src
-        lastSrc,
         // check if a new src has been set, if so, trigger contentupdate
         checkSrc = function() {
           var src;
           if (player.ads.state !== 'ad-playback') {
             src = player.currentSrc();
-            if (src !== lastSrc) {
+            if (src !== player.ads.contentSrc) {
               player.trigger({
                 type: 'contentupdate',
-                oldValue: lastSrc,
+                oldValue: player.ads.contentSrc,
                 newValue: src
               });
-              lastSrc = src;
+              player.ads.contentSrc = src;
             }
           }
         };
