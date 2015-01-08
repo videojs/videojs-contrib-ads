@@ -299,6 +299,39 @@ test('changing src does not trigger contentupdate during ad playback', function(
 
 });
 
+test('contentSrc can be modified to avoid src changes triggering contentupdate', function() {
+  var contentupdates = 0;
+
+  // load a low bitrate rendition
+  player.src('http://example.com/movie-low.mp4');
+  player.trigger('loadstart');
+  equal(player.ads.contentSrc,
+        player.currentSrc(),
+        'captures the current content src');
+
+  // track contentupdate events
+  player.on('contentupdate', function(){
+    contentupdates++;
+  });
+
+  // play an ad
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adstart');
+  player.trigger('adend');
+
+  // notify ads that the contentSrc is changing
+  player.ads.contentSrc = 'http://example.com/movie-high.mp4';
+  player.src('http://example.com/movie-high.mp4');
+  player.trigger('loadstart');
+
+  equal(contentupdates, 0, 'no contentupdate was generated');
+  equal(player.ads.state, 'content-playback', 'did not reset ad state');
+  equal(player.ads.contentSrc,
+        player.currentSrc(),
+        'captures the current content src');
+});
+
 test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
   var callbacks = [];
   expect(3);
