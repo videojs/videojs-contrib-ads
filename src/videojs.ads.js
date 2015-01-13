@@ -445,9 +445,12 @@ var
               this.snapshot = getPlayerSnapshot(player);
               // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
-              // We no longer need to supress play events once an ad is playing
-              clearImmediate(player.ads.cancelPlayTimeout);
-              player.ads.cancelPlayTimeout = null;
+              // We no longer need to supress play events once an ad is playing.
+              // Clear it if we were.
+              if (player.ads.cancelPlayTimeout) {
+                clearImmediate(player.ads.cancelPlayTimeout);
+                player.ads.cancelPlayTimeout = null;
+              }
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
@@ -481,11 +484,7 @@ var
             events: {
               // in the case of a timeout, adsready might come in late.
               'adsready': function() {
-                if (player.paused()) {
-                  this.state = 'ads-ready';
-                } else {
-                  this.state = 'preroll?';
-                }
+                player.trigger('readyforpreroll');
               },
               'adstart': function() {
                 this.state = 'ad-playback';

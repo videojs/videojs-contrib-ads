@@ -477,3 +477,21 @@ test('adserror in ad-playback transitions to content-playback', function(){
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
 });
+
+test('adsready in content-playback triggers readyforpreroll', function(){
+  expect(6);
+
+  player.on('readyforpreroll', function(event) {
+    equal(event.type, 'readyforpreroll', 'readyforpreroll should have been triggered.');
+  });
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('play');
+  equal(player.ads.state, 'ads-ready?');
+  player.trigger('adtimeout');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adtimeout', 'The reason for content-playback should have been adtimeout');
+  player.trigger('adsready');
+
+});
