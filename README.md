@@ -46,7 +46,7 @@ And here are the interaction points you use to send information to the ads plugi
 
  * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
  * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
- * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and the the preroll ad flow should abort so that content can resume.
+ * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
  * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
  * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
 

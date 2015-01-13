@@ -456,6 +456,9 @@ var
             events: {
               'adend': function() {
                 this.state = 'content-playback';
+              },
+              'adserror': function() {
+                this.state = 'content-playback';
               }
             }
           },
