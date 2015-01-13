@@ -345,7 +345,6 @@ var
     };
 
     fsmHandler = function(event) {
-
       // Ad Playback State Machine
       var
         fsm = {
@@ -360,9 +359,11 @@ var
               'play': function() {
                 this.state = 'ads-ready?';
                 cancelContentPlay(player);
-
                 // remove the poster so it doesn't flash between videos
                 removeNativePoster(player);
+              },
+              'adserror': function() {
+                this.state = 'content-playback';
               }
             }
           },
@@ -371,6 +372,9 @@ var
               'play': function() {
                 this.state = 'preroll?';
                 cancelContentPlay(player);
+              },
+              'adserror': function() {
+                this.state = 'content-playback';
               }
             }
           },
@@ -378,22 +382,15 @@ var
             enter: function() {
               // change class to show that we're waiting on ads
               player.el().className += ' vjs-ad-loading';
-
               // schedule an adtimeout event to fire if we waited too long
               player.ads.timeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.prerollTimeout);
-
               // signal to ad plugin that it's their opportunity to play a preroll
               player.trigger('readyforpreroll');
-
             },
             leave: function() {
               window.clearTimeout(player.ads.timeout);
-
-              clearImmediate(player.ads.cancelPlayTimeout);
-              player.ads.cancelPlayTimeout = null;
-
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
@@ -407,6 +404,9 @@ var
               'adtimeout': function() {
                 this.state = 'content-playback';
                 player.play();
+              },
+              'adserror': function() {
+                this.state = 'content-playback';
               }
             }
           },
@@ -427,34 +427,15 @@ var
               },
               'adscanceled': function() {
                 this.state = 'content-playback';
-
-                clearImmediate(player.ads.cancelPlayTimeout);
-                player.ads.cancelPlayTimeout = null;
-                player.play();
               },
               'adsready': function() {
                 this.state = 'preroll?';
               },
               'adtimeout': function() {
-                this.state = 'ad-timeout-playback';
-              }
-            }
-          },
-          'ad-timeout-playback': {
-            events: {
-              'adsready': function() {
-                if (player.paused()) {
-                  this.state = 'ads-ready';
-                } else {
-                  this.state = 'preroll?';
-                }
+                this.state = 'content-playback';
               },
-              'contentupdate': function() {
-                if (player.paused()) {
-                  this.state = 'content-set';
-                } else {
-                  this.state = 'ads-ready?';
-                }
+              'adserror': function() {
+                this.state = 'content-playback';
               }
             }
           },
@@ -462,9 +443,11 @@ var
             enter: function() {
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
-
               // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
+              // We no longer need to supress play events once an ad is playing
+              clearImmediate(player.ads.cancelPlayTimeout);
+              player.ads.cancelPlayTimeout = null;
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
@@ -477,11 +460,33 @@ var
             }
           },
           'content-playback': {
+            enter: function() {
+              player.trigger({
+                type: 'contentplayback',
+                triggerevent: fsm.triggerevent
+              });
+              // Make sure that the cancelPlayTimeout is cleared
+              if (player.ads.cancelPlayTimeout) {
+                clearImmediate(player.ads.cancelPlayTimeout);
+                player.ads.cancelPlayTimeout = null;
+                // Trigger playback if play was canceled and the player is paused.
+                if (player.paused()) {
+                  player.play();
+                }
+              }
+            },
             events: {
+              // in the case of a timeout, adsready might come in late.
+              'adsready': function() {
+                if (player.paused()) {
+                  this.state = 'ads-ready';
+                } else {
+                  this.state = 'preroll?';
+                }
+              },
               'adstart': function() {
                 this.state = 'ad-playback';
                 player.el().className += ' vjs-ad-playing';
-
                 // remove the poster so it doesn't flash between videos
                 removeNativePoster(player);
               },
@@ -497,7 +502,6 @@ var
         };
 
       (function(state) {
-
         var noop = function() {};
 
         // process the current event with a noop default handler
@@ -505,11 +509,11 @@ var
 
         // execute leave/enter callbacks if present
         if (state !== player.ads.state) {
+          fsm.triggerevent = event.type;
           (fsm[state].leave || noop).apply(player.ads);
           (fsm[player.ads.state].enter || noop).apply(player.ads);
-
           if (settings.debug) {
-            videojs.log('ads', state + ' -> ' + player.ads.state);
+            videojs.log('ads', fsm.triggerevent + ' triggered: ' + state + ' -> ' + player.ads.state);
           }
         }
 
@@ -524,6 +528,7 @@ var
       'contentupdate',
       // events emitted by third party ad implementors
       'adsready',
+      'adserror',
       'adscanceled',
       'adstart',  // startLinearAdMode()
       'adend'     // endLinearAdMode()

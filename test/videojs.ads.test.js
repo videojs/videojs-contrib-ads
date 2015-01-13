@@ -2,6 +2,8 @@ var
   video,
   oldSetImmediate,
   oldClearImmediate,
+  contentPlaybackFired,
+  contentPlaybackReason,
   player;
 
 test('the environment is sane', function() {
@@ -44,6 +46,15 @@ module('Ad Framework', {
 
     // save clearImmediate so it can be restored after tests run
     oldClearImmediate = window.clearImmediate;
+
+    // contentPlaybackFired is used to validate that we are left
+    // in a playback state due to aderror, adscanceled, and adend
+    // conditions.
+    contentPlaybackFired = 0;
+    player.on('contentplayback', function(event){
+      contentPlaybackFired++;
+      contentPlaybackReason = event.triggerevent;
+    });
   },
   teardown: function() {
     window.setImmediate = oldSetImmediate;
@@ -146,6 +157,8 @@ test('moves to content-playback if the preroll times out', function() {
   equal(player.ads.state,
         'content-playback',
         'the state is content-playback');
+  equal(contentPlaybackFired, 1, 'A contentplayback event should have triggered');
+  equal(contentPlaybackReason, 'adtimeout', 'The triggerevent for content-playback should have been adtimeout');
 });
 
 test('waits for adsready if play is received first', function() {
@@ -154,12 +167,14 @@ test('waits for adsready if play is received first', function() {
   equal(player.ads.state, 'preroll?', 'the state is preroll?');
 });
 
-test('moves to ad-timeout-playback if a plugin does not finish initializing', function() {
+test('moves to content-playback if a plugin does not finish initializing', function() {
   player.trigger('play');
   player.trigger('adtimeout');
   equal(player.ads.state,
-        'ad-timeout-playback',
-        'the state is ad-timeout-playback');
+        'content-playback',
+        'the state is content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adtimeout', 'The triggerevent for content-playback should have been adtimeout');
 });
 
 test('calls start immediately on play when ads are ready', function() {
@@ -189,6 +204,8 @@ test('removes the ad-mode class when a preroll finishes', function() {
 
   ok(player.el().className.indexOf('vjs-ad-playing') < 0,
      'the ad class should not be in "' + player.el().className + '"');
+  equal(contentPlaybackFired, 1, 'A contentplayback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The triggerevent for content-playback should have been adend');
 });
 
 test('adds a class while waiting for an ad plugin to load', function() {
@@ -222,6 +239,8 @@ test('removes the loading class when the preroll times out', function() {
 
   ok(player.el().className.indexOf('vjs-ad-loading') < 0,
      'there should be no ad loading class present');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adtimeout', 'The reason for content-playback should have been adtimeout');
 });
 
 test('starts the content video if there is no preroll', function() {
@@ -234,6 +253,8 @@ test('starts the content video if there is no preroll', function() {
   player.trigger('adtimeout');
 
   equal(1, playCount, 'play is called once');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adtimeout', 'The reason for content-playback should have been adtimeout');
 });
 
 test('removes the poster attribute so it does not flash between videos', function() {
@@ -245,6 +266,7 @@ test('removes the poster attribute so it does not flash between videos', functio
   player.trigger('adstart');
 
   equal(video.poster, '', 'poster is removed');
+  ok(!contentPlaybackFired, 'A content-playback event should not have triggered');
 });
 
 test('restores the poster attribute after ads have ended', function() {
@@ -255,6 +277,8 @@ test('restores the poster attribute after ads have ended', function() {
   player.trigger('adend');
 
   ok(video.poster, 'the poster is restored');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 });
 
 test('changing the src triggers contentupdate', function() {
@@ -297,6 +321,8 @@ test('changing src does not trigger contentupdate during ad playback', function(
   // confirm one contentupdate event
   equal(contentupdates, 0, 'no contentupdate events fired');
 
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 });
 
 test('contentSrc can be modified to avoid src changes triggering contentupdate', function() {
@@ -319,6 +345,9 @@ test('contentSrc can be modified to avoid src changes triggering contentupdate',
   player.trigger('play');
   player.trigger('adstart');
   player.trigger('adend');
+
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 
   // notify ads that the contentSrc is changing
   player.ads.contentSrc = 'http://example.com/movie-high.mp4';
@@ -357,4 +386,37 @@ test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
   player.trigger('play');
   player.trigger('play');
   equal(1, callbacks.length, 'a single cancel-play is registered');
+});
+
+test('adscanceled allows us to transition from content-set to content-playback', function() {
+  equal(player.ads.state, 'content-set');
+  player.trigger('adscanceled');
+
+  equal(player.ads.state, 'content-playback');
+});
+
+test('adscanceled allows us to transition from ads-ready? to content-playback', function() {
+  var callback;
+  expect(6);
+  // capture setImmediate callbacks to manipulate invocation order
+  window.setImmediate = function(cb) {
+    callback = cb;
+    return 1;
+  };
+  window.clearImmediate = function(id) {
+    callback = null;
+    equal(player.ads.cancelPlayTimeout,
+          id,
+          'the cancel-play timeout is cancelled');
+  };
+
+  equal(player.ads.state, 'content-set');
+
+  player.trigger('play');
+  equal(player.ads.state, 'ads-ready?');
+  equal(player.ads.cancelPlayTimeout, 1);
+
+  player.trigger('adscanceled');
+  equal(player.ads.state, 'content-playback');
+  equal(callback, null);
 });

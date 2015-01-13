@@ -1,7 +1,9 @@
 var
   video,
   oldTimeout,
-  player;
+  player,
+  contentPlaybackFired,
+  contentPlaybackReason;
 
 module('Ad Framework - Video Snapshot', {
   setup: function() {
@@ -45,6 +47,15 @@ module('Ad Framework - Video Snapshot', {
     player.ads();
 
     oldTimeout = window.setTimeout;
+
+    // contentPlaybackFired is used to validate that we are left
+    // in a playback state due to aderror, adscanceled, and adend
+    // conditions.
+    contentPlaybackFired = 0;
+    player.on('contentplayback', function(event){
+      contentPlaybackFired++;
+      contentPlaybackReason = event.triggerevent;
+    });
   },
 
   teardown: function() {
@@ -176,6 +187,8 @@ test('only restores the player snapshot if the src changed', function() {
 
   ok(!srcModified, 'the src was reset');
   ok(playCalled, 'content playback resumed');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 
   // the src wasn't changed, so we shouldn't be waiting on loadedmetadata to
   // update the currentTime
@@ -210,6 +223,8 @@ test('snapshot does not resume after post-roll', function() {
   player.trigger('loadstart');
   player.trigger('loadedmetadata');
   ok(playCalled, 'content playback resumed');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -228,6 +243,8 @@ test('snapshot does not resume after post-roll', function() {
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 });
 
 test('snapshot does not resume after burned-in post-roll', function() {
@@ -249,6 +266,8 @@ test('snapshot does not resume after burned-in post-roll', function() {
 
   player.trigger('adstart');
   player.trigger('adend');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
   ok(playCalled, 'content playback resumed');
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -265,6 +284,8 @@ test('snapshot does not resume after burned-in post-roll', function() {
   player.trigger('adend');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
   equal(player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   ok(!loadCalled, 'player.load() should not be called if the player is ended.');
   ok(!playCalled, 'content playback should not have been resumed');
@@ -289,6 +310,8 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.trigger('adstart');
   player.trigger('adend');
   ok(playCalled, 'content playback resumed');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -302,13 +325,13 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.trigger('adstart');
   player.src('http://example.com/ad1.mp4');
   player.trigger('loadstart');
-  player.trigger('adend');
-  player.trigger('adstart');
   player.src('http://example.com/ad2.mp4');
   player.trigger('loadstart');
   player.trigger('adend');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
   ok(!playCalled, 'content playback should not resume');
 
 });
@@ -325,6 +348,8 @@ test('changing the source and then timing out does not restore a snapshot', func
   // preroll
   player.trigger('adstart');
   player.trigger('adend');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 
   // change the content and timeout the new ad response
   player.src('http://example.com/movie2.mp4');
@@ -332,8 +357,11 @@ test('changing the source and then timing out does not restore a snapshot', func
   player.trigger('adtimeout');
 
   equal(player.ads.state,
-        'ad-timeout-playback',
+        'content-playback',
         'playing the new content video after the ad timeout');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adtimeout', 'The reason for content-playback should have been adtimeout');
+
   equal('http://example.com/movie2.mp4',
         player.currentSrc(),
         'playing the second video');
@@ -362,6 +390,8 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
     updatedSrc = source;
   };
   player.trigger('adend');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
 
   deepEqual(updatedSrc, {
     src: 'content.mp4',
