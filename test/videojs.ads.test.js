@@ -393,11 +393,13 @@ test('adscanceled allows us to transition from content-set to content-playback',
   player.trigger('adscanceled');
 
   equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adscanceled', 'The reason for content-playback should have been adscanceled');
 });
 
 test('adscanceled allows us to transition from ads-ready? to content-playback', function() {
   var callback;
-  expect(6);
+  expect(8);
   // capture setImmediate callbacks to manipulate invocation order
   window.setImmediate = function(cb) {
     callback = cb;
@@ -419,4 +421,47 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   player.trigger('adscanceled');
   equal(player.ads.state, 'content-playback');
   equal(callback, null);
+
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adscanceled', 'The reason for content-playback should have been adscanceled');
+});
+
+test('adserror in content-set transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('adserror');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
+});
+
+test('adserror in ads-ready? transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('play');
+  equal(player.ads.state, 'ads-ready?');
+  player.trigger('adserror');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
+});
+
+test('adserror in ads-ready transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('adserror');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
+});
+
+test('adserror in preroll? transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  equal(player.ads.state, 'preroll?');
+  player.trigger('adserror');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
 });
