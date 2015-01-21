@@ -231,6 +231,13 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 A short list of features, fixes and changes for each release.
 
+### v0.7.0
+
+ * Simplify ad timeout handling and remove the `ad-timeout-playback` state
+ * Introduce `aderror` event to get back to content when a problem occurs
+ * Fire `contentplayback` event any time the `content-playback` state is entered
+ * Expose the event that caused the transition to the current state
+
 ### v0.6.0
 
  * Disable and re-enable text tracks automatically around ads
