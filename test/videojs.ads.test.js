@@ -466,12 +466,18 @@ test('adserror in preroll? transitions to content-playback', function(){
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
 });
 
-test('adserror in ad-playback transitions to content-playback', function(){
+test('adserror in ad-playback transitions to content-playback and triggers adend', function(){
+  expect(6);
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
   player.trigger('play');
   player.trigger('adstart');
+
+  player.on('adend', function(event) {
+    equal(event.type, 'adend', 'adend should be fired when we enter content-playback from adserror');
+  });
+
   player.trigger('adserror');
   equal(player.ads.state, 'content-playback');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
