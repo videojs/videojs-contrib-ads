@@ -140,7 +140,7 @@ var
   getPlayerSnapshot = function(player) {
     var
       tech = player.el().querySelector('.vjs-tech'),
-      tracks = player.remoteTextTracks(),
+      tracks = player.textTracks(),
       track,
       i,
       suppressedTracks = [],
