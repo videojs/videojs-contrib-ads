@@ -118,15 +118,21 @@ var
       // another cancellation is already in flight, so do nothing
       return;
     }
-
     player.ads.cancelPlayTimeout = setImmediate(function() {
-
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
 
+      // pause playback so ads can be handled.
       if (!player.paused()) {
         player.pause();
       }
+
+      // add a contentplayback handler to resume playback when ads finish.
+      player.on('contentplayback', function() {
+        if (player.paused()) {
+          player.play();
+        }
+      });
     });
   },
 
@@ -242,7 +248,7 @@ var
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
     }
-    
+
     if ('style' in snapshot) {
       // overwrite all css style properties to restore state precisely
       tech.setAttribute('style', snapshot.style || '');
@@ -403,7 +409,6 @@ var
               },
               'adtimeout': function() {
                 this.state = 'content-playback';
-                player.play();
               },
               'adserror': function() {
                 this.state = 'content-playback';
@@ -467,19 +472,17 @@ var
           },
           'content-playback': {
             enter: function() {
+              // make sure that any cancelPlayTimeout is cleared
+              if (player.ads.cancelPlayTimeout) {
+                clearImmediate(player.ads.cancelPlayTimeout);
+                player.ads.cancelPlayTimeout = null;
+              }
+              // this will cause content to start if a user initiated
+              // 'play' event was canceled earlier.
               player.trigger({
                 type: 'contentplayback',
                 triggerevent: fsm.triggerevent
               });
-              // Make sure that the cancelPlayTimeout is cleared
-              if (player.ads.cancelPlayTimeout) {
-                clearImmediate(player.ads.cancelPlayTimeout);
-                player.ads.cancelPlayTimeout = null;
-                // Trigger playback if play was canceled and the player is paused.
-                if (player.paused()) {
-                  player.play();
-                }
-              }
             },
             events: {
               // in the case of a timeout, adsready might come in late.

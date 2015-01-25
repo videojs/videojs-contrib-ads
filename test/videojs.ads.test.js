@@ -426,6 +426,32 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
   equal(contentPlaybackReason, 'adscanceled', 'The reason for content-playback should have been adscanceled');
 });
 
+test('content is resumed on contentplayback if a user intiated play event is canceled', function() {
+  var callback;
+  expect();
+  // capture setImmediate callbacks to manipulate invocation order
+  window.setImmediate = function(cb) {
+    callback = cb;
+    return 1;
+  };
+  window.clearImmediate = function(id) {
+    callback = null;
+    equal(player.ads.cancelPlayTimeout,
+          id,
+          'the cancel-play timeout is cancelled');
+  };
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('play');
+  equal(player.ads.state, 'ads-ready?');
+
+  player.on('play', function() {
+    ok(true, 'a play event should be triggered once we enter content-playback state if on was canceled.');
+  });
+  player.trigger('adserror');
+  equal(player.ads.state, 'content-playback');
+});
+
 test('adserror in content-set transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
   player.trigger('adserror');
