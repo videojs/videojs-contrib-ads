@@ -128,7 +128,7 @@ var
       }
 
       // add a contentplayback handler to resume playback when ads finish.
-      player.on('contentplayback', function() {
+      player.one('contentplayback', function() {
         if (player.paused()) {
           player.play();
         }
