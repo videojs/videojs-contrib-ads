@@ -455,6 +455,11 @@ var
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
               restorePlayerSnapshot(player, this.snapshot);
+              if (fsm.triggerevent !== 'adend') {
+                //trigger 'adend' as a consistent notification
+                //event that we're exiting ad-playback.
+                player.trigger('adend');
+              }
             },
             events: {
               'adend': function() {
