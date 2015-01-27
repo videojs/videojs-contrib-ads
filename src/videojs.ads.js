@@ -146,6 +146,32 @@ var
     });
   },
 
+  prefixEvents = function(player, prefix) {
+    var
+      videoEvents = videojs.Html5.Events,
+      i = videoEvents.length,
+      redispatch = function(event) {
+        event.stopImmediatePropagation();
+        player.trigger({
+          type: prefix + event.type,
+          originalEvent: event
+        });
+      };
+
+    while (i--) {
+      player.on(videoEvents[i], redispatch);
+    }
+    return redispatch;
+  },
+
+  unprefixEvents = function(player, callback) {
+    var videoEvents = videojs.Html5.Events, i = videoEvents.length;
+    // return video event dispatches to normal
+    while (i--) {
+      player.off(videoEvents[i], callback);
+    }
+  },
+
   /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
@@ -224,6 +250,9 @@ var
       // finish restoring the playback state
       resume = function() {
         player.currentTime(snapshot.currentTime);
+
+        unprefixEvents(player, prefixRestoreEvents);
+
         //If this wasn't a postroll resume
         if (!player.ended()) {
           player.play();
@@ -253,7 +282,14 @@ var
 
       // whether the video element has been modified since the
       // snapshot was taken
-      srcChanged;
+      srcChanged,
+
+      // restoration event prefixing listener
+      prefixRestoreEvents;
+
+    // prefix all video events during snapshot restoration with
+    // 'content' so that non-ad plugins can ignore them
+    prefixRestoreEvents = prefixEvents(player, 'content');
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
@@ -283,14 +319,14 @@ var
 
     if (srcChanged) {
       // on ios7, fiddling with textTracks too early will cause it safari to crash
-      player.one('loadedmetadata', restoreTracks);
+      player.one('contentloadedmetadata', restoreTracks);
 
       // if the src changed for ad playback, reset it
       player.src({ src: snapshot.src, type: snapshot.type });
       // safari requires a call to `load` to pick up a changed source
       player.load();
       // and then resume from the snapshots time once the original src has loaded
-      player.one('loadedmetadata', tryToResume);
+      player.one('contentloadedmetadata', tryToResume);
     } else if (!player.ended()) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();
@@ -345,6 +381,9 @@ var
       // merge options and defaults
       settings = extend({}, defaults, options || {}),
 
+      // ad event prefixing listener
+      prefixAdEvents,
+
       fsmHandler;
 
     // replace the ad initializer with the ad namespace
@@ -352,10 +391,20 @@ var
       state: 'content-set',
 
       startLinearAdMode: function() {
+        // prefix all video element events during ad playback
+        // if the video element emits ad-related events directly,
+        // plugins that aren't ad-aware will break. prefixing allows
+        // plugins that wish to handle ad events to do so while
+        // avoiding the complexity for common usage
+        prefixAdEvents = prefixEvents(player, 'ad');
+
         player.trigger('adstart');
       },
 
       endLinearAdMode: function() {
+        // return video event dispatches to normal
+        unprefixEvents(player, prefixAdEvents);
+
         player.trigger('adend');
       }
     };
@@ -458,6 +507,7 @@ var
             enter: function() {
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
+
               // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
               // We no longer need to supress play events once an ad is playing.
@@ -469,6 +519,9 @@ var
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
+              // remove the ad event prefix
+              player.eventPrefix('');
+
               restorePlayerSnapshot(player, this.snapshot);
               if (fsm.triggerevent !== 'adend') {
                 //trigger 'adend' as a consistent notification
