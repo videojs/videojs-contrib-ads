@@ -135,8 +135,8 @@ test('adstart is fired before a preroll', function() {
 test('moves to content-playback after a preroll', function() {
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
-  player.trigger('adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
   equal(player.ads.state,
         'content-playback',
         'the state is content-playback');
@@ -146,7 +146,7 @@ test('moves to ad-playback if a midroll is requested', function() {
   player.trigger('adsready');
   player.trigger('play');
   player.trigger('adtimeout');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   equal(player.ads.state, 'ad-playback', 'the state is ad-playback');
 });
 
@@ -190,7 +190,7 @@ test('calls start immediately on play when ads are ready', function() {
 test('adds the ad-mode class when a preroll plays', function() {
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   ok(player.el().className.indexOf('vjs-ad-playing') >= 0,
      'the ad class should be in "' + player.el().className + '"');
@@ -226,7 +226,7 @@ test('adds a class while waiting for a preroll', function() {
 test('removes the loading class when the preroll begins', function() {
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   ok(player.el().className.indexOf('vjs-ad-loading') < 0,
      'there should be no ad loading class present');
@@ -263,7 +263,7 @@ test('removes the poster attribute so it does not flash between videos', functio
 
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   equal(video.poster, '', 'poster is removed');
   ok(!contentPlaybackFired, 'A content-playback event should not have triggered');
@@ -273,8 +273,8 @@ test('restores the poster attribute after ads have ended', function() {
   video.poster = 'http://www.videojs.com/img/poster.jpg';
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
-  player.trigger('adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
 
   ok(video.poster, 'the poster is restored');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
@@ -309,14 +309,14 @@ test('changing src does not trigger contentupdate during ad playback', function(
   // enter ad playback mode
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   // set src and trigger synthetic 'loadstart'
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   player.trigger('loadstart');
 
   // finish playing ad
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
 
   // confirm one contentupdate event
   equal(contentupdates, 0, 'no contentupdate events fired');
@@ -343,8 +343,8 @@ test('contentSrc can be modified to avoid src changes triggering contentupdate',
   // play an ad
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
-  player.trigger('adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
 
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
   equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
@@ -498,7 +498,7 @@ test('adserror in ad-playback transitions to content-playback and triggers adend
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
   player.trigger('play');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   player.on('adend', function(event) {
     equal(event.type, 'adend', 'adend should be fired when we enter content-playback from adserror');
@@ -525,5 +525,108 @@ test('adsready in content-playback triggers readyforpreroll', function(){
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
   equal(contentPlaybackReason, 'adtimeout', 'The reason for content-playback should have been adtimeout');
   player.trigger('adsready');
+});
 
+// ----------------------------------
+// Event prefixing during ad playback
+// ----------------------------------
+
+test('player events during prerolls are prefixed', function() {
+  var prefixed = [], unprefixed = [];
+
+  // play a preroll
+  player.on('readyforpreroll', function() {
+    player.ads.startLinearAdMode();
+  });
+  player.trigger('play');
+  player.trigger('adsready');
+
+  // simulate video events that should be prefixed
+  player.on(['loadstart', 'playing', 'pause', 'ended'], function(event) {
+    unprefixed.push(event);
+  });
+  player.on(['adloadstart', 'adplaying', 'adpause', 'adended'], function(event) {
+    prefixed.push(event);
+  });
+  player.trigger('loadstart');
+  player.trigger('playing');
+  player.trigger('pause');
+  player.trigger('ended');
+
+  equal(unprefixed.length, 0, 'no unprefixed events fired');
+  equal(prefixed.length, 4, 'prefixed events fired');
+});
+
+test('player events during midrolls are prefixed', function() {
+  var prefixed = [], unprefixed = [];
+
+  // play a midroll
+  player.trigger('play');
+  player.trigger('adsready');
+  player.trigger('adtimeout');
+  player.ads.startLinearAdMode();
+
+  // simulate video events that should be prefixed
+  player.on(['loadstart', 'playing', 'pause', 'ended'], function(event) {
+    unprefixed.push(event);
+  });
+  player.on(['adloadstart', 'adplaying', 'adpause', 'adended'], function(event) {
+    prefixed.push(event);
+  });
+  player.trigger('loadstart');
+  player.trigger('playing');
+  player.trigger('pause');
+  player.trigger('ended');
+
+  equal(unprefixed.length, 0, 'no unprefixed events fired');
+  equal(prefixed.length, 4, 'prefixed events fired');
+});
+test('player events during postrolls are prefixed', function() {
+  var prefixed = [], unprefixed = [];
+
+  // play a postroll
+  player.trigger('play');
+  player.trigger('adsready');
+  player.trigger('adtimeout');
+  player.trigger('ended');
+  player.ads.startLinearAdMode();
+
+  // simulate video events that should be prefixed
+  player.on(['loadstart', 'playing', 'pause', 'ended'], function(event) {
+    unprefixed.push(event);
+  });
+  player.on(['adloadstart', 'adplaying', 'adpause', 'adended'], function(event) {
+    prefixed.push(event);
+  });
+  player.trigger('loadstart');
+  player.trigger('playing');
+  player.trigger('pause');
+  player.trigger('ended');
+
+  equal(unprefixed.length, 0, 'no unprefixed events fired');
+  equal(prefixed.length, 4, 'prefixed events fired');
+});
+test('player events during content playback are not prefixed', function() {
+  var prefixed = [], unprefixed = [];
+
+  // play content
+  player.trigger('play');
+  player.trigger('adsready');
+  player.trigger('adtimeout');
+  player.trigger('playing');
+
+  // simulate video events that should not be prefixed
+  player.on(['seeked', 'playing', 'pause', 'ended'], function(event) {
+    unprefixed.push(event);
+  });
+  player.on(['adseeked', 'adplaying', 'adpause', 'adended'], function(event) {
+    prefixed.push(event);
+  });
+  player.trigger('seeked');
+  player.trigger('playing');
+  player.trigger('pause');
+  player.trigger('ended');
+
+  equal(unprefixed.length, 4, 'unprefixed events fired');
+  equal(prefixed.length, 0, 'no prefixed events fired');
 });
