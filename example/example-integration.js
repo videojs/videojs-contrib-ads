@@ -25,6 +25,7 @@
       //  - adPlaying - whether a linear ad is currently playing
       //  - prerollPlayed - whether we've played a preroll
       //  - midrollPlayed - whether we've played a midroll
+      //  - postrollPlayed - whether we've played a postroll
       state = {},
       
       // asynchronous method for requesting ad inventory
@@ -91,6 +92,13 @@
     if (player.currentSrc()) {
       requestAds();
     }
+
+    player.on('ended', function() {
+      if (!state.postrollPlayed && player.ads.state === 'content-playback') {
+        state.postrollPlayed = true;
+        playAd();
+      }
+    });
     
     // play an ad the first time there's a preroll opportunity
     player.on('readyforpreroll', function() {
