@@ -93,7 +93,7 @@
       requestAds();
     }
 
-    player.on('ended', function() {
+    player.on('contentended', function() {
       if (!state.postrollPlayed && player.ads.state === 'content-playback') {
         state.postrollPlayed = true;
         playAd();
