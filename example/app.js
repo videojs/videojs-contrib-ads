@@ -7,13 +7,16 @@
   var player = videojs('examplePlayer', {}, function(){
     // initalize example ads integration for this player
     var player = this;
-    player.exampleAds();
+    player.exampleAds({
+      debug: true
+    });
 
-    var pre = document.querySelector('pre');
+    var log = document.querySelector('.log');
     videojs.Html5.Events.concat([
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
+      'contentended',
       // events emitted by third party ad implementors
       'adsready',
       'adscanceled',
@@ -31,7 +34,13 @@
 
     }).map(function(evt) {
       player.on(evt, function(event) {
-        var d , str;
+        var d , str, pre;
+
+        pre = document.createElement('pre');
+        if (/^(ad|content)/.test(evt)) {
+          pre.className = 'highlight';
+        }
+
         d = new Date();
         d = '' +
           pad(2, d.getHours()) + ':' +
@@ -45,7 +54,8 @@
           str += "\toldValue: " + event.oldValue + "\n" +
                  "\tnewValue: " + event.newValue + "\n";
         }
-        pre.innerHTML = str + pre.innerHTML;
+        pre.textContent = str;
+        log.insertBefore(pre, log.firstChild);
       });
     });
   });
