@@ -400,7 +400,7 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
 });
 
 test('When captions are enabled, the video\'s tracks will be disabled during the ad', function() {
-  var tracks = player.remoteTextTracks(),
+  var tracks = player.textTracks(),
       showing = 0,
       disabled = 0,
       i;
