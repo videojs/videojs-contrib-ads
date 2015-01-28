@@ -1,0 +1,7 @@
+.log pre {
+  margin: 0.5em 0;
+}
+
+.log .highlight {
+  color: red;
+}
