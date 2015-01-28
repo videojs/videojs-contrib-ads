@@ -482,6 +482,15 @@ var
               },
               'adserror': function() {
                 this.state = 'content-playback';
+              },
+              'ended': function() {
+                if (player.ads.ended) {
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                  event.stopPropagation();
+                  this.state = 'content-playback';
+                  player.trigger('ended');
+                }
               }
             }
           },
@@ -516,6 +525,16 @@ var
                 } else {
                   this.state = 'ads-ready?';
                 }
+              },
+              'ended': function() {
+                //this.state = 'ad-playback';
+                player.ads.ended = true;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+                setImmediate(function() {
+                  player.trigger('contentended');
+                });
               }
             }
           }
