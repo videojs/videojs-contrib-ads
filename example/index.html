@@ -5,7 +5,19 @@
   <title>Example Ad Integration</title>
   <!-- Load local video.js -->
   <link rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.min.css">
-  <script src="../node_modules/video.js/dist/video-js/video.dev.js"></script>
+  <style>
+    .ad-event {
+      background-color: #ffe400;
+    }
+    .content-event {
+      background-color: #66a8cc;
+    }
+    ol {
+      list-style-type: none;
+      padding: 0;
+    }
+  </style>
+  <script src="../node_modules/video.js/dist/video-js/video.js"></script>
   <!-- Load local ads plugin. -->
   <link rel="stylesheet" href="../src/videojs.ads.css">
   <script src="../src/videojs.ads.js"></script>
@@ -23,6 +35,7 @@
     width="640"
     height="264"
     poster="http://video-js.zencoder.com/oceans-clip.png"
+    autoplay
     controls>
     <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4' />
     <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
@@ -43,7 +56,7 @@
 
   <h2>Events</h2>
 
-  <div class="log"></div>
+  <ol class="log"></ol>
 
 <script src="app.js"></script>
 </body>

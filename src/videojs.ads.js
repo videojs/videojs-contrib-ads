@@ -146,32 +146,6 @@ var
     });
   },
 
-  prefixEvents = function(player, prefix) {
-    var
-      videoEvents = videojs.Html5.Events,
-      i = videoEvents.length,
-      redispatch = function(event) {
-        event.stopImmediatePropagation();
-        player.trigger({
-          type: prefix + event.type,
-          originalEvent: event
-        });
-      };
-
-    while (i--) {
-      player.on(videoEvents[i], redispatch);
-    }
-    return redispatch;
-  },
-
-  unprefixEvents = function(player, callback) {
-    var videoEvents = videojs.Html5.Events, i = videoEvents.length;
-    // return video event dispatches to normal
-    while (i--) {
-      player.off(videoEvents[i], callback);
-    }
-  },
-
   /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
@@ -251,8 +225,6 @@ var
       resume = function() {
         player.currentTime(snapshot.currentTime);
 
-        unprefixEvents(player, prefixRestoreEvents);
-
         //If this wasn't a postroll resume
         if (!player.ended()) {
           player.play();
@@ -282,14 +254,7 @@ var
 
       // whether the video element has been modified since the
       // snapshot was taken
-      srcChanged,
-
-      // restoration event prefixing listener
-      prefixRestoreEvents;
-
-    // prefix all video events during snapshot restoration with
-    // 'content' so that non-ad plugins can ignore them
-    prefixRestoreEvents = prefixEvents(player, 'content');
+      srcChanged;
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
@@ -318,7 +283,7 @@ var
     }
 
     if (srcChanged) {
-      // on ios7, fiddling with textTracks too early will cause it safari to crash
+      // on ios7, fiddling with textTracks too early will cause safari to crash
       player.one('contentloadedmetadata', restoreTracks);
 
       // if the src changed for ad playback, reset it
@@ -381,30 +346,49 @@ var
       // merge options and defaults
       settings = extend({}, defaults, options || {}),
 
-      // ad event prefixing listener
-      prefixAdEvents,
-
       fsmHandler;
+
+    // prefix all video element events during ad playback
+    // if the video element emits ad-related events directly,
+    // plugins that aren't ad-aware will break. prefixing allows
+    // plugins that wish to handle ad events to do so while
+    // avoiding the complexity for common usage
+    (function() {
+      var
+        videoEvents = videojs.Html5.Events,
+        i = videoEvents.length,
+        redispatch = function(event) {
+          if (player.ads.state === 'ad-playback') {
+            event.stopImmediatePropagation();
+            player.trigger({
+              type: 'ad' + event.type,
+              originalEvent: event
+            });
+          } else if (player.ads.state === 'content-resuming' &&
+                     event.type !== 'playing') {
+            event.stopImmediatePropagation();
+            player.trigger({
+              type: 'content' + event.type,
+              originalEvent: event
+            });
+          }
+        };
+
+      while (i--) {
+        player.on(videoEvents[i], redispatch);
+      }
+      return redispatch;
+    })();
 
     // replace the ad initializer with the ad namespace
     player.ads = {
       state: 'content-set',
 
       startLinearAdMode: function() {
-        // prefix all video element events during ad playback
-        // if the video element emits ad-related events directly,
-        // plugins that aren't ad-aware will break. prefixing allows
-        // plugins that wish to handle ad events to do so while
-        // avoiding the complexity for common usage
-        prefixAdEvents = prefixEvents(player, 'ad');
-
         player.trigger('adstart');
       },
 
       endLinearAdMode: function() {
-        // return video event dispatches to normal
-        unprefixEvents(player, prefixAdEvents);
-
         player.trigger('adend');
       }
     };
@@ -519,22 +503,30 @@ var
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
-              // remove the ad event prefix
-              player.eventPrefix('');
 
               restorePlayerSnapshot(player, this.snapshot);
               if (fsm.triggerevent !== 'adend') {
-                //trigger 'adend' as a consistent notification
-                //event that we're exiting ad-playback.
+                // trigger 'adend' as a consistent notification
+                // event that we're exiting ad-playback.
                 player.trigger('adend');
               }
             },
             events: {
               'adend': function() {
-                this.state = 'content-playback';
+                this.state = 'content-resuming';
               },
               'adserror': function() {
-                this.state = 'content-playback';
+                this.state = 'content-resuming';
+              }
+            }
+          },
+          'content-resuming': {
+            events: {
+              'playing': function() {
+                this.state = 'content-playback'
+              },
+              'contentended': function() {
+                this.state = 'content-playback'
               },
               'ended': function() {
                 if (player.ads.ended) {
@@ -558,7 +550,7 @@ var
               // 'play' event was canceled earlier.
               player.trigger({
                 type: 'contentplayback',
-                triggerevent: fsm.triggerevent
+                triggerevent: player.ads.triggerevent
               });
             },
             events: {
@@ -599,13 +591,19 @@ var
         // process the current event with a noop default handler
         (fsm[state].events[event.type] || noop).apply(player.ads);
 
-        // execute leave/enter callbacks if present
+        // check whether the state has changed
         if (state !== player.ads.state) {
-          fsm.triggerevent = event.type;
+
+          // record the event that caused the state transition
+          player.ads.triggerevent = event.type;
+
+          // execute leave/enter callbacks if present
           (fsm[state].leave || noop).apply(player.ads);
           (fsm[player.ads.state].enter || noop).apply(player.ads);
+
+          // output debug logging
           if (settings.debug) {
-            videojs.log('ads', fsm.triggerevent + ' triggered: ' + state + ' -> ' + player.ads.state);
+            videojs.log('ads', player.ads.triggerevent + ' triggered: ' + state + ' -> ' + player.ads.state);
           }
         }
 
@@ -618,6 +616,9 @@ var
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
+      'contentplaying',
+      'contentended',
+
       // events emitted by third party ad implementors
       'adsready',
       'adserror',

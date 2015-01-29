@@ -70,12 +70,12 @@
         player.src(media);
 
         // when the video metadata is loaded, play it!
-        player.one('durationchange', function() {
+        player.one('addurationchange', function() {
           player.play();
         });
 
         // when it's finished
-        player.one('ended', function() {
+        player.one('adended', function() {
           // play your linear ad content, then when it's finished ...
           player.ads.endLinearAdMode();
           state.adPlaying = false;
