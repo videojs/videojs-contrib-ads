@@ -138,8 +138,12 @@ test('moves to content-playback after a preroll', function() {
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
   equal(player.ads.state,
+        'content-resuming',
+        'the state is content-resuming');
+  player.trigger('playing');
+  equal(player.ads.state,
         'content-playback',
-        'the state is content-playback');
+        'the state is content-resuming');
 });
 
 test('moves to ad-playback if a midroll is requested', function() {
@@ -204,8 +208,15 @@ test('removes the ad-mode class when a preroll finishes', function() {
 
   ok(player.el().className.indexOf('vjs-ad-playing') < 0,
      'the ad class should not be in "' + player.el().className + '"');
+
+  equal(contentPlaybackFired, 0, 'did not fire contentplayback yet');
+  equal(player.ads.triggerevent,
+        'adend',
+        'triggerevent for content-resuming should have been adend');
+
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A contentplayback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The triggerevent for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The triggerevent for content-playback should have been playing');
 });
 
 test('adds a class while waiting for an ad plugin to load', function() {
@@ -277,8 +288,9 @@ test('restores the poster attribute after ads have ended', function() {
   player.ads.endLinearAdMode();
 
   ok(video.poster, 'the poster is restored');
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 });
 
 test('changing the src triggers contentupdate', function() {
@@ -320,9 +332,11 @@ test('changing src does not trigger contentupdate during ad playback', function(
 
   // confirm one contentupdate event
   equal(contentupdates, 0, 'no contentupdate events fired');
+  equal(contentPlaybackFired, 0, 'A content-playback event should not have triggered');
 
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 });
 
 test('contentSrc can be modified to avoid src changes triggering contentupdate', function() {
@@ -345,9 +359,10 @@ test('contentSrc can be modified to avoid src changes triggering contentupdate',
   player.trigger('play');
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
+  player.trigger('playing');
 
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // notify ads that the contentSrc is changing
   player.ads.contentSrc = 'http://example.com/movie-high.mp4';
@@ -493,7 +508,7 @@ test('adserror in preroll? transitions to content-playback', function(){
 });
 
 test('adserror in ad-playback transitions to content-playback and triggers adend', function(){
-  expect(6);
+  expect(8);
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
@@ -505,9 +520,13 @@ test('adserror in ad-playback transitions to content-playback and triggers adend
   });
 
   player.trigger('adserror');
+  equal(player.ads.state, 'content-resuming');
+  equal(player.ads.triggerevent, 'adserror', 'The reason for content-resuming should have been adserror');
+
+  player.trigger('playing');
   equal(player.ads.state, 'content-playback');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 });
 
 test('adsready in content-playback triggers readyforpreroll', function(){
@@ -619,7 +638,7 @@ test('player events during content playback are not prefixed', function() {
   player.on(['seeked', 'playing', 'pause', 'ended'], function(event) {
     unprefixed.push(event);
   });
-  player.on(['adseeked', 'adplaying', 'adpause', 'adended'], function(event) {
+  player.on(['adseeked', 'adplaying', 'adpause', 'adended', 'contentended'], function(event) {
     prefixed.push(event);
   });
   player.trigger('seeked');
@@ -627,6 +646,7 @@ test('player events during content playback are not prefixed', function() {
   player.trigger('pause');
   player.trigger('ended');
 
-  equal(unprefixed.length, 4, 'unprefixed events fired');
-  equal(prefixed.length, 0, 'no prefixed events fired');
+  equal(unprefixed.length, 3, 'unprefixed events fired');
+  equal(prefixed.length, 1, 'no prefixed events fired');
+  equal(prefixed[0].type, 'contentended', 'prefixed the ended event');
 });

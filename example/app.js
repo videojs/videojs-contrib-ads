@@ -12,7 +12,11 @@
     });
 
     var log = document.querySelector('.log');
-    videojs.Html5.Events.concat([
+    videojs.Html5.Events.concat(videojs.Html5.Events.map(function(evt) {
+      return 'ad' + evt;
+    })).concat(videojs.Html5.Events.map(function(evt) {
+      return 'content' + evt;
+    })).concat([
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
@@ -27,6 +31,7 @@
       var events = {
         progress: 1,
         timeupdate: 1,
+        adtimeupdate: 1,
         suspend: 1,
         emptied: 1
       }
@@ -34,12 +39,9 @@
 
     }).map(function(evt) {
       player.on(evt, function(event) {
-        var d , str, pre;
+        var d , str, li;
 
-        pre = document.createElement('pre');
-        if (/^(ad|content)/.test(evt)) {
-          pre.className = 'highlight';
-        }
+        li = document.createElement('li');
 
         d = new Date();
         d = '' +
@@ -48,14 +50,20 @@
           pad(2, d.getSeconds()) + '.' +
           pad(3, d.getMilliseconds());
 
-        str = '[' + (d) + '] ' + evt + '\n';
+        if (event.type.indexOf('ad') === 0) {
+          li.className = 'ad-event';
+        } else if (event.type.indexOf('content') === 0) {
+          li.className = 'content-event';
+        }
+
+        str += '[' + (d) + '] ' + evt;
 
         if (evt === 'contentupdate') {
           str += "\toldValue: " + event.oldValue + "\n" +
                  "\tnewValue: " + event.newValue + "\n";
         }
-        pre.textContent = str;
-        log.insertBefore(pre, log.firstChild);
+        li.textContent = str;
+        log.insertBefore(li, log.firstChild);
       });
     });
   });

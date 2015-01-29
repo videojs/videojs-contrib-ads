@@ -5,7 +5,7 @@ var
   contentPlaybackFired,
   contentPlaybackReason;
 
-module('Ad Framework - Video Snapshot', {
+module('Video Snapshot', {
   setup: function() {
     videojs.Html5.isSupported = function() {
       return true;
@@ -187,8 +187,10 @@ test('only restores the player snapshot if the src changed', function() {
 
   ok(!srcModified, 'the src was reset');
   ok(playCalled, 'content playback resumed');
+
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // the src wasn't changed, so we shouldn't be waiting on loadedmetadata to
   // update the currentTime
@@ -223,8 +225,9 @@ test('snapshot does not resume after post-roll', function() {
   player.trigger('loadstart');
   player.trigger('loadedmetadata');
   ok(playCalled, 'content playback resumed');
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -240,11 +243,12 @@ test('snapshot does not resume after post-roll', function() {
   player.trigger('loadstart');
   player.trigger('loadedmetadata');
   player.ads.endLinearAdMode();
+  player.trigger('playing');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
   equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 });
 
 test('snapshot does not resume after burned-in post-roll', function() {
@@ -266,8 +270,9 @@ test('snapshot does not resume after burned-in post-roll', function() {
 
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
   ok(playCalled, 'content playback resumed');
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -282,10 +287,11 @@ test('snapshot does not resume after burned-in post-roll', function() {
   player.ads.startLinearAdMode();
   player.currentTime(50);
   player.ads.endLinearAdMode();
+  player.trigger('ended');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'contentended', 'The reason for content-playback should have been contentended');
   equal(player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   ok(!loadCalled, 'player.load() should not be called if the player is ended.');
   ok(!playCalled, 'content playback should not have been resumed');
@@ -309,9 +315,10 @@ test('snapshot does not resume after multiple post-rolls', function() {
   // unnecessary seeking and rebuffering
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
+  player.trigger('playing');
   ok(playCalled, 'content playback resumed');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -328,10 +335,11 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.src('http://example.com/ad2.mp4');
   player.trigger('loadstart');
   player.ads.endLinearAdMode();
+  player.trigger('playing');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
   ok(!playCalled, 'content playback should not resume');
 
 });
@@ -348,8 +356,9 @@ test('changing the source and then timing out does not restore a snapshot', func
   // preroll
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // change the content and timeout the new ad response
   player.src('http://example.com/movie2.mp4');
@@ -390,8 +399,9 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
     updatedSrc = source;
   };
   player.ads.endLinearAdMode();
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   deepEqual(updatedSrc, {
     src: 'content.mp4',
