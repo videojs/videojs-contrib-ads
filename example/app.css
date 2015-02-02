@@ -1,7 +1,10 @@
-.log pre {
-  margin: 0.5em 0;
+.ad-event {
+  background-color: #ffe400;
 }
-
-.log .highlight {
-  color: red;
+.content-event {
+  background-color: #66a8cc;
+}
+ol {
+  list-style-type: none;
+  padding: 0;
 }

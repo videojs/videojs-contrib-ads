@@ -31,9 +31,12 @@
       var events = {
         progress: 1,
         timeupdate: 1,
-        adtimeupdate: 1,
         suspend: 1,
-        emptied: 1
+        emptied: 1,
+        adprogress: 1,
+        adtimeupdate: 1,
+        adsuspend: 1,
+        ademptied: 1
       }
       return !(evt in events);
 
@@ -56,7 +59,7 @@
           li.className = 'content-event';
         }
 
-        str += '[' + (d) + '] ' + evt;
+        str = '[' + (d) + '] ' + evt;
 
         if (evt === 'contentupdate') {
           str += "\toldValue: " + event.oldValue + "\n" +
