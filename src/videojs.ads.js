@@ -151,6 +151,7 @@ var
       i,
       suppressedTracks = [],
       snapshot = {
+        ended: player.ended(),
         src: player.currentSrc(),
         currentTime: player.currentTime(),
         type: player.currentType()
@@ -216,7 +217,7 @@ var
         player.currentTime(snapshot.currentTime);
 
         //If this wasn't a postroll resume
-        if (!player.ended()) {
+        if (!player.ended() || !snapshot.ended) {
           player.play();
         }
       },
@@ -282,7 +283,7 @@ var
       player.load();
       // and then resume from the snapshots time once the original src has loaded
       player.one('contentloadedmetadata', tryToResume);
-    } else if (!player.ended()) {
+    } else if (!player.ended() || !snapshot.ended) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();
 
@@ -354,8 +355,16 @@ var
               type: 'ad' + event.type,
               originalEvent: event
             });
-          } else if (player.ads.state === 'content-resuming' &&
-                     event.type !== 'playing') {
+          } else if (player.ads.state === 'content-done' &&
+                     (event.type === 'pause' ||
+                      event.type === 'ended')) {
+            player.addClass('vjs-has-started');
+            return;
+          } else if ((player.ads.state === 'content-playback' &&
+                      event.type === 'ended') ||
+                     (player.ads.state === 'content-resuming' &&
+                      event.type !== 'playing') ||
+                     (player.ads.state === 'content-done')) {
             event.stopImmediatePropagation();
             player.trigger({
               type: 'content' + event.type,
@@ -495,7 +504,7 @@ var
               removeClass(player.el(), 'vjs-ad-playing');
 
               restorePlayerSnapshot(player, this.snapshot);
-              if (fsm.triggerevent !== 'adend') {
+              if (player.ads.triggerevent !== 'adend') {
                 // trigger 'adend' as a consistent notification
                 // event that we're exiting ad-playback.
                 player.trigger('adend');
@@ -503,9 +512,15 @@ var
             },
             events: {
               'adend': function() {
+                if (this.snapshot.ended) {
+                  return this.state = 'content-done';
+                }
                 this.state = 'content-resuming';
               },
               'adserror': function() {
+                if (this.snapshot.ended) {
+                  return this.state = 'content-done';
+                }
                 this.state = 'content-resuming';
               }
             }
@@ -517,17 +532,35 @@ var
               },
               'contentended': function() {
                 this.state = 'content-playback'
-              },
-              'ended': function() {
-                if (player.ads.ended) {
-                  event.preventDefault();
-                  event.stopImmediatePropagation();
-                  event.stopPropagation();
-                  this.state = 'content-playback';
-                  player.trigger('ended');
-                }
               }
             }
+          },
+          'postroll?': {
+            enter: function() {
+              player.el().className += ' vjs-ad-loading';
+
+              player.ads.timeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, 1000);
+            },
+            leave: function() {
+              window.clearTimeout(player.ads.timeout);
+              removeClass(player.el(), 'vjs-ad-loading');
+            },
+            events: {
+              'adstart': function() {
+                this.state = 'ad-playback';
+                player.el().className += ' vjs-ad-playing';
+              },
+              'adtimeout': function() {
+                this.state = 'content-playback';
+              },
+              'adserror': function() {
+                this.state = 'content-playback';
+              }
+            }
+          },
+          'content-done': {
           },
           'content-playback': {
             enter: function() {
@@ -561,15 +594,8 @@ var
                   this.state = 'ads-ready?';
                 }
               },
-              'ended': function() {
-                //this.state = 'ad-playback';
-                player.ads.ended = true;
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                event.stopPropagation();
-                setImmediate(function() {
-                  player.trigger('contentended');
-                });
+              'contentended': function() {
+                this.state = 'postroll?';
               }
             }
           }
@@ -579,7 +605,7 @@ var
         var noop = function() {};
 
         // process the current event with a noop default handler
-        (fsm[state].events[event.type] || noop).apply(player.ads);
+        ((fsm[state].events || {})[event.type] || noop).apply(player.ads);
 
         // check whether the state has changed
         if (state !== player.ads.state) {
