@@ -1,7 +1,10 @@
 (function() {
   'use strict';
-  var pad = function(n, x) {
-    return (new Array(n).join('0') + x).slice(-n);
+  var pad = function(n, x, c) {
+    return (new Array(n).join(c || '0') + x).slice(-n);
+  };
+  var padRight = function(n, x, c) {
+    return (x + (new Array(n).join(c || '0'))).slice(0, n);
   };
 
   var player = videojs('examplePlayer', {}, function(){
@@ -20,7 +23,6 @@
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
-      'contentended',
       // events emitted by third party ad implementors
       'adsready',
       'adscanceled',
@@ -33,6 +35,10 @@
         timeupdate: 1,
         suspend: 1,
         emptied: 1,
+        contentprogress: 1,
+        contenttimeupdate: 1,
+        contentsuspend: 1,
+        contentemptied: 1,
         adprogress: 1,
         adtimeupdate: 1,
         adsuspend: 1,
@@ -59,13 +65,13 @@
           li.className = 'content-event';
         }
 
-        str = '[' + (d) + '] ' + evt;
+        str = '[' + (d) + '] ' +  padRight(18, '[' + player.ads.state + ']', ' ') + ' ' + evt;
 
         if (evt === 'contentupdate') {
           str += "\toldValue: " + event.oldValue + "\n" +
                  "\tnewValue: " + event.newValue + "\n";
         }
-        li.textContent = str;
+        li.innerHTML = str;
         log.insertBefore(li, log.firstChild);
       });
     });
