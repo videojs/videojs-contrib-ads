@@ -226,7 +226,7 @@ test('snapshot does not resume after post-roll', function() {
   player.trigger('loadedmetadata');
   ok(playCalled, 'content playback resumed');
   player.trigger('playing');
-  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
   equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
@@ -245,10 +245,9 @@ test('snapshot does not resume after post-roll', function() {
   player.ads.endLinearAdMode();
   player.trigger('playing');
 
-  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  equal(player.ads.state, 'content-done', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
-  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
+  equal(contentPlaybackFired, 1, 'A content-playback event should not have been triggered');
 });
 
 test('snapshot does not resume after burned-in post-roll', function() {
@@ -271,7 +270,7 @@ test('snapshot does not resume after burned-in post-roll', function() {
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
   player.trigger('playing');
-  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
   equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
   ok(playCalled, 'content playback resumed');
   // if the video ends (regardless of burned in post-roll or otherwise) when
@@ -289,9 +288,8 @@ test('snapshot does not resume after burned-in post-roll', function() {
   player.ads.endLinearAdMode();
   player.trigger('ended');
 
-  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'contentended', 'The reason for content-playback should have been contentended');
+  equal(player.ads.state, 'content-done', 'Player should be in content-playback state after a post-roll');
+  equal(contentPlaybackFired, 1, 'A content-playback event should not have been triggered');
   equal(player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   ok(!loadCalled, 'player.load() should not be called if the player is ended.');
   ok(!playCalled, 'content playback should not have been resumed');
@@ -317,7 +315,7 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.ads.endLinearAdMode();
   player.trigger('playing');
   ok(playCalled, 'content playback resumed');
-  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
   equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
@@ -337,9 +335,8 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.ads.endLinearAdMode();
   player.trigger('playing');
 
-  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
+  equal(player.ads.state, 'content-done', 'Player should be in content-playback state after a post-roll');
+  equal(contentPlaybackFired, 1, 'A content-playback event should not have been triggered');
   ok(!playCalled, 'content playback should not resume');
 
 });
