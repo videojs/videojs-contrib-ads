@@ -94,7 +94,7 @@
     }
 
     player.on('contentended', function() {
-      if (!state.postrollPlayed && player.ads.state === 'content-playback') {
+      if (!state.postrollPlayed && player.ads.state === 'postroll?') {
         state.postrollPlayed = true;
         playAd();
       }
