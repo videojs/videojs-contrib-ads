@@ -563,10 +563,10 @@ var
                 player.el().className += ' vjs-ad-playing';
               },
               'adtimeout': function() {
-                this.state = 'content-playback';
+                this.state = 'content-done';
               },
               'adserror': function() {
-                this.state = 'content-playback';
+                this.state = 'content-done';
               }
             }
           },
