@@ -690,7 +690,7 @@ var
           }
         };
       // loadstart reliably indicates a new src has been set
-      player.on(['loadstart', 'contentloadstart'], checkSrc);
+      player.on(['loadstart'], checkSrc);
       // check immediately in case we missed the loadstart
       setImmediate(checkSrc);
     })();
