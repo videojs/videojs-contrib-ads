@@ -512,21 +512,18 @@ var
             },
             events: {
               'adend': function() {
-                if (this.snapshot.ended) {
-                  return this.state = 'content-done';
-                }
                 this.state = 'content-resuming';
               },
               'adserror': function() {
-                if (this.snapshot.ended) {
-                  return this.state = 'content-done';
-                }
                 this.state = 'content-resuming';
               }
             }
           },
           'content-resuming': {
             events: {
+              'contentupdate': function() {
+                this.state = 'content-set'
+              },
               'playing': function() {
                 this.state = 'content-playback'
               },
@@ -537,6 +534,8 @@ var
           },
           'postroll?': {
             enter: function() {
+              this.snapshot = getPlayerSnapshot(player);
+
               player.el().className += ' vjs-ad-loading';
 
               player.ads.timeout = window.setTimeout(function() {
@@ -559,8 +558,6 @@ var
                 this.state = 'content-done';
               }
             }
-          },
-          'content-done': {
           },
           'content-playback': {
             enter: function() {
