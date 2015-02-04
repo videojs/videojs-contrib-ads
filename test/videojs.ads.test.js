@@ -310,6 +310,55 @@ test('changing the src triggers contentupdate', function() {
 
 });
 
+test('contentupdate should fire when src is changed in content-resuming state after postroll', function() {
+  
+  // track contentupdate events
+  var contentupdates = 0;
+  player.on('contentupdate', function(){
+    contentupdates++;
+  });
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  player.trigger('ended');
+  player.trigger('adtimeout');
+  player.ads.snapshot.ended = true;
+
+  // set src and trigger synthetic 'loadstart'
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+
+  // confirm one contentupdate event
+  equal(contentupdates, 1, 'one contentupdate event fired');
+  equal(player.ads.state, 'content-set', 'we are in the content-set state');
+});
+
+test('contentupdate should fire when src is changed in content-playback state after postroll', function() {
+  
+  // track contentupdate events
+  var contentupdates = 0;
+  player.on('contentupdate', function(){
+    contentupdates++;
+  });
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  player.trigger('ended');
+  player.trigger('adtimeout');
+  player.ads.snapshot.ended = true;
+  player.trigger('ended');
+
+  // set src and trigger synthetic 'loadstart'
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  player.trigger('loadstart');
+
+  // confirm one contentupdate event
+  equal(contentupdates, 1, 'one contentupdate event fired');
+  equal(player.ads.state, 'content-set', 'we are in the content-set state');
+});
+
 test('changing src does not trigger contentupdate during ad playback', function() {
 
   // track contentupdate events
