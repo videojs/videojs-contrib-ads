@@ -353,23 +353,38 @@ var
             event.stopImmediatePropagation();
             player.trigger({
               type: 'ad' + event.type,
+              state: player.ads.state,
               originalEvent: event
             });
-          } else if (player.ads.state === 'content-done' &&
-                     (event.type === 'pause' ||
-                      event.type === 'ended')) {
-            player.addClass('vjs-has-started');
-            return;
-          } else if ((player.ads.state === 'content-playback' &&
-                      event.type === 'ended') ||
-                     (player.ads.state === 'content-resuming' &&
-                      event.type !== 'playing') ||
-                     (player.ads.state === 'content-done')) {
+          } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
             event.stopImmediatePropagation();
             player.trigger({
               type: 'content' + event.type,
+              state: player.ads.state,
               originalEvent: event
             });
+          } else if (player.ads.state === 'content-resuming') {
+            if (player.ads.snapshot && player.ads.snapshot.ended) {
+              if ((event.type === 'pause' ||
+                  event.type === 'ended')) {
+                player.addClass('vjs-has-started');
+                return;
+              }
+              event.stopImmediatePropagation();
+              return player.trigger({
+                type: 'content' + event.type,
+                state: player.ads.state,
+                originalEvent: event
+              });
+            }
+            if (event.type !== 'playing') {
+              event.stopImmediatePropagation();
+              player.trigger({
+                type: 'content' + event.type,
+                state: player.ads.state,
+                originalEvent: event
+              });
+            }
           }
         };
 
@@ -527,7 +542,7 @@ var
               'playing': function() {
                 this.state = 'content-playback'
               },
-              'contentended': function() {
+              'ended': function() {
                 this.state = 'content-playback'
               }
             }
@@ -552,10 +567,10 @@ var
                 player.el().className += ' vjs-ad-playing';
               },
               'adtimeout': function() {
-                this.state = 'content-done';
+                this.state = 'content-resuming';
               },
               'adserror': function() {
-                this.state = 'content-done';
+                this.state = 'content-resuming';
               }
             }
           },
@@ -665,7 +680,7 @@ var
           }
         };
       // loadstart reliably indicates a new src has been set
-      player.on('loadstart', checkSrc);
+      player.on(['loadstart', 'contentloadstart'], checkSrc);
       // check immediately in case we missed the loadstart
       setImmediate(checkSrc);
     })();
