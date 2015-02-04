@@ -244,10 +244,12 @@ test('snapshot does not resume after post-roll', function() {
   player.trigger('loadedmetadata');
   player.ads.endLinearAdMode();
   player.trigger('playing');
+  player.trigger('ended');
 
-  equal(player.ads.state, 'content-done', 'Player should be in content-playback state after a post-roll');
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
-  equal(contentPlaybackFired, 1, 'A content-playback event should not have been triggered');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
 });
 
 test('snapshot does not resume after burned-in post-roll', function() {
@@ -288,8 +290,9 @@ test('snapshot does not resume after burned-in post-roll', function() {
   player.ads.endLinearAdMode();
   player.trigger('ended');
 
-  equal(player.ads.state, 'content-done', 'Player should be in content-playback state after a post-roll');
-  equal(contentPlaybackFired, 1, 'A content-playback event should not have been triggered');
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
   equal(player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   ok(!loadCalled, 'player.load() should not be called if the player is ended.');
   ok(!playCalled, 'content playback should not have been resumed');
@@ -334,9 +337,11 @@ test('snapshot does not resume after multiple post-rolls', function() {
   player.trigger('loadstart');
   player.ads.endLinearAdMode();
   player.trigger('playing');
+  player.trigger('ended');
 
-  equal(player.ads.state, 'content-done', 'Player should be in content-playback state after a post-roll');
-  equal(contentPlaybackFired, 1, 'A content-playback event should not have been triggered');
+  equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
   ok(!playCalled, 'content playback should not resume');
 
 });
