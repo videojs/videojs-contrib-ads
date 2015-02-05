@@ -230,9 +230,6 @@ var
             trackSnapshot.track.show();
           }
         }
-        if(typeof(player.remoteTextTracks) !== 'undefined') {
-          player.textTracks = trackSnapshot;
-        }
       },
 
       // finish restoring the playback state
