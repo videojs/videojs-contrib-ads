@@ -348,42 +348,40 @@ var
       var
         videoEvents = videojs.Html5.Events,
         i = videoEvents.length,
+        triggerEvent = function(type, event) {
+          event.stopImmediatePropagation();
+          player.trigger({
+            type: type + event.type,
+            state: player.ads.state,
+            originalEvent: event
+          });
+        },
         redispatch = function(event) {
           if (player.ads.state === 'ad-playback') {
-            event.stopImmediatePropagation();
-            player.trigger({
-              type: 'ad' + event.type,
-              state: player.ads.state,
-              originalEvent: event
-            });
+            triggerEvent('ad', event);
+
           } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
-            event.stopImmediatePropagation();
-            player.trigger({
-              type: 'content' + event.type,
-              state: player.ads.state,
-              originalEvent: event
-            });
+            triggerEvent('content', event);
+
           } else if (player.ads.state === 'content-resuming') {
-            if (player.ads.snapshot && player.ads.snapshot.ended) {
-              if ((event.type === 'pause' ||
-                  event.type === 'ended')) {
-                player.addClass('vjs-has-started');
-                return;
+            if (player.ads.snapshot) {
+              if (player.currentSrc() !== player.ads.snapshot.src) {
+                if (event.type === 'loadstart') {
+                  return;
+                }
+                return triggerEvent('content', event);
+
+              } else if (player.ads.snapshot.ended) {
+                if ((event.type === 'pause' ||
+                    event.type === 'ended')) {
+                  player.addClass('vjs-has-started');
+                  return;
+                }
+                return triggerEvent('content', event);
               }
-              event.stopImmediatePropagation();
-              return player.trigger({
-                type: 'content' + event.type,
-                state: player.ads.state,
-                originalEvent: event
-              });
             }
             if (event.type !== 'playing') {
-              event.stopImmediatePropagation();
-              player.trigger({
-                type: 'content' + event.type,
-                state: player.ads.state,
-                originalEvent: event
-              });
+              triggerEvent('content', event);
             }
           }
         };
