@@ -324,6 +324,10 @@ var
     // the standard timeout.
     prerollTimeout: 100,
 
+    // maximum amount of time in ms to wait for the ad implementation to start
+    // linear ad mode after `contentended` has fired.
+    postrollTimeout: 100,
+
     // when truthy, instructs the plugin to output additional information about
     // plugin state to the video.js log. On most devices, the video.js log is
     // the same as the developer console.
@@ -553,7 +557,7 @@ var
 
               player.ads.timeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
-              }, 1000);
+              }, settings.postrollTimeout);
             },
             leave: function() {
               window.clearTimeout(player.ads.timeout);
