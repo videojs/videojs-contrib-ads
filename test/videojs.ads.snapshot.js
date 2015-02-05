@@ -400,10 +400,16 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
 });
 
 test('When captions are enabled, the video\'s tracks will be disabled during the ad', function() {
-  var tracks = player.remoteTextTracks(),
+  var tracks,
       showing = 0,
       disabled = 0,
       i;
+      
+  if(typeof(player.remoteTextTracks) !== 'undefined') {
+    tracks = player.remoteTextTracks();
+  } else {
+    tracks = player.textTracks();
+  }
 
   ok(tracks.length > 0, 'No tracks detected');
 
@@ -412,11 +418,15 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
 
   // set all modes to 'showing'
   for (i = 0; i < tracks.length; i++) {
-    tracks[i].mode = 'showing';
+    if(typeof(player.remoteTextTracks) !== 'undefined') {
+      tracks[i].mode = 'showing';
+    } else {
+      tracks[i].show();
+    }
   }
 
   for (i = 0; i < tracks.length; i++) {
-    if (tracks[i].mode === 'showing') {
+    if (tracks[i].mode === 'showing' || tracks[i].mode === 2) {
       showing++;
     }
   }
@@ -427,7 +437,7 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
   player.trigger('adstart');
 
   for (i = 0; i < tracks.length; i++) {
-    if (tracks[i].mode === 'disabled') {
+    if (tracks[i].mode === 'disabled' || tracks[i].mode === 1) {
       disabled++;
     }
   }
@@ -437,7 +447,7 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
   player.trigger('adend');
 
   for (i = 0; i < tracks.length; i++) {
-    if (tracks[i].mode === 'showing') {
+    if (tracks[i].mode === 'showing' || tracks[i].mode === 2) {
       showing++;
     }
   }
