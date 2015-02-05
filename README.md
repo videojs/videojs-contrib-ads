@@ -159,6 +159,25 @@ The prerollTimout should be as short as possible so that the viewer does not hav
 Make this longer if your ad integration needs a long time to decide whether it has preroll inventory to play or not.
 Ideally, your ad integration should already know if it wants to play a preroll before the `readyforpreroll` event.
 
+### postrollTimeout
+
+Type: `number`
+Default Value: 100
+
+The maximum amount of time to wait for an ad implementation to initiate a postroll, in milliseconds.
+If `contentended` has been fired and the ad implementation does not call `startLinearAdMode()` before `postrollTimeout` expires, the content video will end playback.
+
+Once the ad plugin fires `contentended`, one of these things will happen:
+
+ * `startLinearAdMode()` called within the timeout — postroll(s) will play without the user seeing any content video first.
+ * `startLinearAdMode()` is never called — content video stops.
+ * `startLinearAdMode()` is called, but after the postrollTimeout expried — content video stops
+
+The postrollTimeout should be as short as possible so that the viewer does not have to wait unnecessarily if no postroll is scheduled for a video.
+Make this longer if your ad integration needs a long time to decide whether it has postroll inventory to play or not.
+Ideally, your ad integration should already know if it wants to play a postroll before the `contentended` event.
+
+
 ### debug
 
 Type: `boolean`
