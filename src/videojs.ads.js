@@ -580,9 +580,15 @@ var
               },
               'adtimeout': function() {
                 this.state = 'content-resuming';
+                setImmediate(function() {
+                  player.trigger('ended');
+                });
               },
               'adserror': function() {
                 this.state = 'content-resuming';
+                setImmediate(function() {
+                  player.trigger('ended');
+                });
               }
             }
           },
