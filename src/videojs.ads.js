@@ -539,13 +539,13 @@ var
           'content-resuming': {
             events: {
               'contentupdate': function() {
-                this.state = 'content-set'
+                this.state = 'content-set';
               },
               'playing': function() {
-                this.state = 'content-playback'
+                this.state = 'content-playback';
               },
               'ended': function() {
-                this.state = 'content-playback'
+                this.state = 'content-playback';
               }
             }
           },
