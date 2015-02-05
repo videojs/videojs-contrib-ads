@@ -146,7 +146,7 @@ var
   getPlayerSnapshot = function(player) {
     var
       tech = player.el().querySelector('.vjs-tech'),
-      tracks = player.remoteTextTracks(),
+      tracks,
       track,
       i,
       suppressedTracks = [],
@@ -160,16 +160,33 @@ var
       snapshot.nativePoster = tech.poster;
       snapshot.style = tech.getAttribute('style');
     }
+    
+    if(typeof(player.remoteTextTracks) !== 'undefined') {
+      tracks = player.remoteTextTracks();
 
-    i = tracks.length;
-    while (i--) {
-      track = tracks[i];
-      suppressedTracks.push({
-        track: track,
-        mode: track.mode
-      });
-      track.mode = 'disabled';
+      i = tracks.length;
+      while (i--) {
+        track = tracks[i];
+        suppressedTracks.push({
+          track: track,
+          mode: track.mode
+        });
+        track.mode = 'disabled';
+      }
+    } else {
+      tracks = player.textTracks();
+      
+      i = tracks.length;
+      while (i--) {
+        track = tracks[i];
+        suppressedTracks.push({
+          track: track,
+          mode: track.mode()
+        });
+        track.hide();
+      }
     }
+    
     snapshot.suppressedTracks = suppressedTracks;
 
     return snapshot;
@@ -203,11 +220,15 @@ var
 
       suppressedTracks = snapshot.suppressedTracks,
       trackSnapshot,
-      restoreTracks =  function() {
+      restoreTracks = function() {
         var i = suppressedTracks.length;
         while (i--) {
           trackSnapshot = suppressedTracks[i];
-          trackSnapshot.track.mode = trackSnapshot.mode;
+          if(typeof(player.remoteTextTracks) !== 'undefined') {
+            trackSnapshot.track.mode = trackSnapshot.mode;
+          } else if(trackSnapshot.mode === 2) {
+            trackSnapshot.track.show();
+          }
         }
       },
 
