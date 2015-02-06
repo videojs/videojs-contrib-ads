@@ -51,7 +51,18 @@ attachListeners = function(player) {
   // capture video element events during test runs
   player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
     return 'ad' + event;
-  })).concat(['adstart', 'adend']), function(event) {
+  })).concat([
+    // events emitted by ad plugin
+    'adtimeout',
+    'contentupdate',
+    'contentplayback',
+    // events emitted by third party ad implementors
+    'adsready',
+    'adscanceled',
+    'adstart',  // startLinearAdMode()
+    'adend'     // endLinearAdMode()
+
+  ]), function(event) {
     events.push(event.type);
   });
   events = [];
@@ -106,16 +117,22 @@ test('linear ads should not affect regular video playback events', function(asse
 
     ok(events.length > 0, 'fired video events');
     occurInOrder(events, [
-      'play',                        // start the video
-      'adstart', 'adend', 'playing', // play a preroll
-      'adstart', 'adend', 'playing', // play a midroll
+      'adstart', 'adend', // play a preroll
+      'adstart', 'adend', // play a midroll
       'adstart', 'adend',            // play a postroll
+      'pause', 'ended'               // end the video
+    ]);
+    occurInOrder(events, [
+      'play',                        // start the video
+      'playing', // play a preroll
+      'playing', // play a midroll
       'pause', 'ended'               // end the video
     ]);
     occurInOrder(events, [
       'loadstart',
       'playing'
     ]);
+    equal(count(events, 'adsready'), 1, 'fired adsready exactly once');
     equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
     equal(count(events, 'ended'), 1, 'fired ended exactly once');
     ok(player.ended(), 'the video is still ended');
