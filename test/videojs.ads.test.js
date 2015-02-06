@@ -556,6 +556,66 @@ test('adserror in preroll? transitions to content-playback', function(){
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
 });
 
+test('adserror in postroll? transitions to content-playback and fires ended', function(){
+  var oldimmediate = window.setImmediate,
+      cbs = [];
+  window.setImmediate = function(cb) {
+    cbs.push(cb);
+  };
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  cbs.pop().call(window);
+  player.trigger('ended');
+  equal(player.ads.state, 'postroll?');
+
+  player.ads.snapshot.ended = true;
+  player.trigger('adserror');
+
+  equal(player.ads.state, 'content-resuming');
+  equal(player.ads.triggerevent, 'adserror', 'adserror should be the trigger event');
+
+  cbs.pop().call(window);
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
+  equal(player.ads.state, 'content-playback');
+
+  window.setImmediate = oldimmediate;
+});
+test('adtimeout in postroll? transitions to content-playback and fires ended', function(){
+  var oldimmediate = window.setImmediate,
+      cbs = [];
+  window.setImmediate = function(cb) {
+    cbs.push(cb);
+  };
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  cbs.pop().call(window);
+  player.trigger('ended');
+  equal(player.ads.state, 'postroll?');
+
+  player.ads.snapshot.ended = true;
+  player.trigger('adtimeout');
+
+  equal(player.ads.state, 'content-resuming');
+  equal(player.ads.triggerevent, 'adtimeout', 'adtimeout should be the trigger event');
+
+  cbs.pop().call(window);
+
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
+  equal(player.ads.state, 'content-playback');
+
+  window.setImmediate = oldimmediate;
+});
+
 test('adserror in ad-playback transitions to content-playback and triggers adend', function(){
   expect(8);
   equal(player.ads.state, 'content-set');
