@@ -28,6 +28,11 @@
       //  - postrollPlayed - whether we've played a postroll
       state = {},
 
+      // just like any other video.js plugin, ad integrations can
+      // accept initialization options
+      adServerUrl = (options && options.adServerUrl) || "inventory.json",
+      midrollPoint = (options && options.midrollPoint) || 15,
+
       // asynchronous method for requesting ad inventory
       requestAds = function() {
 
@@ -38,7 +43,7 @@
         // the 'src' parameter is ignored by the example inventory.json flat file,
         // but this shows how you might send player information along to the ad server.
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "inventory.json?src=" + encodeURIComponent(player.currentSrc()));
+        xhr.open("GET", adServerUrl + "?src=" + encodeURIComponent(player.currentSrc()));
         xhr.onreadystatechange = function() {
           if (xhr.readyState === 4) {
             try {
@@ -119,7 +124,7 @@
       var currentTime = player.currentTime(), opportunity;
 
       if ('lastTime' in state) {
-        opportunity = currentTime > 15 && state.lastTime < 15;
+        opportunity = currentTime > midrollPoint && state.lastTime < midrollPoint;
       }
 
       state.lastTime = currentTime;
