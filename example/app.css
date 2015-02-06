@@ -4,6 +4,9 @@
 .content-event {
   background-color: #66a8cc;
 }
+.content-adplugin-event {
+  background-color: #00a866;
+}
 ol {
   list-style-type: none;
   padding: 0;
