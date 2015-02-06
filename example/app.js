@@ -23,6 +23,7 @@
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
+      'contentplayback',
       // events emitted by third party ad implementors
       'adsready',
       'adscanceled',
@@ -65,12 +66,17 @@
           li.className = 'content-event';
         }
 
-        str = '[' + (d) + '] ' +  padRight(18, '[' + player.ads.state + ']', ' ') + ' ' + evt;
+        str = '[' + (d) + '] ' +  padRight(19, '[' + (event.state ? event.state : player.ads.state + '*') + ']', ' ') + ' ' + evt;
 
         if (evt === 'contentupdate') {
           str += "\toldValue: " + event.oldValue + "\n" +
                  "\tnewValue: " + event.newValue + "\n";
+          li.className = 'content-adplugin-event';
         }
+        if (evt === 'contentplayback') {
+          li.className = 'content-adplugin-event';
+        }
+
         li.innerHTML = str;
         log.insertBefore(li, log.firstChild);
       });
