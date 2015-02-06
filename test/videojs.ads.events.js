@@ -1,4 +1,36 @@
-var video, player, events;
+var video, player, events, occurInOrder, count;
+
+// Asserts that elements in the first array occur in the same order as
+// in the second array. It's okay to have duplicates or intermediate
+// elements in the first array that don't occur in the second. An
+// assertion will fail if all of the elements in the second array are
+// not present in the first.
+occurInOrder = function(actual, expected) {
+  var i, j;
+  for (i = j = 0; i < actual.length; i++) {
+    if (actual[i] !== expected[j]) {
+      continue;
+    }
+    equal(actual[i],
+          expected[j],
+          'matched "' + expected[j] + '" to event number ' + i);
+    j++;
+  }
+  equal(j,
+        expected.length,
+        expected.length !== j ? 'missing ' + expected.slice(j).join(', ') : 'all expected events occurred');
+};
+
+// returns then number of elements in an array that equal the specified element.
+count = function(array, element) {
+  var i = array.length, result = 0;
+  while (i--) {
+    if (array[i] === element) {
+      result++;
+    }
+  }
+  return result;
+};
 
 module('Ad Events Tranformation', {
   setup: function() {
@@ -56,11 +88,18 @@ test('linear ads should not affect regular video playback events', function(asse
         suspend: 1
       });
     });
-    
+
     ok(events.length > 0, 'fired video events');
-    deepEqual(events, [
-      'loadstart', 'play', 'canplay', 'playing', 'canplaythrough', 'ended'
-    ], 'events matched regular playback');
+    occurInOrder(events, [
+      'play', 'playing', 'pause', 'ended'
+    ]);
+    occurInOrder(events, [
+      'loadstart',
+      'playing'
+    ]);
+    equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
+    equal(count(events, 'ended'), 1, 'fired ended exactly once');
+    ok(player.ended(), 'the video is still ended');
     done();
   });
   player.play();
