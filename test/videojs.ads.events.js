@@ -1,4 +1,19 @@
-var video, player, events, occurInOrder, count;
+var video, player, events, filteredEvents, occurInOrder, count, attachListeners;
+
+filteredEvents = {
+  contenttimeupdate: 1,
+  contentprogress: 1,
+  contentwaiting: 1,
+  contentsuspend: 1,
+  adtimeupdate: 1,
+  adprogress: 1,
+  adwaiting: 1,
+  adsuspend: 1,
+  timeupdate: 1,
+  progress: 1,
+  waiting: 1,
+  suspend: 1
+};
 
 // Asserts that elements in the first array occur in the same order as
 // in the second array. It's okay to have duplicates or intermediate
@@ -32,6 +47,26 @@ count = function(array, element) {
   return result;
 };
 
+attachListeners = function(player) {
+  // capture video element events during test runs
+  player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
+    return 'ad' + event;
+  })).concat(['adstart', 'adend']), function(event) {
+    events.push(event.type);
+  });
+  events = [];
+  events.filter = function(predicate) {
+    var i = this.length;
+    while (i--) {
+      if (predicate(this[i])) {
+        this.splice(i, 1);
+      }
+    }
+    return this;
+  };
+  return player;
+};
+
 module('Ad Events Tranformation', {
   setup: function() {
     video = document.createElement('video');
@@ -51,23 +86,6 @@ module('Ad Events Tranformation', {
     document.getElementById('qunit-fixture').appendChild(video);
     player = videojs(video);
 
-    // capture video element events during test runs
-    player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
-      return 'ad' + event;
-    })).concat(['adstart', 'adend']), function(event) {
-      events.push(event.type);
-    });
-    events = [];
-    events.filter = function(predicate) {
-      var i = this.length;
-      while (i--) {
-        if (predicate(this[i])) {
-          this.splice(i, 1);
-        }
-      }
-      return this;
-    };
-
     // load a video
     player.src({
       src: '../example/sintel-low.mp4',
@@ -81,14 +99,9 @@ test('linear ads should not affect regular video playback events', function(asse
   player.exampleAds({
     midrollPoint: 2
   });
-  player.on('ended', function() {
+  attachListeners(player).on('ended', function() {
     events.filter(function(event) {
-      return (event in {
-        timeupdate: 1,
-        progress: 1,
-        waiting: 1,
-        suspend: 1
-      });
+      return (event in filteredEvents);
     });
 
     ok(events.length > 0, 'fired video events');
@@ -119,14 +132,9 @@ test('regular video playback is not affected', function(assert) {
     adServerUrl: 'empty-inventory.json'
   });
 
-  player.on('ended', function() {
+  attachListeners(player).on('ended', function() {
     events.filter(function(event) {
-      return (event in {
-        timeupdate: 1,
-        progress: 1,
-        waiting: 1,
-        suspend: 1
-      });
+      return (event in filteredEvents);
     });
 
     ok(events.length > 0, 'fired video events');
