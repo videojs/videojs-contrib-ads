@@ -62,7 +62,7 @@
       playAd = function() {
 
         // short-circuit if we don't have any ad inventory to play
-        if (!state.inventory) {
+        if (!state.inventory || state.inventory.length === 0) {
           return;
         }
 

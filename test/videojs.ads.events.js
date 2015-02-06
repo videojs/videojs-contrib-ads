@@ -50,12 +50,11 @@ module('Ad Events Tranformation', {
     }
     document.getElementById('qunit-fixture').appendChild(video);
     player = videojs(video);
-    player.exampleAds({
-      midrollPoint: 2
-    });
 
     // capture video element events during test runs
-    player.on(videojs.Html5.Events, function(event) {
+    player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
+      return 'ad' + event;
+    })).concat(['adstart', 'adend']), function(event) {
       events.push(event.type);
     });
     events = [];
@@ -79,6 +78,9 @@ module('Ad Events Tranformation', {
 
 test('linear ads should not affect regular video playback events', function(assert) {
   var done = assert.async();
+  player.exampleAds({
+    midrollPoint: 2
+  });
   player.on('ended', function() {
     events.filter(function(event) {
       return (event in {
@@ -91,12 +93,53 @@ test('linear ads should not affect regular video playback events', function(asse
 
     ok(events.length > 0, 'fired video events');
     occurInOrder(events, [
-      'play', 'playing', 'pause', 'ended'
+      'play',                        // start the video
+      'adstart', 'adend', 'playing', // play a preroll
+      'adstart', 'adend', 'playing', // play a midroll
+      'adstart', 'adend',            // play a postroll
+      'pause', 'ended'               // end the video
     ]);
     occurInOrder(events, [
       'loadstart',
       'playing'
     ]);
+    equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
+    equal(count(events, 'ended'), 1, 'fired ended exactly once');
+    ok(player.ended(), 'the video is still ended');
+    done();
+  });
+  player.play();
+});
+
+test('regular video playback is not affected', function(assert) {
+  var done = assert.async();
+
+  // disable ads
+  player.exampleAds({
+    adServerUrl: 'empty-inventory.json'
+  });
+
+  player.on('ended', function() {
+    events.filter(function(event) {
+      return (event in {
+        timeupdate: 1,
+        progress: 1,
+        waiting: 1,
+        suspend: 1
+      });
+    });
+
+    ok(events.length > 0, 'fired video events');
+    occurInOrder(events, [
+      'play',                        // start the video
+      'pause', 'ended'               // end the video
+    ]);
+    occurInOrder(events, [
+      'loadstart',
+      'playing'
+    ]);
+    equal(count(events, 'adstart'), 0, 'did not fire adstart');
+    equal(count(events, 'adend'), 0, 'did not fire adend');
     equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
     equal(count(events, 'ended'), 1, 'fired ended exactly once');
     ok(player.ended(), 'the video is still ended');
