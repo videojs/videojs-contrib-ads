@@ -198,7 +198,7 @@ test('only restores the player snapshot if the src changed', function() {
   ok(!currentTimeModified, 'no seeking occurred');
 });
 
-test('snapshot does not resume after post-roll', function() {
+test('snapshot does not resume playback after post-rolls', function() {
   var playCalled = false;
 
   // start playback
@@ -252,7 +252,7 @@ test('snapshot does not resume after post-roll', function() {
   equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
 });
 
-test('snapshot does not resume after burned-in post-roll', function() {
+test('snapshot does not resume playback after a burned-in post-roll', function() {
   var
     playCalled = false,
     loadCalled = false;
@@ -298,7 +298,7 @@ test('snapshot does not resume after burned-in post-roll', function() {
   ok(!playCalled, 'content playback should not have been resumed');
 });
 
-test('snapshot does not resume after multiple post-rolls', function() {
+test('snapshot does not resume playback after multiple post-rolls', function() {
   var playCalled = false;
 
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
@@ -329,7 +329,7 @@ test('snapshot does not resume after multiple post-rolls', function() {
     return true;
   };
   player.trigger('ended');
-  //trigger a lots o post-rolls
+  //trigger a lot of post-rolls
   player.ads.startLinearAdMode();
   player.src('http://example.com/ad1.mp4');
   player.trigger('loadstart');
@@ -343,7 +343,46 @@ test('snapshot does not resume after multiple post-rolls', function() {
   equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
   equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
   ok(!playCalled, 'content playback should not resume');
+});
 
+// "ended" does not fire when the end of a video is seeked to directly
+// in iOS 8.1
+test('does resume playback after postrolls if "ended" does not fire naturally', function() {
+  var playCalled = false, callbacks = [], i;
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+
+  // play the video
+  player.trigger('loadstart');
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+
+  // finish the video and watch for play()
+  player.ended = function() {
+    return true;
+  };
+  player.trigger('ended');
+  // play a postroll
+  player.ads.startLinearAdMode();
+  player.src('http://example.com/ad1.mp4');
+  player.ads.endLinearAdMode();
+
+  // reload the content video while capturing timeouts
+  window.setTimeout = function(callback) {
+    callbacks.push(callback);
+  };
+  player.trigger('contentloadedmetadata');
+
+  ok(callbacks.length > 0, 'set a timeout to check for "ended"');
+  // trigger any registered timeouts
+  player.play = function() {
+    playCalled = true;
+  };
+  i = callbacks.length;
+  while (i--) {
+    callbacks[i]();
+  }
+  ok(playCalled, 'called play() to trigger an "ended"');
 });
 
 test('changing the source and then timing out does not restore a snapshot', function() {

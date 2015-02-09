@@ -214,11 +214,33 @@ var
 
       // finish restoring the playback state
       resume = function() {
+        var
+          ended = false,
+          updateEnded = function() {
+            ended = true;
+          };
         player.currentTime(snapshot.currentTime);
 
-        //If this wasn't a postroll resume
-        if (!player.ended() || !snapshot.ended) {
+        // Resume playback if this wasn't a postroll
+        if (!snapshot.ended) {
           player.play();
+        } else {
+          // On iOS 8.1, the "ended" event will not fire if you seek
+          // directly to the end of a video. To make that behavior
+          // consistent with the standard, fire a synthetic event if
+          // "ended" does not fire within 250ms. Note that the ended
+          // event should occur whether the browser actually has data
+          // available for that position
+          // (https://html.spec.whatwg.org/multipage/embedded-content.html#seeking),
+          // so it should not be necessary to wait for the seek to
+          // indicate completion.
+          window.setTimeout(function() {
+            if (!ended) {
+              player.play();
+            }
+            player.off('ended', updateEnded);
+          }, 250);
+          player.on('ended', updateEnded);
         }
       },
 
@@ -240,6 +262,8 @@ var
         // delay a bit and then check again unless we're out of attempts
         if (attempts--) {
           setTimeout(tryToResume, 50);
+        } else {
+          videojs.log.warn('Failed to resume the content after an advertisement');
         }
       },
 
