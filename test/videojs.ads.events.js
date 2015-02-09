@@ -1,4 +1,4 @@
-var video, player, events, filteredEvents, occurInOrder, count, attachListeners;
+var video, player, events, filteredEvents, occurInOrder, count, attachListeners, contentUrl;
 
 filteredEvents = {
   contenttimeupdate: 1,
@@ -54,6 +54,7 @@ attachListeners = function(player) {
   })).concat([
     // events emitted by ad plugin
     'adtimeout',
+    'contentended',
     'contentupdate',
     'contentplayback',
     // events emitted by third party ad implementors
@@ -78,6 +79,14 @@ attachListeners = function(player) {
   return player;
 };
 
+// get the absolute URL to the video so that snapshot restores aren't
+// seen as content updates
+contentUrl = (function() {
+  var a = document.createElement('a');
+  a.href = '../example/sintel-low.mp4';
+  return a.href;
+})();
+
 module('Ad Events Tranformation', {
   setup: function() {
     video = document.createElement('video');
@@ -99,7 +108,7 @@ module('Ad Events Tranformation', {
 
     // load a video
     player.src({
-      src: '../example/sintel-low.mp4',
+      src: contentUrl,
       type: 'video/mp4'
     });
   }
@@ -116,22 +125,29 @@ test('linear ads should not affect regular video playback events', function(asse
     });
 
     ok(events.length > 0, 'fired video events');
+
+    // ad events should occur in a sensible order
     occurInOrder(events, [
-      'adstart', 'adend', // play a preroll
-      'adstart', 'adend', // play a midroll
-      'adstart', 'adend',            // play a postroll
-      'pause', 'ended'               // end the video
+      'adstart', 'adend',                 // play a preroll
+      'contentplayback',
+      'adstart', 'adend',                 // play a midroll
+      'contentplayback',
+      'adstart', 'contentended', 'adend', // play a postroll
+      'contentplayback',
+      'ended'                             // end the video
     ]);
+
+    // content related events should occur in a sensible order
     occurInOrder(events, [
-      'play',                        // start the video
-      'playing', // play a preroll
-      'playing', // play a midroll
-      'pause', 'ended'               // end the video
+      'play',    // start the video
+      'playing', // content begins playing
+      'ended'    // end the video
     ]);
     occurInOrder(events, [
       'loadstart',
       'playing'
     ]);
+
     equal(count(events, 'adsready'), 1, 'fired adsready exactly once');
     equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
     equal(count(events, 'ended'), 1, 'fired ended exactly once');
@@ -156,8 +172,8 @@ test('regular video playback is not affected', function(assert) {
 
     ok(events.length > 0, 'fired video events');
     occurInOrder(events, [
-      'play',                        // start the video
-      'pause', 'ended'               // end the video
+      'play', // start the video
+      'ended' // end the video
     ]);
     occurInOrder(events, [
       'loadstart',
