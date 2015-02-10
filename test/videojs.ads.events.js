@@ -80,6 +80,8 @@ contentUrl = (function() {
 
 module('Ad Events Tranformation', {
   setup: function() {
+    var vjsOptions = {};
+
     video = document.createElement('video');
     video.className = 'video-js vjs-default-skin';
     video.width = '640';
@@ -95,7 +97,12 @@ module('Ad Events Tranformation', {
       video.play = function() {};
     }
     document.getElementById('qunit-fixture').appendChild(video);
-    player = videojs(video);
+
+    if (QUnit.config.flash) {
+      vjsOptions.techOrder = ['flash'];
+    }
+
+    player = videojs(video, vjsOptions);
 
     // load a video
     player.src({
