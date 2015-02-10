@@ -67,15 +67,6 @@ attachListeners = function(player) {
     events.push(event.type);
   });
   events = [];
-  events.filter = function(predicate) {
-    var i = this.length;
-    while (i--) {
-      if (predicate(this[i])) {
-        this.splice(i, 1);
-      }
-    }
-    return this;
-  };
   return player;
 };
 
@@ -120,8 +111,8 @@ test('linear ads should not affect regular video playback events', function(asse
     midrollPoint: 2
   });
   attachListeners(player).on('ended', function() {
-    events.filter(function(event) {
-      return (event in filteredEvents);
+    events = events.filter(function(event) {
+      return !(event in filteredEvents);
     });
 
     ok(events.length > 0, 'fired video events');
@@ -166,8 +157,8 @@ test('regular video playback is not affected', function(assert) {
   });
 
   attachListeners(player).on('ended', function() {
-    events.filter(function(event) {
-      return (event in filteredEvents);
+    events = events.filter(function(event) {
+      return !(event in filteredEvents);
     });
 
     ok(events.length > 0, 'fired video events');
