@@ -21,8 +21,15 @@
     }
   </style>
 
-  <script src="../node_modules/video.js/dist/video-js/video.js"></script>
+  <script src="../node_modules/video.js/dist/video-js/video.dev.js"></script>
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+  <script>
+    QUnit.config.urlConfig.push({
+      id: 'flash',
+      label: "Flash",
+      tooltip: "Run tests with the flash player"
+    });
+  </script>
   <!-- Load local lib and tests. -->
   <script src="../src/videojs.ads.js"></script>
   <script src="../example/example-integration.js"></script>
