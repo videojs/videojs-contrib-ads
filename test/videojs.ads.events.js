@@ -51,6 +51,8 @@ attachListeners = function(player) {
   // capture video element events during test runs
   player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
     return 'ad' + event;
+  })).concat(videojs.Html5.Events.map(function(event) {
+    return 'content' + event;
   })).concat([
     // events emitted by ad plugin
     'adtimeout',
@@ -80,7 +82,9 @@ contentUrl = (function() {
 
 module('Ad Events Tranformation', {
   setup: function() {
-    var vjsOptions = {};
+    var vjsOptions = {
+      inactivityTimeout: 0
+    };
 
     video = document.createElement('video');
     video.className = 'video-js vjs-default-skin';
@@ -152,7 +156,9 @@ test('linear ads should not affect regular video playback events', function(asse
     ok(player.ended(), 'the video is still ended');
     done();
   });
-  player.play();
+  player.ready(function() {
+    player.play();
+  });
 });
 
 test('regular video playback is not affected', function(assert) {
@@ -184,5 +190,7 @@ test('regular video playback is not affected', function(assert) {
     ok(player.ended(), 'the video is still ended');
     done();
   });
-  player.play();
+  player.ready(function() {
+    player.play();
+  });
 });
