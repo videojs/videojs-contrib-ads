@@ -316,7 +316,7 @@ var
       // safari requires a call to `load` to pick up a changed source
       player.load();
       // and then resume from the snapshots time once the original src has loaded
-      player.one('contentloadedmetadata', tryToResume);
+      player.one('contentcanplay', tryToResume);
     } else if (!player.ended() || !snapshot.ended) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();
@@ -429,6 +429,18 @@ var
       }
       return redispatch;
     })();
+
+    // We now auto-play when an ad gets loaded if we're playing ads in the same video element as the content.
+    // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we cannot play from adcanplay.
+    // This will allow ad-integrations from needing to do this themselves.
+    player.on(['addurationchange', 'adcanplay'], function(event) {
+      var snapshot = player.ads.snapshot;
+      if (player.currentSrc() === snapshot.src) {
+        return;  // do nothing
+      }
+
+      player.play();
+    });
 
     // replace the ad initializer with the ad namespace
     player.ads = {
