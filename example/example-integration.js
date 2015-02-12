@@ -74,11 +74,6 @@
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
         player.src(media);
 
-        // when the video metadata is loaded, play it!
-        player.one('addurationchange', function() {
-          player.play();
-        });
-
         // when it's finished
         player.one('adended', function() {
           // play your linear ad content, then when it's finished ...
