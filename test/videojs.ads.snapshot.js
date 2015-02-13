@@ -99,7 +99,7 @@ test('waits for the video to become seekable before restoring the time', functio
   // the ad resets the current time
   video.currentTime = 0;
   player.ads.endLinearAdMode();
-  player.trigger('loadedmetadata');
+  player.trigger('canplay');
 
   equal(1, timeouts, 'restoring the time should be delayed');
   equal(0, video.currentTime, 'currentTime is not modified');
@@ -130,7 +130,7 @@ test('tries to restore the play state up to 20 times', function() {
   // the ad resets the current time
   video.currentTime = 0;
   player.ads.endLinearAdMode();
-  player.trigger('loadedmetadata');
+  player.trigger('canplay');
 
   equal(20, timeouts, 'seekable was tried multiple times');
 });
@@ -149,7 +149,7 @@ test('the current time is restored at the end of an ad', function() {
   // the ad resets the current time
   video.currentTime = 0;
   player.ads.endLinearAdMode();
-  player.trigger('loadedmetadata');
+  player.trigger('canplay');
 
   equal(video.currentTime, 100, 'currentTime was restored');
 });
@@ -223,7 +223,7 @@ test('snapshot does not resume playback after post-rolls', function() {
   //resume playback
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   player.trigger('loadstart');
-  player.trigger('loadedmetadata');
+  player.trigger('canplay');
   ok(playCalled, 'content playback resumed');
   player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
@@ -371,7 +371,7 @@ test('does resume playback after postrolls if "ended" does not fire naturally', 
   window.setTimeout = function(callback) {
     callbacks.push(callback);
   };
-  player.trigger('contentloadedmetadata');
+  player.trigger('contentcanplay');
 
   ok(callbacks.length > 0, 'set a timeout to check for "ended"');
   // trigger any registered timeouts
