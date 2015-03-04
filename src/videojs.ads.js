@@ -151,6 +151,7 @@ var
       i,
       suppressedTracks = [],
       snapshot = {
+        ended: player.ended(),
         src: player.currentSrc(),
         currentTime: player.currentTime(),
         type: player.currentType()
@@ -213,10 +214,33 @@ var
 
       // finish restoring the playback state
       resume = function() {
+        var
+          ended = false,
+          updateEnded = function() {
+            ended = true;
+          };
         player.currentTime(snapshot.currentTime);
-        //If this wasn't a postroll resume
-        if (!player.ended()) {
+
+        // Resume playback if this wasn't a postroll
+        if (!snapshot.ended) {
           player.play();
+        } else {
+          // On iOS 8.1, the "ended" event will not fire if you seek
+          // directly to the end of a video. To make that behavior
+          // consistent with the standard, fire a synthetic event if
+          // "ended" does not fire within 250ms. Note that the ended
+          // event should occur whether the browser actually has data
+          // available for that position
+          // (https://html.spec.whatwg.org/multipage/embedded-content.html#seeking),
+          // so it should not be necessary to wait for the seek to
+          // indicate completion.
+          window.setTimeout(function() {
+            if (!ended) {
+              player.play();
+            }
+            player.off('ended', updateEnded);
+          }, 250);
+          player.on('ended', updateEnded);
         }
       },
 
@@ -238,6 +262,8 @@ var
         // delay a bit and then check again unless we're out of attempts
         if (attempts--) {
           setTimeout(tryToResume, 50);
+        } else {
+          videojs.log.warn('Failed to resume the content after an advertisement');
         }
       },
 
@@ -272,16 +298,16 @@ var
     }
 
     if (srcChanged) {
-      // on ios7, fiddling with textTracks too early will cause it safari to crash
-      player.one('loadedmetadata', restoreTracks);
+      // on ios7, fiddling with textTracks too early will cause safari to crash
+      player.one('contentloadedmetadata', restoreTracks);
 
       // if the src changed for ad playback, reset it
       player.src({ src: snapshot.src, type: snapshot.type });
       // safari requires a call to `load` to pick up a changed source
       player.load();
       // and then resume from the snapshots time once the original src has loaded
-      player.one('loadedmetadata', tryToResume);
-    } else if (!player.ended()) {
+      player.one('contentcanplay', tryToResume);
+    } else if (!player.ended() || !snapshot.ended) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();
 
@@ -322,6 +348,10 @@ var
     // the standard timeout.
     prerollTimeout: 100,
 
+    // maximum amount of time in ms to wait for the ad implementation to start
+    // linear ad mode after `contentended` has fired.
+    postrollTimeout: 100,
+
     // when truthy, instructs the plugin to output additional information about
     // plugin state to the video.js log. On most devices, the video.js log is
     // the same as the developer console.
@@ -336,6 +366,71 @@ var
       settings = extend({}, defaults, options || {}),
 
       fsmHandler;
+
+    // prefix all video element events during ad playback
+    // if the video element emits ad-related events directly,
+    // plugins that aren't ad-aware will break. prefixing allows
+    // plugins that wish to handle ad events to do so while
+    // avoiding the complexity for common usage
+    (function() {
+      var
+        videoEvents = videojs.Html5.Events,
+        i = videoEvents.length,
+        triggerEvent = function(type, event) {
+          event.stopImmediatePropagation();
+          player.trigger({
+            type: type + event.type,
+            state: player.ads.state,
+            originalEvent: event
+          });
+        },
+        redispatch = function(event) {
+          if (player.ads.state === 'ad-playback') {
+            triggerEvent('ad', event);
+
+          } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
+            triggerEvent('content', event);
+
+          } else if (player.ads.state === 'content-resuming') {
+            if (player.ads.snapshot) {
+              if (player.currentSrc() !== player.ads.snapshot.src) {
+                if (event.type === 'loadstart') {
+                  return;
+                }
+                return triggerEvent('content', event);
+
+              } else if (player.ads.snapshot.ended) {
+                if ((event.type === 'pause' ||
+                    event.type === 'ended')) {
+                  player.addClass('vjs-has-started');
+                  return;
+                }
+                return triggerEvent('content', event);
+              }
+            }
+            if (event.type !== 'playing') {
+              triggerEvent('content', event);
+            }
+          }
+        };
+
+      while (i--) {
+        player.on(videoEvents[i], redispatch);
+      }
+      return redispatch;
+    })();
+
+    // We now auto-play when an ad gets loaded if we're playing ads in the same video element as the content.
+    // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we cannot play from adcanplay.
+    // This will allow ad-integrations from needing to do this themselves.
+    player.on(['addurationchange', 'adcanplay'], function(event) {
+      var snapshot = player.ads.snapshot;
+      if (player.currentSrc() === snapshot.src) {
+        return;  // do nothing
+      }
+
+      player.play();
+    });
 
     // replace the ad initializer with the ad namespace
     player.ads = {
@@ -448,6 +543,7 @@ var
             enter: function() {
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
+
               // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
               // We no longer need to supress play events once an ad is playing.
@@ -459,19 +555,66 @@ var
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
+
               restorePlayerSnapshot(player, this.snapshot);
-              if (fsm.triggerevent !== 'adend') {
-                //trigger 'adend' as a consistent notification
-                //event that we're exiting ad-playback.
+              if (player.ads.triggerevent !== 'adend') {
+                // trigger 'adend' as a consistent notification
+                // event that we're exiting ad-playback.
                 player.trigger('adend');
               }
             },
             events: {
               'adend': function() {
-                this.state = 'content-playback';
+                this.state = 'content-resuming';
               },
               'adserror': function() {
+                this.state = 'content-resuming';
+              }
+            }
+          },
+          'content-resuming': {
+            events: {
+              'contentupdate': function() {
+                this.state = 'content-set';
+              },
+              'playing': function() {
                 this.state = 'content-playback';
+              },
+              'ended': function() {
+                this.state = 'content-playback';
+              }
+            }
+          },
+          'postroll?': {
+            enter: function() {
+              this.snapshot = getPlayerSnapshot(player);
+
+              player.el().className += ' vjs-ad-loading';
+
+              player.ads.timeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, settings.postrollTimeout);
+            },
+            leave: function() {
+              window.clearTimeout(player.ads.timeout);
+              removeClass(player.el(), 'vjs-ad-loading');
+            },
+            events: {
+              'adstart': function() {
+                this.state = 'ad-playback';
+                player.el().className += ' vjs-ad-playing';
+              },
+              'adtimeout': function() {
+                this.state = 'content-resuming';
+                setImmediate(function() {
+                  player.trigger('ended');
+                });
+              },
+              'adserror': function() {
+                this.state = 'content-resuming';
+                setImmediate(function() {
+                  player.trigger('ended');
+                });
               }
             }
           },
@@ -486,7 +629,7 @@ var
               // 'play' event was canceled earlier.
               player.trigger({
                 type: 'contentplayback',
-                triggerevent: fsm.triggerevent
+                triggerevent: player.ads.triggerevent
               });
             },
             events: {
@@ -506,6 +649,9 @@ var
                 } else {
                   this.state = 'ads-ready?';
                 }
+              },
+              'contentended': function() {
+                this.state = 'postroll?';
               }
             }
           }
@@ -515,15 +661,21 @@ var
         var noop = function() {};
 
         // process the current event with a noop default handler
-        (fsm[state].events[event.type] || noop).apply(player.ads);
+        ((fsm[state].events || {})[event.type] || noop).apply(player.ads);
 
-        // execute leave/enter callbacks if present
+        // check whether the state has changed
         if (state !== player.ads.state) {
-          fsm.triggerevent = event.type;
+
+          // record the event that caused the state transition
+          player.ads.triggerevent = event.type;
+
+          // execute leave/enter callbacks if present
           (fsm[state].leave || noop).apply(player.ads);
           (fsm[player.ads.state].enter || noop).apply(player.ads);
+
+          // output debug logging
           if (settings.debug) {
-            videojs.log('ads', fsm.triggerevent + ' triggered: ' + state + ' -> ' + player.ads.state);
+            videojs.log('ads', player.ads.triggerevent + ' triggered: ' + state + ' -> ' + player.ads.state);
           }
         }
 
@@ -536,6 +688,9 @@ var
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
+      'contentplaying',
+      'contentended',
+
       // events emitted by third party ad implementors
       'adsready',
       'adserror',
@@ -569,7 +724,7 @@ var
           }
         };
       // loadstart reliably indicates a new src has been set
-      player.on('loadstart', checkSrc);
+      player.on(['loadstart'], checkSrc);
       // check immediately in case we missed the loadstart
       setImmediate(checkSrc);
     })();
