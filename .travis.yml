@@ -1,6 +1,6 @@
 language: node_js
 install:
-- npm install -g grunt-cli
+- npm install -g grunt-cli && npm install
 notifications:
   hipchat:
     rooms:
