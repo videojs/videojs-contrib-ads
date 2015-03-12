@@ -5,7 +5,7 @@ var
   contentPlaybackFired,
   contentPlaybackReason;
 
-module('Ad Framework - Video Snapshot', {
+module('Video Snapshot', {
   setup: function() {
     videojs.Html5.isSupported = function() {
       return true;
@@ -69,9 +69,9 @@ test('restores the original video src after ads', function() {
   player.trigger('adsready');
   player.trigger('play');
 
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
 
   equal(originalSrc, player.currentSrc(), 'the original src is restored');
 });
@@ -93,13 +93,13 @@ test('waits for the video to become seekable before restoring the time', functio
   // the video plays to time 100
   timeouts = 0;
   video.currentTime = 100;
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
-  player.trigger('adend');
-  player.trigger('loadedmetadata');
+  player.ads.endLinearAdMode();
+  player.trigger('canplay');
 
   equal(1, timeouts, 'restoring the time should be delayed');
   equal(0, video.currentTime, 'currentTime is not modified');
@@ -124,13 +124,13 @@ test('tries to restore the play state up to 20 times', function() {
   // the video plays to time 100
   timeouts = 0;
   video.currentTime = 100;
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
-  player.trigger('adend');
-  player.trigger('loadedmetadata');
+  player.ads.endLinearAdMode();
+  player.trigger('canplay');
 
   equal(20, timeouts, 'seekable was tried multiple times');
 });
@@ -143,13 +143,13 @@ test('the current time is restored at the end of an ad', function() {
   player.trigger('play');
 
   // the video plays to time 100
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
 
   // the ad resets the current time
   video.currentTime = 0;
-  player.trigger('adend');
-  player.trigger('loadedmetadata');
+  player.ads.endLinearAdMode();
+  player.trigger('canplay');
 
   equal(video.currentTime, 100, 'currentTime was restored');
 });
@@ -182,13 +182,15 @@ test('only restores the player snapshot if the src changed', function() {
   // with a separate video display or server-side ad insertion, ads play but
   // the src never changes. Modifying the src or currentTime would introduce
   // unnecessary seeking and rebuffering
-  player.trigger('adstart');
-  player.trigger('adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
 
   ok(!srcModified, 'the src was reset');
   ok(playCalled, 'content playback resumed');
+
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // the src wasn't changed, so we shouldn't be waiting on loadedmetadata to
   // update the currentTime
@@ -196,7 +198,7 @@ test('only restores the player snapshot if the src changed', function() {
   ok(!currentTimeModified, 'no seeking occurred');
 });
 
-test('snapshot does not resume after post-roll', function() {
+test('snapshot does not resume playback after post-rolls', function() {
   var playCalled = false;
 
   // start playback
@@ -212,19 +214,20 @@ test('snapshot does not resume after post-roll', function() {
   };
 
   //trigger an ad
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
   player.trigger('loadstart');
   player.trigger('loadedmetadata');
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
 
   //resume playback
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   player.trigger('loadstart');
-  player.trigger('loadedmetadata');
+  player.trigger('canplay');
   ok(playCalled, 'content playback resumed');
-  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  player.trigger('playing');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -235,19 +238,21 @@ test('snapshot does not resume after post-roll', function() {
   };
   player.trigger('ended');
   //trigger a post-roll
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
   player.trigger('loadstart');
   player.trigger('loadedmetadata');
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
+  player.trigger('ended');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   ok(!playCalled, 'content playback should not have been resumed');
-  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
 });
 
-test('snapshot does not resume after burned-in post-roll', function() {
+test('snapshot does not resume playback after a burned-in post-roll', function() {
   var
     playCalled = false,
     loadCalled = false;
@@ -264,10 +269,11 @@ test('snapshot does not resume after burned-in post-roll', function() {
     loadCalled = true;
   };
 
-  player.trigger('adstart');
-  player.trigger('adend');
-  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
   ok(playCalled, 'content playback resumed');
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -279,19 +285,20 @@ test('snapshot does not resume after burned-in post-roll', function() {
   };
   //trigger a post-roll
   player.currentTime(30);
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
   player.currentTime(50);
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
+  player.trigger('ended');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
   equal(player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   ok(!loadCalled, 'player.load() should not be called if the player is ended.');
   ok(!playCalled, 'content playback should not have been resumed');
 });
 
-test('snapshot does not resume after multiple post-rolls', function() {
+test('snapshot does not resume playback after multiple post-rolls', function() {
   var playCalled = false;
 
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
@@ -307,11 +314,12 @@ test('snapshot does not resume after multiple post-rolls', function() {
   // with a separate video display or server-side ad insertion, ads play but
   // the src never changes. Modifying the src or currentTime would introduce
   // unnecessary seeking and rebuffering
-  player.trigger('adstart');
-  player.trigger('adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
   ok(playCalled, 'content playback resumed');
-  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -321,19 +329,60 @@ test('snapshot does not resume after multiple post-rolls', function() {
     return true;
   };
   player.trigger('ended');
-  //trigger a lots o post-rolls
-  player.trigger('adstart');
+  //trigger a lot of post-rolls
+  player.ads.startLinearAdMode();
   player.src('http://example.com/ad1.mp4');
   player.trigger('loadstart');
   player.src('http://example.com/ad2.mp4');
   player.trigger('loadstart');
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
+  player.trigger('ended');
 
   equal(player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  equal(contentPlaybackFired, 2, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
   ok(!playCalled, 'content playback should not resume');
+});
 
+// "ended" does not fire when the end of a video is seeked to directly
+// in iOS 8.1
+test('does resume playback after postrolls if "ended" does not fire naturally', function() {
+  var playCalled = false, callbacks = [], i;
+  player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+
+  // play the video
+  player.trigger('loadstart');
+  player.trigger('adsready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+
+  // finish the video and watch for play()
+  player.ended = function() {
+    return true;
+  };
+  player.trigger('ended');
+  // play a postroll
+  player.ads.startLinearAdMode();
+  player.src('http://example.com/ad1.mp4');
+  player.ads.endLinearAdMode();
+
+  // reload the content video while capturing timeouts
+  window.setTimeout = function(callback) {
+    callbacks.push(callback);
+  };
+  player.trigger('contentcanplay');
+
+  ok(callbacks.length > 0, 'set a timeout to check for "ended"');
+  // trigger any registered timeouts
+  player.play = function() {
+    playCalled = true;
+  };
+  i = callbacks.length;
+  while (i--) {
+    callbacks[i]();
+  }
+  ok(playCalled, 'called play() to trigger an "ended"');
 });
 
 test('changing the source and then timing out does not restore a snapshot', function() {
@@ -346,10 +395,11 @@ test('changing the source and then timing out does not restore a snapshot', func
   player.trigger('play');
   player.trigger('adsready');
   // preroll
-  player.trigger('adstart');
-  player.trigger('adend');
+  player.ads.startLinearAdMode();
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   // change the content and timeout the new ad response
   player.src('http://example.com/movie2.mp4');
@@ -381,7 +431,7 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
 
   player.trigger('adsready');
   player.trigger('play');
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   player.src = function(source) {
     if (source === undefined) {
@@ -389,9 +439,10 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
     }
     updatedSrc = source;
   };
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
-  equal(contentPlaybackReason, 'adend', 'The reason for content-playback should have been adend');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 
   deepEqual(updatedSrc, {
     src: 'content.mp4',
@@ -400,12 +451,14 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
 });
 
 test('When captions are enabled, the video\'s tracks will be disabled during the ad', function() {
-  var tracks = player.remoteTextTracks(),
+  var tracks = player.remoteTextTracks ? player.remoteTextTracks() : [],
       showing = 0,
       disabled = 0,
       i;
 
-  ok(tracks.length > 0, 'No tracks detected');
+  if (tracks.length <= 0) {
+    videojs.log.warn('Did not detect text track support, skipping');
+  }
 
   player.trigger('adsready');
   player.trigger('play');
@@ -424,7 +477,7 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
   equal(showing, tracks.length, 'all tracks should be showing');
   showing = 0;
 
-  player.trigger('adstart');
+  player.ads.startLinearAdMode();
 
   for (i = 0; i < tracks.length; i++) {
     if (tracks[i].mode === 'disabled') {
@@ -434,7 +487,7 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
 
   equal(disabled, tracks.length, 'all tracks should be disabled');
 
-  player.trigger('adend');
+  player.ads.endLinearAdMode();
 
   for (i = 0; i < tracks.length; i++) {
     if (tracks[i].mode === 'showing') {
@@ -443,4 +496,37 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
   }
 
   equal(showing, tracks.length, 'all tracks should be showing');
+});
+
+test('player events during snapshot restoration are prefixed', function() {
+  var contentEvents = [];
+  player.on(['contentloadstart', 'contentloadedmetadata'], function(event) {
+    contentEvents.push(event);
+  });
+  player.src({
+    src: 'http://example.com/movie.mp4',
+    type: 'video/mp4'
+  });
+
+  player.on('readyforpreroll', function() {
+    player.ads.startLinearAdMode();
+  });
+  player.trigger('adsready');
+  player.trigger('play');
+  // change the source to an ad
+  player.src({
+    src: 'http://example.com/ad.mp4',
+    type: 'video/mp4'
+  });
+  player.trigger('loadstart');
+
+  equal(contentEvents.length, 0, 'did not fire contentloadstart');
+  player.ads.endLinearAdMode();
+
+  // make it appear that the tech is ready to seek
+  player.trigger('loadstart');
+  player.el().querySelector('.vjs-tech').seekable = [1];
+  player.trigger('loadedmetadata');
+
+  equal(contentEvents.length, 2, 'fired "content" prefixed events');
 });

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ads Test Suite</title>
+  <!-- Load local video.js -->
+  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.min.css" media="screen">
+  <link rel="stylesheet" href="../src/videojs.ads.css" media="screen">
+  <!-- Load local QUnit. -->
+  <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" media="screen">
+  <script src="../node_modules/es5-shim/es5-shim.js"></script>
+  <style>
+    #qunit-fixture {
+      position: static;
+      width: 100%;
+      height: 300px;
+    }
+    .video-js {
+      width: 620px;
+      height: 272px;
+    }
+  </style>
+
+  <script src="../node_modules/video.js/dist/video-js/video.dev.js"></script>
+  <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+  <script>
+    QUnit.config.urlConfig.push({
+      id: 'flash',
+      label: "Flash",
+      tooltip: "Run tests with the flash player"
+    });
+  </script>
+  <!-- Load local lib and tests. -->
+  <script src="../src/videojs.ads.js"></script>
+  <script src="../example/example-integration.js"></script>
+  <script src="videojs.ads.events.js"></script>
+</head>
+<body>
+  </div>
+  <div id="qunit"></div>
+  <h1>Player</h1>
+  <div id="qunit-fixture">
+</body>
+</html>
