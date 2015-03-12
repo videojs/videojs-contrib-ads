@@ -433,7 +433,7 @@ var
     // We now auto-play when an ad gets loaded if we're playing ads in the same video element as the content.
     // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we cannot play from adcanplay.
     // This will allow ad-integrations from needing to do this themselves.
-    player.on(['addurationchange', 'adcanplay'], function(event) {
+    player.on(['addurationchange', 'adcanplay'], function() {
       var snapshot = player.ads.snapshot;
       if (player.currentSrc() === snapshot.src) {
         return;  // do nothing
