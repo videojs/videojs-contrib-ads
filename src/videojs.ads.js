@@ -583,6 +583,17 @@ var
             }
           },
           'content-resuming': {
+            enter: function() {
+              if (this.snapshot.ended) {
+                window.clearTimeout(player.ads._fireEndedTimeout);
+                player.ads._fireEndedTimeout = window.setTimeout(function() {
+                  player.trigger('ended');
+                }, 1000);
+              }
+            },
+            leave: function() {
+              window.clearTimeout(player.ads._fireEndedTimeout);
+            },
             events: {
               'contentupdate': function() {
                 this.state = 'content-set';
