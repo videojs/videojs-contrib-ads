@@ -586,6 +586,10 @@ var
             enter: function() {
               if (this.snapshot.ended) {
                 window.clearTimeout(player.ads._fireEndedTimeout);
+                // in some cases, ads are played in a swf or another video element
+                // so we do not get an ended event in this state automatically.
+                // If we don't get an ended event we can use, we need to trigger
+                // one ourselves or else we won't actually ever end the current video.
                 player.ads._fireEndedTimeout = window.setTimeout(function() {
                   player.trigger('ended');
                 }, 1000);
