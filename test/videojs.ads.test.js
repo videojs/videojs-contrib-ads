@@ -616,6 +616,88 @@ test('adtimeout in postroll? transitions to content-playback and fires ended', f
   window.setImmediate = oldimmediate;
 });
 
+test('an ended event is fired in content-resuming via a timeout if not fired naturally', function() {
+  var oldtimeout = window.setTimeout,
+      oldclear = window.clearTimeout,
+      ended = 0,
+      cbs = [];
+
+  window.setTimeout = function(cb) {
+    return cbs.push(cb) - 1;
+  };
+  window.clearTimeout = function(index) {
+    cbs.splice(index, 1);
+  };
+
+  player.on('ended', function() {
+    ended++;
+  });
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  player.trigger('ended');
+  equal(player.ads.state, 'postroll?');
+
+  player.ads.startLinearAdMode();
+  player.ads.snapshot.ended = true;
+  player.ads.endLinearAdMode();
+
+  equal(player.ads.state, 'content-resuming');
+
+  equal(ended, 0, 'we should not have gotten an ended event yet');
+
+  if (!/phantomjs/i.test(window.navigator.userAgent)) {
+    cbs.pop().call(window);
+    equal(ended, 1, 'we should have fired ended from the timeout cbs');
+  }
+
+  window.setTimeout = oldtimeout;
+  window.clearTimeout = oldclear;
+});
+
+test('an ended event is not fired in content-resuming via a timeout if fired naturally', function() {
+  var oldtimeout = window.setTimeout,
+      oldclear = window.clearTimeout,
+      ended = 0,
+      cbs = [];
+
+  window.setTimeout = function(cb) {
+    return cbs.push(cb) - 1;
+  };
+  window.clearTimeout = function(index) {
+    cbs.splice(index, 1);
+  };
+
+  player.on('ended', function() {
+    ended++;
+  });
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  player.trigger('ended');
+  equal(player.ads.state, 'postroll?');
+
+  player.ads.startLinearAdMode();
+  player.ads.snapshot.ended = true;
+  player.ads.endLinearAdMode();
+
+  equal(player.ads.state, 'content-resuming');
+
+  player.trigger('ended');
+
+  equal(ended, 1, 'we got an ended event');
+  equal(cbs.length, 0, 'we should have cleared the ended timeout');
+
+  window.setTimeout = oldtimeout;
+  window.clearTimeout = oldclear;
+});
+
 test('adserror in ad-playback transitions to content-playback and triggers adend', function(){
   expect(8);
   equal(player.ads.state, 'content-set');
