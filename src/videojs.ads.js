@@ -257,23 +257,34 @@ var
       // determine if the video element has loaded enough of the snapshot source
       // to be ready to apply the rest of the state
       tryToResume = function() {
+        if (tech.readyState > 1) {
+          // some browsers and media aren't "seekable".
+          // readyState greater than 1 allows for seeking without exceptions
+          return resume();
+        }
+
         if (tech.seekable === undefined) {
           // if the tech doesn't expose the seekable time ranges, try to
           // resume playback immediately
-          resume();
-          return;
+          return resume();
         }
+
         if (tech.seekable.length > 0) {
           // if some period of the video is seekable, resume playback
-          resume();
-          return;
+          return resume();
         }
 
         // delay a bit and then check again unless we're out of attempts
         if (attempts--) {
           setTimeout(tryToResume, 50);
         } else {
-          videojs.log.warn('Failed to resume the content after an advertisement');
+          (function() {
+            try {
+              resume();
+            } catch(e) {
+              videojs.log.warn('Failed to resume the content after an advertisement', e);
+            }
+          })();
         }
       },
 
@@ -386,8 +397,13 @@ var
       var
         videoEvents = videojs.Html5.Events,
         i = videoEvents.length,
+        returnTrue = function() { return true; },
         triggerEvent = function(type, event) {
-          event.stopImmediatePropagation();
+          // pretend we called stopImmediatePropagation because we want the native
+          // element events to continue propagating
+          event.isImmediatePropagationStopped = returnTrue;
+          event.cancelBubble = true;
+          event.isPropagationStopped = returnTrue;
           player.trigger({
             type: type + event.type,
             state: player.ads.state,
@@ -403,18 +419,25 @@ var
 
           } else if (player.ads.state === 'content-resuming') {
             if (player.ads.snapshot) {
+              // the video element was recycled for ad playback
               if (player.currentSrc() !== player.ads.snapshot.src) {
                 if (event.type === 'loadstart') {
                   return;
                 }
                 return triggerEvent('content', event);
 
+              // we ended playing postrolls and the video itself
+              // the content src is back in place
               } else if (player.ads.snapshot.ended) {
                 if ((event.type === 'pause' ||
                     event.type === 'ended')) {
+                  // after loading a video, the natural state is to not be started
+                  // in this case, it actually has, so, we do it manually
                   player.addClass('vjs-has-started');
+                  // let `pause` and `ended` events through, naturally
                   return;
                 }
+                // prefix all other events in content-resuming with `content`
                 return triggerEvent('content', event);
               }
             }
