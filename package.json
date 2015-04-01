@@ -5,6 +5,7 @@
     "type": "git",
     "url": "https://github.com/videojs/videojs-contrib-ads.git"
   },
+  "main": "src/videojs.ads.js",
   "version": "2.0.0",
   "author": {
     "name": "Brightcove"
@@ -28,5 +29,8 @@
     "grunt-contrib-watch": "~0.4.0",
     "qunitjs": "^1.17.1",
     "video.js": "^4.12.4"
+  },
+  "dependencies": {
+    "video.js": "^4.12.5"
   }
 }
