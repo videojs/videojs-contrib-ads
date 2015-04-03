@@ -1,4 +1,4 @@
-# Guidance for Ad Partners
+# Guidance for Ad Plugin Maintainers
 One of the best features of video.js is the community of plugins and customizations that has built up around it.
 Ad support is an important part of that ecosystem but not all plugin authors write with advertisements in mind (and we probably won't be able to convince them to start).
 Rather than throw our hands in the air, we're making some big changes in [videojs-contrib-ads](https://github.com/videojs/videojs-contrib-ads) to make advertisements more compatible with the rest of the video.js universe.
