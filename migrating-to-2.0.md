@@ -4,6 +4,7 @@ Ad support is an important part of that ecosystem but not all plugin authors wri
 Rather than throw our hands in the air, we're making some big changes in [videojs-contrib-ads](https://github.com/videojs/videojs-contrib-ads) to make advertisements more compatible with the rest of the video.js universe.
 In version 2.0 of the plugin, we redispatch events with different prefixes depending on whether an ad is playing or not.
 When an ad is playing, events are prefixed with `ad` and when content is resuming after an ad break, events are prefixed with `content`.
+A `pause` event during an ad would become an `adpause` event, for instance.
 This means from the perspective of a (non-ad) plugin author, video.js will behave just the same whether ads are playing or not.
 And if someoene wants to write a plugin that is ad-aware, those original events are still available for them to hook into.
 
