@@ -222,6 +222,11 @@ player.ads.contentSrc = 'movie-high.mp4';
 player.src('movie-high.mp4');
 ```
 
+## Migrating to 2.0
+
+If you've previously developed an ad plugin on the 1.0 releases of this project, you may need to make some changes to operate correctly with 2.0.
+Check out the [migration guide](migrating-to-2.0.md) for more details.
+
 ## Building
 
 You can use the `videojs.ads.js` file as it is in the `src/` directory, or you can use a minified version.
@@ -249,6 +254,10 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 ## Release History
 
 A short list of features, fixes and changes for each release.
+
+### v2.0.0
+
+ * Prefix video events during ad playback to simplify the world for non-ad plugins
 
 ### v1.0.0
 
