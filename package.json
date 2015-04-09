@@ -19,6 +19,7 @@
   "devDependencies": {
     "es5-shim": "^4.1.0",
     "grunt": "~0.4.1",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-connect": "^0.8.0",
