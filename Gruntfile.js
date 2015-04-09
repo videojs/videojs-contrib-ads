@@ -15,17 +15,23 @@ module.exports = function(grunt) {
     clean: {
       files: ['dist']
     },
+    copy: {
+      global: {
+        src: 'src/videojs.ads.js',
+        dest: 'dist/videojs.ads.global.js'
+      }
+    },
     concat: {
       options: {
         banner: '<%= banner %>',
         stripBanners: true
       },
       dist: {
-        src: ['src/videojs.ads.js'],
+        src: ['dist/videojs.ads.js'],
         dest: 'dist/videojs.ads.js'
       },
       global: {
-        src: ['src/videojs.ads.global.js'],
+        src: ['dist/videojs.ads.global.js'],
         dest: 'dist/videojs.ads.global.js'
       }
     },
@@ -39,8 +45,8 @@ module.exports = function(grunt) {
     umd: {
       all: {
         options: {
-          src: 'src/videojs.ads.global.js',
-          dest: 'src/videojs.ads.js',
+          src: 'src/videojs.ads.js',
+          dest: 'dist/videojs.ads.js',
           template: 'umd',
           amdModuleId: 'videojs-contrib-ads',
           globalAlias: 'videojs-contrib-ads',
@@ -105,17 +111,12 @@ module.exports = function(grunt) {
   });
 
   // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-umd');
+  require('load-grunt-tasks')(grunt);
+
+  grunt.registerTask('build', ['clean', 'copy', 'umd', 'concat', 'uglify']);
 
   // Default task.
-  grunt.registerTask('default', ['umd', 'jshint', 'qunit', 'clean', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'qunit', 'build']);
 
   // travis build task
   grunt.registerTask('build:travis', ['jshint', 'test:node']);
