@@ -15,20 +15,46 @@ module.exports = function(grunt) {
     clean: {
       files: ['dist']
     },
+    copy: {
+      global: {
+        src: 'src/videojs.ads.js',
+        dest: 'dist/videojs.ads.global.js'
+      }
+    },
     concat: {
       options: {
         banner: '<%= banner %>',
         stripBanners: true
       },
       dist: {
-        src: ['src/videojs.ads.js'],
+        src: ['dist/videojs.ads.js'],
         dest: 'dist/videojs.ads.js'
       },
+      global: {
+        src: ['dist/videojs.ads.global.js'],
+        dest: 'dist/videojs.ads.global.js'
+      }
     },
     connect: {
       server: {
         options: {
           keepalive: true
+        }
+      }
+    },
+    umd: {
+      all: {
+        options: {
+          src: 'src/videojs.ads.js',
+          dest: 'dist/videojs.ads.js',
+          template: 'umd',
+          amdModuleId: 'videojs-contrib-ads',
+          globalAlias: 'videojs-contrib-ads',
+          deps: {
+            default: ['videojs'],
+            amd: ['videojs'],
+            cjs: ['video.js']
+          }
         }
       }
     },
@@ -39,6 +65,10 @@ module.exports = function(grunt) {
       dist: {
         src: '<%= concat.dist.dest %>',
         dest: 'dist/videojs.ads.min.js'
+      },
+      global: {
+        src: '<%= concat.global.dest %>',
+        dest: 'dist/videojs.ads.global.min.js'
       },
     },
     qunit: {
@@ -81,16 +111,12 @@ module.exports = function(grunt) {
   });
 
   // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-connect');
+  require('load-grunt-tasks')(grunt);
+
+  grunt.registerTask('build', ['clean', 'copy', 'umd', 'concat', 'uglify']);
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'qunit', 'build']);
 
   // travis build task
   grunt.registerTask('build:travis', ['jshint', 'test:node']);
