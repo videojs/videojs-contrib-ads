@@ -567,8 +567,8 @@ var
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
 
-               //Hide text track while the ad is being played.
-                if (player.textTracks().length > 0) {
+              //Hide text track while the ad is being played.
+              if (player.textTracks().length > 0) {
                 player.textTrackDisplay.hide();
               }
 
