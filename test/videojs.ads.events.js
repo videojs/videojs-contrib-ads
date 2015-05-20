@@ -113,6 +113,9 @@ module('Ad Events Tranformation', {
       src: contentUrl,
       type: 'video/mp4'
     });
+  },
+  teardown: function(){
+    player.dispose();
   }
 });
 
