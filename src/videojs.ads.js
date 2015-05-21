@@ -567,6 +567,11 @@ var
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
 
+              //Hide text track while the ad is being played.
+              if (player.textTracks().length > 0) {
+                player.textTrackDisplay.hide();
+              }
+
               // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
               // We no longer need to supress play events once an ad is playing.
@@ -578,8 +583,12 @@ var
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
-
               restorePlayerSnapshot(player, this.snapshot);
+
+              //Show text track when the ad has finished.
+              if (player.textTracks().length > 0) {
+                player.textTrackDisplay.show();
+              }
               if (player.ads.triggerevent !== 'adend') {
                 // trigger 'adend' as a consistent notification
                 // event that we're exiting ad-playback.
