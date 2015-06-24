@@ -9,8 +9,15 @@
   <!-- Load local QUnit. -->
   <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" media="screen">
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+  <!-- Load blanket (code coverage) -->
+  <script src="../node_modules/blanket/dist/qunit/blanket.min.js"></script>
+  <script>
+    if (location.href.match(/(\?|&)gruntReport($|&|=)/)) {
+       blanket.options("reporter", "../node_modules/grunt-blanket-qunit/reporter/grunt-reporter.js");
+    }
+  </script>
   <!-- Load local lib and tests. -->
-  <script src="../src/videojs.ads.js"></script>
+  <script src="../src/videojs.ads.js" data-cover></script>
   <script src="videojs.ads.test.js"></script>
   <script src="videojs.ads.snapshot.js"></script>
 </head>
