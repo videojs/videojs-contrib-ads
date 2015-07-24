@@ -311,7 +311,7 @@ test('changing the src triggers contentupdate', function() {
 });
 
 test('contentupdate should fire when src is changed in content-resuming state after postroll', function() {
-  
+
   // track contentupdate events
   var contentupdates = 0;
   player.on('contentupdate', function(){
@@ -335,7 +335,7 @@ test('contentupdate should fire when src is changed in content-resuming state af
 });
 
 test('contentupdate should fire when src is changed in content-playback state after postroll', function() {
-  
+
   // track contentupdate events
   var contentupdates = 0;
   player.on('contentupdate', function(){
@@ -718,6 +718,72 @@ test('adserror in ad-playback transitions to content-playback and triggers adend
   equal(player.ads.state, 'content-playback');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
   equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
+});
+
+test('calling startLinearAdMode() when already in ad-playback does not trigger adstart', function(){
+  var adstart = 0;
+  player.on('adstart', function() {
+    adstart++;
+  });
+
+  //go through preroll flow
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  equal(player.ads.state, 'preroll?');
+  player.ads.startLinearAdMode();
+  equal(player.ads.state, 'ad-playback');
+  equal(adstart, 1, 'adstart should have fired');
+
+  //add an extraneous start call
+  player.ads.startLinearAdMode();
+  equal(adstart, 1, 'adstart should have fired');
+
+  //make sure subsequent adstarts trigger again on exit/re-enter
+  player.ads.endLinearAdMode();
+  player.trigger('playing');
+  equal(player.ads.state, 'content-playback');
+  player.ads.startLinearAdMode();
+  equal(adstart, 2, 'adstart should have fired');
+});
+
+test('calling endLinearAdMode() in any state but ad-playback does not trigger adend', function(){
+  var adend = 0;
+  player.on('adend', function() {
+    adend++;
+  });
+
+  equal(player.ads.state, 'content-set');
+  player.ads.endLinearAdMode();
+  equal(adend, 0, 'adend should not have fired');
+
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.ads.endLinearAdMode();
+  equal(adend, 0, 'adend should not have fired');
+
+  player.trigger('play');
+  equal(player.ads.state, 'preroll?');
+  player.ads.endLinearAdMode();
+  equal(adend, 0, 'adend should not have fired');
+
+  player.trigger('adtimeout');
+  equal(player.ads.state, 'content-playback');
+  player.ads.endLinearAdMode();
+  equal(adend, 0, 'adend should not have fired');
+
+  player.ads.startLinearAdMode();
+  equal(player.ads.state, 'ad-playback');
+  player.ads.endLinearAdMode();
+  equal(adend, 1, 'adend should have fired');
+
+  player.trigger('playing');
+  equal(player.ads.state, 'content-playback');
+  player.ads.startLinearAdMode();
+  equal(player.ads.state, 'ad-playback');
+  player.trigger('adserror');
+  equal(adend, 2, 'adend should have fired');
 });
 
 test('adsready in content-playback triggers readyforpreroll', function(){
