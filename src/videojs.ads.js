@@ -459,12 +459,25 @@ var
     player.ads = {
       state: 'content-set',
 
+      // Call this when an ad response has been recieved and there are
+      // linear ads ready to be played.
       startLinearAdMode: function() {
         player.trigger('adstart');
       },
 
+      // Call this when a linear ad pod has finished playing.
       endLinearAdMode: function() {
         player.trigger('adend');
+      },
+
+      // Call this when an ad response has been recieved but there are no
+      // linear ads to be played (i.e. no ads available, or overlays).
+      // This has no effect if we are already in a linear ad mode.  Always
+      // use endLinearAdMode() to exit from linear ad-playback state.
+      skipLinearAdMode: function() {
+        if (player.ads.state !== 'ad-playback') {
+          player.trigger('adskip');
+        }
       }
     };
 
@@ -488,6 +501,9 @@ var
               },
               'adserror': function() {
                 this.state = 'content-playback';
+              },
+              'adskip': function() {
+                this.state = 'content-playback';
               }
             }
           },
@@ -496,6 +512,9 @@ var
               'play': function() {
                 this.state = 'preroll?';
                 cancelContentPlay(player);
+              },
+              'adskip': function() {
+                this.state = 'content-playback';
               },
               'adserror': function() {
                 this.state = 'content-playback';
@@ -525,6 +544,9 @@ var
                 this.state = 'ad-playback';
                 player.el().className += ' vjs-ad-playing';
               },
+              'adskip': function() {
+                this.state = 'content-playback';
+              },
               'adtimeout': function() {
                 this.state = 'content-playback';
               },
@@ -553,6 +575,9 @@ var
               },
               'adsready': function() {
                 this.state = 'preroll?';
+              },
+              'adskip': function() {
+                this.state = 'content-playback';
               },
               'adtimeout': function() {
                 this.state = 'content-playback';
@@ -641,6 +666,12 @@ var
               'adstart': function() {
                 this.state = 'ad-playback';
                 player.el().className += ' vjs-ad-playing';
+              },
+              'adskip': function() {
+                this.state = 'content-resuming';
+                setImmediate(function() {
+                  player.trigger('ended');
+                });
               },
               'adtimeout': function() {
                 this.state = 'content-resuming';
@@ -734,7 +765,8 @@ var
       'adserror',
       'adscanceled',
       'adstart',  // startLinearAdMode()
-      'adend'     // endLinearAdMode()
+      'adend',    // endLinearAdMode()
+      'adskip'    // skipLinearAdMode()
     ]), fsmHandler);
 
     // keep track of the current content source
