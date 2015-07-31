@@ -462,12 +462,16 @@ var
       // Call this when an ad response has been recieved and there are
       // linear ads ready to be played.
       startLinearAdMode: function() {
-        player.trigger('adstart');
+        if (player.ads.state !== 'ad-playback') {
+          player.trigger('adstart');
+        }
       },
 
       // Call this when a linear ad pod has finished playing.
       endLinearAdMode: function() {
-        player.trigger('adend');
+        if (player.ads.state === 'ad-playback') {
+          player.trigger('adend');
+        }
       },
 
       // Call this when an ad response has been recieved but there are no
@@ -542,7 +546,6 @@ var
               },
               'adstart': function() {
                 this.state = 'ad-playback';
-                player.el().className += ' vjs-ad-playing';
               },
               'adskip': function() {
                 this.state = 'content-playback';
@@ -592,8 +595,12 @@ var
               // capture current player state snapshot (playing, currentTime, src)
               this.snapshot = getPlayerSnapshot(player);
 
-              // remove the poster so it doesn't flash between videos
+              // add css to the element to indicate and ad is playing.
+              player.el().className += ' vjs-ad-playing';
+
+              // remove the poster so it doesn't flash between ads
               removeNativePoster(player);
+
               // We no longer need to supress play events once an ad is playing.
               // Clear it if we were.
               if (player.ads.cancelPlayTimeout) {
@@ -603,11 +610,10 @@ var
             },
             leave: function() {
               removeClass(player.el(), 'vjs-ad-playing');
-
               restorePlayerSnapshot(player, this.snapshot);
+              // trigger 'adend' as a consistent notification
+              // event that we're exiting ad-playback.
               if (player.ads.triggerevent !== 'adend') {
-                // trigger 'adend' as a consistent notification
-                // event that we're exiting ad-playback.
                 player.trigger('adend');
               }
             },
@@ -665,7 +671,6 @@ var
             events: {
               'adstart': function() {
                 this.state = 'ad-playback';
-                player.el().className += ' vjs-ad-playing';
               },
               'adskip': function() {
                 this.state = 'content-resuming';
@@ -708,9 +713,6 @@ var
               },
               'adstart': function() {
                 this.state = 'ad-playback';
-                player.el().className += ' vjs-ad-playing';
-                // remove the poster so it doesn't flash between videos
-                removeNativePoster(player);
               },
               'contentupdate': function() {
                 if (player.paused()) {
