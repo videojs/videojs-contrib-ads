@@ -311,7 +311,7 @@ test('changing the src triggers contentupdate', function() {
 });
 
 test('contentupdate should fire when src is changed in content-resuming state after postroll', function() {
-  
+
   // track contentupdate events
   var contentupdates = 0;
   player.on('contentupdate', function(){
@@ -335,7 +335,7 @@ test('contentupdate should fire when src is changed in content-resuming state af
 });
 
 test('contentupdate should fire when src is changed in content-playback state after postroll', function() {
-  
+
   // track contentupdate events
   var contentupdates = 0;
   player.on('contentupdate', function(){
@@ -524,6 +524,14 @@ test('adserror in content-set transitions to content-playback', function(){
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
 });
 
+test('adskip in content-set transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('adskip');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adskip', 'The reason for content-playback should have been adskip');
+});
+
 test('adserror in ads-ready? transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
   player.trigger('play');
@@ -532,6 +540,16 @@ test('adserror in ads-ready? transitions to content-playback', function(){
   equal(player.ads.state, 'content-playback');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
+});
+
+test('adskip in ads-ready? transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('play');
+  equal(player.ads.state, 'ads-ready?');
+  player.trigger('adskip');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adskip', 'The reason for content-playback should have been adskip');
 });
 
 test('adserror in ads-ready transitions to content-playback', function(){
@@ -544,6 +562,16 @@ test('adserror in ads-ready transitions to content-playback', function(){
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
 });
 
+test('adskip in ads-ready transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('adskip');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adskip', 'The reason for content-playback should have been adskip');
+});
+
 test('adserror in preroll? transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
@@ -554,6 +582,18 @@ test('adserror in preroll? transitions to content-playback', function(){
   equal(player.ads.state, 'content-playback');
   equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
   equal(contentPlaybackReason, 'adserror', 'The reason for content-playback should have been adserror');
+});
+
+test('adskip in preroll? transitions to content-playback', function(){
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  equal(player.ads.state, 'preroll?');
+  player.trigger('adskip');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'adskip', 'The reason for content-playback should have been adskip');
 });
 
 test('adserror in postroll? transitions to content-playback and fires ended', function(){
@@ -585,6 +625,7 @@ test('adserror in postroll? transitions to content-playback and fires ended', fu
 
   window.setImmediate = oldimmediate;
 });
+
 test('adtimeout in postroll? transitions to content-playback and fires ended', function(){
   var oldimmediate = window.setImmediate,
       cbs = [];
@@ -606,6 +647,37 @@ test('adtimeout in postroll? transitions to content-playback and fires ended', f
 
   equal(player.ads.state, 'content-resuming');
   equal(player.ads.triggerevent, 'adtimeout', 'adtimeout should be the trigger event');
+
+  cbs.pop().call(window);
+
+  equal(contentPlaybackFired, 2, 'A content-playback event should have been triggered');
+  equal(contentPlaybackReason, 'ended', 'The reason for content-playback should have been ended');
+  equal(player.ads.state, 'content-playback');
+
+  window.setImmediate = oldimmediate;
+});
+
+test('adskip in postroll? transitions to content-playback and fires ended', function(){
+  var oldimmediate = window.setImmediate,
+      cbs = [];
+  window.setImmediate = function(cb) {
+    cbs.push(cb);
+  };
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.trigger('adtimeout');
+  cbs.pop().call(window);
+  player.trigger('ended');
+  equal(player.ads.state, 'postroll?');
+
+  player.ads.snapshot.ended = true;
+  player.trigger('adskip');
+
+  equal(player.ads.state, 'content-resuming');
+  equal(player.ads.triggerevent, 'adskip', 'adskip should be the trigger event');
 
   cbs.pop().call(window);
 
@@ -713,6 +785,32 @@ test('adserror in ad-playback transitions to content-playback and triggers adend
   player.trigger('adserror');
   equal(player.ads.state, 'content-resuming');
   equal(player.ads.triggerevent, 'adserror', 'The reason for content-resuming should have been adserror');
+
+  player.trigger('playing');
+  equal(player.ads.state, 'content-playback');
+  equal(contentPlaybackFired, 1, 'A content-playback event should have triggered');
+  equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
+});
+
+test('skipLinearAdMode in ad-playback does not trigger adskip', function(){
+  var adskip = 0;
+  player.on('adskip', function() {
+    adskip++;
+  });
+
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.ads.startLinearAdMode();
+  equal(player.ads.state, 'ad-playback');
+  player.ads.skipLinearAdMode();
+  equal(player.ads.state, 'ad-playback');
+  equal(adskip, 0, 'adskip event should not trigger when skipLinearAdMode called in ad-playback state');
+
+  player.ads.endLinearAdMode();
+  equal(player.ads.state, 'content-resuming');
+  equal(player.ads.triggerevent, 'adend', 'The reason for content-resuming should have been adend');
 
   player.trigger('playing');
   equal(player.ads.state, 'content-playback');

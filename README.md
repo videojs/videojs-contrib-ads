@@ -49,6 +49,8 @@ And here are the interaction points you use to send information to the ads plugi
  * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
  * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
  * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
+ * `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
+
 
 In addition, video.js provides a number of events and APIs that might be useful to you.
 For example, the `ended` event signals that the content video has played to completion.
@@ -152,12 +154,13 @@ If `readyforpreroll` has been fired and the ad implementation does not call `sta
 Once the ad plugin fires `readyforpreroll`, one of these things will happen:
 
  * `startLinearAdMode()` called within the timeout — preroll(s) will play without the user seeing any content video first.
+ * `skipLinearAdMode()` is called within the timeout because there are no linear ads in the response or you already know you won't be making a preroll request - content video plays without preroll(s).
  * `startLinearAdMode()` is never called — content video plays without preroll(s).
- * `startLinearAdMode()` is called, but after the prerollTimeout expried — bad user experience; content video plays a bit, then preroll(s) cut in.
+ * `startLinearAdMode()` is called, but after the prerollTimeout expired — bad user experience; content video plays a bit, then preroll(s) cut in.
 
-The prerollTimout should be as short as possible so that the viewer does not have to wait unnecessarily if no preroll is scheduled for a video.
+The prerollTimeout should be as short as possible so that the viewer does not have to wait unnecessarily if no preroll is scheduled for a video.
 Make this longer if your ad integration needs a long time to decide whether it has preroll inventory to play or not.
-Ideally, your ad integration should already know if it wants to play a preroll before the `readyforpreroll` event.
+Ideally, your ad integration should already know if it wants to play a preroll before the `readyforpreroll` event.  In this case, skipLinearAdMode() should be called to resume content quickly.
 
 ### postrollTimeout
 
@@ -170,8 +173,9 @@ If `contentended` has been fired and the ad implementation does not call `startL
 Once the ad plugin fires `contentended`, one of these things will happen:
 
  * `startLinearAdMode()` called within the timeout — postroll(s) will play without the user seeing any content video first.
+ * `skipLinearAdMode()` is called within the timeout - content video stops.
  * `startLinearAdMode()` is never called — content video stops.
- * `startLinearAdMode()` is called, but after the postrollTimeout expried — content video stops
+ * `startLinearAdMode()` is called, but after the postrollTimeout expired — content video stops
 
 The postrollTimeout should be as short as possible so that the viewer does not have to wait unnecessarily if no postroll is scheduled for a video.
 Make this longer if your ad integration needs a long time to decide whether it has postroll inventory to play or not.
@@ -194,6 +198,9 @@ The player has entered linear ad playback mode. This event is fired directly as 
 
 ### adend
 The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. Note that multiple ads may have played back between `adstart` and `adend`.
+
+### adskip
+The player is skipping a linear ad opportunity and content-playback should resume immediately.  This event is fired directly as a consequence of calling `skipLinearAdMode()`. It can indicate that an ad response was made but returned no linear ad content or that no ad call is going to be made at either the preroll or postroll timeout opportunities.
 
 ### adtimeout
 A timeout managed by the plugin has expired and regular video content has begun to play. Ad integrations have a fixed amount of time to inform the plugin of their intent during playback. If the ad integration is blocked by network conditions or an error, this event will fire and regular playback resumes rather than stalling the player indefinitely.
