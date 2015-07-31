@@ -49,7 +49,7 @@ And here are the interaction points you use to send information to the ads plugi
  * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
  * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
  * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
- * `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration is not going to play a linear ad and should skip directly to content playback (no linear ads in response, already know there is no preroll to wait for). This method triggers `adskip` to be emitted by the player.  You should always use `endLinearAdMode()` to exit the linear `ad-playback` state.  For this reason, `adskip` will not be triggered and has no effect if you are already in the `ad-playback` state.
+ * `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
 
 
 In addition, video.js provides a number of events and APIs that might be useful to you.
