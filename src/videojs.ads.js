@@ -162,6 +162,25 @@ var
         type: player.currentType()
       };
 
+    player.one('adplaying', function() {
+      var trackEls = this.el().querySelector('.vjs-tech').querySelectorAll('track'),
+          track,
+          i = trackEls.length,
+          j = 0;
+
+      while (i--) {
+        track = trackEls[i].track;
+
+        for (j = 0; j < suppressedTracks.length; j++) {
+          if (suppressedTracks[i].track === track) {
+            suppressedTracks[i].mode = track.mode;
+          }
+        }
+
+        track.mode = 'disabled';
+      }
+    });
+
     if (tech) {
       snapshot.nativePoster = tech.poster;
       snapshot.style = tech.getAttribute('style');
