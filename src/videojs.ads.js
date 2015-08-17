@@ -160,9 +160,10 @@ var
         src: player.currentSrc(),
         currentTime: player.currentTime(),
         type: player.currentType()
-      };
+      },
+      tracksPlayingHandler;
 
-    player.one('adplaying', function() {
+    tracksPlayingHandler = function() {
       var trackEls = this.el().querySelector('.vjs-tech').querySelectorAll('track'),
           track,
           i = trackEls.length,
@@ -179,6 +180,10 @@ var
 
         track.mode = 'disabled';
       }
+    };
+    player.on('adplaying', tracksPlayingHandler);
+    player.one('adsend', function() {
+      player.off('adplaying', tracksPlayingHandler);
     });
 
     if (tech) {
