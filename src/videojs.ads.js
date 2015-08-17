@@ -193,8 +193,8 @@ var
       trackEls = tech.querySelectorAll('track');
       i = trackEls.length;
       while (i--) {
-        if (trackEls[0].addEventListener) {
-          trackEls[0].addEventListener('load', trackOnLoad);
+        if (trackEls[i].addEventListener) {
+          trackEls[i].addEventListener('load', trackOnLoad);
         }
       }
     }
