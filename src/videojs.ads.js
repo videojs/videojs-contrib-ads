@@ -173,8 +173,8 @@ var
         track = trackEls[i].track;
 
         for (j = 0; j < suppressedTracks.length; j++) {
-          if (suppressedTracks[i].track === track) {
-            suppressedTracks[i].mode = track.mode;
+          if (suppressedTracks[j].track === track) {
+            suppressedTracks[j].mode = track.mode;
           }
         }
 
