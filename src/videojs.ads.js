@@ -136,6 +136,10 @@ var
     });
   },
 
+  trackOnLoad = function(event) {
+    event.target.track.mode = 'disabled';
+  },
+
   /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
@@ -146,6 +150,7 @@ var
   getPlayerSnapshot = function(player) {
     var
       tech = player.el().querySelector('.vjs-tech'),
+      trackEls,
       tracks = player.remoteTextTracks ? player.remoteTextTracks() : [],
       track,
       i,
@@ -160,6 +165,14 @@ var
     if (tech) {
       snapshot.nativePoster = tech.poster;
       snapshot.style = tech.getAttribute('style');
+
+      trackEls = tech.querySelectorAll('track');
+      i = trackEls.length;
+      while (i--) {
+        if (trackEls[0].addEventListener) {
+          trackEls[0].addEventListener('load', trackOnLoad);
+        }
+      }
     }
 
     i = tracks.length;
@@ -203,6 +216,8 @@ var
       attempts = 20,
 
       suppressedTracks = snapshot.suppressedTracks,
+      i,
+      trackEls,
       trackSnapshot,
       restoreTracks =  function() {
         var i = suppressedTracks.length;
@@ -281,6 +296,16 @@ var
       // whether the video element has been modified since the
       // snapshot was taken
       srcChanged;
+
+    if (tech) {
+      trackEls = tech.querySelectorAll('track');
+      i = trackEls.length;
+      while (i--) {
+        if (trackEls[0].removeEventListener) {
+          trackEls[0].removeEventListener('load', trackOnLoad);
+        }
+      }
+    }
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
