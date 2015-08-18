@@ -40,7 +40,7 @@ Here are the events that communicate information to your integration from the ad
 
  * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
  * `readyforpreroll` (EVENT) — Fires when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
- * `contentplayback` (EVENT) - Fires whenever the state changes to content-playback state.  Included in this event is a 'triggerevent' property which indicates what event type triggered the state change. 
+ * `contentplayback` (EVENT) - Fires whenever the state changes to content-playback state.  Included in this event is a 'triggerevent' property which indicates what event type triggered the state change.
 
 And here are the interaction points you use to send information to the ads plugin:
 
@@ -64,29 +64,27 @@ This is not actually a runnable example, as it needs more information as specifi
 
 ```js
 videojs('video', {}, function() {
-  
+
   var player = this;
   player.ads(); // initialize the ad framework
-  
+
   // request ads whenever there's new video content
   player.on('contentupdate', function(){
     // fetch ad inventory asynchronously, then ...
     player.trigger('adsready');
   });
-  
+
   player.on('readyforpreroll', function() {
     player.ads.startLinearAdMode();
     // play your linear ad content
     player.src('http://url/to/your/ad.content');
-    player.one('durationchange', function(){
-      player.play();
-    });
-    // when all your linear ads have finished...
-    player.one('ended', function() {
+
+    // when all your linear ads have finished… do not confuse this with `ended`
+    player.one('adended', function() {
       player.ads.endLinearAdMode();
     });
   });
-  
+
 });
 ```
 
