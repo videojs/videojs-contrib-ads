@@ -401,6 +401,10 @@ var
           });
         },
         redispatch = function(event) {
+          if (event.type === 'play') {
+            player.hasStarted(true);
+          }
+
           if (player.ads.state === 'ad-playback') {
             triggerEvent('ad', event);
 
