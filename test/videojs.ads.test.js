@@ -132,6 +132,15 @@ test('adstart is fired before a preroll', function() {
   equal(1, adStarts, 'a preroll triggers adstart');
 });
 
+test('player has the .vjs-has-started class once a preroll begins', function() {
+  var el = player.el_;
+
+  player.trigger('adsready');
+  player.trigger('play');
+  player.ads.startLinearAdMode();
+  notEqual(el.className.indexOf('vjs-has-started'), -1, 'player has .vjs-has-started class');
+});
+
 test('moves to content-playback after a preroll', function() {
   player.trigger('adsready');
   player.trigger('play');
