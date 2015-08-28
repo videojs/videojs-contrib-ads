@@ -925,19 +925,21 @@ test('player events during prerolls are prefixed', function() {
   player.trigger('adsready');
 
   // simulate video events that should be prefixed
-  player.on(['loadstart', 'playing', 'pause', 'ended'], function(event) {
+  player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], function(event) {
     unprefixed.push(event);
   });
-  player.on(['adloadstart', 'adplaying', 'adpause', 'adended'], function(event) {
+  player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], function(event) {
     prefixed.push(event);
   });
+  player.trigger('firstplay');
   player.trigger('loadstart');
   player.trigger('playing');
+  player.trigger('loadedalldata');
   player.trigger('pause');
   player.trigger('ended');
 
   equal(unprefixed.length, 0, 'no unprefixed events fired');
-  equal(prefixed.length, 4, 'prefixed events fired');
+  equal(prefixed.length, 6, 'prefixed events fired');
 });
 
 test('player events during midrolls are prefixed', function() {
@@ -950,19 +952,21 @@ test('player events during midrolls are prefixed', function() {
   player.ads.startLinearAdMode();
 
   // simulate video events that should be prefixed
-  player.on(['loadstart', 'playing', 'pause', 'ended'], function(event) {
+  player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], function(event) {
     unprefixed.push(event);
   });
-  player.on(['adloadstart', 'adplaying', 'adpause', 'adended'], function(event) {
+  player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], function(event) {
     prefixed.push(event);
   });
+  player.trigger('firstplay');
   player.trigger('loadstart');
   player.trigger('playing');
+  player.trigger('loadedalldata');
   player.trigger('pause');
   player.trigger('ended');
 
   equal(unprefixed.length, 0, 'no unprefixed events fired');
-  equal(prefixed.length, 4, 'prefixed events fired');
+  equal(prefixed.length, 6, 'prefixed events fired');
 });
 test('player events during postrolls are prefixed', function() {
   var prefixed = [], unprefixed = [];
@@ -975,19 +979,21 @@ test('player events during postrolls are prefixed', function() {
   player.ads.startLinearAdMode();
 
   // simulate video events that should be prefixed
-  player.on(['loadstart', 'playing', 'pause', 'ended'], function(event) {
+  player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], function(event) {
     unprefixed.push(event);
   });
-  player.on(['adloadstart', 'adplaying', 'adpause', 'adended'], function(event) {
+  player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], function(event) {
     prefixed.push(event);
   });
+  player.trigger('firstplay');
   player.trigger('loadstart');
   player.trigger('playing');
+  player.trigger('loadedalldata');
   player.trigger('pause');
   player.trigger('ended');
 
   equal(unprefixed.length, 0, 'no unprefixed events fired');
-  equal(prefixed.length, 4, 'prefixed events fired');
+  equal(prefixed.length, 6, 'prefixed events fired');
 });
 test('player events during content playback are not prefixed', function() {
   var prefixed = [], unprefixed = [];
@@ -997,20 +1003,23 @@ test('player events during content playback are not prefixed', function() {
   player.trigger('adsready');
   player.trigger('adtimeout');
   player.trigger('playing');
+  player.trigger('loadedalldata');
 
   // simulate video events that should not be prefixed
-  player.on(['seeked', 'playing', 'pause', 'ended'], function(event) {
+  player.on(['seeked', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], function(event) {
     unprefixed.push(event);
   });
-  player.on(['adseeked', 'adplaying', 'adpause', 'adended', 'contentended'], function(event) {
+  player.on(['adseeked', 'adplaying', 'adpause', 'adended', 'contentended', 'adfirstplay', 'adloadedalldata'], function(event) {
     prefixed.push(event);
   });
+  player.trigger('firstplay');
   player.trigger('seeked');
   player.trigger('playing');
+  player.trigger('loadedalldata');
   player.trigger('pause');
   player.trigger('ended');
 
-  equal(unprefixed.length, 3, 'unprefixed events fired');
+  equal(unprefixed.length, 5, 'unprefixed events fired');
   equal(prefixed.length, 1, 'no prefixed events fired');
   equal(prefixed[0].type, 'contentended', 'prefixed the ended event');
 });
