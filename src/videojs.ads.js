@@ -321,7 +321,6 @@ var
     } else if (!player.ended() || !snapshot.ended) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();
-
       // the src didn't change and this wasn't a postroll
       // just resume playback at the current time.
       player.play();
@@ -386,7 +385,7 @@ var
     (function() {
       var
         videoEvents = videojs.Html5.Events,
-        i = videoEvents.length,
+        i,
         returnTrue = function() { return true; },
         triggerEvent = function(type, event) {
           // pretend we called stopImmediatePropagation because we want the native
@@ -403,10 +402,8 @@ var
         redispatch = function(event) {
           if (player.ads.state === 'ad-playback') {
             triggerEvent('ad', event);
-
           } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
             triggerEvent('content', event);
-
           } else if (player.ads.state === 'content-resuming') {
             if (player.ads.snapshot) {
               // the video element was recycled for ad playback
@@ -437,6 +434,11 @@ var
           }
         };
 
+      //Add video.js specific events
+      videoEvents.push('firstplay');
+      videoEvents.push('loadedalldata');
+
+      i = videoEvents.length;
       while (i--) {
         player.on(videoEvents[i], redispatch);
       }
