@@ -12,11 +12,12 @@ test('the environment is sane', function() {
 
 module('Ad Framework', {
   setup: function() {
+    var Html5 = videojs.getComponent('Html5');
     // fake out Html5 support
-    videojs.Html5.isSupported = function() {
+    Html5.isSupported = function() {
       return true;
     };
-    delete videojs.Html5.prototype.setSource;
+    delete Html5.prototype.setSource;
 
     video = document.createElement('video');
     video.load = function() {};

@@ -48,10 +48,11 @@ count = function(array, element) {
 };
 
 attachListeners = function(player) {
+  var Html5 = videojs.getComponent('Html5');
   // capture video element events during test runs
-  player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
+  player.on(Html5.Events.concat(Html5.Events.map(function(event) {
     return 'ad' + event;
-  })).concat(videojs.Html5.Events.map(function(event) {
+  })).concat(Html5.Events.map(function(event) {
     return 'content' + event;
   })).concat([
     // events emitted by ad plugin

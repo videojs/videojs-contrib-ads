@@ -3,7 +3,7 @@
  *
  * Common code to support ad integrations.
  */
-(function(window, document, vjs, undefined) {
+(function(window, document, videojs, undefined) {
 "use strict";
 
 var
@@ -384,7 +384,7 @@ var
     // avoiding the complexity for common usage
     (function() {
       var
-        videoEvents = videojs.Html5.Events,
+        videoEvents = videojs.getComponent('Html5').Events,
         i,
         returnTrue = function() { return true; },
         triggerEvent = function(type, event) {
@@ -757,7 +757,7 @@ var
     };
 
     // register for the events we're interested in
-    on(player, vjs.Html5.Events.concat([
+    on(player, videojs.getComponent('Html5').Events.concat([
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
@@ -812,6 +812,6 @@ var
   };
 
   // register the ad plugin framework
-  vjs.plugin('ads', adFramework);
+  videojs.plugin('ads', adFramework);
 
 })(window, document, videojs);

@@ -7,10 +7,11 @@ var
 
 module('Video Snapshot', {
   setup: function() {
-    videojs.Html5.isSupported = function() {
+    var Html5 = videojs.getComponent('Html5');
+    Html5.isSupported = function() {
       return true;
     };
-    delete videojs.Html5.prototype.setSource;
+    delete Html5.prototype.setSource;
 
     var captionTrack = document.createElement('track'),
         otherTrack = document.createElement('track');
