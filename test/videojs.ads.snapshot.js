@@ -68,7 +68,7 @@ test('restores the original video src after ads', function() {
   var originalSrc = player.currentSrc();
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   player.ads.startLinearAdMode();
   player.src('//example.com/ad.mp4');
@@ -89,7 +89,7 @@ test('waits for the video to become seekable before restoring the time', functio
   video.seekable = [];
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // the video plays to time 100
   timeouts = 0;
@@ -120,7 +120,7 @@ test('tries to restore the play state up to 20 times', function() {
   video.seekable = [];
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // the video plays to time 100
   timeouts = 0;
@@ -141,7 +141,7 @@ test('the current time is restored at the end of an ad', function() {
 
   player.trigger('adsready');
   video.currentTime = 100;
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // the video plays to time 100
   player.ads.startLinearAdMode();
@@ -162,7 +162,7 @@ test('only restores the player snapshot if the src changed', function() {
     currentTimeModified = false;
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // spy on relevant player methods
   player.play = function() {
@@ -207,7 +207,7 @@ test('snapshot does not resume playback after post-rolls', function() {
   player.trigger('loadstart');
   player.trigger('loadedmetadata');
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // spy on relevant player methods
   player.play = function() {
@@ -259,7 +259,7 @@ test('snapshot does not resume playback after a burned-in post-roll', function()
     loadCalled = false;
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // spy on relevant player methods
   player.play = function() {
@@ -305,7 +305,7 @@ test('snapshot does not resume playback after multiple post-rolls', function() {
   player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   player.trigger('loadstart');
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // spy on relevant player methods
   player.play = function() {
@@ -355,7 +355,7 @@ test('does resume playback after postrolls if "ended" does not fire naturally', 
   // play the video
   player.trigger('loadstart');
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
 
   // finish the video and watch for play()
@@ -393,7 +393,7 @@ test('changing the source and then timing out does not restore a snapshot', func
   // load and play the initial video
   player.src('http://example.com/movie.mp4');
   player.trigger('loadstart');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
   // preroll
   player.ads.startLinearAdMode();
@@ -431,7 +431,7 @@ test('checks for a src attribute change that isn\'t reflected in currentSrc', fu
   };
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
 
   player.src = function(source) {
@@ -462,7 +462,7 @@ test('When captions are enabled, the video\'s tracks will be disabled during the
   }
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   // set all modes to 'showing'
   for (i = 0; i < tracks.length; i++) {
@@ -513,7 +513,7 @@ test('player events during snapshot restoration are prefixed', function() {
     player.ads.startLinearAdMode();
   });
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   // change the source to an ad
   player.src({
     src: 'http://example.com/ad.mp4',

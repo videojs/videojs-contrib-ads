@@ -77,8 +77,8 @@ test('pauses to wait for prerolls when the plugin loads before play', function()
   };
 
   player.trigger('adsready');
-  player.trigger('play');
-  player.trigger('play');
+  player.tech.trigger('play');
+  player.tech.trigger('play');
 
   equal(2, pauses, 'play attempts are paused');
 });
@@ -92,8 +92,8 @@ test('pauses to wait for prerolls when the plugin loads after play', function() 
     return false;
   };
 
-  player.trigger('play');
-  player.trigger('play');
+  player.tech.trigger('play');
+  player.tech.trigger('play');
 
   equal(2, pauses, 'play attempts are paused');
 });
@@ -113,7 +113,7 @@ test('stops canceling play events when an ad is playing', function() {
           'the cancel-play timeout is cancelled');
   };
 
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
   equal(1, player.ads.cancelPlayTimeout, 'a cancel-play is scheduled');
 
@@ -128,23 +128,21 @@ test('adstart is fired before a preroll', function() {
   });
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
   equal(1, adStarts, 'a preroll triggers adstart');
 });
 
 test('player has the .vjs-has-started class once a preroll begins', function() {
-  var el = player.el_;
-
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
-  notEqual(el.className.indexOf('vjs-has-started'), -1, 'player has .vjs-has-started class');
+  notEqual(player.el().className.indexOf('vjs-has-started'), -1, 'player has .vjs-has-started class');
 });
 
 test('moves to content-playback after a preroll', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
   equal(player.ads.state,
@@ -158,7 +156,7 @@ test('moves to content-playback after a preroll', function() {
 
 test('moves to ad-playback if a midroll is requested', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   player.ads.startLinearAdMode();
   equal(player.ads.state, 'ad-playback', 'the state is ad-playback');
@@ -166,7 +164,7 @@ test('moves to ad-playback if a midroll is requested', function() {
 
 test('moves to content-playback if the preroll times out', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   equal(player.ads.state,
         'content-playback',
@@ -176,13 +174,13 @@ test('moves to content-playback if the preroll times out', function() {
 });
 
 test('waits for adsready if play is received first', function() {
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
   equal(player.ads.state, 'preroll?', 'the state is preroll?');
 });
 
 test('moves to content-playback if a plugin does not finish initializing', function() {
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   equal(player.ads.state,
         'content-playback',
@@ -197,13 +195,13 @@ test('calls start immediately on play when ads are ready', function() {
     prerolls++;
   });
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(1, prerolls, 'readyforpreroll was fired');
 });
 
 test('adds the ad-mode class when a preroll plays', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
 
   ok(player.el().className.indexOf('vjs-ad-playing') >= 0,
@@ -212,7 +210,7 @@ test('adds the ad-mode class when a preroll plays', function() {
 
 test('removes the ad-mode class when a preroll finishes', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
 
@@ -230,7 +228,7 @@ test('removes the ad-mode class when a preroll finishes', function() {
 });
 
 test('adds a class while waiting for an ad plugin to load', function() {
-  player.trigger('play');
+  player.tech.trigger('play');
 
   ok(player.el().className.indexOf('vjs-ad-loading') >= 0,
      'the ad loading class should be in "' + player.el().className + '"');
@@ -238,7 +236,7 @@ test('adds a class while waiting for an ad plugin to load', function() {
 
 test('adds a class while waiting for a preroll', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   ok(player.el().className.indexOf('vjs-ad-loading') >= 0,
      'the ad loading class should be in "' + player.el().className + '"');
@@ -246,7 +244,7 @@ test('adds a class while waiting for a preroll', function() {
 
 test('removes the loading class when the preroll begins', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
 
   ok(player.el().className.indexOf('vjs-ad-loading') < 0,
@@ -255,7 +253,7 @@ test('removes the loading class when the preroll begins', function() {
 
 test('removes the loading class when the preroll times out', function() {
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
 
   ok(player.el().className.indexOf('vjs-ad-loading') < 0,
@@ -270,7 +268,7 @@ test('starts the content video if there is no preroll', function() {
     playCount++;
   };
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
 
   equal(1, playCount, 'play is called once');
@@ -283,7 +281,7 @@ test('removes the poster attribute so it does not flash between videos', functio
   ok(video.poster, 'the poster is present initially');
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
 
   equal(video.poster, '', 'poster is removed');
@@ -293,7 +291,7 @@ test('removes the poster attribute so it does not flash between videos', functio
 test('restores the poster attribute after ads have ended', function() {
   video.poster = 'http://www.videojs.com/img/poster.jpg';
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
 
@@ -329,7 +327,7 @@ test('contentupdate should fire when src is changed in content-resuming state af
   });
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   player.trigger('ended');
   player.trigger('adtimeout');
@@ -353,7 +351,7 @@ test('contentupdate should fire when src is changed in content-playback state af
   });
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   player.trigger('ended');
   player.trigger('adtimeout');
@@ -379,7 +377,7 @@ test('changing src does not trigger contentupdate during ad playback', function(
 
   // enter ad playback mode
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
 
   // set src and trigger synthetic 'loadstart'
@@ -415,7 +413,7 @@ test('contentSrc can be modified to avoid src changes triggering contentupdate',
 
   // play an ad
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
   player.ads.endLinearAdMode();
   player.trigger('playing');
@@ -446,19 +444,19 @@ test('the cancel-play timeout is cleared when exiting "preroll?"', function() {
   };
 
   player.trigger('adsready');
-  player.trigger('play');
+  player.tech.trigger('play');
 
   equal('preroll?', player.ads.state, 'the player is waiting for prerolls');
 
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(1, callbacks.length, 'a single cancel-play is registered');
 
   callbacks[0](); // run the cancel-play
   callbacks.length = 0;
 
-  player.trigger('play');
-  player.trigger('play');
-  player.trigger('play');
+  player.tech.trigger('play');
+  player.tech.trigger('play');
+  player.tech.trigger('play');
   equal(1, callbacks.length, 'a single cancel-play is registered');
 });
 
@@ -488,7 +486,7 @@ test('adscanceled allows us to transition from ads-ready? to content-playback', 
 
   equal(player.ads.state, 'content-set');
 
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'ads-ready?');
   equal(player.ads.cancelPlayTimeout, 1);
 
@@ -516,7 +514,7 @@ test('content is resumed on contentplayback if a user intiated play event is can
   };
 
   equal(player.ads.state, 'content-set');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'ads-ready?');
 
   player.on('play', function() {
@@ -544,7 +542,7 @@ test('adskip in content-set transitions to content-playback', function(){
 
 test('adserror in ads-ready? transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'ads-ready?');
   player.trigger('adserror');
   equal(player.ads.state, 'content-playback');
@@ -554,7 +552,7 @@ test('adserror in ads-ready? transitions to content-playback', function(){
 
 test('adskip in ads-ready? transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'ads-ready?');
   player.trigger('adskip');
   equal(player.ads.state, 'content-playback');
@@ -586,7 +584,7 @@ test('adserror in preroll? transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'preroll?');
   player.trigger('adserror');
   equal(player.ads.state, 'content-playback');
@@ -598,7 +596,7 @@ test('adskip in preroll? transitions to content-playback', function(){
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'preroll?');
   player.trigger('adskip');
   equal(player.ads.state, 'content-playback');
@@ -616,7 +614,7 @@ test('adserror in postroll? transitions to content-playback and fires ended', fu
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   cbs.pop().call(window);
   player.trigger('ended');
@@ -646,7 +644,7 @@ test('adtimeout in postroll? transitions to content-playback and fires ended', f
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   cbs.pop().call(window);
   player.trigger('ended');
@@ -677,7 +675,7 @@ test('adskip in postroll? transitions to content-playback and fires ended', func
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   cbs.pop().call(window);
   player.trigger('ended');
@@ -718,7 +716,7 @@ test('an ended event is fired in content-resuming via a timeout if not fired nat
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   player.trigger('ended');
   equal(player.ads.state, 'postroll?');
@@ -760,7 +758,7 @@ test('an ended event is not fired in content-resuming via a timeout if fired nat
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adtimeout');
   player.trigger('ended');
   equal(player.ads.state, 'postroll?');
@@ -785,7 +783,7 @@ test('adserror in ad-playback transitions to content-playback and triggers adend
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
 
   player.on('adend', function(event) {
@@ -812,7 +810,7 @@ test('calling startLinearAdMode() when already in ad-playback does not trigger a
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'preroll?');
   player.ads.startLinearAdMode();
   equal(player.ads.state, 'ad-playback');
@@ -845,7 +843,7 @@ test('calling endLinearAdMode() in any state but ad-playback does not trigger ad
   player.ads.endLinearAdMode();
   equal(adend, 0, 'adend should not have fired');
 
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'preroll?');
   player.ads.endLinearAdMode();
   equal(adend, 0, 'adend should not have fired');
@@ -877,7 +875,7 @@ test('skipLinearAdMode in ad-playback does not trigger adskip', function(){
   equal(player.ads.state, 'content-set');
   player.trigger('adsready');
   equal(player.ads.state, 'ads-ready');
-  player.trigger('play');
+  player.tech.trigger('play');
   player.ads.startLinearAdMode();
   equal(player.ads.state, 'ad-playback');
   player.ads.skipLinearAdMode();
@@ -902,7 +900,7 @@ test('adsready in content-playback triggers readyforpreroll', function(){
   });
 
   equal(player.ads.state, 'content-set');
-  player.trigger('play');
+  player.tech.trigger('play');
   equal(player.ads.state, 'ads-ready?');
   player.trigger('adtimeout');
   equal(player.ads.state, 'content-playback');
@@ -922,7 +920,7 @@ test('player events during prerolls are prefixed', function() {
   player.on('readyforpreroll', function() {
     player.ads.startLinearAdMode();
   });
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
 
   // simulate video events that should be prefixed
@@ -947,7 +945,7 @@ test('player events during midrolls are prefixed', function() {
   var prefixed = [], unprefixed = [];
 
   // play a midroll
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
   player.trigger('adtimeout');
   player.ads.startLinearAdMode();
@@ -973,7 +971,7 @@ test('player events during postrolls are prefixed', function() {
   var prefixed = [], unprefixed = [];
 
   // play a postroll
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
   player.trigger('adtimeout');
   player.trigger('ended');
@@ -1000,7 +998,7 @@ test('player events during content playback are not prefixed', function() {
   var prefixed = [], unprefixed = [];
 
   // play content
-  player.trigger('play');
+  player.tech.trigger('play');
   player.trigger('adsready');
   player.trigger('adtimeout');
   player.trigger('playing');
