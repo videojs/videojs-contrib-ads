@@ -79,29 +79,21 @@ var
   },
 
   /**
-   * Runs the callback at the next available opportunity.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate
+   * Defer an action until the call stack is clear.
+   *
+   * @param {Function} callback
    */
-  setImmediate = function(callback) {
-    return (
-      window.setImmediate ||
-      window.requestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.setTimeout
-    )(callback, 0);
+  defer = function(callback) {
+    return window.setTimeout(callback, 1);
   },
 
   /**
-   * Clears a callback previously registered with `setImmediate`.
+   * Aborts a previously deferred action.
+   *
    * @param {id} id The identifier of the callback to abort
    */
-  clearImmediate = function(id) {
-    return (window.clearImmediate ||
-            window.cancelAnimationFrame ||
-            window.webkitCancelAnimationFrame ||
-            window.mozCancelAnimationFrame ||
-            window.clearTimeout)(id);
+  undefer = function(id) {
+    return window.clearTimeout(id);
   },
 
   /**
@@ -118,7 +110,7 @@ var
       // another cancellation is already in flight, so do nothing
       return;
     }
-    player.ads.cancelPlayTimeout = setImmediate(function() {
+    player.ads.cancelPlayTimeout = defer(function() {
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
 
@@ -234,13 +226,20 @@ var
           // (https://html.spec.whatwg.org/multipage/embedded-content.html#seeking),
           // so it should not be necessary to wait for the seek to
           // indicate completion.
-          window.setTimeout(function() {
+          player.ads.resumeEndedTimeout = window.setTimeout(function() {
             if (!ended) {
               player.play();
             }
             player.off('ended', updateEnded);
+            player.ads.resumeEndedTimeout = null;
           }, 250);
           player.on('ended', updateEnded);
+
+          // Need to clear the resume/ended timeout on dispose. If it fires
+          // after a player is disposed, an error will be thrown!
+          player.on('dispose', function() {
+            window.clearTimeout(player.ads.resumeEndedTimeout);
+          });
         }
       },
 
@@ -266,7 +265,7 @@ var
 
         // delay a bit and then check again unless we're out of attempts
         if (attempts--) {
-          setTimeout(tryToResume, 50);
+          window.setTimeout(tryToResume, 50);
         } else {
           (function() {
             try {
@@ -606,7 +605,7 @@ var
               // We no longer need to supress play events once an ad is playing.
               // Clear it if we were.
               if (player.ads.cancelPlayTimeout) {
-                clearImmediate(player.ads.cancelPlayTimeout);
+                undefer(player.ads.cancelPlayTimeout);
                 player.ads.cancelPlayTimeout = null;
               }
             },
@@ -676,19 +675,19 @@ var
               },
               'adskip': function() {
                 this.state = 'content-resuming';
-                setImmediate(function() {
+                defer(function() {
                   player.trigger('ended');
                 });
               },
               'adtimeout': function() {
                 this.state = 'content-resuming';
-                setImmediate(function() {
+                defer(function() {
                   player.trigger('ended');
                 });
               },
               'adserror': function() {
                 this.state = 'content-resuming';
-                setImmediate(function() {
+                defer(function() {
                   player.trigger('ended');
                 });
               }
@@ -698,7 +697,7 @@ var
             enter: function() {
               // make sure that any cancelPlayTimeout is cleared
               if (player.ads.cancelPlayTimeout) {
-                clearImmediate(player.ads.cancelPlayTimeout);
+                undefer(player.ads.cancelPlayTimeout);
                 player.ads.cancelPlayTimeout = null;
               }
               // this will cause content to start if a user initiated
@@ -798,9 +797,9 @@ var
           }
         };
       // loadstart reliably indicates a new src has been set
-      player.on(['loadstart'], checkSrc);
+      player.on('loadstart', checkSrc);
       // check immediately in case we missed the loadstart
-      setImmediate(checkSrc);
+      defer(checkSrc);
     })();
 
     // kick off the fsm

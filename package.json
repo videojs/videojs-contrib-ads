@@ -30,7 +30,9 @@
     "grunt-contrib-watch": "~0.4.0",
     "grunt-umd": "^2.3.3",
     "load-grunt-tasks": "^3.1.0",
+    "lodash": "~3.10.1",
     "qunitjs": "^1.17.1",
-    "video.js": "5.0.0-rc.44"
+    "sinon": "~1.16.1",
+    "video.js": "5.0.0-rc.79"
   }
 }
