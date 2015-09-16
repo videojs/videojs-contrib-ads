@@ -87,7 +87,7 @@ var occurInOrder = function(assert, actual, expected) {
       continue;
     }
 
-    assert.equal(
+    assert.strictEqual(
       actual[i],
       expected[j],
       'matched "' + expected[j] + '" to event number ' + i
@@ -96,7 +96,7 @@ var occurInOrder = function(assert, actual, expected) {
     j++;
   }
 
-  assert.equal(
+  assert.strictEqual(
     j,
     expected.length,
     expected.length !== j ? 'missing ' + expected.slice(j).join(', ') : 'all expected events occurred'
@@ -209,9 +209,9 @@ QUnit.test('linear ads should not affect regular video playback events', functio
       'playing'
     ]);
 
-    assert.equal(count(this.events, 'adsready'), 1, 'fired adsready exactly once');
-    assert.equal(count(this.events, 'loadstart'), 1, 'fired loadstart exactly once');
-    assert.equal(count(this.events, 'ended'), 1, 'fired ended exactly once');
+    assert.strictEqual(count(this.events, 'adsready'), 1, 'fired adsready exactly once');
+    assert.strictEqual(count(this.events, 'loadstart'), 1, 'fired loadstart exactly once');
+    assert.strictEqual(count(this.events, 'ended'), 1, 'fired ended exactly once');
     assert.ok(this.player.ended(), 'the video is still ended');
     done();
   }));
@@ -240,10 +240,10 @@ QUnit.test('regular video playback is not affected', function(assert) {
       'playing'
     ]);
 
-    assert.equal(count(this.events, 'adstart'), 0, 'did not fire adstart');
-    assert.equal(count(this.events, 'adend'), 0, 'did not fire adend');
-    assert.equal(count(this.events, 'loadstart'), 1, 'fired loadstart exactly once');
-    assert.equal(count(this.events, 'ended'), 1, 'fired ended exactly once');
+    assert.strictEqual(count(this.events, 'adstart'), 0, 'did not fire adstart');
+    assert.strictEqual(count(this.events, 'adend'), 0, 'did not fire adend');
+    assert.strictEqual(count(this.events, 'loadstart'), 1, 'fired loadstart exactly once');
+    assert.strictEqual(count(this.events, 'ended'), 1, 'fired ended exactly once');
     assert.ok(this.player.ended(), 'the video is still ended');
     done();
   }));

@@ -99,26 +99,11 @@ window.sharedModuleHooks = (function(){
     }
   };
 
-  function toArray(x) {
-    return Array.prototype.slice.apply(x);
-  }
-
   return function(hooks) {
+    hooks = hooks || {};
     return {
-      beforeEach: function() {
-        var args = toArray(arguments);
-        common.beforeEach.apply(this, args);
-        if (hooks && typeof hooks.beforeEach === 'function') {
-          hooks.beforeEach.apply(this, args);
-        }
-      },
-      afterEach: function() {
-        var args = toArray(arguments);
-        common.afterEach.apply(this, args);
-        if (hooks && typeof hooks.afterEach === 'function') {
-          hooks.afterEach.apply(this, args);
-        }
-      }
+      beforeEach: _.flow(common.beforeEach, hooks.beforeEach || _.noop),
+      afterEach: _.flow(common.afterEach, hooks.afterEach || _.noop)
     };
   };
 }());

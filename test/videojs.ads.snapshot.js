@@ -1,4 +1,4 @@
-QUnit.module('Video Snapshot', sharedModuleHooks({
+QUnit.module('Video Snapshot', window.sharedModuleHooks({
 
   beforeEach: function() {
     var captionTrack = document.createElement('track');
@@ -23,7 +23,7 @@ QUnit.test('restores the original video src after ads', function(assert) {
   this.player.ads.startLinearAdMode();
   this.player.src('//example.com/ad.mp4');
   this.player.ads.endLinearAdMode();
-  assert.equal(this.player.currentSrc(), originalSrc, 'the original src is restored');
+  assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
 });
 
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
@@ -42,8 +42,8 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   this.video.currentTime = 0;
   this.player.ads.endLinearAdMode();
   this.player.trigger('canplay');
-  assert.equal(setTimeoutSpy.callCount, 1, 'restoring the time should be delayed');
-  assert.equal(this.video.currentTime, 0, 'currentTime is not modified');
+  assert.strictEqual(setTimeoutSpy.callCount, 1, 'restoring the time should be delayed');
+  assert.strictEqual(this.video.currentTime, 0, 'currentTime is not modified');
   window.setTimeout.restore();
 });
 
@@ -69,7 +69,7 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
 
   // This expectation was previously 20, but as of video.js 5.0 there appear
   // to be two more setTimeout calls.
-  assert.equal(setTimeoutSpy.callCount, 20, 'seekable was tried multiple times');
+  assert.strictEqual(setTimeoutSpy.callCount, 20, 'seekable was tried multiple times');
   window.setTimeout.restore();
 });
 
@@ -88,7 +88,7 @@ QUnit.test('the current time is restored at the end of an ad', function(assert) 
   this.player.ads.endLinearAdMode();
   this.player.trigger('canplay');
   this.clock.tick(1000);
-  assert.equal(this.video.currentTime, 100, 'currentTime was restored');
+  assert.strictEqual(this.video.currentTime, 100, 'currentTime was restored');
 });
 
 QUnit.test('only restores the player snapshot if the src changed', function(assert) {
@@ -108,7 +108,7 @@ QUnit.test('only restores the player snapshot if the src changed', function(asse
   assert.ok(srcSpy.alwaysCalledWithExactly(), 'the src was reset');
   this.player.trigger('playing');
   assert.ok(this.contentPlaybackSpy.calledOnce, 'A content-playback event should have triggered');
-  assert.equal(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
+  assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
 
   // the src wasn't changed, so we shouldn't be waiting on loadedmetadata to
   // update the currentTime
@@ -139,10 +139,10 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   this.player.trigger('loadstart');
   this.player.trigger('canplay');
   this.clock.tick(1000);
-  assert.equal(playSpy.callCount, 1, 'content playback resumed');
+  assert.strictEqual(playSpy.callCount, 1, 'content playback resumed');
   this.player.trigger('playing');
-  assert.equal(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have been triggered');
-  assert.equal(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have been triggered');
+  assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -162,10 +162,10 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
   this.player.trigger('ended');
-  assert.equal(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  assert.equal(playSpy.callCount, 0, 'content playback should not have been resumed');
-  assert.equal(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have been triggered');
-  assert.equal(this.contentPlaybackReason(1), 'ended', 'The reason for content-playback should have been ended');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  assert.strictEqual(playSpy.callCount, 0, 'content playback should not have been resumed');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have been triggered');
+  assert.strictEqual(this.contentPlaybackReason(1), 'ended', 'The reason for content-playback should have been ended');
 });
 
 QUnit.test('snapshot does not resume playback after a burned-in post-roll', function(assert) {
@@ -178,7 +178,7 @@ QUnit.test('snapshot does not resume playback after a burned-in post-roll', func
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
   assert.ok(this.contentPlaybackSpy.calledOnce, 'A content-playback event should have been triggered');
-  assert.equal(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
+  assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
   assert.ok(playSpy.called, 'content playback resumed');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
@@ -197,10 +197,10 @@ QUnit.test('snapshot does not resume playback after a burned-in post-roll', func
   this.player.currentTime(50);
   this.player.ads.endLinearAdMode();
   this.player.trigger('ended');
-  assert.equal(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  assert.equal(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have been triggered');
-  assert.equal(this.contentPlaybackReason(1), 'ended', 'The reason for content-playback should have been ended');
-  assert.equal(this.player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have been triggered');
+  assert.strictEqual(this.contentPlaybackReason(1), 'ended', 'The reason for content-playback should have been ended');
+  assert.strictEqual(this.player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   assert.notOk(loadSpy.called, 'player.load() should not be called if the player is ended.');
   assert.notOk(playSpy.called, 'content playback should not have been resumed');
 });
@@ -221,7 +221,7 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
   this.player.trigger('playing');
   assert.ok(playSpy.called, 'content playback resumed');
   assert.ok(this.contentPlaybackSpy.calledOnce, 'A content-playback event should have been triggered');
-  assert.equal(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
+  assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
 
   // if the video ends (regardless of burned in post-roll or otherwise) when
   // stopLinearAdMode fires next we should not hit play() since we have reached
@@ -242,9 +242,9 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
   this.player.trigger('ended');
-  assert.equal(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
-  assert.equal(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have been triggered');
-  assert.equal(this.contentPlaybackReason(1), 'ended', 'The reason for content-playback should have been ended');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have been triggered');
+  assert.strictEqual(this.contentPlaybackReason(1), 'ended', 'The reason for content-playback should have been ended');
   assert.notOk(playSpy.called, 'content playback should not resume');
 });
 
@@ -274,12 +274,12 @@ QUnit.test('does resume playback after postrolls if "ended" does not fire natura
   // reload the content video while capturing timeouts
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
   this.player.trigger('contentcanplay');
-  assert.equal(setTimeoutSpy.callCount, 1, 'set a timeout to check for "ended"');
+  assert.strictEqual(setTimeoutSpy.callCount, 1, 'set a timeout to check for "ended"');
 
   // trigger any registered timeouts
   var playSpy = sinon.spy(this.player, 'play');
   this.clock.tick(10000);
-  assert.equal(playSpy.callCount, 1, 'called play() to trigger an "ended"');
+  assert.strictEqual(playSpy.callCount, 1, 'called play() to trigger an "ended"');
 });
 
 QUnit.test('changing the source and then timing out does not restore a snapshot', function(assert) {
@@ -299,17 +299,17 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   this.player.ads.startLinearAdMode();
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
-  assert.equal(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
-  assert.equal(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
+  assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
 
   // change the content and timeout the new ad response
   this.player.src('http://example.com/movie2.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('adtimeout');
-  assert.equal(this.player.ads.state, 'content-playback', 'playing the new content video after the ad timeout');
-  assert.equal(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have triggered');
-  assert.equal(this.contentPlaybackReason(1), 'adtimeout', 'The reason for content-playback should have been adtimeout');
-  assert.equal('http://example.com/movie2.mp4', this.player.currentSrc(), 'playing the second video');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'playing the new content video after the ad timeout');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 2, 'A content-playback event should have triggered');
+  assert.strictEqual(this.contentPlaybackReason(1), 'adtimeout', 'The reason for content-playback should have been adtimeout');
+  assert.strictEqual('http://example.com/movie2.mp4', this.player.currentSrc(), 'playing the second video');
 });
 
 // changing the src attribute to a URL that AdBlocker is intercepting
@@ -340,8 +340,8 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
-  assert.equal(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
-  assert.equal(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
+  assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
   assert.deepEqual(updatedSrc, {src: 'content.mp4', type: 'video/mp4'}, 'restored src attribute');
 });
 
@@ -372,7 +372,7 @@ QUnit.test('When captions are enabled, the video\'s tracks will be disabled duri
     }
   }
 
-  assert.equal(showing, tracks.length, 'all tracks should be showing');
+  assert.strictEqual(showing, tracks.length, 'all tracks should be showing');
   showing = 0;
   this.player.ads.startLinearAdMode();
 
@@ -382,7 +382,7 @@ QUnit.test('When captions are enabled, the video\'s tracks will be disabled duri
     }
   }
 
-  assert.equal(disabled, tracks.length, 'all tracks should be disabled');
+  assert.strictEqual(disabled, tracks.length, 'all tracks should be disabled');
   this.player.ads.endLinearAdMode();
 
   for (i = 0; i < tracks.length; i++) {
@@ -391,7 +391,7 @@ QUnit.test('When captions are enabled, the video\'s tracks will be disabled duri
     }
   }
 
-  assert.equal(showing, tracks.length, 'all tracks should be showing');
+  assert.strictEqual(showing, tracks.length, 'all tracks should be showing');
 });
 
 QUnit.test('player events during snapshot restoration are prefixed', function(assert) {
@@ -418,12 +418,12 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   });
 
   this.player.trigger('loadstart');
-  assert.equal(spy.callCount, 0, 'did not fire contentloadstart');
+  assert.strictEqual(spy.callCount, 0, 'did not fire contentloadstart');
   this.player.ads.endLinearAdMode();
 
   // make it appear that the tech is ready to seek
   this.player.trigger('loadstart');
   this.player.el().querySelector('.vjs-tech').seekable = [1];
   this.player.trigger('loadedmetadata');
-  assert.equal(spy.callCount, 2, 'fired "content" prefixed events');
+  assert.strictEqual(spy.callCount, 2, 'fired "content" prefixed events');
 });
