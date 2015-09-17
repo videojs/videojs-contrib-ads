@@ -119,13 +119,14 @@ QUnit.test('only restores the player snapshot if the src changed', function(asse
 QUnit.test('snapshot does not resume playback after post-rolls', function(assert) {
   assert.expect(7);
 
+  var playSpy = sinon.spy(this.player, 'play');
+
   // start playback
   this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.trigger('adsready');
-  this.player.trigger('play');
-  var playSpy = sinon.spy(this.player, 'play');
+  this.player.tech_.trigger('play');
 
   // trigger an ad
   this.player.ads.startLinearAdMode();
@@ -138,8 +139,13 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('canplay');
+
+  // "canplay" causes the `restorePlayerSnapshot` function in the plugin
+  // to be called. This causes content playback to be resumed after 20
+  // attempts of a 50ms timeout (20 * 50 == 1000).
   this.clock.tick(1000);
   assert.strictEqual(playSpy.callCount, 1, 'content playback resumed');
+
   this.player.trigger('playing');
   assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have been triggered');
   assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
@@ -278,7 +284,9 @@ QUnit.test('does resume playback after postrolls if "ended" does not fire natura
 
   // trigger any registered timeouts
   var playSpy = sinon.spy(this.player, 'play');
-  this.clock.tick(10000);
+
+  // 20 `tryToResume` timeouts at 50ms each + `resumeEndedTimeout` at 250ms.
+  this.clock.tick(1250);
   assert.strictEqual(playSpy.callCount, 1, 'called play() to trigger an "ended"');
 });
 

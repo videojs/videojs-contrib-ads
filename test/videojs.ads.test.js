@@ -522,7 +522,7 @@ QUnit.test('an ended event is fired in content-resuming via a timeout if not fir
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.ads.state, 'content-resuming');
   assert.strictEqual(spy.callCount, 0, 'we should not have gotten an ended event yet');
-  this.clock.tick(2000);
+  this.clock.tick(1000);
   assert.strictEqual(spy.callCount, 1, 'we should have fired ended from the timeout cbs');
 });
 
