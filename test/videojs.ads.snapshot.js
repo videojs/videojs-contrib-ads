@@ -19,7 +19,7 @@ QUnit.test('restores the original video src after ads', function(assert) {
   assert.expect(1);
   var originalSrc = this.player.currentSrc();
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   this.player.ads.startLinearAdMode();
   this.player.src('//example.com/ad.mp4');
   this.player.ads.endLinearAdMode();
@@ -30,7 +30,7 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   assert.expect(2);
   this.video.seekable = [];
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
 
   // the video plays to time 100
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
@@ -51,7 +51,7 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
   assert.expect(1);
   this.video.seekable = [];
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
 
   // the video plays to time 100
   this.video.currentTime = 100;
@@ -77,7 +77,7 @@ QUnit.test('the current time is restored at the end of an ad', function(assert) 
   assert.expect(1);
   this.player.trigger('adsready');
   this.video.currentTime = 100;
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
 
   // the video plays to time 100
   this.player.ads.startLinearAdMode();
@@ -94,7 +94,7 @@ QUnit.test('the current time is restored at the end of an ad', function(assert) 
 QUnit.test('only restores the player snapshot if the src changed', function(assert) {
   assert.expect(5);
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   var playSpy = sinon.spy(this.player, 'play');
   var srcSpy = sinon.spy(this.player, 'src');
   var currentTimeSpy = sinon.spy(this.player, 'currentTime');
@@ -124,7 +124,7 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   var playSpy = sinon.spy(this.player, 'play');
 
   // trigger an ad
@@ -171,7 +171,7 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
 QUnit.test('snapshot does not resume playback after a burned-in post-roll', function(assert) {
   assert.expect(9);
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   var playSpy = sinon.spy(this.player, 'play');
   var loadSpy = sinon.spy(this.player, 'load');
   this.player.ads.startLinearAdMode();
@@ -210,7 +210,7 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
   this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   var playSpy = sinon.spy(this.player, 'play');
 
   // with a separate video display or server-side ad insertion, ads play but
@@ -256,7 +256,7 @@ QUnit.test('does resume playback after postrolls if "ended" does not fire natura
   this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   this.player.trigger('adtimeout');
 
   // finish the video and watch for play()
@@ -292,7 +292,7 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   // load and play the initial video
   this.player.src('http://example.com/movie.mp4');
   this.player.trigger('loadstart');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   this.player.trigger('adsready');
 
   // preroll
@@ -328,7 +328,7 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   };
 
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
   this.player.ads.startLinearAdMode();
 
   this.player.src = function(source) {
@@ -359,7 +359,7 @@ QUnit.test('When captions are enabled, the video\'s tracks will be disabled duri
 
   assert.expect(3);
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
 
   // set all modes to 'showing'
   for (i = 0; i < tracks.length; i++) {
@@ -409,7 +409,7 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   }));
 
   this.player.trigger('adsready');
-  this.player.tech.trigger('play');
+  this.player.trigger('play');
 
   // change the source to an ad
   this.player.src({
