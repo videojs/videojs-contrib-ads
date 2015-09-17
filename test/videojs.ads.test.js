@@ -50,14 +50,15 @@ QUnit.test('adstart is fired before a preroll', function(assert) {
 });
 
 QUnit.test('player has the .vjs-has-started class once a preroll begins', function(assert) {
+  var done = assert.async();
   assert.expect(1);
   this.player.trigger('adsready');
-
-  // This test fails unless the tech is directly triggered here. Why? Bug in
-  // video.js 5.0?
-  this.player.trigger('play');
+  this.player.play();
   this.player.ads.startLinearAdMode();
-  assert.ok(hasClass(this.player.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
+  this.player.on('play', videojs.bind(this, function() {
+    assert.ok(hasClass(this.player.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
+    done();
+  }));
 });
 
 QUnit.test('moves to content-playback after a preroll', function(assert) {
