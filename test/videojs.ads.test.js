@@ -1,4 +1,4 @@
-(function(window, QUnit, videojs){
+(function(window, QUnit){
 
 var hasClass = function(el, className) {
   return (el.classList) ?
@@ -55,10 +55,10 @@ QUnit.test('player has the .vjs-has-started class once a preroll begins', functi
   this.player.trigger('adsready');
   this.player.play();
   this.player.ads.startLinearAdMode();
-  this.player.on('play', videojs.bind(this, function() {
-    assert.ok(hasClass(this.player.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
+  this.player.on('play', function() {
+    assert.ok(hasClass(this.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
     done();
-  }));
+  });
 });
 
 QUnit.test('moves to content-playback after a preroll', function(assert) {
@@ -649,9 +649,9 @@ QUnit.test('player events during prerolls are prefixed', function(assert) {
   var unprefixed = sinon.spy();
 
   // play a preroll
-  this.player.on('readyforpreroll', videojs.bind(this, function() {
-    this.player.ads.startLinearAdMode();
-  }));
+  this.player.on('readyforpreroll', function() {
+    this.ads.startLinearAdMode();
+  });
   this.player.trigger('play');
   this.player.trigger('adsready');
 
@@ -743,4 +743,4 @@ QUnit.test('player events during content playback are not prefixed', function(as
   assert.strictEqual(prefixed.getCall(0).args[0].type, 'contentended', 'prefixed the ended event');
 });
 
-}(window, window.QUnit, window.videojs));
+}(window, window.QUnit));

@@ -404,9 +404,9 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
     type: 'video/mp4'
   });
 
-  this.player.on('readyforpreroll', videojs.bind(this, function() {
-    this.player.ads.startLinearAdMode();
-  }));
+  this.player.on('readyforpreroll', function() {
+    this.ads.startLinearAdMode();
+  });
 
   this.player.trigger('adsready');
   this.player.trigger('play');
