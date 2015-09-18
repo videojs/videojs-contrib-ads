@@ -658,13 +658,12 @@ QUnit.test('adskip in postroll? transitions to content-playback and fires ended'
   assert.strictEqual(this.player.ads.state, 'content-playback');
 });
 
-QUnit.test('an ended event is fired in content-resuming via a timeout if not fired naturally', function(assert) {
-  var spy;
+QUnit.test('an "ended" event is fired in "content-resuming" via a timeout if not fired naturally', function(assert) {
+  var endedSpy = sinon.spy();
 
   assert.expect(6);
 
-  spy = sinon.spy();
-  this.player.on('ended', spy);
+  this.player.on('ended', endedSpy);
   assert.strictEqual(this.player.ads.state, 'content-set');
 
   this.player.trigger('adsready');
@@ -679,10 +678,36 @@ QUnit.test('an ended event is fired in content-resuming via a timeout if not fir
   this.player.ads.snapshot.ended = true;
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.ads.state, 'content-resuming');
-  assert.strictEqual(spy.callCount, 0, 'we should not have gotten an ended event yet');
+  assert.strictEqual(endedSpy.callCount, 0, 'we should not have gotten an ended event yet');
 
   this.clock.tick(1000);
-  assert.strictEqual(spy.callCount, 1, 'we should have fired ended from the timeout cbs');
+  assert.strictEqual(endedSpy.callCount, 1, 'we should have fired ended from the timeout');
+});
+
+QUnit.test('an "ended" event is not fired in "content-resuming" via a timeout if fired naturally', function(assert) {
+  var endedSpy = sinon.spy();
+
+  assert.expect(6);
+
+  this.player.on('ended', endedSpy);
+  assert.strictEqual(this.player.ads.state, 'content-set');
+
+  this.player.trigger('adsready');
+  assert.strictEqual(this.player.ads.state, 'ads-ready');
+
+  this.player.trigger('play');
+  this.player.trigger('adtimeout');
+  this.player.trigger('ended');
+  assert.strictEqual(this.player.ads.state, 'postroll?');
+
+  this.player.ads.startLinearAdMode();
+  this.player.ads.snapshot.ended = true;
+  this.player.ads.endLinearAdMode();
+  assert.strictEqual(this.player.ads.state, 'content-resuming');
+  assert.strictEqual(endedSpy.callCount, 0, 'we should not have gotten an ended event yet');
+
+  this.player.trigger('ended');
+  assert.strictEqual(endedSpy.callCount, 1, 'we should have fired ended from the timeout');
 });
 
 QUnit.test('adserror in ad-playback transitions to content-playback and triggers adend', function(assert) {
