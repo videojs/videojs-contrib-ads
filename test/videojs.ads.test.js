@@ -93,18 +93,13 @@ QUnit.test('adstart is fired before a preroll', function(assert) {
 });
 
 QUnit.test('player has the .vjs-has-started class once a preroll begins', function(assert) {
-  var done = assert.async();
-
   assert.expect(1);
-
   this.player.trigger('adsready');
-  this.player.play();
-  this.player.ads.startLinearAdMode();
 
-  this.player.on('play', function() {
-    assert.ok(hasClass(this.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
-    done();
-  });
+  // This is a bit of a hack in order to not need the test to be async.
+  this.player.tech_.trigger('play');
+  this.player.ads.startLinearAdMode();
+  assert.ok(hasClass(this.player.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
 });
 
 QUnit.test('moves to content-playback after a preroll', function(assert) {
