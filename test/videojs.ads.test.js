@@ -1,4 +1,4 @@
-(function(window, QUnit){
+(function(window, QUnit) {
 
 var hasClass = function(el, className) {
   return (el.classList) ?
@@ -28,6 +28,23 @@ QUnit.test('pauses to wait for prerolls when the plugin loads before play', func
   this.player.trigger('play');
   this.clock.tick(1);
   assert.strictEqual(spy.callCount, 2, 'play attempts are paused');
+});
+
+QUnit.test('pauses to wait for prerolls when the plugin loads after play', function(assert) {
+  var pauseSpy;
+
+  assert.expect(1);
+
+  this.player.paused = function() {
+    return false;
+  };
+
+  pauseSpy = sinon.spy(this.player, 'pause');
+  this.player.trigger('play');
+  this.clock.tick(1);
+  this.player.trigger('play');
+  this.clock.tick(1);
+  assert.equal(pauseSpy.callCount, 2, 'play attempts are paused');
 });
 
 QUnit.test('stops canceling play events when an ad is playing', function(assert) {
