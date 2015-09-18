@@ -6,6 +6,11 @@ var hasClass = function(el, className) {
     el.className.indexOf(className) !== -1;
 };
 
+var timerExists = function(env, keyOrId) {
+  var timerId = _.isNumber(keyOrId) ? keyOrId : env.player.ads[String(keyOrId)];
+  return env.clock.timers.hasOwnProperty(String(timerId));
+};
+
 QUnit.module('Ad Framework', window.sharedModuleHooks());
 
 QUnit.test('begins in content-set', function(assert) {
@@ -48,15 +53,31 @@ QUnit.test('pauses to wait for prerolls when the plugin loads after play', funct
 });
 
 QUnit.test('stops canceling play events when an ad is playing', function(assert) {
-  assert.expect(3);
+  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
+
+  assert.expect(10);
+
+  // Throughout this test, we check both that the expected timeouts are
+  // populated on the `clock` _and_ that `setTimeout` has been called the
+  // expected number of times.
+  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` does not exist');
+  assert.notOk(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` does not exist');
 
   this.player.trigger('play');
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
+  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
+
   this.player.trigger('adsready');
-  assert.ok(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'a cancel-play is scheduled');
+  assert.strictEqual(setTimeoutSpy.callCount, 3, '`adTimeoutTimeout` was re-scheduled');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
 
   this.player.trigger('adstart');
   assert.strictEqual(this.player.ads.state, 'ad-playback', 'ads are playing');
-  assert.notOk(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'the cancel-play timeout is canceled');
+  assert.notOk(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` no longer exists');
+  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` no longer exists');
+
+  window.setTimeout.restore();
 });
 
 QUnit.test('adstart is fired before a preroll', function(assert) {
@@ -269,7 +290,7 @@ QUnit.test('restores the poster attribute after ads have ended', function(assert
   assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
 });
 
-QUnit.test('changing the src triggers contentupdate', function(assert) {
+QUnit.test('changing the src triggers "contentupdate"', function(assert) {
   var spy = sinon.spy();
 
   assert.expect(1);
@@ -282,7 +303,7 @@ QUnit.test('changing the src triggers contentupdate', function(assert) {
   assert.strictEqual(spy.callCount, 1, 'one contentupdate event fired');
 });
 
-QUnit.test('contentupdate should fire when src is changed in content-resuming state after postroll', function(assert) {
+QUnit.test('"contentupdate" should fire when src is changed in "content-resuming" state after postroll', function(assert) {
   var spy = sinon.spy();
 
   assert.expect(2);
@@ -302,7 +323,7 @@ QUnit.test('contentupdate should fire when src is changed in content-resuming st
   assert.strictEqual(this.player.ads.state, 'content-set', 'we are in the content-set state');
 });
 
-QUnit.test('contentupdate should fire when src is changed in content-playback state after postroll', function(assert) {
+QUnit.test('"contentupdate" should fire when src is changed in "content-playback" state after postroll', function(assert) {
   var spy = sinon.spy();
 
   assert.expect(2);
@@ -323,7 +344,7 @@ QUnit.test('contentupdate should fire when src is changed in content-playback st
   assert.strictEqual(this.player.ads.state, 'content-set', 'we are in the content-set state');
 });
 
-QUnit.test('changing src does not trigger contentupdate during ad playback', function(assert) {
+QUnit.test('changing src does not trigger "contentupdate" during ad playback', function(assert) {
   var spy = sinon.spy();
 
   assert.expect(4);
@@ -349,7 +370,7 @@ QUnit.test('changing src does not trigger contentupdate during ad playback', fun
   assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The reason for content-playback should have been playing');
 });
 
-QUnit.test('contentSrc can be modified to avoid src changes triggering contentupdate', function(assert) {
+QUnit.test('`contentSrc` can be modified to avoid src changes triggering "contentupdate"', function(assert) {
   var spy = sinon.spy();
 
   assert.expect(6);
@@ -379,23 +400,27 @@ QUnit.test('contentSrc can be modified to avoid src changes triggering contentup
   assert.strictEqual(this.player.ads.contentSrc, this.player.currentSrc(), 'captures the current content src');
 });
 
-QUnit.test('the cancel-play timeout is cleared when exiting "preroll?"', function(assert) {
-  assert.expect(3);
+QUnit.test('the `cancelPlayTimeout` timeout is cleared when exiting "preroll?"', function(assert) {
+  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
+
+  assert.expect(5);
 
   this.player.trigger('adsready');
   this.player.trigger('play');
   assert.strictEqual(this.player.ads.state, 'preroll?', 'the player is waiting for prerolls');
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
+  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
 
   this.player.trigger('play');
-  assert.ok(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'a single cancel-play is registered');
+  this.player.trigger('play');
+  this.player.trigger('play');
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'no additional timers were created on subsequent "play" events');
 
-  this.player.trigger('play');
-  this.player.trigger('play');
-  this.player.trigger('play');
-  assert.ok(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'a single cancel-play is registered');
+  window.setTimeout.restore();
 });
 
-QUnit.test('adscanceled allows us to transition from content-set to content-playback', function(assert) {
+QUnit.test('"adscanceled" allows us to transition from "content-set" to "content-playback"', function(assert) {
   assert.expect(4);
 
   assert.strictEqual(this.player.ads.state, 'content-set');
@@ -406,39 +431,47 @@ QUnit.test('adscanceled allows us to transition from content-set to content-play
   assert.strictEqual(this.contentPlaybackReason(), 'adscanceled', 'The reason for content-playback should have been adscanceled');
 });
 
-QUnit.test('adscanceled allows us to transition from ads-ready? to content-playback', function(assert) {
-  assert.expect(7);
+QUnit.test('"adscanceled" allows us to transition from "ads-ready?" to "content-playback"', function(assert) {
+  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
+
+  assert.expect(9);
 
   assert.strictEqual(this.player.ads.state, 'content-set');
 
   this.player.trigger('play');
   assert.strictEqual(this.player.ads.state, 'ads-ready?');
-  assert.ok(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'the cancel-play timeout is registered');
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
+  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
 
   this.player.trigger('adscanceled');
   assert.strictEqual(this.player.ads.state, 'content-playback');
-  assert.notOk(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'the cancel-play timeout is canceled');
-  assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
-  assert.strictEqual(this.contentPlaybackReason(), 'adscanceled', 'The reason for content-playback should have been adscanceled');
+  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` was canceled');
+  assert.strictEqual(this.contentPlaybackSpy.callCount, 1, '"content-playback" event should have triggered');
+  assert.strictEqual(this.contentPlaybackReason(), 'adscanceled', 'reason for "content-playback" should have been "adscanceled"');
+
+  window.setTimeout.restore();
 });
 
 QUnit.test('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
-  var spy;
+  var playSpy = sinon.spy(this.player, 'play');
+  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
 
-  assert.expect(6);
+  assert.expect(8);
 
   assert.strictEqual(this.player.ads.state, 'content-set');
 
   this.player.trigger('play');
-  assert.ok(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'the cancel-play timeout is registered');
   assert.strictEqual(this.player.ads.state, 'ads-ready?');
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
+  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
 
   this.clock.tick(1);
-  spy = sinon.spy(this.player, 'play');
   this.player.trigger('adserror');
   assert.strictEqual(this.player.ads.state, 'content-playback');
-  assert.notOk(this.clock.timers.hasOwnProperty(String(this.player.ads.cancelPlayTimeout)), 'the cancel-play timeout is canceled');
-  assert.strictEqual(spy.callCount, 1, 'a play event should be triggered once we enter content-playback state if on was canceled.');
+  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` was canceled');
+  assert.strictEqual(playSpy.callCount, 1, 'a play event should be triggered once we enter "content-playback" state if on was canceled.');
 });
 
 QUnit.test('adserror in content-set transitions to content-playback', function(assert) {

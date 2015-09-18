@@ -531,14 +531,14 @@ var
               // change class to show that we're waiting on ads
               player.el().className += ' vjs-ad-loading';
               // schedule an adtimeout event to fire if we waited too long
-              player.ads.timeout = window.setTimeout(function() {
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.prerollTimeout);
               // signal to ad plugin that it's their opportunity to play a preroll
               player.trigger('readyforpreroll');
             },
             leave: function() {
-              window.clearTimeout(player.ads.timeout);
+              window.clearTimeout(player.ads.adTimeoutTimeout);
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
@@ -562,12 +562,12 @@ var
           'ads-ready?': {
             enter: function() {
               player.el().className += ' vjs-ad-loading';
-              player.ads.timeout = window.setTimeout(function() {
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.timeout);
             },
             leave: function() {
-              window.clearTimeout(player.ads.timeout);
+              window.clearTimeout(player.ads.adTimeoutTimeout);
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
@@ -661,12 +661,12 @@ var
 
               player.el().className += ' vjs-ad-loading';
 
-              player.ads.timeout = window.setTimeout(function() {
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.postrollTimeout);
             },
             leave: function() {
-              window.clearTimeout(player.ads.timeout);
+              window.clearTimeout(player.ads.adTimeoutTimeout);
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
