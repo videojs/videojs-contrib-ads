@@ -625,6 +625,9 @@ var
               },
               'adserror': function() {
                 this.state = 'content-resuming';
+              },
+              'adsfallback': function() {
+                this.state = 'ads-ready?';
               }
             }
           },
@@ -768,6 +771,7 @@ var
       'adsready',
       'adserror',
       'adscanceled',
+      'adsfallback',
       'adstart',  // startLinearAdMode()
       'adend',    // endLinearAdMode()
       'adskip'    // skipLinearAdMode()
