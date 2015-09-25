@@ -460,7 +460,7 @@ var
     player.ads = {
       state: 'content-set',
 
-      // Call this when an ad response has been recieved and there are
+      // Call this when an ad response has been received and there are
       // linear ads ready to be played.
       startLinearAdMode: function() {
         if (player.ads.state !== 'ad-playback') {
@@ -475,7 +475,7 @@ var
         }
       },
 
-      // Call this when an ad response has been recieved but there are no
+      // Call this when an ad response has been received but there are no
       // linear ads to be played (i.e. no ads available, or overlays).
       // This has no effect if we are already in a linear ad mode.  Always
       // use endLinearAdMode() to exit from linear ad-playback state.
