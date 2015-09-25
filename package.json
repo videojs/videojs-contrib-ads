@@ -1,6 +1,7 @@
 {
   "name": "videojs-contrib-ads",
   "description": "A framework that provides common functionality needed by video advertisement libraries working with video.js.",
+  "main": "dist/videojs.ads.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/videojs/videojs-contrib-ads.git"
