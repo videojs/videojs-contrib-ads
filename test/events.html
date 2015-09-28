@@ -4,9 +4,12 @@
   <meta charset="utf-8">
   <title>ads Test Suite</title>
   <!-- Load local video.js -->
-  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.min.css" media="screen">
+  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js.min.css" media="screen">
   <link rel="stylesheet" href="../src/videojs.ads.css" media="screen">
-  <!-- Load local QUnit. -->
+  <script src="../node_modules/video.js/dist/video.js"></script>
+  <!-- Lodash, for convenience in tests -->
+  <script src="../node_modules/lodash/index.js"></script>
+  <!-- Load local QUnit/sinon. -->
   <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" media="screen">
   <script src="../node_modules/es5-shim/es5-shim.js"></script>
   <style>
@@ -20,9 +23,9 @@
       height: 272px;
     }
   </style>
-
-  <script src="../node_modules/video.js/dist/video-js/video.dev.js"></script>
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+  <script src="../node_modules/sinon/pkg/sinon.js"></script>
+  <script src="../node_modules/sinon/pkg/sinon-ie.js"></script>
   <script>
     QUnit.config.urlConfig.push({
       id: 'flash',

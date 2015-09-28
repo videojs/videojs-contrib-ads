@@ -15,9 +15,10 @@
     });
 
     var log = document.querySelector('.log');
-    videojs.Html5.Events.concat(videojs.Html5.Events.map(function(evt) {
+    var Html5 = videojs.getComponent('Html5');
+    Html5.Events.concat(Html5.Events.map(function(evt) {
       return 'ad' + evt;
-    })).concat(videojs.Html5.Events.map(function(evt) {
+    })).concat(Html5.Events.map(function(evt) {
       return 'content' + evt;
     })).concat([
       // events emitted by ad plugin
