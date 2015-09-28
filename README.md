@@ -267,6 +267,13 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 A short list of features, fixes and changes for each release.
 
+### v3.0.0
+
+ * Mostly transparent to plugin users, this release is a VideoJS 5.0-compatible iteration of the plugin.
+ * Updated testing to be more modern and robust.
+ * Renamed `player.ads.timeout` to `player.ads.adTimeoutTimeout`.
+ * Exposed `player.ads.resumeEndedTimeout`.
+
 ### v2.0.0
 
  * Prefix video events during ad playback to simplify the world for non-ad plugins
