@@ -138,7 +138,7 @@ Without this timeout, the ads plugin would wait forever, and neither the content
 If the ad implementation takes a long time to initialize and this timeout is too short, then the content video will beging playing before the first preroll opportunity.
 This has the jarring effect that the viewer would see a little content before the preroll cuts in.
 
-During development, we found that five seconds seemed to be long enough to accomodate slow initialization in most cases, but still short enough that failures to initialize didn't look like failures of the player or content video.
+During development, we found that five seconds seemed to be long enough to accommodate slow initialization in most cases, but still short enough that failures to initialize didn't look like failures of the player or content video.
 
 ### prerollTimeout
 
