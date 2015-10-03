@@ -801,6 +801,23 @@ test('adserror in ad-playback transitions to content-playback and triggers adend
   equal(contentPlaybackReason, 'playing', 'The reason for content-playback should have been playing');
 });
 
+test('adsfallback in ad-playback transitions to adsready?', function(){
+  expect(5);
+  equal(player.ads.state, 'content-set');
+  player.trigger('adsready');
+  equal(player.ads.state, 'ads-ready');
+  player.trigger('play');
+  player.ads.startLinearAdMode();
+
+  player.on('adend', function(event) {
+    equal(event.type, 'adend', 'adend should be fired when we enter ads-ready? from adsfallback');
+  });
+
+  player.trigger('adsfallback');
+  equal(player.ads.state, 'ads-ready?');
+  equal(player.ads.triggerevent, 'adsfallback', 'The reason for ads-ready? should have been adsfallback');
+});
+
 test('calling startLinearAdMode() when already in ad-playback does not trigger adstart', function(){
   var adstart = 0;
   player.on('adstart', function() {

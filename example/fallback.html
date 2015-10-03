@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Example Ad Integration</title>
+  <!-- Load local video.js -->
+  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.min.css">
+  <script src="../node_modules/video.js/dist/video-js/video.dev.js"></script>
+  <!-- Load local ads plugin. -->
+  <link rel="stylesheet" href="../src/videojs.ads.css">
+  <script src="../src/videojs.ads.js"></script>
+  <!-- Load example ads integraiton. -->
+  <script src="example-integration-fallback.js"></script>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+  <h1>Example Ad Integration</h1>
+
+  <video
+    id="examplePlayer"
+    class="video-js vjs-default-skin"
+    width="640"
+    height="264"
+    poster="http://video-js.zencoder.com/oceans-clip.png"
+    autoplay
+    controls>
+    <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4' />
+    <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
+    <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
+  </video>
+
+  <h2>Set Src programmatically</h2>
+
+  <form>
+    <p>
+      <label>
+        <span>src: </span>
+        <input type="url" name="src" value="http://media.w3.org/2010/05/sintel/trailer.mp4" />
+      </label>
+      <button type="submit">set src</button>
+    </p>
+  </form>
+
+  <h2>Events</h2>
+
+  <ol class="log"></ol>
+
+<script src="app.js"></script>
+</body>
+</html>
