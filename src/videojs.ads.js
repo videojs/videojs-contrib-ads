@@ -151,10 +151,10 @@ var
       i,
       suppressedTracks = [],
       snapshot = {
-        ended: player.ended(),
-        src: player.currentSrc(),
         currentTime: player.currentTime(),
-        type: player.currentType()
+        ended: player.ended(),
+        source: player.currentSource(),
+        src: player.currentSrc()
       };
 
     if (tech) {
@@ -313,7 +313,7 @@ var
       player.one('contentloadedmetadata', restoreTracks);
 
       // if the src changed for ad playback, reset it
-      player.src({ src: snapshot.src, type: snapshot.type });
+      player.src(snapshot.source);
       // safari requires a call to `load` to pick up a changed source
       player.load();
       // and then resume from the snapshots time once the original src has loaded

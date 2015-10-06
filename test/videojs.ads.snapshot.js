@@ -422,11 +422,14 @@ test('changing the source and then timing out does not restore a snapshot', func
 // should check for src attribute modifications as well
 test('checks for a src attribute change that isn\'t reflected in currentSrc', function() {
   var updatedSrc;
+  player.currentSource = function() {
+    return {
+      src: 'content.mp4',
+      type: 'video/mp4'
+    };
+  };
   player.currentSrc = function() {
     return 'content.mp4';
-  };
-  player.currentType = function() {
-    return 'video/mp4';
   };
 
   player.trigger('adsready');
