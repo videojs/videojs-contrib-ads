@@ -1,13 +1,3 @@
-(function(factory){
-    "use strict";
-    if (typeof define === 'function' && define.amd) {
-        define('videojs-contrib-ads', ['videojs'], function(vjs){factory(window, document, vjs);});
-    } else if (typeof exports === 'object' && typeof module === 'object') {
-        factory(window, document, require('video.js'));
-    } else {
-        factory(window, document, videojs);
-    }
-})
 /**
  * Basic Ad support plugin for video.js.
  *
@@ -788,4 +778,4 @@ var
   // register the ad plugin framework
   vjs.plugin('ads', adFramework);
 
-});
+})(window, document, window.videojs);
