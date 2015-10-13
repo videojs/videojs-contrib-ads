@@ -647,6 +647,9 @@ var
               'contentupdate': function() {
                 this.state = 'content-set';
               },
+              contentresumed: function() {
+                this.state = 'content-playback';
+              },
               'playing': function() {
                 this.state = 'content-playback';
               },
@@ -762,6 +765,7 @@ var
       'contentupdate',
       'contentplaying',
       'contentended',
+      'contentresumed',
 
       // events emitted by third party ad implementors
       'adsready',
