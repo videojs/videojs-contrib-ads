@@ -246,6 +246,9 @@ var
       // determine if the video element has loaded enough of the snapshot source
       // to be ready to apply the rest of the state
       tryToResume = function() {
+        // Tech may have changed depending on the differences in sources of the
+        // original video and that of the ad
+        tech = player.el().querySelector('.vjs-tech');
         if (tech.readyState > 1) {
           // some browsers and media aren't "seekable".
           // readyState greater than 1 allows for seeking without exceptions
