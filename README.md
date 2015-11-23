@@ -227,10 +227,17 @@ player.ads.contentSrc = 'movie-high.mp4';
 player.src('movie-high.mp4');
 ```
 
-## Migrating to 2.0
+## Migration
+
+### Migrating to 2.0
 
 If you've previously developed an ad plugin on the 1.0 releases of this project, you may need to make some changes to operate correctly with 2.0.
 Check out the [migration guide](migrating-to-2.0.md) for more details.
+
+### Migrating to 3.0
+
+If you've previously developed an ad plugin on the 1.0 or 2.0 releases of this project, you may need to make some changes to operate correctly with 3.0.
+Check out the [migration guide](migrating-to-3.0.md) for more details.
 
 ## Building
 
@@ -259,6 +266,13 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 ## Release History
 
 A short list of features, fixes and changes for each release.
+
+### v3.0.0
+
+ * Mostly transparent to plugin users, this release is a VideoJS 5.0-compatible iteration of the plugin.
+ * Updated testing to be more modern and robust.
+ * Renamed `player.ads.timeout` to `player.ads.adTimeoutTimeout`.
+ * Exposed `player.ads.resumeEndedTimeout`.
 
 ### v2.0.0
 

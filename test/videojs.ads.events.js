@@ -1,92 +1,139 @@
-var video, player, events, filteredEvents, occurInOrder, count, attachListeners, contentUrl;
+(function(){
 
-filteredEvents = {
-  contenttimeupdate: 1,
-  contentprogress: 1,
-  contentwaiting: 1,
-  contentsuspend: 1,
-  adtimeupdate: 1,
-  adprogress: 1,
-  adwaiting: 1,
-  adsuspend: 1,
-  timeupdate: 1,
-  progress: 1,
-  waiting: 1,
-  suspend: 1
+/**
+ * Events which are explicitly ignored by player listeners in tests.
+ *
+ * @type {Array}
+ */
+var filteredEvents = [
+  'contenttimeupdate',
+  'contentprogress',
+  'contentwaiting',
+  'contentsuspend',
+  'adtimeupdate',
+  'adprogress',
+  'adwaiting',
+  'adsuspend',
+  'timeupdate',
+  'progress',
+  'waiting',
+  'suspend'
+];
+
+/**
+ * All player events that are listened to in the testing process.
+ *
+ * @type {Array}
+ */
+var relevantEvents = (function (events) {
+  return _.union(
+    events,
+    events.map(function(event) {
+      return 'ad' + event;
+    }),
+    events.map(function(event) {
+      return 'content' + event;
+    }),
+    [
+
+      // events emitted by ad plugin
+      'adtimeout',
+      'contentended',
+      'contentupdate',
+      'contentplayback',
+
+      // events emitted by third party ad implementors
+      'adsready',
+      'adscanceled',
+      'adstart',  // startLinearAdMode()
+      'adend'     // endLinearAdMode()
+
+    ]).filter(function(event) {
+      return filteredEvents.indexOf(event) === -1;
+    });
+}(videojs.getComponent('Html5').Events));
+
+/**
+ * Attaches a listener to track occurrences of `relevantEvents` on a player
+ * in a testing context.
+ *
+ * @param  {Object} env
+ *         A QUnit testing context. Expects `player` and `events` properties.
+ * @return {Object}
+ *         The `player` object in `env`.
+ */
+var attachPlayerListeners = function(env) {
+  return env.player.on(relevantEvents, function(event) {
+    env.events.push(event.type);
+  });
 };
 
-// Asserts that elements in the first array occur in the same order as
-// in the second array. It's okay to have duplicates or intermediate
-// elements in the first array that don't occur in the second. An
-// assertion will fail if all of the elements in the second array are
-// not present in the first.
-occurInOrder = function(actual, expected) {
+/**
+ * Asserts that elements in the first array occur in the same order as
+ * in the second array. It's okay to have duplicates or intermediate
+ * elements in the first array that don't occur in the second. An
+ * assertion will fail if all of the elements in the second array are
+ * not present in the first.
+ *
+ * @param  {Object} assert
+ * @param  {Array} actual
+ * @param  {Array} expected
+ */
+var occurInOrder = function(assert, actual, expected) {
   var i, j;
+
   for (i = j = 0; i < actual.length; i++) {
     if (actual[i] !== expected[j]) {
       continue;
     }
-    equal(actual[i],
-          expected[j],
-          'matched "' + expected[j] + '" to event number ' + i);
+
+    assert.strictEqual(
+      actual[i],
+      expected[j],
+      'matched "' + expected[j] + '" to event number ' + i
+    );
+
     j++;
   }
-  equal(j,
-        expected.length,
-        expected.length !== j ? 'missing ' + expected.slice(j).join(', ') : 'all expected events occurred');
+
+  assert.strictEqual(
+    j,
+    expected.length,
+    expected.length !== j ? 'missing ' + expected.slice(j).join(', ') : 'all expected events occurred'
+  );
 };
 
-// returns then number of elements in an array that equal the specified element.
-count = function(array, element) {
+/**
+ * Counts the number of elements in an array that are strictly equal to the
+ * specified element.
+ *
+ * @param  {Array} array
+ * @param  {Mixed} element
+ * @return {Number}
+ */
+var count = function(array, element) {
   var i = array.length, result = 0;
+
   while (i--) {
     if (array[i] === element) {
       result++;
     }
   }
+
   return result;
 };
 
-attachListeners = function(player) {
-  // capture video element events during test runs
-  player.on(videojs.Html5.Events.concat(videojs.Html5.Events.map(function(event) {
-    return 'ad' + event;
-  })).concat(videojs.Html5.Events.map(function(event) {
-    return 'content' + event;
-  })).concat([
-    // events emitted by ad plugin
-    'adtimeout',
-    'contentended',
-    'contentupdate',
-    'contentplayback',
-    // events emitted by third party ad implementors
-    'adsready',
-    'adscanceled',
-    'adstart',  // startLinearAdMode()
-    'adend'     // endLinearAdMode()
+QUnit.module('Ad Events Tranformation', {
 
-  ]), function(event) {
-    events.push(event.type);
-  });
-  events = [];
-  return player;
-};
-
-// get the absolute URL to the video so that snapshot restores aren't
-// seen as content updates
-contentUrl = (function() {
-  var a = document.createElement('a');
-  a.href = '../example/sintel-low.mp4';
-  return a.href;
-})();
-
-module('Ad Events Tranformation', {
-  setup: function() {
+  beforeEach: function() {
     var vjsOptions = {
       inactivityTimeout: 0
     };
 
-    video = document.createElement('video');
+    var video = document.createElement('video');
+
+    this.events = [];
+
     video.className = 'video-js vjs-default-skin';
     video.width = '640';
     video.height = '272';
@@ -95,44 +142,52 @@ module('Ad Events Tranformation', {
     // add video element behavior to phantom's non-functioning version
     if (/phantom/i.test(window.navigator.userAgent)) {
       video.removeAttribute = function(attr) {
-        video[attr] = '';
+        this[attr] = '';
       };
+
       video.load = function() {};
       video.play = function() {};
     }
+
     document.getElementById('qunit-fixture').appendChild(video);
 
     if (QUnit.config.flash) {
       vjsOptions.techOrder = ['flash'];
     }
 
-    player = videojs(video, vjsOptions);
+    this.player = videojs(video, vjsOptions);
 
     // load a video
-    player.src({
-      src: contentUrl,
+    this.player.src({
+
+      // get the absolute URL to the video so that snapshot restores aren't
+      // seen as content updates
+      src: (function() {
+        var a = document.createElement('a');
+        a.href = '../example/sintel-low.mp4';
+        return a.href;
+      })(),
       type: 'video/mp4'
     });
   },
-  teardown: function(){
-    player.dispose();
+
+  afterEach: function(){
+    this.player.dispose();
   }
 });
 
-test('linear ads should not affect regular video playback events', function(assert) {
+QUnit.test('linear ads should not affect regular video playback events', function(assert) {
   var done = assert.async();
-  player.exampleAds({
+
+  this.player.exampleAds({
     midrollPoint: 2
   });
-  attachListeners(player).on('ended', function() {
-    events = events.filter(function(event) {
-      return !(event in filteredEvents);
-    });
 
-    ok(events.length > 0, 'fired video events');
+  attachPlayerListeners(this).on('ended', videojs.bind(this, function() {
+    assert.ok(this.events.length > 0, 'fired video events');
 
     // ad events should occur in a sensible order
-    occurInOrder(events, [
+    occurInOrder(assert, this.events, [
       'adstart', 'adend',                 // play a preroll
       'contentplayback',
       'adstart', 'adend',                 // play a midroll
@@ -143,57 +198,57 @@ test('linear ads should not affect regular video playback events', function(asse
     ]);
 
     // content related events should occur in a sensible order
-    occurInOrder(events, [
+    occurInOrder(assert, this.events, [
       'play',    // start the video
       'playing', // content begins playing
       'ended'    // end the video
     ]);
-    occurInOrder(events, [
+
+    occurInOrder(assert, this.events, [
       'loadstart',
       'playing'
     ]);
 
-    equal(count(events, 'adsready'), 1, 'fired adsready exactly once');
-    equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
-    equal(count(events, 'ended'), 1, 'fired ended exactly once');
-    ok(player.ended(), 'the video is still ended');
+    assert.strictEqual(count(this.events, 'adsready'), 1, 'fired adsready exactly once');
+    assert.strictEqual(count(this.events, 'loadstart'), 1, 'fired loadstart exactly once');
+    assert.strictEqual(count(this.events, 'ended'), 1, 'fired ended exactly once');
+    assert.ok(this.player.ended(), 'the video is still ended');
     done();
-  });
-  player.ready(function() {
-    player.play();
-  });
+  }));
+
+  this.player.ready(this.player.play);
 });
 
-test('regular video playback is not affected', function(assert) {
+QUnit.test('regular video playback is not affected', function(assert) {
   var done = assert.async();
 
   // disable ads
-  player.exampleAds({
+  this.player.exampleAds({
     adServerUrl: 'empty-inventory.json'
   });
 
-  attachListeners(player).on('ended', function() {
-    events = events.filter(function(event) {
-      return !(event in filteredEvents);
-    });
+  attachPlayerListeners(this).on('ended', videojs.bind(this, function() {
+    assert.ok(this.events.length > 0, 'fired video events');
 
-    ok(events.length > 0, 'fired video events');
-    occurInOrder(events, [
+    occurInOrder(assert, this.events, [
       'play', // start the video
       'ended' // end the video
     ]);
-    occurInOrder(events, [
+
+    occurInOrder(assert, this.events, [
       'loadstart',
       'playing'
     ]);
-    equal(count(events, 'adstart'), 0, 'did not fire adstart');
-    equal(count(events, 'adend'), 0, 'did not fire adend');
-    equal(count(events, 'loadstart'), 1, 'fired loadstart exactly once');
-    equal(count(events, 'ended'), 1, 'fired ended exactly once');
-    ok(player.ended(), 'the video is still ended');
+
+    assert.strictEqual(count(this.events, 'adstart'), 0, 'did not fire adstart');
+    assert.strictEqual(count(this.events, 'adend'), 0, 'did not fire adend');
+    assert.strictEqual(count(this.events, 'loadstart'), 1, 'fired loadstart exactly once');
+    assert.strictEqual(count(this.events, 'ended'), 1, 'fired ended exactly once');
+    assert.ok(this.player.ended(), 'the video is still ended');
     done();
-  });
-  player.ready(function() {
-    player.play();
-  });
+  }));
+
+  this.player.ready(this.player.play);
 });
+
+}());

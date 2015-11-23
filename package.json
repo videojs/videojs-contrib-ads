@@ -1,11 +1,12 @@
 {
   "name": "videojs-contrib-ads",
   "description": "A framework that provides common functionality needed by video advertisement libraries working with video.js.",
+  "main": "dist/videojs.ads.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/videojs/videojs-contrib-ads.git"
   },
-  "version": "2.2.1",
+  "version": "3.0.0",
   "author": {
     "name": "Brightcove"
   },
@@ -30,7 +31,9 @@
     "grunt-contrib-watch": "~0.4.0",
     "grunt-umd": "^2.3.3",
     "load-grunt-tasks": "^3.1.0",
+    "lodash": "~3.10.1",
     "qunitjs": "^1.17.1",
-    "video.js": "^4.12.4"
+    "sinon": "~1.16.1",
+    "video.js": "5.0.0-rc.102"
   }
 }

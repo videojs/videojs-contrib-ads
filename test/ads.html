@@ -4,13 +4,24 @@
   <meta charset="utf-8">
   <title>ads Test Suite</title>
   <!-- Load local video.js -->
-  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.min.css" media="screen">
-  <script src="../node_modules/video.js/dist/video-js/video.dev.js"></script>
-  <!-- Load local QUnit. -->
+  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js.min.css" media="screen">
+  <script src="../node_modules/video.js/dist/video.js"></script>
+  <!-- Lodash, for convenience in tests -->
+  <script src="../node_modules/lodash/index.js"></script>
+  <!-- Load local QUnit/sinon. -->
   <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" media="screen">
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+  <script src="../node_modules/sinon/pkg/sinon.js"></script>
+  <script src="../node_modules/sinon/pkg/sinon-ie.js"></script>
   <!-- Load local lib and tests. -->
   <script src="../src/videojs.ads.js"></script>
+  <script src="shared-module-hooks.js"></script>
+  <script>
+    // There is a lot of setTimeout spaghetti in this plugin/tests/video.js,
+    // so we don't want QUnit to reorder tests on failure because it seems
+    // to occassionally cause problems.
+    QUnit.config.reorder = false;
+  </script>
   <script src="videojs.ads.test.js"></script>
   <script src="videojs.ads.snapshot.js"></script>
 </head>

@@ -12,21 +12,9 @@
   "eqnull": true,
   "browser": true,
   "predef": [
-    "videojs",
+    "_",
     "QUnit",
-    "module",
-    "test",
-    "asyncTest",
-    "expect",
-    "start",
-    "stop",
-    "ok",
-    "equal",
-    "notEqual",
-    "deepEqual",
-    "notDeepEqual",
-    "strictEqual",
-    "notStrictEqual",
-    "throws"
+    "sinon",
+    "videojs"
   ]
 }

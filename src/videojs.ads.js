@@ -3,7 +3,7 @@
  *
  * Common code to support ad integrations.
  */
-(function(window, document, vjs, undefined) {
+(function(window, document, videojs, undefined) {
 "use strict";
 
 var
@@ -79,29 +79,21 @@ var
   },
 
   /**
-   * Runs the callback at the next available opportunity.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate
+   * Defer an action until the call stack is clear.
+   *
+   * @param {Function} callback
    */
-  setImmediate = function(callback) {
-    return (
-      window.setImmediate ||
-      window.requestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.setTimeout
-    )(callback, 0);
+  defer = function(callback) {
+    return window.setTimeout(callback, 1);
   },
 
   /**
-   * Clears a callback previously registered with `setImmediate`.
+   * Aborts a previously deferred action.
+   *
    * @param {id} id The identifier of the callback to abort
    */
-  clearImmediate = function(id) {
-    return (window.clearImmediate ||
-            window.cancelAnimationFrame ||
-            window.webkitCancelAnimationFrame ||
-            window.mozCancelAnimationFrame ||
-            window.clearTimeout)(id);
+  undefer = function(id) {
+    return window.clearTimeout(id);
   },
 
   /**
@@ -118,7 +110,7 @@ var
       // another cancellation is already in flight, so do nothing
       return;
     }
-    player.ads.cancelPlayTimeout = setImmediate(function() {
+    player.ads.cancelPlayTimeout = defer(function() {
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
 
@@ -234,13 +226,20 @@ var
           // (https://html.spec.whatwg.org/multipage/embedded-content.html#seeking),
           // so it should not be necessary to wait for the seek to
           // indicate completion.
-          window.setTimeout(function() {
+          player.ads.resumeEndedTimeout = window.setTimeout(function() {
             if (!ended) {
               player.play();
             }
             player.off('ended', updateEnded);
+            player.ads.resumeEndedTimeout = null;
           }, 250);
           player.on('ended', updateEnded);
+
+          // Need to clear the resume/ended timeout on dispose. If it fires
+          // after a player is disposed, an error will be thrown!
+          player.on('dispose', function() {
+            window.clearTimeout(player.ads.resumeEndedTimeout);
+          });
         }
       },
 
@@ -266,7 +265,7 @@ var
 
         // delay a bit and then check again unless we're out of attempts
         if (attempts--) {
-          setTimeout(tryToResume, 50);
+          window.setTimeout(tryToResume, 50);
         } else {
           (function() {
             try {
@@ -384,7 +383,7 @@ var
     // avoiding the complexity for common usage
     (function() {
       var
-        videoEvents = videojs.Html5.Events,
+        videoEvents = videojs.getComponent('Html5').Events,
         i,
         returnTrue = function() { return true; },
         triggerEvent = function(type, event) {
@@ -461,7 +460,7 @@ var
     player.ads = {
       state: 'content-set',
 
-      // Call this when an ad response has been recieved and there are
+      // Call this when an ad response has been received and there are
       // linear ads ready to be played.
       startLinearAdMode: function() {
         if (player.ads.state !== 'ad-playback') {
@@ -476,7 +475,7 @@ var
         }
       },
 
-      // Call this when an ad response has been recieved but there are no
+      // Call this when an ad response has been received but there are no
       // linear ads to be played (i.e. no ads available, or overlays).
       // This has no effect if we are already in a linear ad mode.  Always
       // use endLinearAdMode() to exit from linear ad-playback state.
@@ -532,14 +531,14 @@ var
               // change class to show that we're waiting on ads
               player.el().className += ' vjs-ad-loading';
               // schedule an adtimeout event to fire if we waited too long
-              player.ads.timeout = window.setTimeout(function() {
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.prerollTimeout);
               // signal to ad plugin that it's their opportunity to play a preroll
               player.trigger('readyforpreroll');
             },
             leave: function() {
-              window.clearTimeout(player.ads.timeout);
+              window.clearTimeout(player.ads.adTimeoutTimeout);
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
@@ -563,12 +562,12 @@ var
           'ads-ready?': {
             enter: function() {
               player.el().className += ' vjs-ad-loading';
-              player.ads.timeout = window.setTimeout(function() {
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.timeout);
             },
             leave: function() {
-              window.clearTimeout(player.ads.timeout);
+              window.clearTimeout(player.ads.adTimeoutTimeout);
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
@@ -606,7 +605,7 @@ var
               // We no longer need to supress play events once an ad is playing.
               // Clear it if we were.
               if (player.ads.cancelPlayTimeout) {
-                clearImmediate(player.ads.cancelPlayTimeout);
+                undefer(player.ads.cancelPlayTimeout);
                 player.ads.cancelPlayTimeout = null;
               }
             },
@@ -648,6 +647,9 @@ var
               'contentupdate': function() {
                 this.state = 'content-set';
               },
+              contentresumed: function() {
+                this.state = 'content-playback';
+              },
               'playing': function() {
                 this.state = 'content-playback';
               },
@@ -662,12 +664,12 @@ var
 
               player.el().className += ' vjs-ad-loading';
 
-              player.ads.timeout = window.setTimeout(function() {
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
                 player.trigger('adtimeout');
               }, settings.postrollTimeout);
             },
             leave: function() {
-              window.clearTimeout(player.ads.timeout);
+              window.clearTimeout(player.ads.adTimeoutTimeout);
               removeClass(player.el(), 'vjs-ad-loading');
             },
             events: {
@@ -676,19 +678,19 @@ var
               },
               'adskip': function() {
                 this.state = 'content-resuming';
-                setImmediate(function() {
+                defer(function() {
                   player.trigger('ended');
                 });
               },
               'adtimeout': function() {
                 this.state = 'content-resuming';
-                setImmediate(function() {
+                defer(function() {
                   player.trigger('ended');
                 });
               },
               'adserror': function() {
                 this.state = 'content-resuming';
-                setImmediate(function() {
+                defer(function() {
                   player.trigger('ended');
                 });
               }
@@ -698,7 +700,7 @@ var
             enter: function() {
               // make sure that any cancelPlayTimeout is cleared
               if (player.ads.cancelPlayTimeout) {
-                clearImmediate(player.ads.cancelPlayTimeout);
+                undefer(player.ads.cancelPlayTimeout);
                 player.ads.cancelPlayTimeout = null;
               }
               // this will cause content to start if a user initiated
@@ -757,12 +759,13 @@ var
     };
 
     // register for the events we're interested in
-    on(player, vjs.Html5.Events.concat([
+    on(player, videojs.getComponent('Html5').Events.concat([
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
       'contentplaying',
       'contentended',
+      'contentresumed',
 
       // events emitted by third party ad implementors
       'adsready',
@@ -798,9 +801,9 @@ var
           }
         };
       // loadstart reliably indicates a new src has been set
-      player.on(['loadstart'], checkSrc);
+      player.on('loadstart', checkSrc);
       // check immediately in case we missed the loadstart
-      setImmediate(checkSrc);
+      defer(checkSrc);
     })();
 
     // kick off the fsm
@@ -812,6 +815,6 @@ var
   };
 
   // register the ad plugin framework
-  vjs.plugin('ads', adFramework);
+  videojs.plugin('ads', adFramework);
 
 })(window, document, videojs);
