@@ -1,11 +1,5 @@
 (function(window, QUnit) {
 
-var hasClass = function(el, className) {
-  return (el.classList) ?
-    el.classList.contains(className) :
-    el.className.indexOf(className) !== -1;
-};
-
 var timerExists = function(env, keyOrId) {
   var timerId = _.isNumber(keyOrId) ? keyOrId : env.player.ads[String(keyOrId)];
   return env.clock.timers.hasOwnProperty(String(timerId));
@@ -99,7 +93,7 @@ QUnit.test('player has the .vjs-has-started class once a preroll begins', functi
   // This is a bit of a hack in order to not need the test to be async.
   this.player.tech_.trigger('play');
   this.player.ads.startLinearAdMode();
-  assert.ok(hasClass(this.player.el(), 'vjs-has-started'), 'player has .vjs-has-started class');
+  assert.ok(this.player.hasClass('vjs-has-started'), 'player has .vjs-has-started class');
 });
 
 QUnit.test('moves to content-playback after a preroll', function(assert) {
@@ -174,7 +168,7 @@ QUnit.test('adds the ad-mode class when a preroll plays', function(assert) {
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
   el = this.player.el();
-  assert.ok(hasClass(el, 'vjs-ad-playing'), 'the ad class should be in "' + el.className + '"');
+  assert.ok(this.player.hasClass('vjs-ad-playing'), 'the ad class should be in "' + el.className + '"');
 });
 
 QUnit.test('removes the ad-mode class when a preroll finishes', function(assert) {
@@ -187,7 +181,7 @@ QUnit.test('removes the ad-mode class when a preroll finishes', function(assert)
   this.player.ads.startLinearAdMode();
   this.player.ads.endLinearAdMode();
   el = this.player.el();
-  assert.notOk(hasClass(el, 'vjs-ad-playing'), 'the ad class should not be in "' + el.className + '"');
+  assert.notOk(this.player.hasClass('vjs-ad-playing'), 'the ad class should not be in "' + el.className + '"');
   assert.strictEqual(this.contentPlaybackSpy.callCount, 0, 'did not fire contentplayback yet');
   assert.strictEqual(this.player.ads.triggerevent, 'adend', 'triggerevent for content-resuming should have been adend');
 
@@ -203,7 +197,7 @@ QUnit.test('adds a class while waiting for an ad plugin to load', function(asser
 
   this.player.trigger('play');
   el = this.player.el();
-  assert.ok(hasClass(el, 'vjs-ad-loading'), 'the ad loading class should be in "' + el.className + '"');
+  assert.ok(this.player.hasClass('vjs-ad-loading'), 'the ad loading class should be in "' + el.className + '"');
 });
 
 QUnit.test('adds a class while waiting for a preroll', function(assert) {
@@ -214,7 +208,7 @@ QUnit.test('adds a class while waiting for a preroll', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   el = this.player.el();
-  assert.ok(hasClass(el, 'vjs-ad-loading'), 'the ad loading class should be in "' + el.className + '"');
+  assert.ok(this.player.hasClass('vjs-ad-loading'), 'the ad loading class should be in "' + el.className + '"');
 });
 
 QUnit.test('removes the loading class when the preroll begins', function(assert) {
@@ -226,7 +220,7 @@ QUnit.test('removes the loading class when the preroll begins', function(assert)
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
   el = this.player.el();
-  assert.notOk(hasClass(el, 'vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
+  assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
 });
 
 QUnit.test('removes the loading class when the preroll times out', function(assert) {
@@ -238,7 +232,7 @@ QUnit.test('removes the loading class when the preroll times out', function(asse
   this.player.trigger('play');
   this.player.trigger('adtimeout');
   el = this.player.el();
-  assert.notOk(hasClass(el, 'vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
+  assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
   assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
   assert.strictEqual(this.contentPlaybackReason(), 'adtimeout', 'The reason for content-playback should have been adtimeout');
 });

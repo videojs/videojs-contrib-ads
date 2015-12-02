@@ -51,7 +51,7 @@ var
    */
   getPlayerSnapshot = function(player) {
     var
-      tech = player.el().querySelector('.vjs-tech'),
+      tech = player.$('.vjs-tech'),
       tracks = player.remoteTextTracks ? player.remoteTextTracks() : [],
       track,
       i,
@@ -83,19 +83,6 @@ var
     return snapshot;
   },
 
-  removeClass = function(element, className) {
-    var
-      classes = element.className.split(/\s+/),
-      i = classes.length,
-      newClasses = [];
-    while (i--) {
-      if (classes[i] !== className) {
-        newClasses.push(classes[i]);
-      }
-    }
-    element.className = newClasses.join(' ');
-  },
-
   /**
    * Attempts to modify the specified player so that its state is equivalent to
    * the state of the snapshot.
@@ -104,7 +91,7 @@ var
   restorePlayerSnapshot = function(player, snapshot) {
     var
       // the playback tech
-      tech = player.el().querySelector('.vjs-tech'),
+      tech = player.$('.vjs-tech'),
 
       // the number of remaining attempts to restore the snapshot
       attempts = 20,
@@ -242,7 +229,7 @@ var
    * @param {object} player The videojs player object
    */
   removeNativePoster = function(player) {
-    var tech = player.el().querySelector('.vjs-tech');
+    var tech = player.$('.vjs-tech');
     if (tech) {
       tech.removeAttribute('poster');
     }
@@ -425,7 +412,7 @@ var
         'preroll?': {
           enter: function() {
             // change class to show that we're waiting on ads
-            player.el().className += ' vjs-ad-loading';
+            player.addClass('vjs-ad-loading');
             // schedule an adtimeout event to fire if we waited too long
             player.ads.adTimeoutTimeout = window.setTimeout(function() {
               player.trigger('adtimeout');
@@ -435,7 +422,7 @@ var
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
-            removeClass(player.el(), 'vjs-ad-loading');
+            player.removeClass('vjs-ad-loading');
           },
           events: {
             'play': function() {
@@ -457,14 +444,14 @@ var
         },
         'ads-ready?': {
           enter: function() {
-            player.el().className += ' vjs-ad-loading';
+            player.addClass('vjs-ad-loading');
             player.ads.adTimeoutTimeout = window.setTimeout(function() {
               player.trigger('adtimeout');
             }, settings.timeout);
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
-            removeClass(player.el(), 'vjs-ad-loading');
+            player.removeClass('vjs-ad-loading');
           },
           events: {
             'play': function() {
@@ -493,7 +480,7 @@ var
             this.snapshot = getPlayerSnapshot(player);
 
             // add css to the element to indicate and ad is playing.
-            player.el().className += ' vjs-ad-playing';
+            player.addClass('vjs-ad-playing');
 
             // remove the poster so it doesn't flash between ads
             removeNativePoster(player);
@@ -506,7 +493,7 @@ var
             }
           },
           leave: function() {
-            removeClass(player.el(), 'vjs-ad-playing');
+            player.removeClass('vjs-ad-playing');
             restorePlayerSnapshot(player, this.snapshot);
             // trigger 'adend' as a consistent notification
             // event that we're exiting ad-playback.
@@ -558,7 +545,7 @@ var
           enter: function() {
             this.snapshot = getPlayerSnapshot(player);
 
-            player.el().className += ' vjs-ad-loading';
+            player.addClass('vjs-ad-loading');
 
             player.ads.adTimeoutTimeout = window.setTimeout(function() {
               player.trigger('adtimeout');
@@ -566,7 +553,7 @@ var
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
-            removeClass(player.el(), 'vjs-ad-loading');
+            player.removeClass('vjs-ad-loading');
           },
           events: {
             'adstart': function() {

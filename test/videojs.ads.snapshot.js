@@ -457,7 +457,7 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
 
   // make it appear that the tech is ready to seek
   this.player.trigger('loadstart');
-  this.player.el().querySelector('.vjs-tech').seekable = [1];
+  this.player.$('.vjs-tech').seekable = [1];
   this.player.trigger('loadedmetadata');
   assert.strictEqual(spy.callCount, 2, 'fired "content" prefixed events');
 });
