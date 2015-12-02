@@ -9,22 +9,6 @@
 var
 
   /**
-   * Copies properties from one or more objects onto an original.
-   */
-  extend = function(obj /*, arg1, arg2, ... */) {
-    var arg, i, k;
-    for (i=1; i<arguments.length; i++) {
-      arg = arguments[i];
-      for (k in arg) {
-        if (arg.hasOwnProperty(k)) {
-          obj[k] = arg[k];
-        }
-      }
-    }
-    return obj;
-  },
-
-  /**
    * Add a handler for multiple listeners to an object that supports addEventListener() or on().
    *
    * @param {object} obj The object to which the handler will be assigned.
@@ -364,10 +348,7 @@ var
   adFramework = function(options) {
     var
       player = this,
-
-      // merge options and defaults
-      settings = extend({}, defaults, options || {}),
-
+      settings = videojs.mergeOptions(defaults, options),
       fsmHandler;
 
     // prefix all video element events during ad playback
