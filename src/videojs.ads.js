@@ -3,30 +3,12 @@
  *
  * Common code to support ad integrations.
  */
-(function(window, document, videojs, undefined) {
-"use strict";
+(function(window, videojs, undefined) {
+'use strict';
 
 var
 
   VIDEO_EVENTS = videojs.getComponent('Html5').Events,
-
-  /**
-   * Defer an action until the call stack is clear.
-   *
-   * @param {Function} callback
-   */
-  defer = function(callback) {
-    return window.setTimeout(callback, 1);
-  },
-
-  /**
-   * Aborts a previously deferred action.
-   *
-   * @param {id} id The identifier of the callback to abort
-   */
-  undefer = function(id) {
-    return window.clearTimeout(id);
-  },
 
   /**
    * If ads are not playing, pauses the player at the next available
@@ -42,7 +24,7 @@ var
       // another cancellation is already in flight, so do nothing
       return;
     }
-    player.ads.cancelPlayTimeout = defer(function() {
+    player.ads.cancelPlayTimeout = window.setTimeout(function() {
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
 
@@ -57,7 +39,7 @@ var
           player.play();
         }
       });
-    });
+    }, 1);
   },
 
   /**
@@ -519,7 +501,7 @@ var
             // We no longer need to supress play events once an ad is playing.
             // Clear it if we were.
             if (player.ads.cancelPlayTimeout) {
-              undefer(player.ads.cancelPlayTimeout);
+              window.clearTimeout(player.ads.cancelPlayTimeout);
               player.ads.cancelPlayTimeout = null;
             }
           },
@@ -592,21 +574,21 @@ var
             },
             'adskip': function() {
               this.state = 'content-resuming';
-              defer(function() {
+              window.setTimeout(function() {
                 player.trigger('ended');
-              });
+              }, 1);
             },
             'adtimeout': function() {
               this.state = 'content-resuming';
-              defer(function() {
+              window.setTimeout(function() {
                 player.trigger('ended');
-              });
+              }, 1);
             },
             'adserror': function() {
               this.state = 'content-resuming';
-              defer(function() {
+              window.setTimeout(function() {
                 player.trigger('ended');
-              });
+              }, 1);
             }
           }
         },
@@ -614,7 +596,7 @@ var
           enter: function() {
             // make sure that any cancelPlayTimeout is cleared
             if (player.ads.cancelPlayTimeout) {
-              undefer(player.ads.cancelPlayTimeout);
+              window.clearTimeout(player.ads.cancelPlayTimeout);
               player.ads.cancelPlayTimeout = null;
             }
             // this will cause content to start if a user initiated
@@ -717,7 +699,7 @@ var
       // loadstart reliably indicates a new src has been set
       player.on('loadstart', checkSrc);
       // check immediately in case we missed the loadstart
-      defer(checkSrc);
+      window.setTimeout(checkSrc, 1);
     })();
 
     // kick off the fsm
@@ -731,4 +713,4 @@ var
   // register the ad plugin framework
   videojs.plugin('ads', adFramework);
 
-})(window, document, videojs);
+})(window, videojs);
