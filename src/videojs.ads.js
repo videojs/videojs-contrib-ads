@@ -303,7 +303,7 @@ var
       player.one('contentloadedmetadata', restoreTracks);
 
       // if the src changed for ad playback, reset it
-      player.src({ src: snapshot.src, type: snapshot.type });
+      player.src({ src: snapshot.currentSrc, type: snapshot.type });
       // safari requires a call to `load` to pick up a changed source
       player.load();
       // and then resume from the snapshots time once the original src has loaded
