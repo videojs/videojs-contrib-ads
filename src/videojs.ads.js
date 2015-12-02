@@ -8,59 +8,7 @@
 
 var
 
-  /**
-   * Add a handler for multiple listeners to an object that supports addEventListener() or on().
-   *
-   * @param {object} obj The object to which the handler will be assigned.
-   * @param {mixed} events A string, array of strings, or hash of string/callback pairs.
-   * @param {function} callback Invoked when specified events occur, if events param is not a hash.
-   *
-   * @return {object} obj The object passed in.
-   */
-  on = function(obj, events, handler) {
-
-    var
-
-      type = Object.prototype.toString.call(events),
-
-      register = function(obj, event, handler) {
-        if (obj.addEventListener) {
-          obj.addEventListener(event, handler);
-        } else if (obj.on) {
-          obj.on(event, handler);
-        } else if (obj.attachEvent) {
-          obj.attachEvent('on' + event, handler);
-        } else {
-          throw new Error('object has no mechanism for adding event listeners');
-        }
-      },
-
-      i,
-      ii;
-
-    switch (type) {
-      case '[object String]':
-        register(obj, events, handler);
-        break;
-      case '[object Array]':
-        for (i = 0, ii = events.length; i<ii; i++) {
-          register(obj, events[i], handler);
-        }
-        break;
-      case '[object Object]':
-        for (i in events) {
-          if (events.hasOwnProperty(i)) {
-            register(obj, i, events[i]);
-          }
-        }
-        break;
-      default:
-        throw new Error('Unrecognized events parameter type: ' + type);
-    }
-
-    return obj;
-
-  },
+  VIDEO_EVENTS = videojs.getComponent('Html5').Events,
 
   /**
    * Defer an action until the call stack is clear.
@@ -346,10 +294,9 @@ var
   },
 
   adFramework = function(options) {
-    var
-      player = this,
-      settings = videojs.mergeOptions(defaults, options),
-      fsmHandler;
+    var player = this;
+    var settings = videojs.mergeOptions(defaults, options);
+    var fsmHandler;
 
     // prefix all video element events during ad playback
     // if the video element emits ad-related events directly,
@@ -357,75 +304,68 @@ var
     // plugins that wish to handle ad events to do so while
     // avoiding the complexity for common usage
     (function() {
-      var
-        videoEvents = videojs.getComponent('Html5').Events,
-        i,
-        returnTrue = function() { return true; },
-        triggerEvent = function(type, event) {
-          // pretend we called stopImmediatePropagation because we want the native
-          // element events to continue propagating
-          event.isImmediatePropagationStopped = returnTrue;
-          event.cancelBubble = true;
-          event.isPropagationStopped = returnTrue;
-          player.trigger({
-            type: type + event.type,
-            state: player.ads.state,
-            originalEvent: event
-          });
-        },
-        redispatch = function(event) {
-          if (player.ads.state === 'ad-playback') {
-            triggerEvent('ad', event);
-          } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
-            triggerEvent('content', event);
-          } else if (player.ads.state === 'content-resuming') {
-            if (player.ads.snapshot) {
-              // the video element was recycled for ad playback
-              if (player.currentSrc() !== player.ads.snapshot.currentSrc) {
-                if (event.type === 'loadstart') {
-                  return;
-                }
-                return triggerEvent('content', event);
+      var videoEvents = VIDEO_EVENTS.concat([
+        'firstplay',
+        'loadedalldata'
+      ]);
 
-              // we ended playing postrolls and the video itself
-              // the content src is back in place
-              } else if (player.ads.snapshot.ended) {
-                if ((event.type === 'pause' ||
-                    event.type === 'ended')) {
-                  // after loading a video, the natural state is to not be started
-                  // in this case, it actually has, so, we do it manually
-                  player.addClass('vjs-has-started');
-                  // let `pause` and `ended` events through, naturally
-                  return;
-                }
-                // prefix all other events in content-resuming with `content`
-                return triggerEvent('content', event);
+      var returnTrue = function() { return true; };
+
+      var triggerEvent = function(type, event) {
+        // pretend we called stopImmediatePropagation because we want the native
+        // element events to continue propagating
+        event.isImmediatePropagationStopped = returnTrue;
+        event.cancelBubble = true;
+        event.isPropagationStopped = returnTrue;
+        player.trigger({
+          type: type + event.type,
+          state: player.ads.state,
+          originalEvent: event
+        });
+      };
+
+      player.on(videoEvents, function(event) {
+        if (player.ads.state === 'ad-playback') {
+          triggerEvent('ad', event);
+        } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
+          triggerEvent('content', event);
+        } else if (player.ads.state === 'content-resuming') {
+          if (player.ads.snapshot) {
+            // the video element was recycled for ad playback
+            if (player.currentSrc() !== player.ads.snapshot.currentSrc) {
+              if (event.type === 'loadstart') {
+                return;
               }
-            }
-            if (event.type !== 'playing') {
-              triggerEvent('content', event);
+              return triggerEvent('content', event);
+
+            // we ended playing postrolls and the video itself
+            // the content src is back in place
+            } else if (player.ads.snapshot.ended) {
+              if ((event.type === 'pause' ||
+                  event.type === 'ended')) {
+                // after loading a video, the natural state is to not be started
+                // in this case, it actually has, so, we do it manually
+                player.addClass('vjs-has-started');
+                // let `pause` and `ended` events through, naturally
+                return;
+              }
+              // prefix all other events in content-resuming with `content`
+              return triggerEvent('content', event);
             }
           }
-        };
-
-      //Add video.js specific events
-      videoEvents.push('firstplay');
-      videoEvents.push('loadedalldata');
-
-      i = videoEvents.length;
-      while (i--) {
-        player.on(videoEvents[i], redispatch);
-      }
-      return redispatch;
+          if (event.type !== 'playing') {
+            triggerEvent('content', event);
+          }
+        }
+      });
     })();
 
     // We now auto-play when an ad gets loaded if we're playing ads in the same video element as the content.
     // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we cannot play from adcanplay.
     // This will allow ad-integrations from needing to do this themselves.
     player.on(['addurationchange', 'adcanplay'], function() {
-      var snapshot = player.ads.snapshot;
-      if (player.currentSrc() === snapshot.currentSrc) {
-        return;  // do nothing
+      if (player.currentSrc() === player.ads.snapshot.currentSrc) {
+        return;
       }
 
       player.play();
@@ -463,249 +403,248 @@ var
 
     fsmHandler = function(event) {
       // Ad Playback State Machine
-      var
-        fsm = {
-          'content-set': {
-            events: {
-              'adscanceled': function() {
-                this.state = 'content-playback';
-              },
-              'adsready': function() {
-                this.state = 'ads-ready';
-              },
-              'play': function() {
-                this.state = 'ads-ready?';
-                cancelContentPlay(player);
-                // remove the poster so it doesn't flash between videos
-                removeNativePoster(player);
-              },
-              'adserror': function() {
-                this.state = 'content-playback';
-              },
-              'adskip': function() {
-                this.state = 'content-playback';
-              }
-            }
-          },
-          'ads-ready': {
-            events: {
-              'play': function() {
-                this.state = 'preroll?';
-                cancelContentPlay(player);
-              },
-              'adskip': function() {
-                this.state = 'content-playback';
-              },
-              'adserror': function() {
-                this.state = 'content-playback';
-              }
-            }
-          },
-          'preroll?': {
-            enter: function() {
-              // change class to show that we're waiting on ads
-              player.el().className += ' vjs-ad-loading';
-              // schedule an adtimeout event to fire if we waited too long
-              player.ads.adTimeoutTimeout = window.setTimeout(function() {
-                player.trigger('adtimeout');
-              }, settings.prerollTimeout);
-              // signal to ad plugin that it's their opportunity to play a preroll
-              player.trigger('readyforpreroll');
+      var fsm = {
+        'content-set': {
+          events: {
+            'adscanceled': function() {
+              this.state = 'content-playback';
             },
-            leave: function() {
-              window.clearTimeout(player.ads.adTimeoutTimeout);
-              removeClass(player.el(), 'vjs-ad-loading');
+            'adsready': function() {
+              this.state = 'ads-ready';
             },
-            events: {
-              'play': function() {
-                cancelContentPlay(player);
-              },
-              'adstart': function() {
-                this.state = 'ad-playback';
-              },
-              'adskip': function() {
-                this.state = 'content-playback';
-              },
-              'adtimeout': function() {
-                this.state = 'content-playback';
-              },
-              'adserror': function() {
-                this.state = 'content-playback';
-              }
-            }
-          },
-          'ads-ready?': {
-            enter: function() {
-              player.el().className += ' vjs-ad-loading';
-              player.ads.adTimeoutTimeout = window.setTimeout(function() {
-                player.trigger('adtimeout');
-              }, settings.timeout);
-            },
-            leave: function() {
-              window.clearTimeout(player.ads.adTimeoutTimeout);
-              removeClass(player.el(), 'vjs-ad-loading');
-            },
-            events: {
-              'play': function() {
-                cancelContentPlay(player);
-              },
-              'adscanceled': function() {
-                this.state = 'content-playback';
-              },
-              'adsready': function() {
-                this.state = 'preroll?';
-              },
-              'adskip': function() {
-                this.state = 'content-playback';
-              },
-              'adtimeout': function() {
-                this.state = 'content-playback';
-              },
-              'adserror': function() {
-                this.state = 'content-playback';
-              }
-            }
-          },
-          'ad-playback': {
-            enter: function() {
-              // capture current player state snapshot (playing, currentTime, src)
-              this.snapshot = getPlayerSnapshot(player);
-
-              // add css to the element to indicate and ad is playing.
-              player.el().className += ' vjs-ad-playing';
-
-              // remove the poster so it doesn't flash between ads
+            'play': function() {
+              this.state = 'ads-ready?';
+              cancelContentPlay(player);
+              // remove the poster so it doesn't flash between videos
               removeNativePoster(player);
-
-              // We no longer need to supress play events once an ad is playing.
-              // Clear it if we were.
-              if (player.ads.cancelPlayTimeout) {
-                undefer(player.ads.cancelPlayTimeout);
-                player.ads.cancelPlayTimeout = null;
-              }
             },
-            leave: function() {
-              removeClass(player.el(), 'vjs-ad-playing');
-              restorePlayerSnapshot(player, this.snapshot);
-              // trigger 'adend' as a consistent notification
-              // event that we're exiting ad-playback.
-              if (player.ads.triggerevent !== 'adend') {
-                player.trigger('adend');
-              }
+            'adserror': function() {
+              this.state = 'content-playback';
             },
-            events: {
-              'adend': function() {
-                this.state = 'content-resuming';
-              },
-              'adserror': function() {
-                this.state = 'content-resuming';
-              }
-            }
-          },
-          'content-resuming': {
-            enter: function() {
-              if (this.snapshot.ended) {
-                window.clearTimeout(player.ads._fireEndedTimeout);
-                // in some cases, ads are played in a swf or another video element
-                // so we do not get an ended event in this state automatically.
-                // If we don't get an ended event we can use, we need to trigger
-                // one ourselves or else we won't actually ever end the current video.
-                player.ads._fireEndedTimeout = window.setTimeout(function() {
-                  player.trigger('ended');
-                }, 1000);
-              }
-            },
-            leave: function() {
-              window.clearTimeout(player.ads._fireEndedTimeout);
-            },
-            events: {
-              'contentupdate': function() {
-                this.state = 'content-set';
-              },
-              contentresumed: function() {
-                this.state = 'content-playback';
-              },
-              'playing': function() {
-                this.state = 'content-playback';
-              },
-              'ended': function() {
-                this.state = 'content-playback';
-              }
-            }
-          },
-          'postroll?': {
-            enter: function() {
-              this.snapshot = getPlayerSnapshot(player);
-
-              player.el().className += ' vjs-ad-loading';
-
-              player.ads.adTimeoutTimeout = window.setTimeout(function() {
-                player.trigger('adtimeout');
-              }, settings.postrollTimeout);
-            },
-            leave: function() {
-              window.clearTimeout(player.ads.adTimeoutTimeout);
-              removeClass(player.el(), 'vjs-ad-loading');
-            },
-            events: {
-              'adstart': function() {
-                this.state = 'ad-playback';
-              },
-              'adskip': function() {
-                this.state = 'content-resuming';
-                defer(function() {
-                  player.trigger('ended');
-                });
-              },
-              'adtimeout': function() {
-                this.state = 'content-resuming';
-                defer(function() {
-                  player.trigger('ended');
-                });
-              },
-              'adserror': function() {
-                this.state = 'content-resuming';
-                defer(function() {
-                  player.trigger('ended');
-                });
-              }
-            }
-          },
-          'content-playback': {
-            enter: function() {
-              // make sure that any cancelPlayTimeout is cleared
-              if (player.ads.cancelPlayTimeout) {
-                undefer(player.ads.cancelPlayTimeout);
-                player.ads.cancelPlayTimeout = null;
-              }
-              // this will cause content to start if a user initiated
-              // 'play' event was canceled earlier.
-              player.trigger({
-                type: 'contentplayback',
-                triggerevent: player.ads.triggerevent
-              });
-            },
-            events: {
-              // in the case of a timeout, adsready might come in late.
-              'adsready': function() {
-                player.trigger('readyforpreroll');
-              },
-              'adstart': function() {
-                this.state = 'ad-playback';
-              },
-              'contentupdate': function() {
-                if (player.paused()) {
-                  this.state = 'content-set';
-                } else {
-                  this.state = 'ads-ready?';
-                }
-              },
-              'contentended': function() {
-                this.state = 'postroll?';
-              }
+            'adskip': function() {
+              this.state = 'content-playback';
             }
           }
-        };
+        },
+        'ads-ready': {
+          events: {
+            'play': function() {
+              this.state = 'preroll?';
+              cancelContentPlay(player);
+            },
+            'adskip': function() {
+              this.state = 'content-playback';
+            },
+            'adserror': function() {
+              this.state = 'content-playback';
+            }
+          }
+        },
+        'preroll?': {
+          enter: function() {
+            // change class to show that we're waiting on ads
+            player.el().className += ' vjs-ad-loading';
+            // schedule an adtimeout event to fire if we waited too long
+            player.ads.adTimeoutTimeout = window.setTimeout(function() {
+              player.trigger('adtimeout');
+            }, settings.prerollTimeout);
+            // signal to ad plugin that it's their opportunity to play a preroll
+            player.trigger('readyforpreroll');
+          },
+          leave: function() {
+            window.clearTimeout(player.ads.adTimeoutTimeout);
+            removeClass(player.el(), 'vjs-ad-loading');
+          },
+          events: {
+            'play': function() {
+              cancelContentPlay(player);
+            },
+            'adstart': function() {
+              this.state = 'ad-playback';
+            },
+            'adskip': function() {
+              this.state = 'content-playback';
+            },
+            'adtimeout': function() {
+              this.state = 'content-playback';
+            },
+            'adserror': function() {
+              this.state = 'content-playback';
+            }
+          }
+        },
+        'ads-ready?': {
+          enter: function() {
+            player.el().className += ' vjs-ad-loading';
+            player.ads.adTimeoutTimeout = window.setTimeout(function() {
+              player.trigger('adtimeout');
+            }, settings.timeout);
+          },
+          leave: function() {
+            window.clearTimeout(player.ads.adTimeoutTimeout);
+            removeClass(player.el(), 'vjs-ad-loading');
+          },
+          events: {
+            'play': function() {
+              cancelContentPlay(player);
+            },
+            'adscanceled': function() {
+              this.state = 'content-playback';
+            },
+            'adsready': function() {
+              this.state = 'preroll?';
+            },
+            'adskip': function() {
+              this.state = 'content-playback';
+            },
+            'adtimeout': function() {
+              this.state = 'content-playback';
+            },
+            'adserror': function() {
+              this.state = 'content-playback';
+            }
+          }
+        },
+        'ad-playback': {
+          enter: function() {
+            // capture current player state snapshot (playing, currentTime, src)
+            this.snapshot = getPlayerSnapshot(player);
+
+            // add css to the element to indicate and ad is playing.
+            player.el().className += ' vjs-ad-playing';
+
+            // remove the poster so it doesn't flash between ads
+            removeNativePoster(player);
+
+            // We no longer need to supress play events once an ad is playing.
+            // Clear it if we were.
+            if (player.ads.cancelPlayTimeout) {
+              undefer(player.ads.cancelPlayTimeout);
+              player.ads.cancelPlayTimeout = null;
+            }
+          },
+          leave: function() {
+            removeClass(player.el(), 'vjs-ad-playing');
+            restorePlayerSnapshot(player, this.snapshot);
+            // trigger 'adend' as a consistent notification
+            // event that we're exiting ad-playback.
+            if (player.ads.triggerevent !== 'adend') {
+              player.trigger('adend');
+            }
+          },
+          events: {
+            'adend': function() {
+              this.state = 'content-resuming';
+            },
+            'adserror': function() {
+              this.state = 'content-resuming';
+            }
+          }
+        },
+        'content-resuming': {
+          enter: function() {
+            if (this.snapshot.ended) {
+              window.clearTimeout(player.ads._fireEndedTimeout);
+              // in some cases, ads are played in a swf or another video element
+              // so we do not get an ended event in this state automatically.
+              // If we don't get an ended event we can use, we need to trigger
+              // one ourselves or else we won't actually ever end the current video.
+              player.ads._fireEndedTimeout = window.setTimeout(function() {
+                player.trigger('ended');
+              }, 1000);
+            }
+          },
+          leave: function() {
+            window.clearTimeout(player.ads._fireEndedTimeout);
+          },
+          events: {
+            'contentupdate': function() {
+              this.state = 'content-set';
+            },
+            contentresumed: function() {
+              this.state = 'content-playback';
+            },
+            'playing': function() {
+              this.state = 'content-playback';
+            },
+            'ended': function() {
+              this.state = 'content-playback';
+            }
+          }
+        },
+        'postroll?': {
+          enter: function() {
+            this.snapshot = getPlayerSnapshot(player);
+
+            player.el().className += ' vjs-ad-loading';
+
+            player.ads.adTimeoutTimeout = window.setTimeout(function() {
+              player.trigger('adtimeout');
+            }, settings.postrollTimeout);
+          },
+          leave: function() {
+            window.clearTimeout(player.ads.adTimeoutTimeout);
+            removeClass(player.el(), 'vjs-ad-loading');
+          },
+          events: {
+            'adstart': function() {
+              this.state = 'ad-playback';
+            },
+            'adskip': function() {
+              this.state = 'content-resuming';
+              defer(function() {
+                player.trigger('ended');
+              });
+            },
+            'adtimeout': function() {
+              this.state = 'content-resuming';
+              defer(function() {
+                player.trigger('ended');
+              });
+            },
+            'adserror': function() {
+              this.state = 'content-resuming';
+              defer(function() {
+                player.trigger('ended');
+              });
+            }
+          }
+        },
+        'content-playback': {
+          enter: function() {
+            // make sure that any cancelPlayTimeout is cleared
+            if (player.ads.cancelPlayTimeout) {
+              undefer(player.ads.cancelPlayTimeout);
+              player.ads.cancelPlayTimeout = null;
+            }
+            // this will cause content to start if a user initiated
+            // 'play' event was canceled earlier.
+            player.trigger({
+              type: 'contentplayback',
+              triggerevent: player.ads.triggerevent
+            });
+          },
+          events: {
+            // in the case of a timeout, adsready might come in late.
+            'adsready': function() {
+              player.trigger('readyforpreroll');
+            },
+            'adstart': function() {
+              this.state = 'ad-playback';
+            },
+            'contentupdate': function() {
+              if (player.paused()) {
+                this.state = 'content-set';
+              } else {
+                this.state = 'ads-ready?';
+              }
+            },
+            'contentended': function() {
+              this.state = 'postroll?';
+            }
+          }
+        }
+      };
 
       (function(state) {
         var noop = function() {};
@@ -734,7 +673,7 @@ var
     };
 
     // register for the events we're interested in
-    on(player, videojs.getComponent('Html5').Events.concat([
+    player.on(VIDEO_EVENTS.concat([
       // events emitted by ad plugin
       'adtimeout',
       'contentupdate',
