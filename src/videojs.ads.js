@@ -144,7 +144,8 @@ var
       suppressedTracks = [],
       snapshot = {
         ended: player.ended(),
-        src: player.currentSrc(),
+        currentSrc: player.currentSrc(),
+        src: player.src(),
         currentTime: player.currentTime(),
         type: player.currentType()
       };
@@ -295,17 +296,7 @@ var
     // ads, the content player state hasn't been modified and so no
     // restoration is required
 
-    if (player.src()) {
-      // the player was in src attribute mode before the ad and the
-      // src attribute has not been modified, no restoration is required
-      // to resume playback
-      srcChanged = player.src() !== snapshot.src;
-    } else {
-      // the player was configured through source element children
-      // and the currentSrc hasn't changed, no restoration is required
-      // to resume playback
-      srcChanged = player.currentSrc() !== snapshot.src;
-    }
+    srcChanged = player.src() !== snapshot.src || player.currentSrc() !== snapshot.currentSrc;
 
     if (srcChanged) {
       // on ios7, fiddling with textTracks too early will cause safari to crash
@@ -406,7 +397,7 @@ var
           } else if (player.ads.state === 'content-resuming') {
             if (player.ads.snapshot) {
               // the video element was recycled for ad playback
-              if (player.currentSrc() !== player.ads.snapshot.src) {
+              if (player.currentSrc() !== player.ads.snapshot.currentSrc) {
                 if (event.type === 'loadstart') {
                   return;
                 }
@@ -449,7 +440,7 @@ var
     // This will allow ad-integrations from needing to do this themselves.
     player.on(['addurationchange', 'adcanplay'], function() {
       var snapshot = player.ads.snapshot;
-      if (player.currentSrc() === snapshot.src) {
+      if (player.currentSrc() === snapshot.currentSrc) {
         return;  // do nothing
       }
 

@@ -116,7 +116,7 @@ QUnit.test('only restores the player snapshot if the src changed', function(asse
   this.player.ads.startLinearAdMode();
   this.player.ads.endLinearAdMode();
   assert.ok(playSpy.called, 'content playback resumed');
-  assert.ok(srcSpy.alwaysCalledWithExactly(), 'the src was reset');
+  assert.ok(srcSpy.alwaysCalledWithExactly(), 'the src was not reset');
 
   this.player.trigger('playing');
   assert.ok(this.contentPlaybackSpy.calledOnce, 'A content-playback event should have triggered');
