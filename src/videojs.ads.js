@@ -293,7 +293,7 @@ var
         });
       };
 
-      player.on(videoEvents, function(event) {
+      player.on(videoEvents, function redispatch(event) {
         if (player.ads.state === 'ad-playback') {
           triggerEvent('ad', event);
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
