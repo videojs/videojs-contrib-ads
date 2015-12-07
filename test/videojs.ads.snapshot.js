@@ -360,6 +360,9 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
 
+  // `src` gets called internally to set the source back to its original
+  // value when the player snapshot is restored when `endLinearAdMode`
+  // is called.
   this.player.src = function(source) {
     if (source === undefined) {
       return 'ad.mp4';
