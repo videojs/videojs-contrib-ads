@@ -116,7 +116,7 @@ QUnit.test('only restores the player snapshot if the src changed', function(asse
   this.player.ads.startLinearAdMode();
   this.player.ads.endLinearAdMode();
   assert.ok(playSpy.called, 'content playback resumed');
-  assert.ok(srcSpy.alwaysCalledWithExactly(), 'the src was reset');
+  assert.ok(srcSpy.alwaysCalledWithExactly(), 'the src was not reset');
 
   this.player.trigger('playing');
   assert.ok(this.contentPlaybackSpy.calledOnce, 'A content-playback event should have triggered');
@@ -360,6 +360,9 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
 
+  // `src` gets called internally to set the source back to its original
+  // value when the player snapshot is restored when `endLinearAdMode`
+  // is called.
   this.player.src = function(source) {
     if (source === undefined) {
       return 'ad.mp4';
