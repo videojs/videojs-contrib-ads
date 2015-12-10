@@ -465,9 +465,9 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
 });
 
 QUnit.test('tryToResume is called through canplay, removes handler and timeout', function(assert) {
-  let setTimeoutSpy;
-  let offSpy;
-  let clearTimeoutSpy;
+  var setTimeoutSpy;
+  var offSpy;
+  var clearTimeoutSpy;
 
   assert.expect(4);
 
@@ -476,7 +476,7 @@ QUnit.test('tryToResume is called through canplay, removes handler and timeout',
   this.player.trigger('play');
 
   setTimeoutSpy = sinon.spy(window, 'setTimeout');
-  offSpy = sinon.spy(this.player, 'off')
+  offSpy = sinon.spy(this.player, 'off');
   clearTimeoutSpy = sinon.spy(this.player, 'clearTimeout');
 
   // the video plays to time 100
@@ -501,9 +501,9 @@ QUnit.test('tryToResume is called through canplay, removes handler and timeout',
 });
 
 QUnit.test('tryToResume is called through timeout, removes handler and timeout', function(assert) {
-  let setTimeoutSpy;
-  let offSpy;
-  let clearTimeoutSpy;
+  var setTimeoutSpy;
+  var offSpy;
+  var clearTimeoutSpy;
 
   assert.expect(4);
 
@@ -512,7 +512,7 @@ QUnit.test('tryToResume is called through timeout, removes handler and timeout',
   this.player.trigger('play');
 
   setTimeoutSpy = sinon.spy(window, 'setTimeout');
-  offSpy = sinon.spy(this.player, 'off')
+  offSpy = sinon.spy(this.player, 'off');
   clearTimeoutSpy = sinon.spy(this.player, 'clearTimeout');
 
   // the video plays to time 100
