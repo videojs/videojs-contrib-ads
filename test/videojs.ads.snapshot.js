@@ -48,6 +48,7 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   // the ad resets the current time
   this.video.currentTime = 0;
   this.player.ads.endLinearAdMode();
+  setTimeoutSpy.callCount = 0; // we call setTimeout an extra time restorePlayerSnapshot
   this.player.trigger('canplay');
   assert.strictEqual(setTimeoutSpy.callCount, 1, 'restoring the time should be delayed');
   assert.strictEqual(this.video.currentTime, 0, 'currentTime is not modified');
@@ -72,6 +73,7 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
   // the ad resets the current time
   this.video.currentTime = 0;
   this.player.ads.endLinearAdMode();
+  setTimeoutSpy.callCount = 0; // we call setTimeout an extra time restorePlayerSnapshot
   this.player.trigger('canplay');
 
   // We expect 20 timeouts at 50ms each.
