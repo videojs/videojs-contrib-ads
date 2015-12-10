@@ -155,9 +155,9 @@ var
         // way it could've been called by removing the listener and clearing out
         // the timeout.
         player.off('contentcanplay', tryToResume);
-        if (player.ads.tryToResumeTimeout) {
-          player.clearTimeout(player.ads.tryToResumeTimeout);
-          player.ads.tryToResumeTimeout = null;
+        if (player.ads.tryToResumeTimeout_) {
+          player.clearTimeout(player.ads.tryToResumeTimeout_);
+          player.ads.tryToResumeTimeout_ = null;
         }
 
         // Tech may have changed depending on the differences in sources of the
@@ -227,7 +227,7 @@ var
       // in some browsers (firefox) `canplay` may not fire correctly.
       // Reace the `canplay` event with a timeout.
       player.one('contentcanplay', tryToResume);
-      player.ads.tryToResumeTimeout = player.setTimeout(tryToResume, 2000);
+      player.ads.tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
     } else if (!player.ended() || !snapshot.ended) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();
