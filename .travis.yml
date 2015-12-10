@@ -3,6 +3,7 @@ node_js:
   - 'iojs-v1'
   - '0.12'
   - '0.10'
+sudo: false
 notifications:
   hipchat:
     rooms:
