@@ -148,9 +148,22 @@ var
       // determine if the video element has loaded enough of the snapshot source
       // to be ready to apply the rest of the state
       tryToResume = function() {
+
+        // tryToResume can either have been called through the `contentcanplay`
+        // event or fired through setTimeout.
+        // When tryToResume is called, we should make sure to clear out the other
+        // way it could've been called by removing the listener and clearing out
+        // the timeout.
+        player.off('contentcanplay', tryToResume);
+        if (player.ads.tryToResumeTimeout_) {
+          player.clearTimeout(player.ads.tryToResumeTimeout_);
+          player.ads.tryToResumeTimeout_ = null;
+        }
+
         // Tech may have changed depending on the differences in sources of the
         // original video and that of the ad
         tech = player.el().querySelector('.vjs-tech');
+
         if (tech.readyState > 1) {
           // some browsers and media aren't "seekable".
           // readyState greater than 1 allows for seeking without exceptions
@@ -211,7 +224,10 @@ var
       // safari requires a call to `load` to pick up a changed source
       player.load();
       // and then resume from the snapshots time once the original src has loaded
+      // in some browsers (firefox) `canplay` may not fire correctly.
+      // Reace the `canplay` event with a timeout.
       player.one('contentcanplay', tryToResume);
+      player.ads.tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
     } else if (!player.ended() || !snapshot.ended) {
       // if we didn't change the src, just restore the tracks
       restoreTracks();

@@ -48,6 +48,7 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   // the ad resets the current time
   this.video.currentTime = 0;
   this.player.ads.endLinearAdMode();
+  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
   this.player.trigger('canplay');
   assert.strictEqual(setTimeoutSpy.callCount, 1, 'restoring the time should be delayed');
   assert.strictEqual(this.video.currentTime, 0, 'currentTime is not modified');
@@ -72,6 +73,7 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
   // the ad resets the current time
   this.video.currentTime = 0;
   this.player.ads.endLinearAdMode();
+  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
   this.player.trigger('canplay');
 
   // We expect 20 timeouts at 50ms each.
@@ -460,4 +462,76 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   this.player.$('.vjs-tech').seekable = [1];
   this.player.trigger('loadedmetadata');
   assert.strictEqual(spy.callCount, 2, 'fired "content" prefixed events');
+});
+
+QUnit.test('tryToResume is called through canplay, removes handler and timeout', function(assert) {
+  var setTimeoutSpy;
+  var offSpy;
+  var clearTimeoutSpy;
+
+  assert.expect(4);
+
+  this.video.seekable = [];
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+
+  setTimeoutSpy = sinon.spy(window, 'setTimeout');
+  offSpy = sinon.spy(this.player, 'off');
+  clearTimeoutSpy = sinon.spy(this.player, 'clearTimeout');
+
+  // the video plays to time 100
+  this.video.currentTime = 100;
+  this.player.ads.startLinearAdMode();
+  this.player.src('//example.com/ad.mp4');
+
+  // the ad resets the current time
+  this.video.currentTime = 0;
+  this.player.ads.endLinearAdMode();
+  assert.strictEqual(setTimeoutSpy.callCount, 1, 'setTimeout is called to race against canplay');
+  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
+  this.player.trigger('canplay');
+
+  assert.strictEqual(setTimeoutSpy.callCount, 1, 'tryToResume is called');
+  assert.ok(offSpy.calledWith('contentcanplay'), 'we remove the contentcanplay handler');
+  assert.ok(clearTimeoutSpy.called, 'clearTimeout was called');
+
+  window.setTimeout.restore();
+  this.player.off.restore();
+  this.player.clearTimeout.restore();
+});
+
+QUnit.test('tryToResume is called through timeout, removes handler and timeout', function(assert) {
+  var setTimeoutSpy;
+  var offSpy;
+  var clearTimeoutSpy;
+
+  assert.expect(4);
+
+  this.video.seekable = [];
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+
+  setTimeoutSpy = sinon.spy(window, 'setTimeout');
+  offSpy = sinon.spy(this.player, 'off');
+  clearTimeoutSpy = sinon.spy(this.player, 'clearTimeout');
+
+  // the video plays to time 100
+  this.video.currentTime = 100;
+  this.player.ads.startLinearAdMode();
+  this.player.src('//example.com/ad.mp4');
+
+  // the ad resets the current time
+  this.video.currentTime = 0;
+  this.player.ads.endLinearAdMode();
+  assert.strictEqual(setTimeoutSpy.callCount, 1, 'setTimeout is called to race against canplay');
+  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
+  this.clock.tick(2001);
+
+  assert.strictEqual(setTimeoutSpy.callCount, 1, 'tryToResume is called');
+  assert.ok(offSpy.calledWith('contentcanplay'), 'we remove the contentcanplay handler');
+  assert.ok(clearTimeoutSpy.called, 'clearTimeout was called');
+
+  window.setTimeout.restore();
+  this.player.off.restore();
+  this.player.clearTimeout.restore();
 });
