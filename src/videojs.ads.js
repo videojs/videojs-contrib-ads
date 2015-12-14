@@ -61,6 +61,7 @@ var
         currentSrc: player.currentSrc(),
         src: player.src(),
         currentTime: player.currentTime(),
+        duration: player.duration(),
         type: player.currentType()
       };
 
@@ -113,12 +114,14 @@ var
           updateEnded = function() {
             ended = true;
           };
-        player.currentTime(snapshot.currentTime);
 
         // Resume playback if this wasn't a postroll
         if (!snapshot.ended) {
+          player.currentTime(snapshot.currentTime);
           player.play();
         } else {
+          //seek back to the very end
+          player.currentTime(snapshot.duration);
           // On iOS 8.1, the "ended" event will not fire if you seek
           // directly to the end of a video. To make that behavior
           // consistent with the standard, fire a synthetic event if
