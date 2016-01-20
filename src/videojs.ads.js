@@ -363,7 +363,9 @@ var
       // Call this when an ad response has been received and there are
       // linear ads ready to be played.
       startLinearAdMode: function() {
-        if (player.ads.state !== 'ad-playback') {
+        if (player.ads.state === 'preroll?' ||
+            player.ads.state === 'content-playback' ||
+            player.ads.state === 'postroll?') {
           player.trigger('adstart');
         }
       },
