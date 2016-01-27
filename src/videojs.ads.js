@@ -512,7 +512,7 @@ var
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            if (!player.$('.vjs-ad-only')) {
+            if (!player.hasClass('vjs-ad-only')) {
               restorePlayerSnapshot(player, this.snapshot);
             }
             // trigger 'adend' as a consistent notification
