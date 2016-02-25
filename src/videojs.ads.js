@@ -462,14 +462,12 @@ var
         },
         'ads-ready?': {
           enter: function() {
-            player.addClass('vjs-ad-loading');
             player.ads.adTimeoutTimeout = window.setTimeout(function() {
               player.trigger('adtimeout');
             }, settings.timeout);
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
-            player.removeClass('vjs-ad-loading');
           },
           events: {
             'play': function() {
