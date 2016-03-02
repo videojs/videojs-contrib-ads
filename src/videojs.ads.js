@@ -457,6 +457,9 @@ var
             },
             'adserror': function() {
               this.state = 'content-playback';
+            },
+            'nopreroll': function() {
+              this.state = 'content-playback';
             }
           }
         },
@@ -674,7 +677,8 @@ var
       'adscanceled',
       'adstart',  // startLinearAdMode()
       'adend',    // endLinearAdMode()
-      'adskip'    // skipLinearAdMode()
+      'adskip',   // skipLinearAdMode()
+      'nopreroll'
     ]), fsmHandler);
 
     // keep track of the current content source
