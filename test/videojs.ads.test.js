@@ -997,4 +997,12 @@ QUnit.test('startLinearAdMode should only trigger adstart from correct states', 
   assert.strictEqual(adstart.callCount, 3, 'other states');
 });
 
+QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert) {
+
+  this.player.ads.state = 'preroll?';
+  this.player.trigger('nopreroll');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'no longer in preroll?');
+
+});
+
 }(window, window.QUnit));
