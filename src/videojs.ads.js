@@ -356,6 +356,10 @@ var
       player.play();
     });
 
+    player.on('nopostroll', function() {
+      player.ads.nopostroll_ = true;
+    });
+
     // replace the ad initializer with the ad namespace
     player.ads = {
       state: 'content-set',
@@ -564,13 +568,21 @@ var
         },
         'postroll?': {
           enter: function() {
-            this.snapshot = getPlayerSnapshot(player);
+            if (player.ads.nopostroll_) {
+              this.state = 'content-resuming';
+              window.setTimeout(function() {
+                player.trigger('ended');
+              }, 1);
+            }
+            else {
+              this.snapshot = getPlayerSnapshot(player);
 
-            player.addClass('vjs-ad-loading');
+              player.addClass('vjs-ad-loading');
 
-            player.ads.adTimeoutTimeout = window.setTimeout(function() {
-              player.trigger('adtimeout');
-            }, settings.postrollTimeout);
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, settings.postrollTimeout);
+            }
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
