@@ -438,6 +438,9 @@ var
         'preroll?': {
           enter: function() {
             if (player.ads.nopreroll_) {
+              // This will start the ads manager in case there are later ads
+              player.trigger('readyforpreroll');
+              // Don't wait for a preroll
               player.trigger('nopreroll');
             } else {
               // change class to show that we're waiting on ads
