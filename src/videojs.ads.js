@@ -356,6 +356,10 @@ var
       player.play();
     });
 
+    player.on('nopreroll', function() {
+      player.ads.nopreroll_ = true;
+    });
+
     player.on('nopostroll', function() {
       player.ads.nopostroll_ = true;
     });
@@ -433,14 +437,18 @@ var
         },
         'preroll?': {
           enter: function() {
-            // change class to show that we're waiting on ads
-            player.addClass('vjs-ad-loading');
-            // schedule an adtimeout event to fire if we waited too long
-            player.ads.adTimeoutTimeout = window.setTimeout(function() {
-              player.trigger('adtimeout');
-            }, settings.prerollTimeout);
-            // signal to ad plugin that it's their opportunity to play a preroll
-            player.trigger('readyforpreroll');
+            if (player.ads.nopreroll_) {
+              player.trigger('nopreroll');
+            } else {
+              // change class to show that we're waiting on ads
+              player.addClass('vjs-ad-loading');
+              // schedule an adtimeout event to fire if we waited too long
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, settings.prerollTimeout);
+              // signal to ad plugin that it's their opportunity to play a preroll
+              player.trigger('readyforpreroll');
+            }
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
