@@ -513,7 +513,9 @@ var
         'ad-playback': {
           enter: function() {
             // capture current player state snapshot (playing, currentTime, src)
-            this.snapshot = getPlayerSnapshot(player);
+            if (player.duration() !== Infinity) {
+              this.snapshot = getPlayerSnapshot(player);
+            }
 
             // add css to the element to indicate and ad is playing.
             player.addClass('vjs-ad-playing');
@@ -530,7 +532,9 @@ var
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            restorePlayerSnapshot(player, this.snapshot);
+            if (player.duration() !== Infinity) {
+              restorePlayerSnapshot(player, this.snapshot);
+            }
             // trigger 'adend' as a consistent notification
             // event that we're exiting ad-playback.
             if (player.ads.triggerevent !== 'adend') {
@@ -548,7 +552,7 @@ var
         },
         'content-resuming': {
           enter: function() {
-            if (this.snapshot.ended) {
+            if (this.snapshot && this.snapshot.ended) {
               window.clearTimeout(player.ads._fireEndedTimeout);
               // in some cases, ads are played in a swf or another video element
               // so we do not get an ended event in this state automatically.
