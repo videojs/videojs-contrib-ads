@@ -535,3 +535,18 @@ QUnit.test('tryToResume is called through timeout, removes handler and timeout',
   this.player.off.restore();
   this.player.clearTimeout.restore();
 });
+
+QUnit.test('No snapshot if duration is Infinity', function(assert) {
+  var originalSrc = 'foobar';
+  var newSrc = 'barbaz';
+
+  this.player.duration(Infinity);
+
+  this.player.src(originalSrc);
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+  this.player.ads.startLinearAdMode();
+  this.player.src(newSrc);
+  this.player.ads.endLinearAdMode();
+  assert.strictEqual(this.player.currentSrc(), newSrc, 'source is not reset');
+});
