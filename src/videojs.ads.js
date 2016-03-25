@@ -513,7 +513,7 @@ var
         'ad-playback': {
           enter: function() {
             // capture current player state snapshot (playing, currentTime, src)
-            if (player.duration() !== Infinity) {
+            if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
               this.snapshot = getPlayerSnapshot(player);
             }
 
@@ -532,7 +532,7 @@ var
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            if (player.duration() !== Infinity) {
+            if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
               restorePlayerSnapshot(player, this.snapshot);
             }
             // trigger 'adend' as a consistent notification
