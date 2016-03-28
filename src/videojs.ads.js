@@ -356,6 +356,14 @@ var
       player.play();
     });
 
+    player.on('nopreroll', function() {
+      player.ads.nopreroll_ = true;
+    });
+
+    player.on('nopostroll', function() {
+      player.ads.nopostroll_ = true;
+    });
+
     // replace the ad initializer with the ad namespace
     player.ads = {
       state: 'content-set',
@@ -429,14 +437,21 @@ var
         },
         'preroll?': {
           enter: function() {
-            // change class to show that we're waiting on ads
-            player.addClass('vjs-ad-loading');
-            // schedule an adtimeout event to fire if we waited too long
-            player.ads.adTimeoutTimeout = window.setTimeout(function() {
-              player.trigger('adtimeout');
-            }, settings.prerollTimeout);
-            // signal to ad plugin that it's their opportunity to play a preroll
-            player.trigger('readyforpreroll');
+            if (player.ads.nopreroll_) {
+              // This will start the ads manager in case there are later ads
+              player.trigger('readyforpreroll');
+              // Don't wait for a preroll
+              player.trigger('nopreroll');
+            } else {
+              // change class to show that we're waiting on ads
+              player.addClass('vjs-ad-loading');
+              // schedule an adtimeout event to fire if we waited too long
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, settings.prerollTimeout);
+              // signal to ad plugin that it's their opportunity to play a preroll
+              player.trigger('readyforpreroll');
+            }
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
@@ -456,6 +471,9 @@ var
               this.state = 'content-playback';
             },
             'adserror': function() {
+              this.state = 'content-playback';
+            },
+            'nopreroll': function() {
               this.state = 'content-playback';
             }
           }
@@ -561,13 +579,21 @@ var
         },
         'postroll?': {
           enter: function() {
-            this.snapshot = getPlayerSnapshot(player);
+            if (player.ads.nopostroll_) {
+              this.state = 'content-resuming';
+              window.setTimeout(function() {
+                player.trigger('ended');
+              }, 1);
+            }
+            else {
+              this.snapshot = getPlayerSnapshot(player);
 
-            player.addClass('vjs-ad-loading');
+              player.addClass('vjs-ad-loading');
 
-            player.ads.adTimeoutTimeout = window.setTimeout(function() {
-              player.trigger('adtimeout');
-            }, settings.postrollTimeout);
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, settings.postrollTimeout);
+            }
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
@@ -674,7 +700,8 @@ var
       'adscanceled',
       'adstart',  // startLinearAdMode()
       'adend',    // endLinearAdMode()
-      'adskip'    // skipLinearAdMode()
+      'adskip',   // skipLinearAdMode()
+      'nopreroll'
     ]), fsmHandler);
 
     // keep track of the current content source
