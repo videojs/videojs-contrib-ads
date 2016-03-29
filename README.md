@@ -48,7 +48,6 @@ And here are the interaction points you use to send information to the ads plugi
  * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
  * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
 * `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ad. Otherwise, the player will wait until a timeout occurs before playing content. This event is optional, but can improve user experience.
-* `nopostroll` (EVENT) - Trigger this event to indicate that there will be no postroll ad. Otherwise, contrib-ads will trigger an adtimeout event after content ends if there is no postroll.
  * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
  * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
  * `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
