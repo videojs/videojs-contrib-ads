@@ -580,7 +580,7 @@ var
         'postroll?': {
           enter: function() {
             if (player.ads.nopostroll_) {
-              this.state = 'content-resuming';
+              player.ads.state = 'content-resuming';
               window.setTimeout(function() {
                 player.trigger('ended');
               }, 1);
