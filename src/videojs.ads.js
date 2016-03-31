@@ -517,6 +517,12 @@ var
               this.snapshot = getPlayerSnapshot(player);
             }
 
+            // Mute the player behind the ad
+            if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
+              this.preAdVolume_ = player.volume();
+              player.volume(0);
+            }
+
             // add css to the element to indicate and ad is playing.
             player.addClass('vjs-ad-playing');
 
@@ -535,6 +541,12 @@ var
             if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
               restorePlayerSnapshot(player, this.snapshot);
             }
+
+            // Reset the volume to pre-ad levels
+            if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
+              player.volume(this.preAdVolume_);
+            }
+
             // trigger 'adend' as a consistent notification
             // event that we're exiting ad-playback.
             if (player.ads.triggerevent !== 'adend') {
