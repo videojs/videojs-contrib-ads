@@ -50,6 +50,17 @@ var
    * @param {object} player The videojs player object
    */
   getPlayerSnapshot = function(player) {
+
+    var currentTime;
+
+    if (videojs.browser.IS_IOS && player.duration() === Infinity) {
+      // Record how far behind live we are
+      currentTime = player.currentTime() - player.seekable().end(0);
+    }
+    else {
+      currentTime = player.currentTime();
+    }
+
     var
       tech = player.$('.vjs-tech'),
       tracks = player.remoteTextTracks ? player.remoteTextTracks() : [],
@@ -60,7 +71,7 @@ var
         ended: player.ended(),
         currentSrc: player.currentSrc(),
         src: player.src(),
-        currentTime: player.currentTime(),
+        currentTime: currentTime,
         type: player.currentType()
       };
 
@@ -108,12 +119,22 @@ var
 
       // finish restoring the playback state
       resume = function() {
-        var
-          ended = false,
-          updateEnded = function() {
-            ended = true;
-          };
-        player.currentTime(snapshot.currentTime);
+        var ended = false;
+        var updateEnded = function() {
+          ended = true;
+        };
+        var currentTime;
+
+        if (videojs.browser.IS_IOS && player.duration() === Infinity) {
+          if (snapshot.currentTime < 0) {
+            // Playback was behind real time, so seek backwards to match
+            currentTime = player.seekable().end(0) + snapshot.currentTime;
+            player.currentTime(currentTime);
+          }
+        }
+        else {
+          player.currentTime(snapshot.currentTime);
+        }
 
         // Resume playback if this wasn't a postroll
         if (!snapshot.ended) {
