@@ -43,6 +43,18 @@ var
   },
 
   /**
+   * Returns a boolean indicating if given player is in live mode.
+   */
+  isLive = function(player) {
+    if (player.duration() === Infinity) {
+      return true;
+    } else if (videojs.browser.IOS_VERSION === "8" && player.duration() === 0) {
+      return true;
+    }
+    return false;
+  },
+
+  /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
    * restorePlayerSnapshot with a player to return the player to the state it
@@ -53,7 +65,7 @@ var
 
     var currentTime;
 
-    if (videojs.browser.IS_IOS && player.duration() === Infinity) {
+    if (videojs.browser.IS_IOS && isLive(player)) {
       // Record how far behind live we are
       currentTime = player.currentTime() - player.seekable().end(0);
     }
@@ -125,7 +137,7 @@ var
         };
         var currentTime;
 
-        if (videojs.browser.IS_IOS && player.duration() === Infinity) {
+        if (videojs.browser.IS_IOS && isLive(player)) {
           if (snapshot.currentTime < 0) {
             // Playback was behind real time, so seek backwards to match
             currentTime = player.seekable().end(0) + snapshot.currentTime;
