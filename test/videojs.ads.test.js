@@ -1005,8 +1005,7 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert
 
 });
 
-// We will unskip this once nopostroll is working again
-QUnit.skip('ad impl can notify contrib-ads there is no postroll', function(assert) {
+QUnit.test('ad impl can notify contrib-ads there is no postroll', function(assert) {
 
   this.player.trigger('nopostroll');
   this.player.ads.state = 'content-playback';

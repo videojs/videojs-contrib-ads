@@ -580,12 +580,18 @@ var
         'postroll?': {
           enter: function() {
             this.snapshot = getPlayerSnapshot(player);
+            if (player.ads.nopostroll_) {
+              player.ads.state = 'content-resuming';
+              window.setTimeout(function() {
+                player.trigger('ended');
+              }, 1);
+            } else {
+              player.addClass('vjs-ad-loading');
 
-            player.addClass('vjs-ad-loading');
-
-            player.ads.adTimeoutTimeout = window.setTimeout(function() {
-              player.trigger('adtimeout');
-            }, settings.postrollTimeout);
+              player.ads.adTimeoutTimeout = window.setTimeout(function() {
+                player.trigger('adtimeout');
+              }, settings.postrollTimeout);
+            }
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
