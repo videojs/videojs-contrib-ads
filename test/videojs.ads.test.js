@@ -1005,13 +1005,45 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert
 
 });
 
-// QUnit.test('ad impl can notify contrib-ads there is no postroll', function(assert) {
+// We will unskip this once nopostroll is working again
+QUnit.skip('ad impl can notify contrib-ads there is no postroll', function(assert) {
 
-//   this.player.trigger('nopostroll');
-//   this.player.ads.state = 'content-playback';
-//   this.player.trigger('contentended');
-//   assert.strictEqual(this.player.ads.state, 'content-resuming', 'no longer in postroll?');
+  this.player.trigger('nopostroll');
+  this.player.ads.state = 'content-playback';
+  this.player.trigger('contentended');
+  assert.strictEqual(this.player.ads.state, 'content-resuming', 'no longer in postroll?');
 
-// });
+});
+
+QUnit.test('ended event is sent with postroll', function(assert) {
+
+  var ended = sinon.spy();
+
+  this.player.tech_.el_.ended = true;
+  this.player.on('ended', ended);
+  this.player.ads.state = 'content-playback';
+  this.player.trigger('contentended');
+
+  this.clock.tick(10000);
+
+  assert.ok(ended.calledOnce, 'Ended triggered');
+
+});
+
+QUnit.test('ended event is sent without postroll', function(assert) {
+
+  var ended = sinon.spy();
+
+  this.player.tech_.el_.ended = true;
+  this.player.on('ended', ended);
+  this.player.trigger('nopostroll');
+  this.player.ads.state = 'content-playback';
+  this.player.trigger('contentended');
+
+  this.clock.tick(10000);
+
+  assert.ok(ended.calledOnce, 'Ended triggered');
+
+});
 
 }(window, window.QUnit));
