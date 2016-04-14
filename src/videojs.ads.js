@@ -68,8 +68,7 @@ var
     if (videojs.browser.IS_IOS && isLive(player)) {
       // Record how far behind live we are
       currentTime = player.currentTime() - player.seekable().end(0);
-    }
-    else {
+    } else {
       currentTime = player.currentTime();
     }
 
@@ -143,8 +142,7 @@ var
             currentTime = player.seekable().end(0) + snapshot.currentTime;
             player.currentTime(currentTime);
           }
-        }
-        else {
+        } else {
           player.currentTime(snapshot.currentTime);
         }
 
