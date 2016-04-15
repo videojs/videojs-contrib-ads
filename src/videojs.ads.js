@@ -44,6 +44,7 @@ var
 
   /**
    * Returns a boolean indicating if given player is in live mode.
+   * Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
    */
   isLive = function(player) {
     if (player.duration() === Infinity) {
