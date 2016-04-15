@@ -43,6 +43,19 @@ var
   },
 
   /**
+   * Returns a boolean indicating if given player is in live mode.
+   * Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
+   */
+  isLive = function(player) {
+    if (player.duration() === Infinity) {
+      return true;
+    } else if (videojs.browser.IOS_VERSION === "8" && player.duration() === 0) {
+      return true;
+    }
+    return false;
+  },
+
+  /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
    * restorePlayerSnapshot with a player to return the player to the state it
@@ -50,6 +63,16 @@ var
    * @param {object} player The videojs player object
    */
   getPlayerSnapshot = function(player) {
+
+    var currentTime;
+
+    if (videojs.browser.IS_IOS && isLive(player)) {
+      // Record how far behind live we are
+      currentTime = player.currentTime() - player.seekable().end(0);
+    } else {
+      currentTime = player.currentTime();
+    }
+
     var
       tech = player.$('.vjs-tech'),
       tracks = player.remoteTextTracks ? player.remoteTextTracks() : [],
@@ -60,7 +83,7 @@ var
         ended: player.ended(),
         currentSrc: player.currentSrc(),
         src: player.src(),
-        currentTime: player.currentTime(),
+        currentTime: currentTime,
         type: player.currentType()
       };
 
@@ -108,12 +131,21 @@ var
 
       // finish restoring the playback state
       resume = function() {
-        var
-          ended = false,
-          updateEnded = function() {
-            ended = true;
-          };
-        player.currentTime(snapshot.currentTime);
+        var ended = false;
+        var updateEnded = function() {
+          ended = true;
+        };
+        var currentTime;
+
+        if (videojs.browser.IS_IOS && isLive(player)) {
+          if (snapshot.currentTime < 0) {
+            // Playback was behind real time, so seek backwards to match
+            currentTime = player.seekable().end(0) + snapshot.currentTime;
+            player.currentTime(currentTime);
+          }
+        } else {
+          player.currentTime(snapshot.currentTime);
+        }
 
         // Resume playback if this wasn't a postroll
         if (!snapshot.ended) {
@@ -513,7 +545,15 @@ var
         'ad-playback': {
           enter: function() {
             // capture current player state snapshot (playing, currentTime, src)
-            this.snapshot = getPlayerSnapshot(player);
+            if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
+              this.snapshot = getPlayerSnapshot(player);
+            }
+
+            // Mute the player behind the ad
+            if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
+              this.preAdVolume_ = player.volume();
+              player.volume(0);
+            }
 
             // add css to the element to indicate and ad is playing.
             player.addClass('vjs-ad-playing');
@@ -530,7 +570,15 @@ var
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            restorePlayerSnapshot(player, this.snapshot);
+            if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
+              restorePlayerSnapshot(player, this.snapshot);
+            }
+
+            // Reset the volume to pre-ad levels
+            if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
+              player.volume(this.preAdVolume_);
+            }
+
             // trigger 'adend' as a consistent notification
             // event that we're exiting ad-playback.
             if (player.ads.triggerevent !== 'adend') {
@@ -548,7 +596,7 @@ var
         },
         'content-resuming': {
           enter: function() {
-            if (this.snapshot.ended) {
+            if (this.snapshot && this.snapshot.ended) {
               window.clearTimeout(player.ads._fireEndedTimeout);
               // in some cases, ads are played in a swf or another video element
               // so we do not get an ended event in this state automatically.
