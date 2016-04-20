@@ -4,6 +4,7 @@
 
 * [@incompl](https://github.com/incompl): Ad impl can now send 'nopreroll' and 'nopostroll' to inform contrib-ads it should not wait for an ad that isn't coming.
 * [@incompl](https://github.com/incompl): In live streams, mute live stream and play it in the background during ads, except on platforms where ads reuse the content video element.
+* [@bcvio](https://github.com/incompl): Add ability to prevent snapshot restoration
 
 ## v3.1.3
 
