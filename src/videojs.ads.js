@@ -112,6 +112,10 @@ var
    * @param {object} snapshot - the player state to apply
    */
   restorePlayerSnapshot = function(player, snapshot) {
+    if (player.ads.disableNextSnapshotRestore === true) {
+      player.ads.disableNextSnapshotRestore = false;
+      return;
+    }
     var
       // the playback tech
       tech = player.$('.vjs-tech'),
@@ -399,6 +403,7 @@ var
     // replace the ad initializer with the ad namespace
     player.ads = {
       state: 'content-set',
+      disableNextSnapshotRestore: false,
 
       // Call this when an ad response has been received and there are
       // linear ads ready to be played.
