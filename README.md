@@ -267,7 +267,7 @@ Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
 
 ## Release History
 
-A short list of features, fixes and changes for each release is available in `CHANGELOG.md`.
+A short list of features, fixes and changes for each release is available in [CHANGELOG.md](https://github.com/videojs/videojs-contrib-ads/blob/master/CHANGELOG.md).
 
 ## License
 
