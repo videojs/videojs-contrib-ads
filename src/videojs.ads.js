@@ -345,15 +345,21 @@ var
         });
       };
 
+      function videoElementRecycled(player) {
+        return player.currentSrc() !== player.ads.snapshot.currentSrc;
+      }
+
       player.on(videoEvents, function redispatch(event) {
         if (player.ads.state === 'ad-playback') {
-          triggerEvent('ad', event);
+          if (videoElementRecycled(player)) {
+            triggerEvent('ad', event);
+          }
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
           triggerEvent('content', event);
         } else if (player.ads.state === 'content-resuming') {
           if (player.ads.snapshot) {
             // the video element was recycled for ad playback
-            if (player.currentSrc() !== player.ads.snapshot.currentSrc) {
+            if (videoElementRecycled(player)) {
               if (event.type === 'loadstart') {
                 return;
               }
