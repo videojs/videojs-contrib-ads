@@ -952,6 +952,35 @@ QUnit.test('player events during postrolls are prefixed if tech is reused for ad
   assert.strictEqual(prefixed.callCount, 6, 'prefixed events fired');
 });
 
+QUnit.test('player events during stitched ads are prefixed', function(assert) {
+  var prefixed, unprefixed;
+
+  assert.expect(2);
+
+  prefixed = sinon.spy();
+  unprefixed = sinon.spy();
+
+  this.player.ads.stitchedAds(true);
+
+  // play a midroll
+  this.player.trigger('play');
+  this.player.trigger('adsready');
+  this.player.trigger('adtimeout');
+  this.player.ads.startLinearAdMode();
+
+  // simulate video events that should be prefixed
+  this.player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], unprefixed);
+  this.player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
+  this.player.trigger('firstplay');
+  this.player.trigger('loadstart');
+  this.player.trigger('playing');
+  this.player.trigger('loadedalldata');
+  this.player.trigger('pause');
+  this.player.trigger('ended');
+  assert.strictEqual(unprefixed.callCount, 0, 'no unprefixed events fired');
+  assert.strictEqual(prefixed.callCount, 6, 'prefixed events fired');
+});
+
 QUnit.test('player events during content playback are not prefixed', function(assert) {
   var prefixed, unprefixed;
 

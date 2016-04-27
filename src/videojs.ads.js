@@ -311,7 +311,10 @@ var
     // when truthy, instructs the plugin to output additional information about
     // plugin state to the video.js log. On most devices, the video.js log is
     // the same as the developer console.
-    debug: false
+    debug: false,
+
+    // set this to true when using ads that are part of the content video
+    stitchedAds: false
   },
 
   adFramework = function(options) {
@@ -351,7 +354,7 @@ var
 
       player.on(videoEvents, function redispatch(event) {
         if (player.ads.state === 'ad-playback') {
-          if (videoElementRecycled(player)) {
+          if (videoElementRecycled(player) || player.ads.stitchedAds()) {
             triggerEvent('ad', event);
           }
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
@@ -436,8 +439,17 @@ var
         if (player.ads.state !== 'ad-playback') {
           player.trigger('adskip');
         }
+      },
+
+      stitchedAds: function(arg) {
+        if (arg) {
+          this._stitchedAds = !!arg;
+        }
+        return this._stitchedAds;
       }
     };
+
+    player.ads.stitchedAds(settings.stitchedAds);
 
     fsmHandler = function(event) {
       // Ad Playback State Machine
