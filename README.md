@@ -53,7 +53,7 @@ And here are the interaction points you use to send information to the ads plugi
 * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
 * `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
 * `ads.stitchedAds()` (METHOD) — Get or set the `stitchedAds` setting.
-
+* `ads.videoElementRecycled()` (METHOD) - Returns true if ad playback is taking place in the content element.
 
 In addition, video.js provides a number of events and APIs that might be useful to you.
 For example, the `ended` event signals that the content video has played to completion.

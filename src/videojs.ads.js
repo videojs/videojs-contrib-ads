@@ -229,11 +229,7 @@ var
             }
           })();
         }
-      },
-
-      // whether the video element has been modified since the
-      // snapshot was taken
-      srcChanged;
+      };
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
@@ -249,9 +245,7 @@ var
     // ads, the content player state hasn't been modified and so no
     // restoration is required
 
-    srcChanged = player.src() !== snapshot.src || player.currentSrc() !== snapshot.currentSrc;
-
-    if (srcChanged) {
+    if (player.ads.videoElementRecycled()) {
       // on ios7, fiddling with textTracks too early will cause safari to crash
       player.one('contentloadedmetadata', restoreTracks);
 
@@ -348,13 +342,9 @@ var
         });
       };
 
-      function videoElementRecycled(player) {
-        return player.currentSrc() !== player.ads.snapshot.currentSrc;
-      }
-
       player.on(videoEvents, function redispatch(event) {
         if (player.ads.state === 'ad-playback') {
-          if (videoElementRecycled(player) || player.ads.stitchedAds()) {
+          if (player.ads.videoElementRecycled() || player.ads.stitchedAds()) {
             triggerEvent('ad', event);
           }
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
@@ -362,7 +352,7 @@ var
         } else if (player.ads.state === 'content-resuming') {
           if (player.ads.snapshot) {
             // the video element was recycled for ad playback
-            if (videoElementRecycled(player)) {
+            if (player.currentSrc() !== player.ads.snapshot.currentSrc) {
               if (event.type === 'loadstart') {
                 return;
               }
@@ -446,6 +436,16 @@ var
           this._stitchedAds = !!arg;
         }
         return this._stitchedAds;
+      },
+
+      // Returns whether the video element has been modified since the
+      // snapshot was taken.
+      // We test both src and currentSrc because changing the src attribute to a URL that
+      // AdBlocker is intercepting doesn't update currentSrc.
+      videoElementRecycled: function() {
+        var srcChanged = player.src() !== this.snapshot.src;
+        var currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
+        return srcChanged || currentSrcChanged;
       }
     };
 
