@@ -432,7 +432,7 @@ var
       },
 
       stitchedAds: function(arg) {
-        if (arg) {
+        if (arg !== undefined) {
           this._stitchedAds = !!arg;
         }
         return this._stitchedAds;
