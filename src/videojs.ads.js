@@ -443,8 +443,16 @@ var
       // We test both src and currentSrc because changing the src attribute to a URL that
       // AdBlocker is intercepting doesn't update currentSrc.
       videoElementRecycled: function() {
-        var srcChanged = player.src() !== this.snapshot.src;
-        var currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
+        var srcChanged;
+        var currentSrcChanged;
+
+        if (!this.snapshot) {
+          return false;
+        }
+
+        srcChanged = player.src() !== this.snapshot.src;
+        currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
+
         return srcChanged || currentSrcChanged;
       }
     };
