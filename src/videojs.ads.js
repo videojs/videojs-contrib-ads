@@ -68,7 +68,12 @@ var
 
     if (videojs.browser.IS_IOS && isLive(player)) {
       // Record how far behind live we are
-      currentTime = player.currentTime() - player.seekable().end(0);
+      try {
+        currentTime = player.currentTime() - player.seekable().end(0);
+      } catch (e) {
+        // seekable().end(0) probably threw an exception on ios8
+        currentTime = player.currentTime();
+      }
     } else {
       currentTime = player.currentTime();
     }
@@ -144,7 +149,12 @@ var
         if (videojs.browser.IS_IOS && isLive(player)) {
           if (snapshot.currentTime < 0) {
             // Playback was behind real time, so seek backwards to match
-            currentTime = player.seekable().end(0) + snapshot.currentTime;
+            try {
+              currentTime = player.seekable().end(0) + snapshot.currentTime;
+            } catch (e) {
+              // seekable().end(0) probably threw an exception on ios8
+              currentTime = player.currentTime();
+            }
             player.currentTime(currentTime);
           }
         } else {
