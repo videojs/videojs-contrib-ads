@@ -68,7 +68,12 @@ var
 
     if (videojs.browser.IS_IOS && isLive(player)) {
       // Record how far behind live we are
-      currentTime = player.currentTime() - player.seekable().end(0);
+      try {
+        currentTime = player.currentTime() - player.seekable().end(0);
+      } catch (e) {
+        // seekable().end(0) probably threw an exception on ios8
+        currentTime = player.currentTime();
+      }
     } else {
       currentTime = player.currentTime();
     }
@@ -144,7 +149,12 @@ var
         if (videojs.browser.IS_IOS && isLive(player)) {
           if (snapshot.currentTime < 0) {
             // Playback was behind real time, so seek backwards to match
-            currentTime = player.seekable().end(0) + snapshot.currentTime;
+            try {
+              currentTime = player.seekable().end(0) + snapshot.currentTime;
+            } catch (e) {
+              // seekable().end(0) probably threw an exception on ios8
+              currentTime = player.currentTime();
+            }
             player.currentTime(currentTime);
           }
         } else {
@@ -229,11 +239,7 @@ var
             }
           })();
         }
-      },
-
-      // whether the video element has been modified since the
-      // snapshot was taken
-      srcChanged;
+      };
 
     if (snapshot.nativePoster) {
       tech.poster = snapshot.nativePoster;
@@ -249,9 +255,7 @@ var
     // ads, the content player state hasn't been modified and so no
     // restoration is required
 
-    srcChanged = player.src() !== snapshot.src || player.currentSrc() !== snapshot.currentSrc;
-
-    if (srcChanged) {
+    if (player.ads.videoElementRecycled()) {
       // on ios7, fiddling with textTracks too early will cause safari to crash
       player.one('contentloadedmetadata', restoreTracks);
 
@@ -311,7 +315,10 @@ var
     // when truthy, instructs the plugin to output additional information about
     // plugin state to the video.js log. On most devices, the video.js log is
     // the same as the developer console.
-    debug: false
+    debug: false,
+
+    // set this to true when using ads that are part of the content video
+    stitchedAds: false
   },
 
   adFramework = function(options) {
@@ -347,7 +354,9 @@ var
 
       player.on(videoEvents, function redispatch(event) {
         if (player.ads.state === 'ad-playback') {
-          triggerEvent('ad', event);
+          if (player.ads.videoElementRecycled() || player.ads.stitchedAds()) {
+            triggerEvent('ad', event);
+          }
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
           triggerEvent('content', event);
         } else if (player.ads.state === 'content-resuming') {
@@ -430,8 +439,35 @@ var
         if (player.ads.state !== 'ad-playback') {
           player.trigger('adskip');
         }
+      },
+
+      stitchedAds: function(arg) {
+        if (arg !== undefined) {
+          this._stitchedAds = !!arg;
+        }
+        return this._stitchedAds;
+      },
+
+      // Returns whether the video element has been modified since the
+      // snapshot was taken.
+      // We test both src and currentSrc because changing the src attribute to a URL that
+      // AdBlocker is intercepting doesn't update currentSrc.
+      videoElementRecycled: function() {
+        var srcChanged;
+        var currentSrcChanged;
+
+        if (!this.snapshot) {
+          return false;
+        }
+
+        srcChanged = player.src() !== this.snapshot.src;
+        currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
+
+        return srcChanged || currentSrcChanged;
       }
     };
+
+    player.ads.stitchedAds(settings.stitchedAds);
 
     fsmHandler = function(event) {
       // Ad Playback State Machine
