@@ -68,7 +68,11 @@ var
 
     if (videojs.browser.IS_IOS && isLive(player)) {
       // Record how far behind live we are
-      currentTime = player.currentTime() - player.seekable().end(0);
+      if (player.seekable().length > 0) {
+        currentTime = player.currentTime() - player.seekable().end(0);
+      } else {
+        currentTime = player.currentTime();
+      }
     } else {
       currentTime = player.currentTime();
     }
@@ -144,7 +148,11 @@ var
         if (videojs.browser.IS_IOS && isLive(player)) {
           if (snapshot.currentTime < 0) {
             // Playback was behind real time, so seek backwards to match
-            currentTime = player.seekable().end(0) + snapshot.currentTime;
+            if (player.seekable().length > 0) {
+              currentTime = player.seekable().end(0) + snapshot.currentTime;
+            } else {
+              currentTime = player.currentTime();
+            }
             player.currentTime(currentTime);
           }
         } else {
