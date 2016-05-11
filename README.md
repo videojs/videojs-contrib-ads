@@ -44,15 +44,16 @@ Here are the events that communicate information to your integration from the ad
 
 And here are the interaction points you use to send information to the ads plugin:
 
- * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
- * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
- * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
+* `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
+* `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
+* `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
 * `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ad. Otherwise, the player will wait until a timeout occurs before playing content. This event is optional, but can improve user experience.
 * `nopostroll` (EVENT) - Trigger this event to indicate that there will be no postroll ad. Otherwise, contrib-ads will trigger an adtimeout event after content ends if there is no postroll.
- * `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
- * `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
- * `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
-
+* `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
+* `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
+* `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
+* `ads.stitchedAds()` (METHOD) — Get or set the `stitchedAds` setting.
+* `ads.videoElementRecycled()` (METHOD) - Returns true if ad playback is taking place in the content element.
 
 In addition, video.js provides a number of events and APIs that might be useful to you.
 For example, the `ended` event signals that the content video has played to completion.
@@ -181,6 +182,12 @@ The postrollTimeout should be as short as possible so that the viewer does not h
 Make this longer if your ad integration needs a long time to decide whether it has postroll inventory to play or not.
 Ideally, your ad integration should already know if it wants to play a postroll before the `contentended` event.
 
+### stitchedAds
+
+Type: `boolean`
+Default Value: `false`
+
+Set this to true if you are using ads stitched into the content video. This is necessary for ad events to be sent correctly.
 
 ### debug
 
