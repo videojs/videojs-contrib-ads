@@ -738,7 +738,7 @@ var
               }
             },
             'contentended': function() {
-              if(player.ads.snapshot && player.ads.snapshot.ended){
+              if (player.ads.snapshot && player.ads.snapshot.ended) {
                 // player has already been here. content has really ended. good-bye
                 return;
               }
