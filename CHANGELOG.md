@@ -1,5 +1,13 @@
 ## CHANGELOG
 
+## v3.3.0
+
+* [@incompl](https://github.com/incompl): Fix bug with snapshots and live streams
+* [@incompl](https://github.com/incompl): Added `videoElementRecycled` method
+* [@incompl](https://github.com/incompl): Added `stitchedAds` setting and method
+* [@incompl](https://github.com/incompl): Fix to prefixing of events when player has preload set to `none`
+* [@bcvio](https://github.com/bcvio): Documented `disableNextSnapshotRestore` option
+
 ## v3.2.0
 
 * [@incompl](https://github.com/incompl): Ad impl can now send 'nopreroll' and 'nopostroll' to inform contrib-ads it should not wait for an ad that isn't coming.
