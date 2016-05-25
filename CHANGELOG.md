@@ -1,10 +1,18 @@
 ## CHANGELOG
 
+## v3.3.2
+
+* [@incompl](https://github.com/incompl): Fix bug related to snapshots during live streams on older devices
+* [@incompl](https://github.com/incompl): Added `videoElementRecycled` method
+* [@incompl](https://github.com/incompl): Added `stitchedAds` setting and method
+* [@incompl](https://github.com/incompl): Fix prefixing of events when preload is set to `none`
+* [@bcvio](https://github.com/bcvio): Document `disableNextSnapshotRestore` option
+
 ## v3.2.0
 
 * [@incompl](https://github.com/incompl): Ad impl can now send 'nopreroll' and 'nopostroll' to inform contrib-ads it should not wait for an ad that isn't coming.
 * [@incompl](https://github.com/incompl): In live streams, mute live stream and play it in the background during ads, except on platforms where ads reuse the content video element.
-* [@bcvio](https://github.com/incompl): Add ability to prevent snapshot restoration
+* [@bcvio](https://github.com/bcvio): Add ability to prevent snapshot restoration
 
 ## v3.1.3
 
