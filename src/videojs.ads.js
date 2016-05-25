@@ -617,12 +617,7 @@ var
             if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
               player.volume(this.preAdVolume_);
             }
-
-            // trigger 'adend' as a consistent notification
-            // event that we're exiting ad-playback.
-            if (player.ads.triggerevent !== 'adend') {
-              player.trigger('adend');
-            }
+            
           },
           events: {
             'adend': function() {
@@ -630,6 +625,8 @@ var
             },
             'adserror': function() {
               this.state = 'content-resuming';
+              //trigger 'adend' to notify that we are exiting 'ad-playback'
+              player.trigger('adend');
             }
           }
         },
