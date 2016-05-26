@@ -156,7 +156,7 @@ var
             player.currentTime(currentTime);
           }
         } else {
-          player.currentTime(snapshot.currentTime);
+          player.currentTime(snapshot.ended ? player.duration() : snapshot.currentTime);
         }
 
         // Resume playback if this wasn't a postroll
@@ -735,6 +735,10 @@ var
               }
             },
             'contentended': function() {
+              if (player.ads.snapshot && player.ads.snapshot.ended) {
+                // player has already been here. content has really ended. good-bye
+                return;
+              }
               this.state = 'postroll?';
             }
           }
