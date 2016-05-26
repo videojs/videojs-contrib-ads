@@ -668,8 +668,8 @@ var
           enter: function() {
             this.snapshot = getPlayerSnapshot(player);
             if (player.ads.nopostroll_) {
-              player.ads.state = 'content-resuming';
               window.setTimeout(function() {
+                player.ads.state = 'content-resuming';
                 player.trigger('ended');
               }, 1);
             } else {
