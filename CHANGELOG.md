@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.3
+
+* [@bcvio](https://github.com/bcvio): Fix a bug where two ad-end events would fire
+
 ## v3.3.2
 
 * [@incompl](https://github.com/incompl): Fix bug related to snapshots during live streams on older devices
