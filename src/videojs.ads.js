@@ -666,8 +666,11 @@ var
           enter: function() {
             this.snapshot = getPlayerSnapshot(player);
             if (player.ads.nopostroll_) {
-              player.ads.state = 'content-resuming';
               window.setTimeout(function() {
+                // content-resuming happens after the timeout for backward-compatibility
+                // with plugins that relied on a postrollTimeout before nopostroll was
+                // implemented
+                player.ads.state = 'content-resuming';
                 player.trigger('ended');
               }, 1);
             } else {
