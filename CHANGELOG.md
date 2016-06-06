@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.4
+
+* [@incompl](https://github.com/incompl): Fix bug where content would not pause for preroll ad in cases where the "play" event fires before the "loadstart" event after a source change
+
 ## v3.3.3
 
 * [@bcvio](https://github.com/bcvio): Fix a bug where two ad-end events would fire
