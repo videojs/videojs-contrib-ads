@@ -512,8 +512,13 @@ var
             if (player.ads.nopreroll_) {
               // This will start the ads manager in case there are later ads
               player.trigger('readyforpreroll');
-              // Don't wait for a preroll
-              player.trigger('nopreroll');
+
+              // If we don't wait a tick, entering content-playback will cancel
+              // cancelPlayTimeout, causing the video to not pause for the ad
+              window.setTimeout(function() {
+                // Don't wait for a preroll
+                player.trigger('nopreroll');
+              }, 1);
             } else {
               // change class to show that we're waiting on ads
               player.addClass('vjs-ad-loading');
@@ -585,12 +590,16 @@ var
         'ad-playback': {
           enter: function() {
             // capture current player state snapshot (playing, currentTime, src)
-            if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
+            if (videojs.browser.IS_IOS ||
+                videojs.browser.IS_ANDROID ||
+                player.duration() !== Infinity) {
               this.snapshot = getPlayerSnapshot(player);
             }
 
             // Mute the player behind the ad
-            if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
+            if (!videojs.browser.IS_IOS &&
+                !videojs.browser.IS_ANDROID &&
+                player.duration() === Infinity) {
               this.preAdVolume_ = player.volume();
               player.volume(0);
             }
@@ -604,18 +613,26 @@ var
             // We no longer need to supress play events once an ad is playing.
             // Clear it if we were.
             if (player.ads.cancelPlayTimeout) {
-              window.clearTimeout(player.ads.cancelPlayTimeout);
-              player.ads.cancelPlayTimeout = null;
+              // If we don't wait a tick, we could cancel the pause for cancelContentPlay,
+              // resulting in content playback behind the ad
+              window.setTimeout(function() {
+                window.clearTimeout(player.ads.cancelPlayTimeout);
+                player.ads.cancelPlayTimeout = null;
+              }, 1);
             }
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            if (videojs.browser.IS_IOS || player.duration() !== Infinity) {
+            if (videojs.browser.IS_IOS ||
+                videojs.browser.IS_ANDROID ||
+                player.duration() !== Infinity) {
               restorePlayerSnapshot(player, this.snapshot);
             }
 
             // Reset the volume to pre-ad levels
-            if (!videojs.browser.IS_IOS && player.duration() === Infinity) {
+            if (!videojs.browser.IS_IOS &&
+                !videojs.browser.IS_ANDROID &&
+                player.duration() === Infinity) {
               player.volume(this.preAdVolume_);
             }
             

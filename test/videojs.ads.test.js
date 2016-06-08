@@ -66,6 +66,8 @@ QUnit.test('stops canceling play events when an ad is playing', function(assert)
   assert.strictEqual(setTimeoutSpy.callCount, 3, '`adTimeoutTimeout` was re-scheduled');
   assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
 
+  this.clock.tick(1);
+
   this.player.trigger('adstart');
   assert.strictEqual(this.player.ads.state, 'ad-playback', 'ads are playing');
   assert.notOk(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` no longer exists');
