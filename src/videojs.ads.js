@@ -57,6 +57,17 @@ var
   },
 
   /**
+   * Return true if content playback should mute and continue during ad breaks.
+   * This is only done during live streams on platforms where it's supported.
+   * This improves speed and accuracy when returning from an ad break.
+   */
+  shouldPlayContentBehindAd = function(player) {
+    return !videojs.browser.IS_IOS &&
+           !videojs.browser.IS_ANDROID &&
+           player.duration() === Infinity;
+  },
+
+  /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
    * restorePlayerSnapshot with a player to return the player to the state it
@@ -590,16 +601,12 @@ var
         'ad-playback': {
           enter: function() {
             // capture current player state snapshot (playing, currentTime, src)
-            if (videojs.browser.IS_IOS ||
-                videojs.browser.IS_ANDROID ||
-                player.duration() !== Infinity) {
+            if (!shouldPlayContentBehindAd(player)) {
               this.snapshot = getPlayerSnapshot(player);
             }
 
             // Mute the player behind the ad
-            if (!videojs.browser.IS_IOS &&
-                !videojs.browser.IS_ANDROID &&
-                player.duration() === Infinity) {
+            if (shouldPlayContentBehindAd(player)) {
               this.preAdVolume_ = player.volume();
               player.volume(0);
             }
@@ -623,16 +630,12 @@ var
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            if (videojs.browser.IS_IOS ||
-                videojs.browser.IS_ANDROID ||
-                player.duration() !== Infinity) {
+            if (!shouldPlayContentBehindAd(player)) {
               restorePlayerSnapshot(player, this.snapshot);
             }
 
             // Reset the volume to pre-ad levels
-            if (!videojs.browser.IS_IOS &&
-                !videojs.browser.IS_ANDROID &&
-                player.duration() === Infinity) {
+            if (shouldPlayContentBehindAd(player)) {
               player.volume(this.preAdVolume_);
             }
             
