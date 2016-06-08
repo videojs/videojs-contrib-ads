@@ -1088,4 +1088,76 @@ QUnit.test('ended event is sent without postroll', function(assert) {
 
 });
 
+QUnit.test('isLive', function(assert) {
+
+  this.player.duration = function() {return 0;};
+  videojs.browser.IOS_VERSION = '8';
+  assert.strictEqual(this.player.ads.isLive(this.player), true);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IOS_VERSION = '8';
+  assert.strictEqual(this.player.ads.isLive(this.player), false);
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IOS_VERSION = '8';
+  assert.strictEqual(this.player.ads.isLive(this.player), true);
+
+  this.player.duration = function() {return 0;};
+  videojs.browser.IOS_VERSION = undefined;
+  assert.strictEqual(this.player.ads.isLive(this.player), false);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IOS_VERSION = undefined;
+  assert.strictEqual(this.player.ads.isLive(this.player), false);
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IOS_VERSION = undefined;
+  assert.strictEqual(this.player.ads.isLive(this.player), true);
+
+});
+
+QUnit.test('shouldPlayContentBehindAd', function(assert) {
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IS_IOS = true;
+  videojs.browser.IS_ANDROID = true;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IS_IOS = true;
+  videojs.browser.IS_ANDROID = false;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = true;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), true);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IS_IOS = true;
+  videojs.browser.IS_ANDROID = true;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IS_IOS = true;
+  videojs.browser.IS_ANDROID = false;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = true;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+});
+
 }(window, window.QUnit));

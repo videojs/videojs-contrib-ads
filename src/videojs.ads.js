@@ -44,30 +44,6 @@ var
   },
 
   /**
-   * Returns a boolean indicating if given player is in live mode.
-   * Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
-   */
-  isLive = function(player) {
-    if (player.duration() === Infinity) {
-      return true;
-    } else if (videojs.browser.IOS_VERSION === "8" && player.duration() === 0) {
-      return true;
-    }
-    return false;
-  },
-
-  /**
-   * Return true if content playback should mute and continue during ad breaks.
-   * This is only done during live streams on platforms where it's supported.
-   * This improves speed and accuracy when returning from an ad break.
-   */
-  shouldPlayContentBehindAd = function(player) {
-    return !videojs.browser.IS_IOS &&
-           !videojs.browser.IS_ANDROID &&
-           player.duration() === Infinity;
-  },
-
-  /**
    * Returns an object that captures the portions of player state relevant to
    * video playback. The result of this function can be passed to
    * restorePlayerSnapshot with a player to return the player to the state it
@@ -78,7 +54,7 @@ var
 
     var currentTime;
 
-    if (videojs.browser.IS_IOS && isLive(player)) {
+    if (videojs.browser.IS_IOS && videojs.ads.isLive(player)) {
       // Record how far behind live we are
       if (player.seekable().length > 0) {
         currentTime = player.currentTime() - player.seekable().end(0);
@@ -157,7 +133,7 @@ var
         };
         var currentTime;
 
-        if (videojs.browser.IS_IOS && isLive(player)) {
+        if (videojs.browser.IS_IOS && videojs.ads.isLive(player)) {
           if (snapshot.currentTime < 0) {
             // Playback was behind real time, so seek backwards to match
             if (player.seekable().length > 0) {
@@ -474,7 +450,28 @@ var
         currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
 
         return srcChanged || currentSrcChanged;
+      },
+
+      // Returns a boolean indicating if given player is in live mode.
+      // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
+      isLive: function(player) {
+        if (player.duration() === Infinity) {
+          return true;
+        } else if (videojs.browser.IOS_VERSION === "8" && player.duration() === 0) {
+          return true;
+        }
+        return false;
+      },
+
+      // Return true if content playback should mute and continue during ad breaks.
+      // This is only done during live streams on platforms where it's supported.
+      // This improves speed and accuracy when returning from an ad break.
+      shouldPlayContentBehindAd: function(player) {
+        return !videojs.browser.IS_IOS &&
+               !videojs.browser.IS_ANDROID &&
+               player.duration() === Infinity;
       }
+
     };
 
     player.ads.stitchedAds(settings.stitchedAds);
@@ -601,12 +598,12 @@ var
         'ad-playback': {
           enter: function() {
             // capture current player state snapshot (playing, currentTime, src)
-            if (!shouldPlayContentBehindAd(player)) {
+            if (!player.ads.shouldPlayContentBehindAd(player)) {
               this.snapshot = getPlayerSnapshot(player);
             }
 
             // Mute the player behind the ad
-            if (shouldPlayContentBehindAd(player)) {
+            if (player.ads.shouldPlayContentBehindAd(player)) {
               this.preAdVolume_ = player.volume();
               player.volume(0);
             }
@@ -630,12 +627,12 @@ var
           },
           leave: function() {
             player.removeClass('vjs-ad-playing');
-            if (!shouldPlayContentBehindAd(player)) {
+            if (!player.ads.shouldPlayContentBehindAd(player)) {
               restorePlayerSnapshot(player, this.snapshot);
             }
 
             // Reset the volume to pre-ad levels
-            if (shouldPlayContentBehindAd(player)) {
+            if (player.ads.shouldPlayContentBehindAd(player)) {
               player.volume(this.preAdVolume_);
             }
             
