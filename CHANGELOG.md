@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.6
+
+* [@bcvio](https://github.com/bcvio): Fix a bug where content would replay after a postroll completed.
+
 ## v3.3.5
 
 * Last version release was done in an abnormal way. No issues have been observed, but this release is guaranteed to be correct.
