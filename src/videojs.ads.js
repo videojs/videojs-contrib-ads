@@ -11,11 +11,12 @@ var
   VIDEO_EVENTS = videojs.getComponent('Html5').Events,
 
   /**
-   * If ads are not playing, pauses the player at the next available
-   * opportunity. Has no effect if ads have started. This function is necessary
-   * because pausing a video element while processing a `play` event on iOS can
-   * cause the video element to continuously toggle between playing and paused
-   * states.
+   * Pause the player so that ads can play, then play again when ads are done.
+   * This makes sure the player is paused during ad loading.
+   *
+   * The timeout is necessary because pausing a video element while processing a `play`
+   * event on iOS can cause the video element to continuously toggle between playing and
+   * paused states.
    *
    * @param {object} player The video player
    */
@@ -740,6 +741,11 @@ var
                 return;
               }
               this.state = 'postroll?';
+            },
+            'play': function() {
+              if (player.currentSrc() !== player.ads.contentSrc) {
+                cancelContentPlay(player);
+              }
             }
           }
         }
