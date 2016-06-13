@@ -54,7 +54,7 @@ var
 
     var currentTime;
 
-    if (videojs.browser.IS_IOS && videojs.ads.isLive(player)) {
+    if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
       // Record how far behind live we are
       if (player.seekable().length > 0) {
         currentTime = player.currentTime() - player.seekable().end(0);
@@ -133,7 +133,7 @@ var
         };
         var currentTime;
 
-        if (videojs.browser.IS_IOS && videojs.ads.isLive(player)) {
+        if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
           if (snapshot.currentTime < 0) {
             // Playback was behind real time, so seek backwards to match
             if (player.seekable().length > 0) {
