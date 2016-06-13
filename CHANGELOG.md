@@ -1,8 +1,12 @@
 ## CHANGELOG
 
-## v3.3.6
+## v3.3.7
 
 * [@bcvio](https://github.com/bcvio): Fix a bug where content would replay after a postroll completed.
+
+## v3.3.6
+
+* Due to a build error, this version has no dist folder.
 
 ## v3.3.5
 
