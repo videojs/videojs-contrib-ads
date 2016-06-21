@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## v3.3.8
+
+* [@incompl](https://github.com/incompl): Fix for issue resuming after ads on Android
+* [@incompl](https://github.com/incompl): Fix for issue requesting ads for subsequent videos
+
 ## v3.3.7
 
 * [@bcvio](https://github.com/bcvio): Fix a bug where content would replay after a postroll completed.
