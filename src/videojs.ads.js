@@ -723,6 +723,9 @@ var
               window.setTimeout(function() {
                 player.trigger('ended');
               }, 1);
+            },
+            'contentupdate': function() {
+              this.state = 'ads-ready?';
             }
           }
         },
