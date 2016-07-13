@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.9
+
+* [@incompl](https://github.com/incompl): Fix a bug in which contentupdate is missed in postroll? state
+
 ## v3.3.8
 
 * [@incompl](https://github.com/incompl): Fix for issue resuming after ads on Android
