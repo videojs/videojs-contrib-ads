@@ -147,7 +147,6 @@ var
         if (!snapshot.ended) {
           player.play();
         } else if (Math.round(player.currentTime()) !== Math.round(player.duration())) {
-          videojs.log('play');
           player.play();
         }
       },
