@@ -143,10 +143,18 @@ var
           player.currentTime(snapshot.ended ? player.duration() : snapshot.currentTime);
         }
 
+        // Android reports duration Infinity right after switching source, so we need
+        // this to determine if ad was a postroll.
+        var androidPostroll = snapshot.ended &&
+                              player.duration() === Infinity &&
+                              player.currentTime() === 0;
+
         // Resume playback if this wasn't a postroll
         if (!snapshot.ended) {
           player.play();
-        } else if (Math.round(player.currentTime()) !== Math.round(player.duration())) {
+        } else if (!androidPostroll &&
+            (player.ads.isLive(player) ||
+             player.currentTime() < player.duration() - 1)) {
           player.play();
         }
       },
@@ -429,7 +437,7 @@ var
       // Returns a boolean indicating if given player is in live mode.
       // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
       isLive: function(player) {
-        if (player.duration() === Infinity) {
+        if (player.currentTime() > 0 && player.duration() === Infinity) {
           return true;
         } else if (videojs.browser.IOS_VERSION === "8" && player.duration() === 0) {
           return true;
