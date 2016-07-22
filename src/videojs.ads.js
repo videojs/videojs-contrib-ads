@@ -29,10 +29,13 @@ var
     // Avoid content flash on iOS
     if (videojs.browser.IS_IOS) {
 
+      var width = player.currentWidth ? player.currentWidth() : player.width();
+      var height = player.currentHeight ? player.currentHeight() : player.height();
+
       // A placeholder black box will be shown in the document while the player is hidden.
       var placeholder = document.createElement('div');
-      placeholder.style.width = player.width() + 'px';
-      placeholder.style.height = player.height() + 'px';
+      placeholder.style.width = width + 'px';
+      placeholder.style.height = height + 'px';
       placeholder.style.background = 'black';
       player.el_.parentNode.insertBefore(placeholder, player.el_);
 
@@ -41,7 +44,8 @@ var
       player.el_.style.display = 'none';
 
       // Unhide the player and remove the placeholder once we're ready to move on.
-      player.one(['nopreroll', 'adstart', 'adtimeout'], function() {
+      player.one(['nopreroll', 'adstart', 'adtimeout', 'adserror',
+                  'adscanceled', 'adskip'], function() {
         player.el_.style.display = 'block';
         placeholder.remove();
       });
