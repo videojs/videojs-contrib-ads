@@ -427,7 +427,7 @@ var
       // Returns a boolean indicating if given player is in live mode.
       // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
       isLive: function(player) {
-        if (player.currentTime() > 0 && player.duration() === Infinity) {
+        if (player.duration() === Infinity) {
           return true;
         } else if (videojs.browser.IOS_VERSION === "8" && player.duration() === 0) {
           return true;

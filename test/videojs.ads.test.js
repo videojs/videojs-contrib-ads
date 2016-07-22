@@ -1092,32 +1092,26 @@ QUnit.test('ended event is sent without postroll', function(assert) {
 QUnit.test('isLive', function(assert) {
 
   this.player.duration = function() {return 0;};
-  this.player.currentTime = function() {return 1;};
   videojs.browser.IOS_VERSION = '8';
   assert.strictEqual(this.player.ads.isLive(this.player), true);
 
   this.player.duration = function() {return 5;};
-  this.player.currentTime = function() {return 1;};
   videojs.browser.IOS_VERSION = '8';
   assert.strictEqual(this.player.ads.isLive(this.player), false);
 
   this.player.duration = function() {return Infinity;};
-  this.player.currentTime = function() {return 1;};
   videojs.browser.IOS_VERSION = '8';
   assert.strictEqual(this.player.ads.isLive(this.player), true);
 
   this.player.duration = function() {return 0;};
-  this.player.currentTime = function() {return 1;};
   videojs.browser.IOS_VERSION = undefined;
   assert.strictEqual(this.player.ads.isLive(this.player), false);
 
   this.player.duration = function() {return 5;};
-  this.player.currentTime = function() {return 1;};
   videojs.browser.IOS_VERSION = undefined;
   assert.strictEqual(this.player.ads.isLive(this.player), false);
 
   this.player.duration = function() {return Infinity;};
-  this.player.currentTime = function() {return 1;};
   videojs.browser.IOS_VERSION = undefined;
   assert.strictEqual(this.player.ads.isLive(this.player), true);
 
