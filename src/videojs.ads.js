@@ -26,8 +26,8 @@ var
       return;
     }
 
-    // Avoid content flash on iOS
-    if (videojs.browser.IS_IOS) {
+    // Avoid content flash on non-iPad iOS
+    if (videojs.browser.IS_IPHONE) {
 
       var width = player.currentWidth ? player.currentWidth() : player.width();
       var height = player.currentHeight ? player.currentHeight() : player.height();
