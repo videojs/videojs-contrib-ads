@@ -83,7 +83,7 @@ videojs('video', {}, function() {
     player.src('http://url/to/your/ad.content');
 
     // when all your linear ads have finished… do not confuse this with `ended`
-    player.one('adended', function() {
+    player.one('adend', function() {
       player.ads.endLinearAdMode();
     });
   });
