@@ -274,44 +274,6 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
   assert.notOk(playSpy.called, 'content playback should not resume');
 });
 
-// "ended" does not fire when the end of a video is seeked to directly in iOS 8.1
-QUnit.test('does resume playback after postrolls if "ended" does not fire naturally', function(assert) {
-  var setTimeoutSpy, playSpy;
-
-  assert.expect(2);
-
-  // play the video
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
-  this.player.trigger('loadstart');
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-  this.player.trigger('adtimeout');
-
-  // finish the video and watch for play()
-  this.player.ended = function() {
-    return true;
-  };
-
-  this.player.trigger('ended');
-
-  // play a postroll
-  this.player.ads.startLinearAdMode();
-  this.player.src('http://example.com/ad1.mp4');
-  this.player.ads.endLinearAdMode();
-
-  // reload the content video while capturing timeouts
-  setTimeoutSpy = sinon.spy(window, 'setTimeout');
-  this.player.trigger('contentcanplay');
-  assert.strictEqual(setTimeoutSpy.callCount, 1, 'set a timeout to check for "ended"');
-
-  // trigger any registered timeouts
-  playSpy = sinon.spy(this.player, 'play');
-
-  // 20 `tryToResume` timeouts at 50ms each + `resumeEndedTimeout` at 250ms.
-  this.clock.tick(1250);
-  assert.strictEqual(playSpy.callCount, 1, 'called play() to trigger an "ended"');
-});
-
 QUnit.test('changing the source and then timing out does not restore a snapshot', function(assert) {
   assert.expect(6);
 
