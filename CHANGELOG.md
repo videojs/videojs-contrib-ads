@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.10
+
+* [@incompl](https://github.com/incompl): Fix a bug in which content would replay after postrolls under certain circumstances
+
 ## v3.3.9
 
 * [@incompl](https://github.com/incompl): Fix a bug in which contentupdate is missed in postroll? state
