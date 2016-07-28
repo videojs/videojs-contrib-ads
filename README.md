@@ -58,9 +58,11 @@ And here are the interaction points you use to send information to the ads plugi
 In addition, video.js provides a number of events and APIs that might be useful to you.
 For example, the `ended` event signals that the content video has played to completion.
 
-### Additional Events Your Integration May Want To Send
+### Additional Events And Properties Your Integration May Want To Include
 
 This project does not send these events, but these events are a convention used some some integrations that you may want to consider sending for consistency.
+
+#### Events
 
 * `ads-request`: Fired when ad data is requested.
 * `ads-load`: Fired when ad data is available following an ad request.
@@ -76,6 +78,23 @@ This project does not send these events, but these events are a convention used 
 * `ads-play`: Fired when the ad is resumed.
 * `ads-mute`: Fired when the ad volume has been muted.
 * `ads-click`: Fired when the ad is clicked.
+
+#### Properties
+
+```
+player.ads.provider = {
+  "type": `String`,
+  "event": `Object`
+}
+
+player.ads.ad = {
+  "type": `String`,
+  "index": `Number`,
+  "id": `String`,
+  "duration": `Number`,
+  "currentTime": `Function`
+}
+```
 
 ## Single Preroll Example
 
