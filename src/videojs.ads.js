@@ -27,7 +27,7 @@ var
     }
 
     // Avoid content flash on non-iPad iOS
-    if (videojs.browser.IS_IPHONE) {
+    if (videojs.browser.IS_IOS) {
 
       var width = player.currentWidth ? player.currentWidth() : player.width();
       var height = player.currentHeight ? player.currentHeight() : player.height();
@@ -44,8 +44,9 @@ var
       player.el_.style.display = 'none';
 
       // Unhide the player and remove the placeholder once we're ready to move on.
-      player.one(['nopreroll', 'adstart', 'adtimeout', 'adserror',
-                  'adscanceled', 'adskip'], function() {
+      player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
+                  'contentplayback'], function(e) {
+        videojs.log(e);
         player.el_.style.display = 'block';
         placeholder.remove();
       });
