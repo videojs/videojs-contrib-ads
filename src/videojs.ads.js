@@ -46,7 +46,6 @@ var
       // Unhide the player and remove the placeholder once we're ready to move on.
       player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
                   'contentplayback'], function(e) {
-        videojs.log(e);
         player.el_.style.display = 'block';
         placeholder.remove();
       });
