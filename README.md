@@ -58,6 +58,44 @@ And here are the interaction points you use to send information to the ads plugi
 In addition, video.js provides a number of events and APIs that might be useful to you.
 For example, the `ended` event signals that the content video has played to completion.
 
+### Additional Events And Properties Your Integration May Want To Include
+
+This project does not send these events, but these events are a convention used some some integrations that you may want to consider sending for consistency.
+
+#### Events
+
+* `ads-request`: Fired when ad data is requested.
+* `ads-load`: Fired when ad data is available following an ad request.
+* `ads-pod-started`: Fired when a LINEAR ad pod has started.
+* `ads-pod-ended`: Fired when a LINEAR ad pod has completed.
+* `ads-allpods-completed`: Fired when all LINEAR ads are completed.
+* `ads-ad-started`: Fired when the ad starts playing.
+* `ads-ad-ended`: Fired when the ad completes playing.
+* `ads-first-quartile`: Fired when the ad playhead crosses first quartile.
+* `ads-midpoint`: Fired when the ad playhead crosses midpoint.
+* `ads-third-quartile`: Fired when the ad playhead crosses third quartile.
+* `ads-pause`: Fired when the ad is paused.
+* `ads-play`: Fired when the ad is resumed.
+* `ads-mute`: Fired when the ad volume has been muted.
+* `ads-click`: Fired when the ad is clicked.
+
+#### Properties
+
+```
+player.ads.provider = {
+  "type": `String`,
+  "event": `Object`
+}
+
+player.ads.ad = {
+  "type": `String`,
+  "index": `Number`,
+  "id": `String`,
+  "duration": `Number`,
+  "currentTime": `Function`
+}
+```
+
 ## Single Preroll Example
 
 Here's an outline of what a basic ad integration might look like.
