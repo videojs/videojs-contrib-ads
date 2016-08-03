@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## v3.3.11
+
+* [@incompl](https://github.com/incompl): Fix for iOS in which a flash of video content is seen before a preroll
+* [@ldayananda](https://github.com/ldayananda): Fix a bug in which the ended event does not trigger after video content source is changed
+
 ## v3.3.10
 
 * [@incompl](https://github.com/incompl): Fix a bug in which content would replay after postrolls under certain circumstances
