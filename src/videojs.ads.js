@@ -25,6 +25,32 @@ var
       // another cancellation is already in flight, so do nothing
       return;
     }
+
+    // Avoid content flash on non-iPad iOS
+    if (videojs.browser.IS_IOS) {
+
+      var width = player.currentWidth ? player.currentWidth() : player.width();
+      var height = player.currentHeight ? player.currentHeight() : player.height();
+
+      // A placeholder black box will be shown in the document while the player is hidden.
+      var placeholder = document.createElement('div');
+      placeholder.style.width = width + 'px';
+      placeholder.style.height = height + 'px';
+      placeholder.style.background = 'black';
+      player.el_.parentNode.insertBefore(placeholder, player.el_);
+
+      // Hide the player. While in full-screen video playback mode on iOS, this
+      // makes the player show a black screen instead of content flash.
+      player.el_.style.display = 'none';
+
+      // Unhide the player and remove the placeholder once we're ready to move on.
+      player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
+                  'contentplayback'], function() {
+        player.el_.style.display = 'block';
+        placeholder.remove();
+      });
+    }
+    
     player.ads.cancelPlayTimeout = window.setTimeout(function() {
       // deregister the cancel timeout so subsequent cancels are scheduled
       player.ads.cancelPlayTimeout = null;
