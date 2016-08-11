@@ -192,16 +192,6 @@ QUnit.test('removes the ad-mode class when a preroll finishes', function(assert)
   assert.strictEqual(this.contentPlaybackReason(), 'playing', 'The triggerevent for content-playback should have been playing');
 });
 
-QUnit.test('adds a class while waiting for an ad plugin to load', function(assert) {
-  var el;
-
-  assert.expect(1);
-
-  this.player.trigger('play');
-  el = this.player.el();
-  assert.ok(this.player.hasClass('vjs-ad-loading'), 'the ad loading class should be in "' + el.className + '"');
-});
-
 QUnit.test('adds a class while waiting for a preroll', function(assert) {
   var el;
 
