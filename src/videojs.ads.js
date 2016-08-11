@@ -853,9 +853,13 @@ var
       window.setTimeout(checkSrc, 1);
     })();
 
-    // kick off the fsm
-    if (!player.paused()) {
+    // The player.currentSrc() check here is necessary
+    // because the flash tech incorrectly returns "false" when
+    // there is no src set and player.paused() is called.
+    // https://github.com/videojs/video-js-swf/issues/136
+    if (!player.paused() && player.currentSrc()) {
       // simulate a play event if we're autoplaying
+      // and kick off the fsm
       fsmHandler({type:'play'});
     }
 
