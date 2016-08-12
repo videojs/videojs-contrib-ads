@@ -14,3 +14,9 @@
 .vjs-ad-playing.vjs-ad-loading .vjs-loading-spinner {
   display: block;
 }
+
+/* Hide vjs-tech when ad loading to prevent content flash */
+.vjs-ima3-flash.vjs-ad-loading .vjs-tech,
+.vjs-ima3-flash.vjs-ad-loading .vjs-poster { 
+    opacity:0; 
+}
