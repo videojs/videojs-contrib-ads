@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.12
+
+* [@vdeshpande](https://github.com/vdeshpande): Fix for metrics on empty ad
+
 ## v3.3.11
 
 * [@incompl](https://github.com/incompl): Fix for iOS in which a flash of video content is seen before a preroll
