@@ -412,6 +412,10 @@ var
       endLinearAdMode: function() {
         if (player.ads.state === 'ad-playback') {
           player.trigger('adend');
+          // In the case of an empty ad response, we want to make sure that
+          // the vjs-ad-loading class is always removed. We could probably check for
+          // duration on adPlayer for an empty ad but we remove it here just to make sure
+          player.removeClass('vjs-ad-loading');
         }
       },
 
