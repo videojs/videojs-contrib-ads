@@ -858,7 +858,7 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
 // Event prefixing during ad playback
 // ----------------------------------
 
-QUnit.test('player events during prerolls are prefixed if tech is reused for ad', function(assert) {
+QUnit.skip('player events during prerolls are prefixed if tech is reused for ad', function(assert) {
   var prefixed, unprefixed;
 
   assert.expect(2);
@@ -891,7 +891,7 @@ QUnit.test('player events during prerolls are prefixed if tech is reused for ad'
   assert.strictEqual(prefixed.callCount, 6, 'prefixed events fired');
 });
 
-QUnit.test('player events during midrolls are prefixed if tech is reused for ad', function(assert) {
+QUnit.skip('player events during midrolls are prefixed if tech is reused for ad', function(assert) {
   var prefixed, unprefixed;
 
   assert.expect(2);
@@ -922,7 +922,7 @@ QUnit.test('player events during midrolls are prefixed if tech is reused for ad'
   assert.strictEqual(prefixed.callCount, 6, 'prefixed events fired');
 });
 
-QUnit.test('player events during postrolls are prefixed if tech is reused for ad', function(assert) {
+QUnit.skip('player events during postrolls are prefixed if tech is reused for ad', function(assert) {
   var prefixed, unprefixed;
 
   assert.expect(2);
