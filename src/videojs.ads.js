@@ -355,7 +355,7 @@ var
           triggerEvent('ad', event);
 
         // Here we send "adplaying" for browsers that send their initial "playing" event
-        // (caused the the initial play/pause) during the "ad-playback" state.
+        // (caused by the the initial play/pause) during the "ad-playback" state.
         // The following browsers come through here:
         // * Chrome
         // * IE11
@@ -368,7 +368,7 @@ var
             !player.ads.videoElementRecycled()) {
           triggerEvent('ad', event);
 
-        // When ad is playing in content tech, we would normally prefix
+        // When an ad is playing in content tech, we would normally prefix
         // "playing" with "ad" to send "adplaying". However, when we did a play/pause
         // before the preroll, we already sent "adplaying". This condition prevents us
         // from sending another.
@@ -388,7 +388,8 @@ var
             triggerEvent('ad', event);
           }
 
-        // Send contentended if ended happens during content. Why do we do this?
+        // Send contentended if ended happens during content.
+        // We will make sure an ended event is sent after postrolls.
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
           triggerEvent('content', event);
 
