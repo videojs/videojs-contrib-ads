@@ -880,7 +880,7 @@ QUnit.test('player events during prerolls are prefixed if tech is reused for ad'
 
   // simulate video events that should be prefixed
   this.player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], unprefixed);
-  this.player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
+  this.player.on(['adloadstart', 'adcontentplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
   this.player.trigger('firstplay');
   this.player.trigger('loadstart');
   this.player.trigger('playing');
@@ -911,7 +911,7 @@ QUnit.test('player events during midrolls are prefixed if tech is reused for ad'
 
   // simulate video events that should be prefixed
   this.player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], unprefixed);
-  this.player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
+  this.player.on(['adloadstart', 'adcontentplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
   this.player.trigger('firstplay');
   this.player.trigger('loadstart');
   this.player.trigger('playing');
@@ -943,7 +943,7 @@ QUnit.test('player events during postrolls are prefixed if tech is reused for ad
 
   // simulate video events that should be prefixed
   this.player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], unprefixed);
-  this.player.on(['adloadstart', 'adplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
+  this.player.on(['adloadstart', 'adcontentplaying', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
   this.player.trigger('firstplay');
   this.player.trigger('loadstart');
   this.player.trigger('playing');

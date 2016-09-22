@@ -393,11 +393,26 @@ var
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
           triggerEvent('content', event);
 
-        // Content resuming is complicated
+        // Event prefixing during content resuming is complicated
         } else if (player.ads.state === 'content-resuming') {
 
+          // This does not happen during normal circumstances. I wasn't able to reproduce
+          // it, but the working theory is that it handles cases where restoring the
+          // snapshot takes a long time.
+          if (player.ads.snapshot &&
+              player.currentSrc() !== player.ads.snapshot.currentSrc) {
+
+            // Don't prefix `loadstart` event
+            if (event.type === 'loadstart') {
+              return;
+            }
+
+            // All other events get "content" prefix
+            return triggerEvent('content', event);
+          }
+
           // Content resuming after postroll
-          if (player.ads.snapshot && player.ads.snapshot.ended) {
+          else if (player.ads.snapshot && player.ads.snapshot.ended) {
 
             // Don't prefix `pause` and `ended` events
             // They don't always happen during content-resuming, but they might.
