@@ -762,7 +762,7 @@ var
               // When a new source is loaded into the player, we should remove the snapshot
               // to avoid confusing player state with the new content's state
               // i.e When new content is set, the player should fire the ended event
-              if (this.snapshot && this.snapshot.ended) {
+              if (this.snapshot && (this.snapshot.ended || this.state === 'content-set')) {
                 this.snapshot = null;
               }
             },
