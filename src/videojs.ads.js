@@ -398,7 +398,7 @@ var
 
           // This does not happen during normal circumstances. I wasn't able to reproduce
           // it, but the working theory is that it handles cases where restoring the
-          // snapshot takes a long time.
+          // snapshot takes a long time, such as in iOS7 and older Firefox.
           if (player.ads.snapshot &&
               player.currentSrc() !== player.ads.snapshot.currentSrc) {
 
