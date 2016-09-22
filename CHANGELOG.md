@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## v3.3.13
+
+* [@marguinbc](https://github.com/marguinbc): Fix check to reset snapshot on contentupdate
+
 ## v3.3.12
 
 * [@vdeshpande](https://github.com/vdeshpande): Fix for metrics on empty ad
