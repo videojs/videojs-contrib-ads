@@ -442,8 +442,8 @@ var
 
     // "vjs-has-started" should be present at the end of a video. In this case we need
     // to re-add it manually.
-    // Not sure why this happens on ended, I've never seen a case where that is needed.
-    player.on(['pause', 'ended'], function redispatch() {
+    // Not sure why this happens on pause, I've never seen a case where that is needed.
+    player.on(['pause', 'ended'], function() {
       if (player.ads.state === 'content-resuming' &&
           player.ads.snapshot &&
           player.ads.snapshot.ended) {
