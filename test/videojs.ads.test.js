@@ -221,6 +221,7 @@ QUnit.test('removes the loading class when the preroll begins', function(assert)
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
+  this.player.trigger('ads-ad-started');
   el = this.player.el();
   assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
 });
@@ -233,6 +234,7 @@ QUnit.test('removes the loading class when the preroll times out', function(asse
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing');
   el = this.player.el();
   assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
   assert.strictEqual(this.contentPlaybackSpy.callCount, 1, 'A content-playback event should have triggered');
