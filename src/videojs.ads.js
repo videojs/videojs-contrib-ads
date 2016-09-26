@@ -368,6 +368,12 @@ var
             !player.ads.videoElementRecycled()) {
           triggerEvent('ad', event);
 
+        // If the ad takes a long time to load, "playing" caused by play/pause can happen
+        // during "ads-ready?" instead of "preroll?" or "ad-playback", skipping the
+        // other conditions that would normally catch it
+        } else if (event.type === 'playing' && player.ads.state === 'ads-ready?') {
+          triggerEvent('ad', event);
+
         // When an ad is playing in content tech, we would normally prefix
         // "playing" with "ad" to send "adplaying". However, when we did a play/pause
         // before the preroll, we already sent "adplaying". This condition prevents us
@@ -824,7 +830,10 @@ var
             });
           },
           events: {
-            // in the case of a timeout, adsready might come in late.
+            // In the case of a timeout, adsready might come in late.
+            // This assumes the behavior that if an ad times out, it could still
+            // interrupt the content and start playing. An integration could
+            // still decide to behave otherwise.
             'adsready': function() {
               player.trigger('readyforpreroll');
             },
