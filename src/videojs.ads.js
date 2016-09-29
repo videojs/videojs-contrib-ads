@@ -318,7 +318,8 @@ var
     (function() {
       var videoEvents = VIDEO_EVENTS.concat([
         'firstplay',
-        'loadedalldata'
+        'loadedalldata',
+        'playing'
       ]);
 
       var returnTrue = function() { return true; };
@@ -337,42 +338,124 @@ var
       };
 
       player.on(videoEvents, function redispatch(event) {
-        if (player.ads.state === 'ad-playback') {
+
+        // We do a quick play/pause before we check for prerolls. This creates a "playing"
+        // event. This conditional block prefixes that event so it's "adplaying" if it
+        // happens while we're in the "preroll?" state. Not every browser is in the
+        // "preroll?" state for this event, so the following browsers come through here:
+        //  * iPad
+        //  * iPhone
+        //  * Android
+        //  * Safari
+        // This is too soon to check videoElementRecycled because there is no snapshot
+        // yet. We rely on the coincidence that all browsers for which
+        // videoElementRecycled would be true also happen to send their initial playing
+        // event during "preroll?"
+        if (event.type === 'playing' && player.ads.state === 'preroll?') {
+          triggerEvent('ad', event);
+
+        // Here we send "adplaying" for browsers that send their initial "playing" event
+        // (caused by the the initial play/pause) during the "ad-playback" state.
+        // The following browsers come through here:
+        // * Chrome
+        // * IE11
+        // If the ad plays in the content tech (aka videoElementRecycled) there will be
+        // another playing event when the ad starts. We check videoElementRecycled to
+        // avoid a second adplaying event. Thankfully, at this point a snapshot exists
+        // so we can safely check videoElementRecycled.
+        } else if (event.type === 'playing' &&
+            player.ads.state === 'ad-playback' &&
+            !player.ads.videoElementRecycled()) {
+          triggerEvent('ad', event);
+
+        // If the ad takes a long time to load, "playing" caused by play/pause can happen
+        // during "ads-ready?" instead of "preroll?" or "ad-playback", skipping the
+        // other conditions that would normally catch it
+        } else if (event.type === 'playing' && player.ads.state === 'ads-ready?') {
+          triggerEvent('ad', event);
+
+        // When an ad is playing in content tech, we would normally prefix
+        // "playing" with "ad" to send "adplaying". However, when we did a play/pause
+        // before the preroll, we already sent "adplaying". This condition prevents us
+        // from sending another.
+        } else if (event.type === 'playing' &&
+            player.ads.state === 'ad-playback' &&
+            player.ads.videoElementRecycled()) {
+
+          // Triggering an event prevents the unprefixed one from firing.
+          // "adcontentplaying" is only seen in this very specific condition.
+          triggerEvent('adcontent', event);
+          return;
+
+        // When ad is playing in content tech, prefix everything with "ad".
+        // This block catches many events such as emptied, play, timeupdate, and ended.
+        } else if (player.ads.state === 'ad-playback') {
           if (player.ads.videoElementRecycled() || player.ads.stitchedAds()) {
             triggerEvent('ad', event);
           }
+
+        // Send contentended if ended happens during content.
+        // We will make sure an ended event is sent after postrolls.
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
           triggerEvent('content', event);
-        } else if (player.ads.state === 'content-resuming') {
-          if (player.ads.snapshot) {
-            // the video element was recycled for ad playback
-            if (player.currentSrc() !== player.ads.snapshot.currentSrc) {
-              if (event.type === 'loadstart') {
-                return;
-              }
-              return triggerEvent('content', event);
 
-            // we ended playing postrolls and the video itself
-            // the content src is back in place
-            } else if (player.ads.snapshot.ended) {
-              if ((event.type === 'pause' ||
-                  event.type === 'ended')) {
-                // after loading a video, the natural state is to not be started
-                // in this case, it actually has, so, we do it manually
-                player.addClass('vjs-has-started');
-                // let `pause` and `ended` events through, naturally
-                return;
-              }
-              // prefix all other events in content-resuming with `content`
-              return triggerEvent('content', event);
+        // Event prefixing during content resuming is complicated
+        } else if (player.ads.state === 'content-resuming') {
+
+          // This does not happen during normal circumstances. I wasn't able to reproduce
+          // it, but the working theory is that it handles cases where restoring the
+          // snapshot takes a long time, such as in iOS7 and older Firefox.
+          if (player.ads.snapshot &&
+              player.currentSrc() !== player.ads.snapshot.currentSrc) {
+
+            // Don't prefix `loadstart` event
+            if (event.type === 'loadstart') {
+              return;
             }
+
+            // All other events get "content" prefix
+            return triggerEvent('content', event);
           }
-          if (event.type !== 'playing') {
-            triggerEvent('content', event);
+
+          // Content resuming after postroll
+          else if (player.ads.snapshot && player.ads.snapshot.ended) {
+
+            // Don't prefix `pause` and `ended` events
+            // They don't always happen during content-resuming, but they might.
+            // It seems to happen most often on iOS and Android.
+            if ((event.type === 'pause' ||
+                event.type === 'ended')) {
+              return;
+            }
+
+            // All other events get "content" prefix
+            return triggerEvent('content', event);
+          }
+
+          // Content resuming after preroll or midroll
+          else {
+
+            // Events besides "playing" get "content" prefix
+            if (event.type !== 'playing') {
+              triggerEvent('content', event);
+            }
+
           }
         }
       });
+
     })();
+
+    // "vjs-has-started" should be present at the end of a video. In this case we need
+    // to re-add it manually.
+    // Not sure why this happens on pause, I've never seen a case where that is needed.
+    player.on(['pause', 'ended'], function() {
+      if (player.ads.state === 'content-resuming' &&
+          player.ads.snapshot &&
+          player.ads.snapshot.ended) {
+        player.addClass('vjs-has-started');
+      }
+    });
 
     // We now auto-play when an ad gets loaded if we're playing ads in the same video element as the content.
     // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we cannot play from adcanplay.
@@ -445,7 +528,8 @@ var
         var currentSrcChanged;
 
         if (!this.snapshot) {
-          return false;
+          throw new Error(
+            'You cannot use videoElementRecycled while there is no snapshot.');
         }
 
         srcChanged = player.src() !== this.snapshot.src;
@@ -746,7 +830,10 @@ var
             });
           },
           events: {
-            // in the case of a timeout, adsready might come in late.
+            // In the case of a timeout, adsready might come in late.
+            // This assumes the behavior that if an ad times out, it could still
+            // interrupt the content and start playing. An integration could
+            // still decide to behave otherwise.
             'adsready': function() {
               player.trigger('readyforpreroll');
             },
