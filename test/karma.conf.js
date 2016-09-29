@@ -20,11 +20,14 @@ module.exports = function(config) {
     frameworks: ['qunit', 'detectBrowsers'],
 
     files: [
-      'dist/videojs-contrib-ads.css',
+      'node_modules/lodash/index.js',
       'node_modules/sinon/pkg/sinon.js',
       'node_modules/sinon/pkg/sinon-ie.js',
       'node_modules/video.js/dist/video.js',
       'node_modules/video.js/dist/video-js.css',
+      'dist/videojs-contrib-ads.js',
+      'dist/videojs-contrib-ads.css',
+      'test/shared-module-hooks.js',
       'test/dist/bundle.js'
     ],
 

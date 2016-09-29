@@ -122,8 +122,8 @@ const restorePlayerSnapshot = function(player, snapshot) {
     return;
   }
 
-  // the playback tech
-  const tech = player.$('.vjs-tech');
+  // The playback tech
+  let tech = player.$('.vjs-tech');
 
   // the number of[ remaining attempts to restore the snapshot
   let attempts = 20;
