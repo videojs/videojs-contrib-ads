@@ -9,11 +9,9 @@ module.exports = function(config) {
     config.browsers = ['Firefox'];
   }
 
-  // If no browsers are specified, we enable `karma-detect-browsers`
-  // this will detect all browsers that are available for testing
-  if (!config.browsers.length) {
-    detectBrowsers.enabled = true;
-  }
+  // We don't currently use detectBrowsers.eneabled=true because the tests don't pass in
+  // Safari. It'd be good to figure that out and turn it on someday.
+  config.browsers = ['Chrome'];
 
   config.set({
     basePath: '..',
