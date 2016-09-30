@@ -44,6 +44,7 @@ Here are the events that communicate information to your integration from the ad
 And here are the interaction points you use to send information to the ads plugin:
 
 * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
+* `adplaying` (EVENT) - Trigger this event when an ads starts playing. If your integration triggers `playing` event when an ad begins, it will automatically be redispatched as `adplaying`.
 * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
 * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
 * `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ad. Otherwise, the player will wait until a timeout occurs before playing content. This event is optional, but can improve user experience.
