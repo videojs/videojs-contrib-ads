@@ -45,7 +45,7 @@ var
 
       // Unhide the player and remove the placeholder once we're ready to move on.
       player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
-                  'contentplayback'], function() {
+                  'playing'], function() {
         player.el_.style.display = 'block';
         placeholder.remove();
       });
@@ -60,12 +60,8 @@ var
         player.pause();
       }
 
-      // add a contentplayback handler to resume playback when ads finish.
-      player.one('contentplayback', function() {
-        if (player.paused()) {
-          player.play();
-        }
-      });
+      // When the 'content-playback' state is entered, this will let us know to play
+      player.ads.cancelledPlay = true;
     }, 1);
   },
 
@@ -308,7 +304,7 @@ var
   adFramework = function(options) {
     var player = this;
     var settings = videojs.mergeOptions(defaults, options);
-    var fsmHandler;
+    var processEvent;
 
     // prefix all video element events during ad playback
     // if the video element emits ad-related events directly,
@@ -324,7 +320,7 @@ var
 
       var returnTrue = function() { return true; };
 
-      var triggerEvent = function(type, event) {
+      var prefixEvent = function(type, event) {
         // pretend we called stopImmediatePropagation because we want the native
         // element events to continue propagating
         event.isImmediatePropagationStopped = returnTrue;
@@ -352,7 +348,7 @@ var
         // videoElementRecycled would be true also happen to send their initial playing
         // event during "preroll?"
         if (event.type === 'playing' && player.ads.state === 'preroll?') {
-          triggerEvent('ad', event);
+          prefixEvent('ad', event);
 
         // Here we send "adplaying" for browsers that send their initial "playing" event
         // (caused by the the initial play/pause) during the "ad-playback" state.
@@ -366,13 +362,13 @@ var
         } else if (event.type === 'playing' &&
             player.ads.state === 'ad-playback' &&
             !player.ads.videoElementRecycled()) {
-          triggerEvent('ad', event);
+          prefixEvent('ad', event);
 
         // If the ad takes a long time to load, "playing" caused by play/pause can happen
         // during "ads-ready?" instead of "preroll?" or "ad-playback", skipping the
         // other conditions that would normally catch it
         } else if (event.type === 'playing' && player.ads.state === 'ads-ready?') {
-          triggerEvent('ad', event);
+          prefixEvent('ad', event);
 
         // When an ad is playing in content tech, we would normally prefix
         // "playing" with "ad" to send "adplaying". However, when we did a play/pause
@@ -384,20 +380,20 @@ var
 
           // Triggering an event prevents the unprefixed one from firing.
           // "adcontentplaying" is only seen in this very specific condition.
-          triggerEvent('adcontent', event);
+          prefixEvent('adcontent', event);
           return;
 
         // When ad is playing in content tech, prefix everything with "ad".
         // This block catches many events such as emptied, play, timeupdate, and ended.
         } else if (player.ads.state === 'ad-playback') {
           if (player.ads.videoElementRecycled() || player.ads.stitchedAds()) {
-            triggerEvent('ad', event);
+            prefixEvent('ad', event);
           }
 
         // Send contentended if ended happens during content.
         // We will make sure an ended event is sent after postrolls.
         } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
-          triggerEvent('content', event);
+          prefixEvent('content', event);
 
         // Event prefixing during content resuming is complicated
         } else if (player.ads.state === 'content-resuming') {
@@ -414,7 +410,7 @@ var
             }
 
             // All other events get "content" prefix
-            return triggerEvent('content', event);
+            return prefixEvent('content', event);
           }
 
           // Content resuming after postroll
@@ -429,7 +425,7 @@ var
             }
 
             // All other events get "content" prefix
-            return triggerEvent('content', event);
+            return prefixEvent('content', event);
           }
 
           // Content resuming after preroll or midroll
@@ -437,7 +433,7 @@ var
 
             // Events besides "playing" get "content" prefix
             if (event.type !== 'playing') {
-              triggerEvent('content', event);
+              prefixEvent('content', event);
             }
 
           }
@@ -459,7 +455,7 @@ var
 
     // We now auto-play when an ad gets loaded if we're playing ads in the same video element as the content.
     // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we cannot play from adcanplay.
-    // This will allow ad-integrations from needing to do this themselves.
+    // This will prevent ad-integrations from needing to do this themselves.
     player.on(['addurationchange', 'adcanplay'], function() {
       if (player.currentSrc() === player.ads.snapshot.currentSrc) {
         return;
@@ -562,9 +558,11 @@ var
 
     player.ads.stitchedAds(settings.stitchedAds);
 
-    fsmHandler = function(event) {
+    processEvent = function(event) {
+
       // Ad Playback State Machine
-      var fsm = {
+      // TODO don't create this object every time we run processEvent
+      var states = {
         'content-set': {
           events: {
             'adscanceled': function() {
@@ -822,12 +820,13 @@ var
               window.clearTimeout(player.ads.cancelPlayTimeout);
               player.ads.cancelPlayTimeout = null;
             }
-            // this will cause content to start if a user initiated
-            // 'play' event was canceled earlier.
-            player.trigger({
-              type: 'contentplayback',
-              triggerevent: player.ads.triggerevent
-            });
+            // Play the content
+            if (player.ads.cancelledPlay) {
+              player.ads.cancelledPlay = false;
+              if (player.paused()) {
+                player.play();
+              }
+            }
           },
           events: {
             // In the case of a timeout, adsready might come in late.
@@ -869,29 +868,41 @@ var
         }
       };
 
-      (function(state) {
-        var noop = function() {};
+      var state = player.ads.state;
 
-        // process the current event with a noop default handler
-        ((fsm[state].events || {})[event.type] || noop).apply(player.ads);
+      // Execute the current state's handler for this event
+      var eventHandlers = states[state].events;
+      if (eventHandlers) {
+        var handler = eventHandlers[event.type];
+        if (handler) {
+          handler.apply(player.ads);
+        }
+      }
 
-        // check whether the state has changed
-        if (state !== player.ads.state) {
+      // If the state has changed...
+      if (state !== player.ads.state) {
+        var previousState = state;
+        var newState = player.ads.state;
 
-          // record the event that caused the state transition
-          player.ads.triggerevent = event.type;
+        // Record the event that caused the state transition
+        player.ads.triggerevent = event.type;
 
-          // execute leave/enter callbacks if present
-          (fsm[state].leave || noop).apply(player.ads);
-          (fsm[player.ads.state].enter || noop).apply(player.ads);
-
-          // output debug logging
-          if (settings.debug) {
-            videojs.log('ads', player.ads.triggerevent + ' triggered: ' + state + ' -> ' + player.ads.state);
-          }
+        // Execute "leave" method for the previous state
+        if (states[previousState].leave) {
+          states[previousState].leave.apply(player.ads);
         }
 
-      })(player.ads.state);
+        // Execute "enter" method for the new state
+        if (states[newState].enter) {
+          states[newState].enter.apply(player.ads);
+        }
+
+        // Debug log message for state changes
+        if (settings.debug) {
+          videojs.log('ads', player.ads.triggerevent + ' triggered: ' +
+            previousState + ' -> ' + newState);
+        }
+      }
 
     };
 
@@ -912,7 +923,7 @@ var
       'adend',    // endLinearAdMode()
       'adskip',   // skipLinearAdMode()
       'nopreroll'
-    ]), fsmHandler);
+    ]), processEvent);
 
     // keep track of the current content source
     // if you want to change the src of the video without triggering
@@ -944,10 +955,10 @@ var
       window.setTimeout(checkSrc, 1);
     })();
 
-    // kick off the fsm
+    // kick off the state machine
     if (!player.paused()) {
       // simulate a play event if we're autoplaying
-      fsmHandler({type:'play'});
+      processEvent({type:'play'});
     }
 
   };

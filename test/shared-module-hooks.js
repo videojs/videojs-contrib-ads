@@ -56,30 +56,6 @@ window.sharedModuleHooks = (function(){
       };
 
       this.player.ads();
-
-      // Spy on the player's "contentplayback" event.
-      this.contentPlaybackSpy = sinon.spy();
-      this.player.on('contentplayback', this.contentPlaybackSpy);
-
-      /**
-       * Convenience function for getting at the reason a "contentplayback"
-       * event was fired (i.e. its `triggerevent` property).
-       *
-       * @param  {Number} [n=0]
-       *         The spy call number.
-       * @return {String|null}
-       *         The reason or null if none was found.
-       */
-      this.contentPlaybackReason = function(n) {
-        var call = this.contentPlaybackSpy.getCall(n || 0);
-        if (call) {
-          var event = call.args[0];
-          if (event && event.triggerevent) {
-            return event.triggerevent;
-          }
-        }
-        return null;
-      };
     },
 
     afterEach: function() {
