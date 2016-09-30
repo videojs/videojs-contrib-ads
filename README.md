@@ -63,7 +63,7 @@ require(['video.js', 'videojs-contrib-ads'], function(videojs) {
 
 ## License
 
-Apache-2.0. Copyright (c) [object Object]
+Apache-2.0. Copyright (c) Brightcove
 
 
 [videojs]: http://videojs.com/
