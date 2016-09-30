@@ -283,17 +283,11 @@ if (player.ads.state  === 'ad-playback') {
 }
 ```
 
-## Migration
+## Migration Guides
 
-### Migrating to 2.0
-
-If you've previously developed an ad plugin on the 1.0 releases of this project, you may need to make some changes to operate correctly with 2.0.
-Check out the [migration guide](migrating-to-2.0.md) for more details.
-
-### Migrating to 3.0
-
-If you've previously developed an ad plugin on the 1.0 or 2.0 releases of this project, you may need to make some changes to operate correctly with 3.0.
-Check out the [migration guide](migrating-to-3.0.md) for more details.
+* [Migrating to 2.0](migrating-to-2.0.md)
+* [Migrating to 3.0](migrating-to-3.0.md)
+* [Migrating to 4.0](migrating-to-4.0.md)
 
 ## Building
 
