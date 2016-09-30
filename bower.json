@@ -3,8 +3,8 @@
   "author": "Brightcove",
   "license": "Apache-2.0",
   "main": [
-    "dist/videojs-contrib-ads.css",
-    "dist/videojs-contrib-ads.min.js"
+    "dist/videojs.ads.css",
+    "dist/videojs.ads.min.js"
   ],
   "keywords": [
     "videojs",
