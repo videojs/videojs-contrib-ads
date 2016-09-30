@@ -1,6 +1,8 @@
 {
   "name": "videojs-contrib-ads",
   "author": "Brightcove",
+  "homepage": "https://github.com/videojs/videojs-contrib-ads",
+  "description": "A plugin that provides common functionality needed by video advertisement libraries working with video.js",
   "license": "Apache-2.0",
   "main": [
     "dist/videojs.ads.css",
@@ -8,7 +10,11 @@
   ],
   "keywords": [
     "videojs",
-    "videojs-plugin"
+    "videojs-plugin",
+    "html5",
+    "video",
+    "ads",
+    "advertisements"
   ]
 }
 
