@@ -6,7 +6,7 @@ It takes care of a number of concerns for you, reducing the code you have to wri
 ## Getting Started
 
 In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`.
-Both are in the `src/` directory.
+After you build the project they are both in the `dist` directory.
 
 For development, include the CSS in your HTML's `<head>` section with a `<link>` tag:
 
@@ -297,27 +297,20 @@ Check out the [migration guide](migrating-to-3.0.md) for more details.
 
 ## Building
 
-You can use the `videojs.ads.js` file as it is in the `src/` directory, or you can use a minified version.
-
-The ads plugin is designed to be built with `npm` and `grunt`.
+The ads plugin is designed to be built with `npm`.
 
 If you don't already have `npm`, then download and install [Node.js](http://nodejs.org/) (which comes with npm).
-Then you can install the build tool [grunt](http://gruntjs.com/):
-
-```sh
-$ npm install -g grunt
-```
 
 With grunt ready, you can download the ads plugin's build-time dependencies and then build the ads plugin.
 Open a terminal to the directory where you've cloned this repository, then:
 
 ```sh
 $ npm install
-$ grunt
+$ npm run build
 ```
 
-grunt will run a suite of unit tests and code formatting checks, then create a `dist/` directory.
-Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
+We will run a suite of unit tests and code formatting checks, then create a `dist/` directory.
+Inside you'll find the minified ads plugin file `videojs.ads.min.js`, the unminified `videojs.ads.js`, and the CSS `videojs.ads.css`.
 
 ## Release History
 
