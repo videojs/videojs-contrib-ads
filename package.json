@@ -15,14 +15,14 @@
     "prebuild": "npm run clean",
     "build": "npm-run-all -p build:*",
     "build:css": "npm-run-all build:css:sass build:css:bannerize",
-    "build:css:bannerize": "bannerize dist/videojs-contrib-ads.css --banner=scripts/banner.ejs",
-    "build:css:sass": "node-sass src/plugin.scss dist/videojs-contrib-ads.css --output-style=compressed --linefeed=lf",
+    "build:css:bannerize": "bannerize dist/videojs.ads.css --banner=scripts/banner.ejs",
+    "build:css:sass": "node-sass src/plugin.scss dist/videojs.ads.css --output-style=compressed --linefeed=lf",
     "build:js": "npm-run-all build:js:babel build:js:browserify build:js:bannerize build:js:collapse build:js:uglify",
     "build:js:babel": "babel src -d es5",
-    "build:js:bannerize": "bannerize dist/videojs-contrib-ads.js --banner=scripts/banner.ejs",
-    "build:js:browserify": "browserify . -g browserify-shim -s videojs-contrib-ads -o dist/videojs-contrib-ads.js",
-    "build:js:collapse": "bundle-collapser dist/videojs-contrib-ads.js -o dist/videojs-contrib-ads.min.js",
-    "build:js:uglify": "uglifyjs dist/videojs-contrib-ads.min.js --comments --mangle --compress -o dist/videojs-contrib-ads.min.js",
+    "build:js:bannerize": "bannerize dist/videojs.ads.js --banner=scripts/banner.ejs",
+    "build:js:browserify": "browserify . -g browserify-shim -s videojs-contrib-ads -o dist/videojs.ads.js",
+    "build:js:collapse": "bundle-collapser dist/videojs.ads.js -o dist/videojs.ads.min.js",
+    "build:js:uglify": "uglifyjs dist/videojs.ads.min.js --comments --mangle --compress -o dist/videojs.ads.min.js",
     "build:test": "babel-node scripts/build-test.js",
     "clean": "rimraf dist test/dist es5 && mkdirp dist test/dist es5",
     "lint": "vjsstandard src/plugin.js",
@@ -98,10 +98,10 @@
     "sinon": "global:sinon",
     "video.js": "global:videojs"
   },
-  "style": "dist/videojs-contrib-ads.css",
+  "style": "dist/videojs.ads.css",
   "videojs-plugin": {
-    "style": "dist/videojs-contrib-ads.css",
-    "script": "dist/videojs-contrib-ads.min.js"
+    "style": "dist/videojs.ads.css",
+    "script": "dist/videojs.ads.min.js"
   },
   "vjsstandard": {
     "ignore": [
