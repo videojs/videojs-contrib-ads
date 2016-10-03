@@ -35,7 +35,6 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
 
   assert.expect(2);
 
-  this.video.seekable = [];
   this.player.trigger('adsready');
   this.player.trigger('play');
 
@@ -60,7 +59,6 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
 
   assert.expect(1);
 
-  this.video.seekable = [];
   this.player.trigger('adsready');
   this.player.trigger('play');
 
@@ -390,7 +388,6 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
 
   // make it appear that the tech is ready to seek
   this.player.trigger('loadstart');
-  this.player.$('.vjs-tech').seekable = [1];
   this.player.trigger('loadedmetadata');
   assert.strictEqual(spy.callCount, 2, 'fired "content" prefixed events');
 });

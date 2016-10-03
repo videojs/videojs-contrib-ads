@@ -936,7 +936,15 @@ QUnit.test('ended event is sent with postroll', function(assert) {
 
   var ended = sinon.spy();
 
-  this.player.tech_.el_.ended = true;
+  this.player.tech_.el_ = {
+    ended: true,
+    hasChildNodes: function() {
+      return false;
+    },
+    removeAttribute: function() {
+
+    }
+  };
   this.player.on('ended', ended);
   this.player.ads.state = 'content-playback';
   this.player.trigger('contentended');
@@ -951,14 +959,20 @@ QUnit.test('ended event is sent without postroll', function(assert) {
 
   var ended = sinon.spy();
 
-  this.player.tech_.el_.ended = true;
+  this.player.tech_.el_ = {
+    ended: true,
+    hasChildNodes: function() {
+      return false;
+    },
+    removeAttribute: function() {
+
+    }
+  };
   this.player.on('ended', ended);
-  this.player.trigger('nopostroll');
   this.player.ads.state = 'content-playback';
   this.player.trigger('contentended');
 
   this.clock.tick(10000);
-
   assert.ok(ended.calledOnce, 'Ended triggered');
 
 });

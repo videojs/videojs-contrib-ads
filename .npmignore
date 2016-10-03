@@ -1,35 +1,3 @@
-# OS
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-.DS_Store
-._*
-
-# Editors
-*~
-*.swp
-*.tmproj
-*.tmproject
-*.sublime-*
-.idea/
-.project/
-.settings/
-.vscode/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# Dependency directories
-bower_components/
-node_modules/
-
-# Yeoman meta-data
-.yo-rc.json
-
-# Build-related directories
-!dist/
-!dist-test/
-!docs/
-!es5/
+# Intentionally left blank, so that npm does not ignore anything by default,
+# but relies on the package.json "files" array to explicitly define what ends
+# up in the package.

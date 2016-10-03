@@ -1,13 +1,12 @@
 # videojs-contrib-ads [![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.svg)](https://travis-ci.org/videojs/videojs-contrib-ads)
 
-
 The `videojs-contrib-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
 It takes care of a number of concerns for you, reducing the code you have to write for your ad integration.
 
 ## Getting Started
 
 In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`.
-Both are in the `src/` directory.
+After you build the project they are both in the `dist` directory.
 
 For development, include the CSS in your HTML's `<head>` section with a `<link>` tag:
 
@@ -39,8 +38,8 @@ Once you call `player.ads()` to initialize the plugin, it provides six interacti
 Here are the events that communicate information to your integration from the ads plugin:
 
  * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
- * `readyforpreroll` (EVENT) — Fires when a content video is about to play for the first time, so your integration can play a preroll.
-
+ * `readyforpreroll` (EVENT) — Fires when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
+ 
 And here are the interaction points you use to send information to the ads plugin:
 
 * `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
@@ -285,41 +284,28 @@ if (player.ads.state  === 'ad-playback') {
 }
 ```
 
-## Migration
+## Migration Guides
 
-### Migrating to 2.0
-
-If you've previously developed an ad plugin on the 1.0 releases of this project, you may need to make some changes to operate correctly with 2.0.
-Check out the [migration guide](migrating-to-2.0.md) for more details.
-
-### Migrating to 3.0
-
-If you've previously developed an ad plugin on the 1.0 or 2.0 releases of this project, you may need to make some changes to operate correctly with 3.0.
-Check out the [migration guide](migrating-to-3.0.md) for more details.
+* [Migrating to 2.0](migrating-to-2.0.md)
+* [Migrating to 3.0](migrating-to-3.0.md)
+* [Migrating to 4.0](migrating-to-4.0.md)
 
 ## Building
 
-You can use the `videojs.ads.js` file as it is in the `src/` directory, or you can use a minified version.
-
-The ads plugin is designed to be built with `npm` and `grunt`.
+The ads plugin is designed to be built with `npm`.
 
 If you don't already have `npm`, then download and install [Node.js](http://nodejs.org/) (which comes with npm).
-Then you can install the build tool [grunt](http://gruntjs.com/):
 
-```sh
-$ npm install -g grunt
-```
-
-With grunt ready, you can download the ads plugin's build-time dependencies and then build the ads plugin.
+With NPM ready, you can download the ads plugin's build-time dependencies and then build the ads plugin.
 Open a terminal to the directory where you've cloned this repository, then:
 
 ```sh
 $ npm install
-$ grunt
+$ npm run build
 ```
 
-grunt will run a suite of unit tests and code formatting checks, then create a `dist/` directory.
-Inside you'll find the minified ads plugin file `videojs-ads.min.js`.
+We will run a suite of unit tests and code formatting checks, then create a `dist/` directory.
+Inside you'll find the minified ads plugin file `videojs.ads.min.js`, the unminified `videojs.ads.js`, and the CSS `videojs.ads.css`.
 
 ## Release History
 
