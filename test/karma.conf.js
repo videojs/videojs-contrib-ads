@@ -4,14 +4,9 @@ module.exports = function(config) {
     usePhantomJS: false
   };
 
-  // On Travis CI, we can only run in Firefox.
-  if (process.env.TRAVIS) {
-    config.browsers = ['Firefox'];
-  }
-
-  // We don't currently use detectBrowsers.eneabled=true because the tests don't pass in
-  // Safari. It'd be good to figure that out and turn it on someday.
-  config.browsers = ['Chrome'];
+  // Travis needs to run them in Firefox.
+  // Additionally, the tests don't pass in Safari.
+  config.browsers = ['Firefox'];
 
   config.set({
     basePath: '..',
