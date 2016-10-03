@@ -20,3 +20,6 @@ notifications:
     channels:
       - "chat.freenode.net#videojs"
     use_notice: true
+
+addons:
+  firefox: "latest-esr"
