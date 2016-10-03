@@ -461,6 +461,12 @@ const adFramework = function(options) {
     player.ads.nopostroll_ = true;
   });
 
+  // Remove ad-loading class when ad plays or when content plays (in case there was no ad)
+  // If you remove this class too soon you can get a flash of content!
+  player.on(['ads-ad-started', 'playing'], () => {
+    player.removeClass('vjs-ad-loading');
+  });
+
   // replace the ad initializer with the ad namespace
   player.ads = {
     state: 'content-set',
@@ -610,7 +616,6 @@ const adFramework = function(options) {
       },
       leave() {
         window.clearTimeout(player.ads.adTimeoutTimeout);
-        player.removeClass('vjs-ad-loading');
       },
       events: {
         play() {
