@@ -3,6 +3,10 @@
 The `videojs-contrib-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
 It takes care of a number of concerns for you, reducing the code you have to write for your ad integration.
 
+Lead Maintainer: Greg Smith [https://github.com/incompl](https://github.com/incompl)
+
+Maintenance Status: Stable, in it's own interesting way
+
 ## Getting Started
 
 In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`.
