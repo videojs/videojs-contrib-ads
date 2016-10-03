@@ -295,7 +295,7 @@ The ads plugin is designed to be built with `npm`.
 
 If you don't already have `npm`, then download and install [Node.js](http://nodejs.org/) (which comes with npm).
 
-With grunt ready, you can download the ads plugin's build-time dependencies and then build the ads plugin.
+With NPM ready, you can download the ads plugin's build-time dependencies and then build the ads plugin.
 Open a terminal to the directory where you've cloned this repository, then:
 
 ```sh
