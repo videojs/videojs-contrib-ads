@@ -624,7 +624,17 @@ var
           },
           leave: function() {
             window.clearTimeout(player.ads.adTimeoutTimeout);
-            player.removeClass('vjs-ad-loading');
+
+            function removeAdLoadingClass() {
+              player.removeClass('vjs-ad-loading');
+            }
+
+            // If you remove this class too soon you can get flash of content
+            player.one(['ads-ad-started', 'playing'], removeAdLoadingClass);
+
+            player.one('contentupdate', function() {
+              player.off(['ads-ad-started', 'playing'], removeAdLoadingClass);
+            });
           },
           events: {
             'play': function() {
