@@ -9,11 +9,9 @@ all other player events.
 
 import videojs from 'video.js';
 
-let player;
-
 // Stop propogation for an event, then send a new event with the type of the original
 // event with the given prefix added.
-const prefixEvent = (prefix, event) => {
+const prefixEvent = (player, prefix, event) => {
   // Pretend we called stopImmediatePropagation because we want the native
   // element events to continue propagating
   event.isImmediatePropagationStopped = function() {
@@ -34,8 +32,6 @@ const prefixEvent = (prefix, event) => {
 // letting it go on its way without any meddling.
 const redispatch = function(event) {
 
-  player = this;
-
   // We do a quick play/pause before we check for prerolls. This creates a "playing"
   // event. This conditional block prefixes that event so it's "adplaying" if it
   // happens while we're in the "preroll?" state. Not every browser is in the
@@ -48,8 +44,8 @@ const redispatch = function(event) {
   // yet. We rely on the coincidence that all browsers for which
   // videoElementRecycled would be true also happen to send their initial playing
   // event during "preroll?"
-  if (event.type === 'playing' && player.ads.state === 'preroll?') {
-    prefixEvent('ad', event);
+  if (event.type === 'playing' && this.ads.state === 'preroll?') {
+    prefixEvent(this, 'ad', event);
 
   // Here we send "adplaying" for browsers that send their initial "playing" event
   // (caused by the the initial play/pause) during the "ad-playback" state.
@@ -61,49 +57,49 @@ const redispatch = function(event) {
   // avoid a second adplaying event. Thankfully, at this point a snapshot exists
   // so we can safely check videoElementRecycled.
   } else if (event.type === 'playing' &&
-      player.ads.state === 'ad-playback' &&
-      !player.ads.videoElementRecycled()) {
-    prefixEvent('ad', event);
+      this.ads.state === 'ad-playback' &&
+      !this.ads.videoElementRecycled()) {
+    prefixEvent(this, 'ad', event);
 
   // If the ad takes a long time to load, "playing" caused by play/pause can happen
   // during "ads-ready?" instead of "preroll?" or "ad-playback", skipping the
   // other conditions that would normally catch it
-  } else if (event.type === 'playing' && player.ads.state === 'ads-ready?') {
-    prefixEvent('ad', event);
+  } else if (event.type === 'playing' && this.ads.state === 'ads-ready?') {
+    prefixEvent(this, 'ad', event);
 
   // When an ad is playing in content tech, we would normally prefix
   // "playing" with "ad" to send "adplaying". However, when we did a play/pause
   // before the preroll, we already sent "adplaying". This condition prevents us
   // from sending another.
   } else if (event.type === 'playing' &&
-      player.ads.state === 'ad-playback' &&
-      player.ads.videoElementRecycled()) {
+      this.ads.state === 'ad-playback' &&
+      this.ads.videoElementRecycled()) {
 
     // Triggering an event prevents the unprefixed one from firing.
     // "adcontentplaying" is only seen in this very specific condition.
-    prefixEvent('adcontent', event);
+    prefixEvent(this, 'adcontent', event);
     return;
 
   // When ad is playing in content tech, prefix everything with "ad".
   // This block catches many events such as emptied, play, timeupdate, and ended.
-  } else if (player.ads.state === 'ad-playback') {
-    if (player.ads.videoElementRecycled() || player.ads.stitchedAds()) {
-      prefixEvent('ad', event);
+  } else if (this.ads.state === 'ad-playback') {
+    if (this.ads.videoElementRecycled() || this.ads.stitchedAds()) {
+      prefixEvent(this, 'ad', event);
     }
 
   // Send contentended if ended happens during content.
   // We will make sure an ended event is sent after postrolls.
-  } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
-    prefixEvent('content', event);
+  } else if (this.ads.state === 'content-playback' && event.type === 'ended') {
+    prefixEvent(this, 'content', event);
 
   // Event prefixing during content resuming is complicated
-  } else if (player.ads.state === 'content-resuming') {
+  } else if (this.ads.state === 'content-resuming') {
 
     // This does not happen during normal circumstances. I wasn't able to reproduce
     // it, but the working theory is that it handles cases where restoring the
     // snapshot takes a long time, such as in iOS7 and older Firefox.
-    if (player.ads.snapshot &&
-        player.currentSrc() !== player.ads.snapshot.currentSrc) {
+    if (this.ads.snapshot &&
+        this.currentSrc() !== this.ads.snapshot.currentSrc) {
 
       // Don't prefix `loadstart` event
       if (event.type === 'loadstart') {
@@ -111,10 +107,10 @@ const redispatch = function(event) {
       }
 
       // All other events get "content" prefix
-      return prefixEvent('content', event);
+      return prefixEvent(this, 'content', event);
 
     // Content resuming after postroll
-    } else if (player.ads.snapshot && player.ads.snapshot.ended) {
+    } else if (this.ads.snapshot && this.ads.snapshot.ended) {
 
       // Don't prefix `pause` and `ended` events
       // They don't always happen during content-resuming, but they might.
@@ -125,14 +121,14 @@ const redispatch = function(event) {
       }
 
       // All other events get "content" prefix
-      return prefixEvent('content', event);
+      return prefixEvent(this, 'content', event);
 
     }
 
     // Content resuming after preroll or midroll
     // Events besides "playing" get "content" prefix
     if (event.type !== 'playing') {
-      prefixEvent('content', event);
+      prefixEvent(this, 'content', event);
     }
 
   }
