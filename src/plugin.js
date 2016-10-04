@@ -8,64 +8,9 @@ import videojs from 'video.js';
 import redispatch from './redispatch.js';
 import snapshot from './snapshot.js';
 import contentupdate from './contentupdate.js';
+import cancelContentPlay from './cancelContentPlay.js';
 
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
-
-/**
- * Pause the player so that ads can play, then play again when ads are done.
- * This makes sure the player is paused during ad loading.
- *
- * The timeout is necessary because pausing a video element while processing a `play`
- * event on iOS can cause the video element to continuously toggle between playing and
- * paused states.
- *
- * @param {object} player The video player
- */
-const cancelContentPlay = function(player) {
-  if (player.ads.cancelPlayTimeout) {
-    // another cancellation is already in flight, so do nothing
-    return;
-  }
-
-  // Avoid content flash on non-iPad iOS
-  if (videojs.browser.IS_IOS) {
-
-    const width = player.currentWidth ? player.currentWidth() : player.width();
-    const height = player.currentHeight ? player.currentHeight() : player.height();
-
-    // A placeholder black box will be shown in the document while the player is hidden.
-    const placeholder = document.createElement('div');
-
-    placeholder.style.width = width + 'px';
-    placeholder.style.height = height + 'px';
-    placeholder.style.background = 'black';
-    player.el_.parentNode.insertBefore(placeholder, player.el_);
-
-    // Hide the player. While in full-screen video playback mode on iOS, this
-    // makes the player show a black screen instead of content flash.
-    player.el_.style.display = 'none';
-
-    // Unhide the player and remove the placeholder once we're ready to move on.
-    player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
-                'playing'], function() {
-      player.el_.style.display = 'block';
-      placeholder.remove();
-    });
-  }
-
-  player.ads.cancelPlayTimeout = window.setTimeout(function() {
-    // deregister the cancel timeout so subsequent cancels are scheduled
-    player.ads.cancelPlayTimeout = null;
-
-    // pause playback so ads can be handled.
-    if (!player.paused()) {
-      player.pause();
-    }
-
-    // When the 'content-playback' state is entered, this will let us know to play
-    player.ads.cancelledPlay = true;
-  }, 1);
-};
 
 /**
  * Remove the poster attribute from the video element tech, if present. When
@@ -112,12 +57,11 @@ const defaults = {
   stitchedAds: false
 };
 
-const adFramework = function(options) {
+const contribAdsPlugin = function(options) {
 
   const player = this; // eslint-disable-line consistent-this
 
   const settings = videojs.mergeOptions(defaults, options);
-  let processEvent;
 
   // prefix all video element events during ad playback
   // if the video element emits ad-related events directly,
@@ -256,6 +200,9 @@ const adFramework = function(options) {
   };
 
   player.ads.stitchedAds(settings.stitchedAds);
+
+  // Start sending contentupdate events for this player
+  contentupdate(player);
 
   // Ad Playback State Machine
   const states = {
@@ -563,7 +510,7 @@ const adFramework = function(options) {
     }
   };
 
-  processEvent = function(event) {
+  const processEvent = function(event) {
 
     let state = player.ads.state;
 
@@ -605,45 +552,35 @@ const adFramework = function(options) {
 
   };
 
-  // register for the events we're interested in
+  // Register our handler for the events we're interested in
   player.on(VIDEO_EVENTS.concat([
-    // events emitted by ad plugin
+    // Events emitted by this plugin
     'adtimeout',
     'contentupdate',
     'contentplaying',
     'contentended',
     'contentresumed',
+    // Triggered by startLinearAdMode()
+    'adstart',
+    // Triggered by endLinearAdMode()
+    'adend',
+    // Triggered by skipLinearAdMode()
+    'adskip',
 
-    // events emitted by third party ad implementors
+    // Events emitted by integrations
     'adsready',
     'adserror',
     'adscanceled',
-
-    // startLinearAdMode()
-    'adstart',
-    // endLinearAdMode()
-    'adend',
-    // skipLinearAdMode()
-    'adskip',
     'nopreroll'
+    
   ]), processEvent);
 
-  // Keep track of the current content source
-  // If you want to change the src of the video without triggering
-  // the ad workflow to restart, you can update this variable before
-  // modifying the player's source
-  player.ads.contentSrc = player.currentSrc();
-
-  // Start sending contentupdate events for this player
-  contentupdate(player);
-
-  // kick off the state machine
+  // The state machine will process a synthetic play event if we're autoplaying
   if (!player.paused()) {
-    // simulate a play event if we're autoplaying
     processEvent({type: 'play'});
   }
 
 };
 
-// register the ad plugin framework
-videojs.plugin('ads', adFramework);
+// Register the ad plugin framework
+videojs.plugin('ads', contribAdsPlugin);

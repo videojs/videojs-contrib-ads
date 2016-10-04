@@ -6,6 +6,12 @@ It might make sense to move this into videojs someday.
 // Start sending contentupdate events
 const initializeContentupdate = function(player) {
 
+  // Keep track of the current content source
+  // If you want to change the src of the video without triggering
+  // the ad workflow to restart, you can update this variable before
+  // modifying the player's source
+  player.ads.contentSrc = player.currentSrc();
+
   // Check if a new src has been set, if so, trigger contentupdate
   const checkSrc = function() {
     if (player.ads.state !== 'ad-playback') {
