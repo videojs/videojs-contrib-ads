@@ -7,6 +7,7 @@ import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
 import snapshot from './snapshot.js';
+import contentupdate from './contentupdate.js';
 
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
 
@@ -633,27 +634,8 @@ const adFramework = function(options) {
   // modifying the player's source
   player.ads.contentSrc = player.currentSrc();
 
-  // Implement 'contentupdate' event.
-  // Check if a new src has been set, if so, trigger contentupdate
-  const checkSrc = function() {
-    if (player.ads.state !== 'ad-playback') {
-      const src = player.currentSrc();
-
-      if (src !== player.ads.contentSrc) {
-        player.trigger({
-          type: 'contentupdate',
-          oldValue: player.ads.contentSrc,
-          newValue: src
-        });
-        player.ads.contentSrc = src;
-      }
-    }
-  };
-
-  // loadstart reliably indicates a new src has been set
-  player.on('loadstart', checkSrc);
-  // check immediately in case we missed the loadstart
-  window.setTimeout(checkSrc, 1);
+  // Start sending contentupdate events for this player
+  contentupdate(player);
 
   // kick off the state machine
   if (!player.paused()) {

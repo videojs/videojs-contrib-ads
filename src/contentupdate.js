@@ -1,0 +1,32 @@
+/*
+This feature sends a `contentupdate` event when the player source changes.
+It might make sense to move this into videojs someday.
+*/
+
+// Start sending contentupdate events
+const initializeContentupdate = function(player) {
+
+  // Check if a new src has been set, if so, trigger contentupdate
+  const checkSrc = function() {
+    if (player.ads.state !== 'ad-playback') {
+      const src = player.currentSrc();
+
+      if (src !== player.ads.contentSrc) {
+        player.trigger({
+          type: 'contentupdate',
+          oldValue: player.ads.contentSrc,
+          newValue: src
+        });
+        player.ads.contentSrc = src;
+      }
+    }
+  };
+
+  // loadstart reliably indicates a new src has been set
+  player.on('loadstart', checkSrc);
+  // check immediately in case we missed the loadstart
+  window.setTimeout(checkSrc, 1);
+
+};
+
+module.exports = initializeContentupdate;
