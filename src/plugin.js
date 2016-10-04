@@ -1,6 +1,6 @@
 /*
-The main plugin file is responsible for integration logic and enabling the features
-in separate files such as redispatch and snapshot.
+This main plugin file is responsible for integration logic and enabling the features
+that live in in separate files.
 */
 
 import videojs from 'video.js';

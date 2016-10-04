@@ -1,6 +1,6 @@
 /*
 The snapshot feature is responsible for saving the player state before an ad, then
-restoring the player state after an ad, creating a seamless experience.
+restoring the player state after an ad.
 */
 
 import videojs from 'video.js';

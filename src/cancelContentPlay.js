@@ -1,13 +1,10 @@
-/**
- * Pause the player so that ads can play, then play again when ads are done.
- * This makes sure the player is paused during ad loading.
- *
- * The timeout is necessary because pausing a video element while processing a `play`
- * event on iOS can cause the video element to continuously toggle between playing and
- * paused states.
- *
- * @param {object} player The video player
- */
+/*
+This feature makes sure the player is paused during ad loading.
+
+It does this by pausing the player immediately after a "play" where ads will be requested,
+then playing after the ad is done if we paused the player in this way.
+*/
+
 const cancelContentPlay = function(player) {
   if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing
@@ -40,6 +37,9 @@ const cancelContentPlay = function(player) {
     });
   }
 
+  // The timeout is necessary because pausing a video element while processing a `play`
+  // event on iOS can cause the video element to continuously toggle between playing and
+  // paused states.
   player.ads.cancelPlayTimeout = window.setTimeout(function() {
     // deregister the cancel timeout so subsequent cancels are scheduled
     player.ads.cancelPlayTimeout = null;
