@@ -7,7 +7,7 @@ import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
 import snapshot from './snapshot.js';
-import contentupdate from './contentupdate.js';
+import initializeContentupdate from './contentupdate.js';
 import cancelContentPlay from './cancelContentPlay.js';
 
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
@@ -202,7 +202,7 @@ const contribAdsPlugin = function(options) {
   player.ads.stitchedAds(settings.stitchedAds);
 
   // Start sending contentupdate events for this player
-  contentupdate(player);
+  initializeContentupdate(player);
 
   // Ad Playback State Machine
   const states = {
