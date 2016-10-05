@@ -1,6 +1,5 @@
 /*
 This feature sends a `contentupdate` event when the player source changes.
-It might make sense to move this into videojs someday.
 */
 
 // Start sending contentupdate events
