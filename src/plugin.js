@@ -1,249 +1,16 @@
+/*
+This main plugin file is responsible for integration logic and enabling the features
+that live in in separate files.
+*/
+
 import videojs from 'video.js';
 
+import redispatch from './redispatch.js';
+import snapshot from './snapshot.js';
+import initializeContentupdate from './contentupdate.js';
+import cancelContentPlay from './cancelContentPlay.js';
+
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
-
-/**
- * Pause the player so that ads can play, then play again when ads are done.
- * This makes sure the player is paused during ad loading.
- *
- * The timeout is necessary because pausing a video element while processing a `play`
- * event on iOS can cause the video element to continuously toggle between playing and
- * paused states.
- *
- * @param {object} player The video player
- */
-const cancelContentPlay = function(player) {
-  if (player.ads.cancelPlayTimeout) {
-    // another cancellation is already in flight, so do nothing
-    return;
-  }
-
-  // Avoid content flash on non-iPad iOS
-  if (videojs.browser.IS_IOS) {
-
-    const width = player.currentWidth ? player.currentWidth() : player.width();
-    const height = player.currentHeight ? player.currentHeight() : player.height();
-
-    // A placeholder black box will be shown in the document while the player is hidden.
-    const placeholder = document.createElement('div');
-
-    placeholder.style.width = width + 'px';
-    placeholder.style.height = height + 'px';
-    placeholder.style.background = 'black';
-    player.el_.parentNode.insertBefore(placeholder, player.el_);
-
-    // Hide the player. While in full-screen video playback mode on iOS, this
-    // makes the player show a black screen instead of content flash.
-    player.el_.style.display = 'none';
-
-    // Unhide the player and remove the placeholder once we're ready to move on.
-    player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
-                'playing'], function() {
-      player.el_.style.display = 'block';
-      placeholder.remove();
-    });
-  }
-
-  player.ads.cancelPlayTimeout = window.setTimeout(function() {
-    // deregister the cancel timeout so subsequent cancels are scheduled
-    player.ads.cancelPlayTimeout = null;
-
-    // pause playback so ads can be handled.
-    if (!player.paused()) {
-      player.pause();
-    }
-
-    // When the 'content-playback' state is entered, this will let us know to play
-    player.ads.cancelledPlay = true;
-  }, 1);
-};
-
-/**
- * Returns an object that captures the portions of player state relevant to
- * video playback. The result of this function can be passed to
- * restorePlayerSnapshot with a player to return the player to the state it
- * was in when this function was invoked.
- * @param {object} player The videojs player object
- */
-const getPlayerSnapshot = function(player) {
-
-  let currentTime;
-
-  if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
-    // Record how far behind live we are
-    if (player.seekable().length > 0) {
-      currentTime = player.currentTime() - player.seekable().end(0);
-    } else {
-      currentTime = player.currentTime();
-    }
-  } else {
-    currentTime = player.currentTime();
-  }
-
-  const tech = player.$('.vjs-tech');
-  const tracks = player.remoteTextTracks ? player.remoteTextTracks() : [];
-  const suppressedTracks = [];
-  const snapshot = {
-    ended: player.ended(),
-    currentSrc: player.currentSrc(),
-    src: player.src(),
-    currentTime,
-    type: player.currentType()
-  };
-
-  if (tech) {
-    snapshot.nativePoster = tech.poster;
-    snapshot.style = tech.getAttribute('style');
-  }
-
-  for (let i = tracks.length; i > 0; i--) {
-    const track = tracks[i];
-
-    suppressedTracks.push({
-      track,
-      mode: track.mode
-    });
-    track.mode = 'disabled';
-  }
-  snapshot.suppressedTracks = suppressedTracks;
-
-  return snapshot;
-};
-
-/**
- * Attempts to modify the specified player so that its state is equivalent to
- * the state of the snapshot.
- * @param {object} snapshot - the player state to apply
- */
-const restorePlayerSnapshot = function(player, snapshot) {
-
-  if (player.ads.disableNextSnapshotRestore === true) {
-    player.ads.disableNextSnapshotRestore = false;
-    return;
-  }
-
-  // The playback tech
-  let tech = player.$('.vjs-tech');
-
-  // the number of[ remaining attempts to restore the snapshot
-  let attempts = 20;
-
-  const suppressedTracks = snapshot.suppressedTracks;
-  let trackSnapshot;
-  let restoreTracks = function() {
-    for (let i = suppressedTracks.length; i > 0; i--) {
-      trackSnapshot = suppressedTracks[i];
-      trackSnapshot.track.mode = trackSnapshot.mode;
-    }
-  };
-
-  // finish restoring the playback state
-  const resume = function() {
-    let currentTime;
-
-    if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
-      if (snapshot.currentTime < 0) {
-        // Playback was behind real time, so seek backwards to match
-        if (player.seekable().length > 0) {
-          currentTime = player.seekable().end(0) + snapshot.currentTime;
-        } else {
-          currentTime = player.currentTime();
-        }
-        player.currentTime(currentTime);
-      }
-    } else {
-      player.currentTime(snapshot.ended ? player.duration() : snapshot.currentTime);
-    }
-
-    // Resume playback if this wasn't a postroll
-    if (!snapshot.ended) {
-      player.play();
-    }
-  };
-
-  // determine if the video element has loaded enough of the snapshot source
-  // to be ready to apply the rest of the state
-  const tryToResume = function() {
-
-    // tryToResume can either have been called through the `contentcanplay`
-    // event or fired through setTimeout.
-    // When tryToResume is called, we should make sure to clear out the other
-    // way it could've been called by removing the listener and clearing out
-    // the timeout.
-    player.off('contentcanplay', tryToResume);
-    if (player.ads.tryToResumeTimeout_) {
-      player.clearTimeout(player.ads.tryToResumeTimeout_);
-      player.ads.tryToResumeTimeout_ = null;
-    }
-
-    // Tech may have changed depending on the differences in sources of the
-    // original video and that of the ad
-    tech = player.el().querySelector('.vjs-tech');
-
-    if (tech.readyState > 1) {
-      // some browsers and media aren't "seekable".
-      // readyState greater than 1 allows for seeking without exceptions
-      return resume();
-    }
-
-    if (tech.seekable === undefined) {
-      // if the tech doesn't expose the seekable time ranges, try to
-      // resume playback immediately
-      return resume();
-    }
-
-    if (tech.seekable.length > 0) {
-      // if some period of the video is seekable, resume playback
-      return resume();
-    }
-
-    // delay a bit and then check again unless we're out of attempts
-    if (attempts--) {
-      window.setTimeout(tryToResume, 50);
-    } else {
-      try {
-        resume();
-      } catch (e) {
-        videojs.log.warn('Failed to resume the content after an advertisement', e);
-      }
-    }
-  };
-
-  if (snapshot.nativePoster) {
-    tech.poster = snapshot.nativePoster;
-  }
-
-  if ('style' in snapshot) {
-    // overwrite all css style properties to restore state precisely
-    tech.setAttribute('style', snapshot.style || '');
-  }
-
-  // Determine whether the player needs to be restored to its state
-  // before ad playback began. With a custom ad display or burned-in
-  // ads, the content player state hasn't been modified and so no
-  // restoration is required
-
-  if (player.ads.videoElementRecycled()) {
-    // on ios7, fiddling with textTracks too early will cause safari to crash
-    player.one('contentloadedmetadata', restoreTracks);
-
-    // if the src changed for ad playback, reset it
-    player.src({ src: snapshot.currentSrc, type: snapshot.type });
-    // safari requires a call to `load` to pick up a changed source
-    player.load();
-    // and then resume from the snapshots time once the original src has loaded
-    // in some browsers (firefox) `canplay` may not fire correctly.
-    // Reace the `canplay` event with a timeout.
-    player.one('contentcanplay', tryToResume);
-    player.ads.tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
-  } else if (!player.ended() || !snapshot.ended) {
-    // if we didn't change the src, just restore the tracks
-    restoreTracks();
-    // the src didn't change and this wasn't a postroll
-    // just resume playback at the current time.
-    player.play();
-  }
-};
 
 /**
  * Remove the poster attribute from the video element tech, if present. When
@@ -290,12 +57,11 @@ const defaults = {
   stitchedAds: false
 };
 
-const adFramework = function(options) {
+const contribAdsPlugin = function(options) {
 
   const player = this; // eslint-disable-line consistent-this
 
   const settings = videojs.mergeOptions(defaults, options);
-  let processEvent;
 
   // prefix all video element events during ad playback
   // if the video element emits ad-related events directly,
@@ -308,126 +74,8 @@ const adFramework = function(options) {
     'playing'
   ]);
 
-  const prefixEvent = function(type, event) {
-    // pretend we called stopImmediatePropagation because we want the native
-    // element events to continue propagating
-    event.isImmediatePropagationStopped = function() {
-      return true;
-    };
-    event.cancelBubble = true;
-    event.isPropagationStopped = function() {
-      return true;
-    };
-    player.trigger({
-      type: type + event.type,
-      state: player.ads.state,
-      originalEvent: event
-    });
-  };
-
-  player.on(videoEvents, function redispatch(event) {
-
-    // We do a quick play/pause before we check for prerolls. This creates a "playing"
-    // event. This conditional block prefixes that event so it's "adplaying" if it
-    // happens while we're in the "preroll?" state. Not every browser is in the
-    // "preroll?" state for this event, so the following browsers come through here:
-    //  * iPad
-    //  * iPhone
-    //  * Android
-    //  * Safari
-    // This is too soon to check videoElementRecycled because there is no snapshot
-    // yet. We rely on the coincidence that all browsers for which
-    // videoElementRecycled would be true also happen to send their initial playing
-    // event during "preroll?"
-    if (event.type === 'playing' && player.ads.state === 'preroll?') {
-      prefixEvent('ad', event);
-
-    // Here we send "adplaying" for browsers that send their initial "playing" event
-    // (caused by the the initial play/pause) during the "ad-playback" state.
-    // The following browsers come through here:
-    // * Chrome
-    // * IE11
-    // If the ad plays in the content tech (aka videoElementRecycled) there will be
-    // another playing event when the ad starts. We check videoElementRecycled to
-    // avoid a second adplaying event. Thankfully, at this point a snapshot exists
-    // so we can safely check videoElementRecycled.
-    } else if (event.type === 'playing' &&
-        player.ads.state === 'ad-playback' &&
-        !player.ads.videoElementRecycled()) {
-      prefixEvent('ad', event);
-
-    // If the ad takes a long time to load, "playing" caused by play/pause can happen
-    // during "ads-ready?" instead of "preroll?" or "ad-playback", skipping the
-    // other conditions that would normally catch it
-    } else if (event.type === 'playing' && player.ads.state === 'ads-ready?') {
-      prefixEvent('ad', event);
-
-    // When an ad is playing in content tech, we would normally prefix
-    // "playing" with "ad" to send "adplaying". However, when we did a play/pause
-    // before the preroll, we already sent "adplaying". This condition prevents us
-    // from sending another.
-    } else if (event.type === 'playing' &&
-        player.ads.state === 'ad-playback' &&
-        player.ads.videoElementRecycled()) {
-
-      // Triggering an event prevents the unprefixed one from firing.
-      // "adcontentplaying" is only seen in this very specific condition.
-      prefixEvent('adcontent', event);
-      return;
-
-    // When ad is playing in content tech, prefix everything with "ad".
-    // This block catches many events such as emptied, play, timeupdate, and ended.
-    } else if (player.ads.state === 'ad-playback') {
-      if (player.ads.videoElementRecycled() || player.ads.stitchedAds()) {
-        prefixEvent('ad', event);
-      }
-
-    // Send contentended if ended happens during content.
-    // We will make sure an ended event is sent after postrolls.
-    } else if (player.ads.state === 'content-playback' && event.type === 'ended') {
-      prefixEvent('content', event);
-
-    // Event prefixing during content resuming is complicated
-    } else if (player.ads.state === 'content-resuming') {
-
-      // This does not happen during normal circumstances. I wasn't able to reproduce
-      // it, but the working theory is that it handles cases where restoring the
-      // snapshot takes a long time, such as in iOS7 and older Firefox.
-      if (player.ads.snapshot &&
-          player.currentSrc() !== player.ads.snapshot.currentSrc) {
-
-        // Don't prefix `loadstart` event
-        if (event.type === 'loadstart') {
-          return;
-        }
-
-        // All other events get "content" prefix
-        return prefixEvent('content', event);
-
-      // Content resuming after postroll
-      } else if (player.ads.snapshot && player.ads.snapshot.ended) {
-
-        // Don't prefix `pause` and `ended` events
-        // They don't always happen during content-resuming, but they might.
-        // It seems to happen most often on iOS and Android.
-        if ((event.type === 'pause' ||
-            event.type === 'ended')) {
-          return;
-        }
-
-        // All other events get "content" prefix
-        return prefixEvent('content', event);
-
-      }
-
-      // Content resuming after preroll or midroll
-      // Events besides "playing" get "content" prefix
-      if (event.type !== 'playing') {
-        prefixEvent('content', event);
-      }
-
-    }
-  });
+  // Set up redispatching of player events
+  player.on(videoEvents, redispatch);
 
   // "vjs-has-started" should be present at the end of a video. In this case we need
   // to re-add it manually.
@@ -553,6 +201,9 @@ const adFramework = function(options) {
 
   player.ads.stitchedAds(settings.stitchedAds);
 
+  // Start sending contentupdate events for this player
+  initializeContentupdate(player);
+
   // Ad Playback State Machine
   const states = {
     'content-set': {
@@ -674,7 +325,7 @@ const adFramework = function(options) {
       enter() {
         // capture current player state snapshot (playing, currentTime, src)
         if (!player.ads.shouldPlayContentBehindAd(player)) {
-          this.snapshot = getPlayerSnapshot(player);
+          this.snapshot = snapshot.getPlayerSnapshot(player);
         }
 
         // Mute the player behind the ad
@@ -703,7 +354,7 @@ const adFramework = function(options) {
       leave() {
         player.removeClass('vjs-ad-playing');
         if (!player.ads.shouldPlayContentBehindAd(player)) {
-          restorePlayerSnapshot(player, this.snapshot);
+          snapshot.restorePlayerSnapshot(player, this.snapshot);
         }
 
         // Reset the volume to pre-ad levels
@@ -756,7 +407,7 @@ const adFramework = function(options) {
     },
     'postroll?': {
       enter() {
-        this.snapshot = getPlayerSnapshot(player);
+        this.snapshot = snapshot.getPlayerSnapshot(player);
         if (player.ads.nopostroll_) {
           window.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
@@ -859,7 +510,7 @@ const adFramework = function(options) {
     }
   };
 
-  processEvent = function(event) {
+  const processEvent = function(event) {
 
     let state = player.ads.state;
 
@@ -901,64 +552,36 @@ const adFramework = function(options) {
 
   };
 
-  // register for the events we're interested in
+  // Register our handler for the events that the state machine will process
   player.on(VIDEO_EVENTS.concat([
-    // events emitted by ad plugin
+    // Events emitted by this plugin
     'adtimeout',
     'contentupdate',
     'contentplaying',
     'contentended',
     'contentresumed',
+    // Triggered by startLinearAdMode()
+    'adstart',
+    // Triggered by endLinearAdMode()
+    'adend',
+    // Triggered by skipLinearAdMode()
+    'adskip',
 
-    // events emitted by third party ad implementors
+    // Events emitted by integrations
     'adsready',
     'adserror',
     'adscanceled',
-
-    // startLinearAdMode()
-    'adstart',
-    // endLinearAdMode()
-    'adend',
-    // skipLinearAdMode()
-    'adskip',
     'nopreroll'
+
   ]), processEvent);
 
-  // Keep track of the current content source
-  // If you want to change the src of the video without triggering
-  // the ad workflow to restart, you can update this variable before
-  // modifying the player's source
-  player.ads.contentSrc = player.currentSrc();
-
-  // Implement 'contentupdate' event.
-  // Check if a new src has been set, if so, trigger contentupdate
-  const checkSrc = function() {
-    if (player.ads.state !== 'ad-playback') {
-      const src = player.currentSrc();
-
-      if (src !== player.ads.contentSrc) {
-        player.trigger({
-          type: 'contentupdate',
-          oldValue: player.ads.contentSrc,
-          newValue: src
-        });
-        player.ads.contentSrc = src;
-      }
-    }
-  };
-
-  // loadstart reliably indicates a new src has been set
-  player.on('loadstart', checkSrc);
-  // check immediately in case we missed the loadstart
-  window.setTimeout(checkSrc, 1);
-
-  // kick off the state machine
+  // If we're autoplaying, the state machine will immidiately process
+  // a synthetic play event
   if (!player.paused()) {
-    // simulate a play event if we're autoplaying
     processEvent({type: 'play'});
   }
 
 };
 
-// register the ad plugin framework
-videojs.plugin('ads', adFramework);
+// Register this plugin with videojs
+videojs.plugin('ads', contribAdsPlugin);

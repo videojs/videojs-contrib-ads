@@ -1,14 +1,18 @@
-// Sass for videojs-contrib-ads
+/*
+Styles for ad integrations.
+*/
 
-/* Ad playback */
+// Prevent seeking during ad playback
 .vjs-ad-playing.vjs-ad-playing .vjs-progress-control {
   pointer-events: none;
 }
+
+// Make the progress bar yellow for ads
 .vjs-ad-playing.vjs-ad-playing .vjs-play-progress {
   background-color: #ffe400;
 }
 
-/* Ad loading */
+// Show the videojs loading spinner during ad loading
 .vjs-ad-playing.vjs-ad-loading .vjs-loading-spinner {
   display: block;
 }

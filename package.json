@@ -25,7 +25,7 @@
     "build:js:uglify": "uglifyjs dist/videojs.ads.min.js --comments --mangle --compress -o dist/videojs.ads.min.js",
     "build:test": "babel-node scripts/build-test.js",
     "clean": "rimraf dist test/dist es5 && mkdirp dist test/dist es5",
-    "lint": "vjsstandard src/plugin.js",
+    "lint": "vjsstandard src",
     "start": "babel-node scripts/server.js",
     "pretest": "npm-run-all lint build",
     "test": "karma start test/karma.conf.js",
