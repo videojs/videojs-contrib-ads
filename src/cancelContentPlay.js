@@ -2,7 +2,7 @@
 This feature makes sure the player is paused during ad loading.
 
 It does this by pausing the player immediately after a "play" where ads will be requested,
-then playing after the ad is done if we paused the player in this way.
+then signalling that we should play after the ad is done.
 */
 
 const cancelContentPlay = function(player) {
