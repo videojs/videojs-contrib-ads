@@ -552,7 +552,7 @@ const contribAdsPlugin = function(options) {
 
   };
 
-  // Register our handler for the events we're interested in
+  // Register our handler for the events that the state machine will process
   player.on(VIDEO_EVENTS.concat([
     // Events emitted by this plugin
     'adtimeout',
@@ -572,15 +572,16 @@ const contribAdsPlugin = function(options) {
     'adserror',
     'adscanceled',
     'nopreroll'
-    
+
   ]), processEvent);
 
-  // The state machine will process a synthetic play event if we're autoplaying
+  // If we're autoplaying, the state machine will immidiately process
+  // a synthetic play event
   if (!player.paused()) {
     processEvent({type: 'play'});
   }
 
 };
 
-// Register the ad plugin framework
+// Register this plugin with videojs
 videojs.plugin('ads', contribAdsPlugin);
