@@ -266,6 +266,11 @@ const contribAdsPlugin = function(options) {
           player.ads.adTimeoutTimeout = window.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.prerollTimeout);
+          // We will try to pause content here. This is because in an autoadvance playlist
+          // on Android devices with HLS renditions, the duration is incorrectly reported
+          // as infinity, due to which the content is not paused incorrectly
+          // So before we signal to the ad plugin , we want to pause content
+          cancelContentPlay(player);
           // signal to ad plugin that it's their opportunity to play a preroll
           player.trigger('readyforpreroll');
         }
