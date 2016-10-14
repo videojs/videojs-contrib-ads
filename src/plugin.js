@@ -120,6 +120,8 @@ const contribAdsPlugin = function(options) {
     state: 'content-set',
     disableNextSnapshotRestore: false,
 
+    VERSION: '__VERSION__',
+
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
