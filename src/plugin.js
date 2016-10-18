@@ -9,6 +9,7 @@ import redispatch from './redispatch.js';
 import snapshot from './snapshot.js';
 import initializeContentupdate from './contentupdate.js';
 import cancelContentPlay from './cancelContentPlay.js';
+import adMacroReplacement from './macros.js';
 
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
 
@@ -202,6 +203,8 @@ const contribAdsPlugin = function(options) {
   };
 
   player.ads.stitchedAds(settings.stitchedAds);
+
+  player.ads.adMacroReplacement = adMacroReplacement.bind(player);
 
   // Start sending contentupdate events for this player
   initializeContentupdate(player);
