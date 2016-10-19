@@ -1,16 +1,24 @@
 /*
-Feature description
+This feature provides an optional method for ad integrations to insert run-time values
+into an ad server URL or configuration.
 */
 
 import videojs from 'video.js';
 
 const uriEncodeIfNeeded = function(value, uriEncode) {
   if (uriEncode) {
-    encodeURIComponent(value);
+    return encodeURIComponent(value);
   }
   return value;
 }
 
+// Public method that integrations use for ad macros.
+// "string" is any string with macros to be replaced
+// "uriEncode" if true will uri encode macro values when replaced
+// "customMacros" is a object with custom macros and values to map them to
+//  - For example: {'{five}': 5}
+// Return value is is "string" with macros replaced
+//  - For example: adMacroReplacement('{player.id}') returns a string of the player id
 const adMacroReplacement = function(string, uriEncode, customMacros) {
 
   if (uriEncode === undefined) {
@@ -56,7 +64,7 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
   }
 
   // Page variables
-  string = string.replace(/{pageVariable\.([^}]+)}/, function(match, name) {
+  string = string.replace(/{pageVariable\.([^}]+)}/g, function(match, name) {
     let value;
     let context = window;
     let names = name.split('.');
@@ -80,7 +88,7 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
       videojs.log.warn(`Page variable "${name}" not found`);
       return '';
     } else if (type !== 'string' && type !== 'number' && type !== 'boolean') {
-      videojs.log.warn(`Page variable "${name}" is not a supported`);
+      videojs.log.warn(`Page variable "${name}" is not a supported type`);
       return '';
     }
 
