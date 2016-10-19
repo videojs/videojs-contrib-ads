@@ -92,13 +92,14 @@ QUnit.test('pageVariables', function(assert) {
       }
     }
   };
+  window.bird = null;
   window.foo = function() {};
   window.bar = {};
 
   var result = this.player.ads.adMacroReplacement(
     'Number: {pageVariable.scrollX}, ' +
     'Boolean: {pageVariable.isSecureContext}, ' +
-    'Null: {pageVariable.onblur}, ' +
+    'Null: {pageVariable.bird}, ' +
     'Undefined: {pageVariable.thisDoesNotExist}, ' +
     'Function: {pageVariable.foo}, ' +
     'Object: {pageVariable.bar}, ' +
