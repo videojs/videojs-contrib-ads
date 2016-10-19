@@ -1,8 +1,4 @@
-QUnit.module('Ad Macros', window.sharedModuleHooks({
-  beforeEach: function() {
-    
-  }
-}));
+QUnit.module('Ad Macros', window.sharedModuleHooks({}));
 
 QUnit.test('player.id', function(assert) {
   this.player.options_['data-player'] = '12345';

@@ -110,9 +110,9 @@ For example, an ad integration that supports this feature might accept an ad ser
 
 In the ad integration, it would use the videojs-contrib-ads macro feature to process that URL like this:
 
-serverUrl = player.ads.adMacroReplacement(serverUrl, true);
+`serverUrl = player.ads.adMacroReplacement(serverUrl, true);`
 
-This would return a server URL like this:
+This would result in a server URL like this:
 
 `'http://example.com/vmap.xml?id=12345'`
 
@@ -148,7 +148,7 @@ A macro such as {mediainfo.custom_fields.foobar} allows the user to access the v
 
 #### Dynamic Macro: pageVariable.*
 
-A macro such as {pageVariable.foobar} allows the user to put any value in the second position and access the value of that property on the `window` object. Only certain value types are allowed, per this table:
+A macro such as {pageVariable.foobar} allows the user access the value of any property on the `window` object. Only certain value types are allowed, per this table:
 
 | Type      | What happens                          |
 |:----------|:--------------------------------------|
