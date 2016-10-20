@@ -266,12 +266,6 @@ const contribAdsPlugin = function(options) {
           player.ads.adTimeoutTimeout = window.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.prerollTimeout);
-          // We will try to pause content here. This is because in an autoadvance playlist
-          // on Android devices with HLS renditions, the duration is incorrectly reported
-          // as infinity, due to which the content is not paused incorrectly
-          // So before we signal to the ad plugin , we want to pause content
-          cancelContentPlay(player);
-          // signal to ad plugin that it's their opportunity to play a preroll
           player.trigger('readyforpreroll');
         }
       },
@@ -502,6 +496,12 @@ const contribAdsPlugin = function(options) {
           this.state = 'ad-playback';
         },
         contentupdate() {
+          // We know sources have changed, so we call CancelContentPlay
+          // to avoid playback of video in the background of an ad. Playback Occurs on
+          // an Android device if we do not call cancelContentPlay
+          if(!player.ads.shouldPlayContentBehindAd(player)) {
+            cancelContentPlay(player);
+          }
           if (player.paused()) {
             this.state = 'content-set';
           } else {
@@ -520,11 +520,6 @@ const contribAdsPlugin = function(options) {
             return;
           }
           this.state = 'postroll?';
-        },
-        play() {
-          if (player.currentSrc() !== player.ads.contentSrc) {
-            cancelContentPlay(player);
-          }
         }
       }
     }
