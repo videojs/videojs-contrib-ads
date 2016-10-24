@@ -1,7 +1,12 @@
+/**
+* This feature allows metadata text tracks to be manipulated once available, @see process.
+* It also allows ad implementations to leverage ad cues coming through
+* text tracks, @see processAdTrack
+**/
+
 import videojs from 'video.js';
 
 const metadataTextTracks = {};
-let includedCues = {};
 
 /**
 * This feature allows metadata text tracks to be manipulated once they are available,
@@ -36,11 +41,10 @@ metadataTextTracks.process = function(player, processTrack) {
 };
 
 /**
-* @override only if necessary
 * Determines whether cue is an ad cue and returns the cue data.
 * @param player A reference to the player
 * @param cue The cue to be checked
-* Returns the given cue by default
+* Returns the given cue by default @override if futher processing is required
 * @return the cueData in JSON if cue is a supported ad cue, or -1 if not
 **/
 metadataTextTracks.getSupportedAdCue = function(player, cue) {
@@ -48,10 +52,9 @@ metadataTextTracks.getSupportedAdCue = function(player, cue) {
 };
 
 /**
-* @override only if necessary
 * Gets the id associated with a cue.
 * @param cue The cue to extract an ID from
-* @returns The first occurance of 'id' in the object
+* @returns The first occurance of 'id' in the object @override if this is not the desired cue id
 **/
 metadataTextTracks.getCueId = function(cue) {
   return cue.id;
@@ -65,6 +68,8 @@ metadataTextTracks.getCueId = function(cue) {
 * @param [cancelAds] A method that dynamically cancels ads in the ad implementation
 **/
 metadataTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
+  player.ads.includedCues = {};
+
   // loop over set of cues
   for (let i = 0; i < cues.length; i++) {
     const cue = cues[i];
@@ -105,17 +110,17 @@ metadataTextTracks.processAdTrack = function(player, cues, processCue, cancelAds
 * Checks whether a cue has already been used
 * @param cueId The Id associated with a cue
 **/
-const cueIncluded = function(cueId) {
-  return (cueId !== undefined) && includedCues[cueId];
+const cueIncluded = function(player, cueId) {
+  return (cueId !== undefined) && player.ads.includedCues[cueId];
 };
 
 /**
 * Indicates that a cue has been used
 * @param cueId The Id associated with a cue
 **/
-const setCueIncluded = function(cueId) {
+const setCueIncluded = function(player, cueId) {
   if (cueId !== undefined && cueId !== '') {
-    includedCues[cueId] = true;
+    player.ads.includedCues[cueId] = true;
   }
 };
 
