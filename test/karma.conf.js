@@ -1,12 +1,39 @@
 module.exports = function(config) {
-  var detectBrowsers = {
-    enabled: false,
-    usePhantomJS: false
-  };
+  var
+    plugins = [],
+    detectBrowsers = {
+      enabled: false,
+      usePhantomJS: false
+    },
+    addBrowserLauncher = function(browser) {
+      plugins.push('karma-' + browser.toLowerCase() + '-launcher');
+    };
 
-  // Travis needs to run them in Firefox.
-  // Additionally, the tests don't pass in Safari.
-  config.browsers = ['Firefox'];
+  if (process.env.TRAVIS) {
+    // Travis needs to run them in Firefox.
+    // Additionally, the tests don't pass in Safari.
+    config.browsers = ['Firefox'];
+
+  } else {
+    // If no browsers are specified, we enable `karma-detect-browsers`
+    // This detects all browsers available for testing
+    plugins.push('karma-detect-browsers');
+    config.browsers = ['chrome', 'firefox', 'ie'];
+
+    detectBrowsers.enabled = true;
+    detectBrowsers.postDetection = function(browsers) {
+      var i = browsers.indexOf('Safari');
+      if (i !== -1) {
+        browsers.splice(i, 1);
+      }
+
+      return browsers;
+    };
+
+    config.browsers.forEach(addBrowserLauncher);
+    plugins.push('karma-qunit');
+    config.plugins = plugins;
+  }
 
   config.set({
     basePath: '..',
