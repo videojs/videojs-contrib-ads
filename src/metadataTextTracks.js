@@ -78,7 +78,7 @@ metadataTextTracks.processAdTrack = function(player, cues, processCue, cancelAds
     // Exit if this is not a supported cue
     cueData = this.getSupportedAdCue(player, cue);
     if (cueData === -1) {
-      videojs.log.debug('Skipping as this is not a supported ad cue.', cue);
+      videojs.log.warn('Skipping as this is not a supported ad cue.', cue);
       return;
 
     // Continue processing supported cue
