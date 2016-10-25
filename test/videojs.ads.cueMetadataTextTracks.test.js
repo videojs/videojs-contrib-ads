@@ -23,6 +23,9 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
     this.player.ads.metadataTextTracks.getCueId = function(cue) {
       return cue.id;
     };
+    this.player.ads.metadataTextTracks.setTrackMode = function(track) {
+      track.mode = 'hidden';
+    };
   }
 }));
 
@@ -55,6 +58,20 @@ QUnit.test('does not call processTrack callback until tracks available', functio
   };
   this.player.textTracks().trigger(addTrackEvent);
   assert.strictEqual(processTrackSpy.callCount, 1);
+});
+
+QUnit.test('setTrackMode should work when overriden', function(assert) {
+  var tt = this.tt;
+  var metadataTextTracks = this.player.ads.metadataTextTracks;
+
+  metadataTextTracks.setTrackMode(tt);
+  assert.strictEqual(tt.mode, 'hidden');
+
+  metadataTextTracks.setTrackMode = function(track) {
+    track.mode = 'disabled';
+  };
+  metadataTextTracks.setTrackMode(tt);
+  assert.strictEqual(tt.mode, 'disabled');
 });
 
 QUnit.test('getSupportedAdCue should work when overriden', function(assert) {

@@ -13,14 +13,17 @@ const metadataTextTracks = {};
 * usually after the 'loadstart' event is observed on the player
 * @param player A reference to a player
 * @param processTrack A method that performs some operations on a metadata text track
+* @param setTrackMode A method that sets the mode of a text track
 **/
-metadataTextTracks.process = function(player, processTrack) {
+metadataTextTracks.process = function(player, processTrack, setTrackMode) {
   const tracks = player.textTracks();
   const prepareTrack = function(track) {
     if (track.kind === 'metadata') {
       // Make sure track is 'hidden' rather than 'disabled' as it may have already
       // existed and had been 'disabled' during a playlist change
-      track.mode = 'hidden';
+      if (setTrackMode !== undefined) {
+        setTrackMode(track);
+      }
       processTrack(player, track);
     }
   };
@@ -38,6 +41,16 @@ metadataTextTracks.process = function(player, processTrack) {
       prepareTrack(track);
     });
   }
+};
+
+/**
+* Sets the track mode to one of 'disabled', 'hidden' or 'showing'
+* @see https://github.com/videojs/video.js/blob/master/docs/guides/text-tracks.md
+* Default behavior is to set the track to hidden, @override if this is not desired
+* @param track The text track to set the mode on
+*/
+metadataTextTracks.setTrackMode = function(track) {
+  track.mode = 'hidden';
 };
 
 /**
