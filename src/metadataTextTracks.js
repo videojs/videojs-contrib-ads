@@ -41,13 +41,11 @@ metadataTextTracks.process = function(player, processTrack) {
 /**
 * Sets the track mode to one of 'disabled', 'hidden' or 'showing'
 * @see https://github.com/videojs/video.js/blob/master/docs/guides/text-tracks.md
-* Default behavior is to set the track to hidden, @override if this is not desired
+* Default behavior is to do nothing, @override if this is not desired
 * @param track The text track to set the mode on
 */
 metadataTextTracks.setTrackMode = function(track) {
-  // Make sure track is 'hidden' rather than 'disabled' as it may have already
-  // existed and had been 'disabled' during a playlist change
-  track.mode = 'hidden';
+  return;
 };
 
 /**

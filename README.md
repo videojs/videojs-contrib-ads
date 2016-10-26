@@ -182,7 +182,11 @@ function processTrack(player, track) {
       // Make an ad request
       ...
     };
-    var cancelAds = function() { ... };
+    var cancelAds = function() {
+      // Optional method to dynamically cancel ads
+      // This will depend on the ad implementation
+      ...
+    };
 
     player.ads.metadataTextTracks.processAdTrack(player, cues, processCue, cancelAds);
   });
@@ -193,7 +197,15 @@ For more information on the utility methods that are available, see [metadataTex
 
 ### setTrackMode
 
-A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad integrations should be careful about setting the mode of tracks in these cases and shadow `setTrackMode` to determine which tracks are safe to change.
+A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad integrations should be careful about setting the mode of tracks in these cases and shadow `setTrackMode` to determine which tracks are safe to change. For example, if all tracks should be hidden:
+
+```
+player.ads.metadataTextTracks.setTrackMode = function(track) {
+  // Hide the tracks so they are enabled and get updated
+  // but are not shown in the UI
+  track.mode = 'hidden';
+}
+```
 
 ## Single Preroll Example
 
