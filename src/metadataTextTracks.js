@@ -97,7 +97,7 @@ metadataTextTracks.processAdTrack = function(player, cues, processCue, cancelAds
       startTime = Math.floor(cue.startTime);
 
       // Skip ad if cue was already used
-      if (cueIncluded(cueId)) {
+      if (cueIncluded(player, cueId)) {
         videojs.log('Skipping already included ad with ID ' + cueId);
         return;
       }
@@ -106,7 +106,7 @@ metadataTextTracks.processAdTrack = function(player, cues, processCue, cancelAds
       processCue(player, cueData, cueId, startTime);
 
       // Indicate that this cue has been used
-      setCueIncluded(cueId);
+      setCueIncluded(player, cueId);
     }
 
     // Optional dynamic ad cancellation
