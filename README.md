@@ -170,9 +170,9 @@ An optional feature that allows the manipulation of metadata tracks, specificall
 
 For example, an ad integration may want to make an ad request when a cuepoint change has been observed. To do this, an ad integration would need to do somthing like this:
 
-`player.ads.metadataTextTracks.process(player, processTrack, setTrackMode)`
+`player.ads.metadataTextTracks.process(player, processTrack)`
 
-where setTrackMode would take a track and set it's mode, and processTrack could be something like this:
+where processTrack could be something like this:
 
 ```
 function processTrack(player, track) {
@@ -193,7 +193,7 @@ For more information on the utility methods that are available, see [metadataTex
 
 ### setTrackMode
 
-A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad integrations should be careful about setting the mode of tracks in these cases and shadown `setTrackMode` to determine which tracks are safe to change.
+A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad integrations should be careful about setting the mode of tracks in these cases and shadow `setTrackMode` to determine which tracks are safe to change.
 
 ## Single Preroll Example
 

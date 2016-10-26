@@ -13,19 +13,12 @@ const metadataTextTracks = {};
 * usually after the 'loadstart' event is observed on the player
 * @param player A reference to a player
 * @param processTrack A method that performs some operations on a metadata text track
-* @param [setTrackMode] A method that sets the mode of a text track
 **/
-metadataTextTracks.process = function(player, processTrack, setTrackMode) {
+metadataTextTracks.process = function(player, processTrack) {
   const tracks = player.textTracks();
   const prepareTrack = function(track) {
     if (track.kind === 'metadata') {
-      // Make sure track is 'hidden' rather than 'disabled' as it may have already
-      // existed and had been 'disabled' during a playlist change
-      if (setTrackMode !== undefined) {
-        setTrackMode(track);
-      } else {
-        metadataTextTracks.setTrackMode(track);
-      }
+      metadataTextTracks.setTrackMode(track);
       processTrack(player, track);
     }
   };
@@ -52,6 +45,8 @@ metadataTextTracks.process = function(player, processTrack, setTrackMode) {
 * @param track The text track to set the mode on
 */
 metadataTextTracks.setTrackMode = function(track) {
+  // Make sure track is 'hidden' rather than 'disabled' as it may have already
+  // existed and had been 'disabled' during a playlist change
   track.mode = 'hidden';
 };
 
