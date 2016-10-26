@@ -6,7 +6,7 @@
 
 import videojs from 'video.js';
 
-const metadataTextTracks = {};
+const cueTextTracks = {};
 
 /**
 * This feature allows metadata text tracks to be manipulated once they are available,
@@ -14,11 +14,11 @@ const metadataTextTracks = {};
 * @param player A reference to a player
 * @param processTrack A method that performs some operations on a metadata text track
 **/
-metadataTextTracks.process = function(player, processTrack) {
+cueTextTracks.process = function(player, processTrack) {
   const tracks = player.textTracks();
   const prepareTrack = function(track) {
     if (track.kind === 'metadata') {
-      metadataTextTracks.setTrackMode(track);
+      cueTextTracks.setTrackMode(track);
       processTrack(player, track);
     }
   };
@@ -44,7 +44,7 @@ metadataTextTracks.process = function(player, processTrack) {
 * Default behavior is to do nothing, @override if this is not desired
 * @param track The text track to set the mode on
 */
-metadataTextTracks.setTrackMode = function(track) {
+cueTextTracks.setTrackMode = function(track) {
   return;
 };
 
@@ -55,7 +55,7 @@ metadataTextTracks.setTrackMode = function(track) {
 * Returns the given cue by default @override if futher processing is required
 * @return the cueData in JSON if cue is a supported ad cue, or -1 if not
 **/
-metadataTextTracks.getSupportedAdCue = function(player, cue) {
+cueTextTracks.getSupportedAdCue = function(player, cue) {
   return cue;
 };
 
@@ -64,7 +64,7 @@ metadataTextTracks.getSupportedAdCue = function(player, cue) {
 * @param cue The cue to extract an ID from
 * @returns The first occurance of 'id' in the object @override if this is not the desired cue id
 **/
-metadataTextTracks.getCueId = function(cue) {
+cueTextTracks.getCueId = function(cue) {
   return cue.id;
 };
 
@@ -75,7 +75,7 @@ metadataTextTracks.getCueId = function(cue) {
 * @param processCue A method that uses a cue to make some ad request in the ad implementation
 * @param [cancelAds] A method that dynamically cancels ads in the ad implementation
 **/
-metadataTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
+cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
   player.ads.includedCues = {};
 
   // loop over set of cues
@@ -132,5 +132,5 @@ const setCueIncluded = function(player, cueId) {
   }
 };
 
-module.exports = metadataTextTracks;
+module.exports = cueTextTracks;
 

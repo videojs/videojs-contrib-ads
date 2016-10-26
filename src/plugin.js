@@ -11,8 +11,12 @@ import redispatch from './redispatch.js';
 import snapshot from './snapshot.js';
 import initializeContentupdate from './contentupdate.js';
 import cancelContentPlay from './cancelContentPlay.js';
+<<<<<<< HEAD
 import adMacroReplacement from './macros.js';
 import metadataTextTracks from './metadataTextTracks.js';
+=======
+import cueTextTracks from './cueTextTracks.js';
+>>>>>>> 3af5b29... Renaming metadataTextTracks to cueTextTracks
 
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
 
@@ -212,7 +216,7 @@ const contribAdsPlugin = function(options) {
 
   player.ads.stitchedAds(settings.stitchedAds);
 
-  player.ads.metadataTextTracks = metadataTextTracks;
+  player.ads.cueTextTracks = cueTextTracks;
   player.ads.adMacroReplacement = adMacroReplacement.bind(player);
 
   // Start sending contentupdate events for this player

@@ -17,13 +17,13 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
     };
   },
   afterEach: function() {
-    this.player.ads.metadataTextTracks.getSupportedAdCue = function(player, cue) {
+    this.player.ads.cueTextTracks.getSupportedAdCue = function(player, cue) {
       return cue;
     };
-    this.player.ads.metadataTextTracks.getCueId = function(cue) {
+    this.player.ads.cueTextTracks.getCueId = function(cue) {
       return cue.id;
     };
-    this.player.ads.metadataTextTracks.setTrackMode = function(track) {
+    this.player.ads.cueTextTracks.setTrackMode = function(track) {
       track.mode = 'hidden';
     };
   }
@@ -39,17 +39,17 @@ QUnit.test('runs processTrack callback as tracks are added', function(assert) {
   };
 
   var processTrackSpy = sinon.spy();
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
+  var cueTextTracks = this.player.ads.cueTextTracks;
 
-  metadataTextTracks.process(this.player, processTrackSpy);
+  cueTextTracks.process(this.player, processTrackSpy);
   assert.strictEqual(processTrackSpy.callCount, 1);
 });
 
 QUnit.test('does not call processTrack callback until tracks available', function(assert) {
   var processTrackSpy = sinon.spy();
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
+  var cueTextTracks = this.player.ads.cueTextTracks;
 
-  metadataTextTracks.process(this.player, processTrackSpy);
+  cueTextTracks.process(this.player, processTrackSpy);
   assert.strictEqual(processTrackSpy.callCount, 0);
 
   var addTrackEvent = {
@@ -62,15 +62,15 @@ QUnit.test('does not call processTrack callback until tracks available', functio
 
 QUnit.test('setTrackMode should work when overriden', function(assert) {
   var tt = this.tt;
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
+  var cueTextTracks = this.player.ads.cueTextTracks;
 
-  metadataTextTracks.setTrackMode(tt);
+  cueTextTracks.setTrackMode(tt);
   assert.strictEqual(tt.mode, 'hidden');
 
-  metadataTextTracks.setTrackMode = function(track) {
+  cueTextTracks.setTrackMode = function(track) {
     track.mode = 'disabled';
   };
-  metadataTextTracks.setTrackMode(tt);
+  cueTextTracks.setTrackMode(tt);
   assert.strictEqual(tt.mode, 'disabled');
 });
 
@@ -80,14 +80,14 @@ QUnit.test('getSupportedAdCue should work when overriden', function(assert) {
     endTime: 1
   };
 
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
-  var supportedCue = metadataTextTracks.getSupportedAdCue(this.player, cue);
+  var cueTextTracks = this.player.ads.cueTextTracks;
+  var supportedCue = cueTextTracks.getSupportedAdCue(this.player, cue);
   assert.strictEqual(supportedCue, cue);
 
-  metadataTextTracks.getSupportedAdCue = function(player, cue) {
+  cueTextTracks.getSupportedAdCue = function(player, cue) {
     return -1;
   };
-  supportedCue = metadataTextTracks.getSupportedAdCue(this.player, cue);
+  supportedCue = cueTextTracks.getSupportedAdCue(this.player, cue);
   assert.strictEqual(supportedCue, -1);
 });
 
@@ -110,20 +110,20 @@ QUnit.test('getCueId should work when overriden', function(assert) {
     };
   };
 
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
-  var cueId = metadataTextTracks.getCueId(cue);
+  var cueTextTracks = this.player.ads.cueTextTracks;
+  var cueId = cueTextTracks.getCueId(cue);
   assert.strictEqual(cueId, 1);
 
-  metadataTextTracks.getCueId = function(cue) {
+  cueTextTracks.getCueId = function(cue) {
     return cue.inner.id;
   };
-  cueId = metadataTextTracks.getCueId(cue);
+  cueId = cueTextTracks.getCueId(cue);
   assert.strictEqual(cueId, 2);
 });
 
 QUnit.test('processAdTrack runs processCue callback', function(assert) {
   var processCueSpy = sinon.spy();
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
+  var cueTextTracks = this.player.ads.cueTextTracks;
   var cues = [{
     startTime: 0,
     endTime: 1,
@@ -131,19 +131,19 @@ QUnit.test('processAdTrack runs processCue callback', function(assert) {
     callCount: 0
   }];
 
-  metadataTextTracks.processAdTrack(this.player, cues, processCueSpy);
+  cueTextTracks.processAdTrack(this.player, cues, processCueSpy);
   assert.strictEqual(processCueSpy.callCount, 1);
 
   var processCue = function(player, cueData, cueId, startTime) {
     cueData.callCount += 1;
   };
-  metadataTextTracks.processAdTrack(this.player, cues, processCue);
+  cueTextTracks.processAdTrack(this.player, cues, processCue);
   assert.strictEqual(cues[0].callCount, 1);
 });
 
 QUnit.test('processAdTrack runs cancelAds callback', function(assert) {
   var cancelAdsSpy = sinon.spy();
-  var metadataTextTracks = this.player.ads.metadataTextTracks;
+  var cueTextTracks = this.player.ads.cueTextTracks;
   var cues = [{
     startTime: 0,
     endTime: 1,
@@ -157,9 +157,9 @@ QUnit.test('processAdTrack runs cancelAds callback', function(assert) {
     cueData.callCount += 1;
   };
 
-  metadataTextTracks.processAdTrack(this.player, cues, processCue, cancelAdsSpy);
+  cueTextTracks.processAdTrack(this.player, cues, processCue, cancelAdsSpy);
   assert.strictEqual(cancelAdsSpy.callCount, 1);
 
-  metadataTextTracks.processAdTrack(this.player, cues, processCue, cancelAds);
+  cueTextTracks.processAdTrack(this.player, cues, processCue, cancelAds);
   assert.strictEqual(cues[0].callCount, 1);
 });
