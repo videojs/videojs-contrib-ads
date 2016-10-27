@@ -5,7 +5,7 @@ This feature sends a `contentupdate` event when the player source changes.
 import window from 'global/window';
 
 // Start sending contentupdate events
-const initializeContentupdate = function(player) {
+export default function initializeContentupdate(player) {
 
   // Keep track of the current content source
   // If you want to change the src of the video without triggering
@@ -35,5 +35,3 @@ const initializeContentupdate = function(player) {
   window.setTimeout(checkSrc, 1);
 
 };
-
-module.exports = initializeContentupdate;
