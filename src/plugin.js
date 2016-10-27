@@ -464,6 +464,16 @@ const contribAdsPlugin = function(options) {
           window.clearTimeout(player.ads.cancelPlayTimeout);
           player.ads.cancelPlayTimeout = null;
         }
+
+        // This was removed because now that "playing" is fixed to only play after
+        // preroll, any integration should just use the "playing" event. However,
+        // we found out some 3rd party code relied on this event, so we've added
+        // it back in to give people more time to update their code.
+        player.trigger({
+          type: 'contentplayback',
+          triggerevent: player.ads.triggerevent
+        });
+
         // Play the content
         if (player.ads.cancelledPlay) {
           player.ads.cancelledPlay = false;
