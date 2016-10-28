@@ -142,7 +142,7 @@ adMacroReplacement takes 3 arguments:
 | {mediainfo.duration}     | Pulled from mediainfo object   |
 | {mediainfo.ad_keys}      | Pulled from mediainfo object   |
 
-* Returns 0 if video is not loaded. Be careful timing your ad request with this macro.
+\* Returns 0 if video is not loaded. Be careful timing your ad request with this macro.
 
 #### Dynamic Macro: mediainfo.custom_fields.*
 
