@@ -70,15 +70,23 @@ QUnit.test('mediainfo.custom_fields', function(assert) {
       dog: 1,
       cat: 2,
       guinea_pig: 3
+    },
+    customFields: {
+      dog: 1,
+      cat: 2,
+      guinea_pig: 3
     }
   };
   var result = this.player.ads.adMacroReplacement(
     '{mediainfo.custom_fields.dog}' +
     '{mediainfo.custom_fields.cat}' +
-    '{mediainfo.custom_fields.guinea_pig}'
+    '{mediainfo.custom_fields.guinea_pig}' +
+    '{mediainfo.customFields.dog}' +
+    '{mediainfo.customFields.cat}' +
+    '{mediainfo.customFields.guinea_pig}'
   );
 
-  assert.equal(result, '123');
+  assert.equal(result, '123123');
 });
 
 QUnit.test('pageVariables', function(assert) {

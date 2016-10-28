@@ -5,11 +5,27 @@ into an ad server URL or configuration.
 
 import videojs from 'video.js';
 
+// Return URI encoded version of value if uriEncode is true
 const uriEncodeIfNeeded = function(value, uriEncode) {
   if (uriEncode) {
     return encodeURIComponent(value);
   }
   return value;
+}
+
+// Add custom field macros to macros object
+// based on given name for custom fields property of mediainfo object.
+const customFields = function(mediainfo, macros, customFieldsName) {
+  if (mediainfo && mediainfo[customFieldsName]) {
+    let customFields = mediainfo[customFieldsName];
+    let fieldNames = Object.keys(customFields);
+
+    for (let i = 0; i < fieldNames.length; i++) {
+      const tag = '{mediainfo.' + customFieldsName + '.' + fieldNames[i] + '}';
+
+      macros[tag] = customFields[fieldNames[i]];
+    }
+  }
 }
 
 // Public method that integrations use for ad macros.
@@ -47,15 +63,8 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
   macros['{random}'] = Math.floor(Math.random() * 1000000000000);
 
   // Custom fields in mediainfo
-  if (this.mediainfo && this.mediainfo.custom_fields) {
-    let fields = Object.keys(this.mediainfo.custom_fields);
-
-    for (let keys = 0; keys < fields.length; keys++) {
-      const custom = '{mediainfo.custom_fields.' + fields[keys] + '}';
-
-      macros[custom] = this.mediainfo.custom_fields[fields[keys]];
-    }
-  }
+  customFields(this.mediainfo, macros, 'custom_fields');
+  customFields(this.mediainfo, macros, 'customFields');
 
   // Go through all the replacement macros and apply them to the string.
   // This will replace all occurrences of the replacement macros.
