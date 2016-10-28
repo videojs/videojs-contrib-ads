@@ -126,21 +126,23 @@ adMacroReplacement takes 3 arguments:
 
 #### Static Macros
 
-| Name                     | Value                         |
-|:-------------------------|:------------------------------|
-| {player.id}              | The player ID                 |
-| {player.duration}        | The duration of current video |
-| {timestamp}              | Current epoch time            |
-| {document.referrer}      | Value of document.referrer    |
-| {window.location.href}   | Value of window.location.href |
-| {random}                 | A random number 0-1 trillion  |
-| {mediainfo.id}           | Pulled from mediainfo object  |
-| {mediainfo.name}         | Pulled from mediainfo object  |
-| {mediainfo.description}  | Pulled from mediainfo object  |
-| {mediainfo.tags}         | Pulled from mediainfo object  |
-| {mediainfo.reference_id} | Pulled from mediainfo object  |
-| {mediainfo.duration}     | Pulled from mediainfo object  |
-| {mediainfo.ad_keys}      | Pulled from mediainfo object  |
+| Name                     | Value                          |
+|:-------------------------|:-------------------------------|
+| {player.id}              | The player ID                  |
+| {player.duration}        | The duration of current video* |
+| {timestamp}              | Current epoch time             |
+| {document.referrer}      | Value of document.referrer     |
+| {window.location.href}   | Value of window.location.href  |
+| {random}                 | A random number 0-1 trillion   |
+| {mediainfo.id}           | Pulled from mediainfo object   |
+| {mediainfo.name}         | Pulled from mediainfo object   |
+| {mediainfo.description}  | Pulled from mediainfo object   |
+| {mediainfo.tags}         | Pulled from mediainfo object   |
+| {mediainfo.reference_id} | Pulled from mediainfo object   |
+| {mediainfo.duration}     | Pulled from mediainfo object   |
+| {mediainfo.ad_keys}      | Pulled from mediainfo object   |
+
+* Returns 0 if video is not loaded. Be careful timing your ad request with this macro.
 
 #### Dynamic Macro: mediainfo.custom_fields.*
 
