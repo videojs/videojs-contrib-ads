@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## 4.1.0
+
+* [@incompl](http://github.com/incompl): New ad macros feature
+
 ## 4.0.0
 
 Please refer to the [Migrating to 4.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migrating-to-4.0.md) guide when updating to this version.
