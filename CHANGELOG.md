@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## 4.1.1
+
+* [@incompl](http://github.com/incompl): Temporarily re-added `contentplayback` as a transitionary step. Do not use this event.
+
 ## 4.1.0
 
 * [@incompl](http://github.com/incompl): New ad macros feature

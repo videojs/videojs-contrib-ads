@@ -5,7 +5,7 @@ It takes care of a number of concerns for you, reducing the code you have to wri
 
 Lead Maintainer: Greg Smith [https://github.com/incompl](https://github.com/incompl)
 
-Maintenance Status: Stable, in it's own interesting way
+Maintenance Status: Stable, in its own interesting way
 
 ## Getting Started
 
