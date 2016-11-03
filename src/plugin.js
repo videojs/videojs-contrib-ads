@@ -206,6 +206,9 @@ const contribAdsPlugin = function(options) {
 
   player.ads.adMacroReplacement = adMacroReplacement.bind(player);
 
+  // Expose snapshot tools for testing
+  player.ads._snapshot = snapshot;
+
   // Start sending contentupdate events for this player
   initializeContentupdate(player);
 
