@@ -1051,4 +1051,24 @@ QUnit.test('shouldPlayContentBehindAd', function(assert) {
 
 });
 
+QUnit.test('Check incorrect addition of vjs-live during ad-playback', function(assert) {
+  this.player.trigger('play');
+  this.player.ads.startLinearAdMode();
+  assert.strictEqual(this.player.hasClass('vjs-live'), false, 'We have the correct class');
+  
+});
+
+QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
+  function(assert) {
+    this.player.trigger('adstart');
+    this.player.ads.startLinearAdMode();
+    this.player.ads.state = 'ad-playback';
+    this.player.duration = function() {return Infinity;};
+    this.player.ads.endLinearAdMode();
+    this.player.trigger('playing');
+    assert.strictEqual(this.player.ads.isLive(this.player), true, 'Content is LIVE');
+    assert.ok(this.player.hasClass('vjs-live'), 'We should be having vjs-live class here');
+    
+});
+
 }(window, window.QUnit));
