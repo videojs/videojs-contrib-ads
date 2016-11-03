@@ -1,3 +1,5 @@
+import snapshot from '../src/snapshot.js';
+
 QUnit.module('Video Snapshot', window.sharedModuleHooks({
 
   beforeEach: function() {
@@ -431,7 +433,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
 
   // Do a snapshot, as if an ad is starting
-  this.player.ads.snapshot = this.player.ads._snapshot.getPlayerSnapshot(this.player);
+  this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
 
   // Snapshot reflects the text track
   assert.equal(this.player.ads.snapshot.suppressedTracks.length, 1);
@@ -444,7 +446,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
 
   // Restore the snapshot, as if an ad is ending
-  this.player.ads._snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
+  snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
 
   // Everything is back to normal
   assert.equal(this.player.remoteTextTracks().length, 1);
