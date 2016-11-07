@@ -1,4 +1,4 @@
-import snapshot from '../src/snapshot.js';
+import * as snapshot from '../src/snapshot.js';
 
 QUnit.module('Video Snapshot', window.sharedModuleHooks({
 
