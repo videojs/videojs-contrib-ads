@@ -45,7 +45,7 @@ snapshot.getPlayerSnapshot = function(player) {
     snapshot.style = tech.getAttribute('style');
   }
 
-  for (let i = tracks.length; i > 0; i--) {
+  for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
 
     suppressedTracks.push({
@@ -80,7 +80,7 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
   const suppressedTracks = snapshot.suppressedTracks;
   let trackSnapshot;
   let restoreTracks = function() {
-    for (let i = suppressedTracks.length; i > 0; i--) {
+    for (let i = 0; i < suppressedTracks.length; i++) {
       trackSnapshot = suppressedTracks[i];
       trackSnapshot.track.mode = trackSnapshot.mode;
     }

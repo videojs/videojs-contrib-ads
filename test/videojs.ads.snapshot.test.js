@@ -1,3 +1,5 @@
+import snapshot from '../src/snapshot.js';
+
 QUnit.module('Video Snapshot', window.sharedModuleHooks({
 
   beforeEach: function() {
@@ -405,4 +407,50 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
   this.player.src(newSrc);
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.currentSrc(), newSrc, 'source is not reset');
+});
+
+QUnit.test('Snapshot and text tracks', function(assert) {
+  const trackSrc = 'http://solutions.brightcove.com/' +
+    'bcls/captions/adding_captions_to_videos_french.vtt'
+
+  // No text tracks at start
+  assert.equal(this.player.remoteTextTracks().length, 0);
+
+  // Add a text track
+  this.player.addRemoteTextTrack({
+    kind: 'captions',
+    language: 'fr',
+    label: 'French',
+    src: trackSrc
+  });
+
+  // Show our new text track, since it's disabled by default
+  this.player.remoteTextTracks()[0].mode = 'showing';
+
+  // Text track looks good
+  assert.equal(this.player.remoteTextTracks().length, 1);
+  assert.equal(this.player.remoteTextTracks()[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
+
+  // Do a snapshot, as if an ad is starting
+  this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
+
+  // Snapshot reflects the text track
+  assert.equal(this.player.ads.snapshot.suppressedTracks.length, 1);
+  assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.src, trackSrc);
+  assert.equal(this.player.ads.snapshot.suppressedTracks[0].mode, 'showing');
+
+  // Meanwhile, track is intact, just disabled
+  assert.equal(this.player.remoteTextTracks().length, 1);
+  assert.equal(this.player.remoteTextTracks()[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
+
+  // Restore the snapshot, as if an ad is ending
+  snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
+
+  // Everything is back to normal
+  assert.equal(this.player.remoteTextTracks().length, 1);
+  assert.equal(this.player.remoteTextTracks()[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
+
 });
