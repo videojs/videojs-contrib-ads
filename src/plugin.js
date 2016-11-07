@@ -342,6 +342,13 @@ const contribAdsPlugin = function(options) {
         // add css to the element to indicate and ad is playing.
         player.addClass('vjs-ad-playing');
 
+        // We should remove the vjs-live class if it has been added in order to 
+        // show the adprogress control bar on Android devices for falsely
+        // determined LIVE videos due to the duration incorrectly reported as Infinity
+        if (player.hasClass('vjs-live')) {
+          player.removeClass('vjs-live');
+        }
+
         // remove the poster so it doesn't flash between ads
         removeNativePoster(player);
 
@@ -358,6 +365,13 @@ const contribAdsPlugin = function(options) {
       },
       leave() {
         player.removeClass('vjs-ad-playing');
+
+        // We should add the vjs-live class back if the video is a LIVE video
+        // If we dont do this, then for a LIVE Video, we will get an incorrect
+        // styled control, which displays the time for the video
+        if (player.ads.isLive(player)) {
+         player.addClass('vjs-live');
+        }
         if (!player.ads.shouldPlayContentBehindAd(player)) {
           snapshot.restorePlayerSnapshot(player, this.snapshot);
         }
@@ -497,6 +511,16 @@ const contribAdsPlugin = function(options) {
           this.state = 'ad-playback';
         },
         contentupdate() {
+          // We know sources have changed, so we call CancelContentPlay
+          // to avoid playback of video in the background of an ad. Playback Occurs on
+          // Android devices if we do not call cancelContentPlay. This is because
+          // the sources do not get updated in time on Android due to timing issues.
+          // So instead of checking if the sources have changed in the play handler
+          // and calling cancelContentPlay() there we call it here.
+          // This does not happen on Desktop as the sources do get updated in time.
+          if(!player.ads.shouldPlayContentBehindAd(player)) {
+            cancelContentPlay(player);
+          }
           if (player.paused()) {
             this.state = 'content-set';
           } else {
@@ -515,11 +539,6 @@ const contribAdsPlugin = function(options) {
             return;
           }
           this.state = 'postroll?';
-        },
-        play() {
-          if (player.currentSrc() !== player.ads.contentSrc) {
-            cancelContentPlay(player);
-          }
         }
       }
     }
