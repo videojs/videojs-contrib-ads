@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+## 4.1.2
+
+* [@incompl](http://github.com/incompl): Fix bug with snapshot and text tracks
+
 ## 4.1.1
 
 * [@incompl](http://github.com/incompl): Temporarily re-added `contentplayback` as a transitionary step. Do not use this event.
