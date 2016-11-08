@@ -18,9 +18,11 @@ module.exports = function(config) {
     // If no browsers are specified, we enable `karma-detect-browsers`
     // This detects all browsers available for testing
     plugins.push('karma-detect-browsers');
-    config.browsers = ['Chrome', 'Firefox', 'IE'];
 
-    detectBrowsers.enabled = true;
+    // Temporarily switch to just using Firefox
+    config.browsers = ['Firefox'];
+    // config.browsers = ['Chrome', 'Firefox', 'IE'];
+    // detectBrowsers.enabled = true;
     detectBrowsers.postDetection = function(browsers) {
       var i = browsers.indexOf('Safari');
       if (i !== -1) {
