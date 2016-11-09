@@ -429,7 +429,9 @@ QUnit.test('Snapshot and text tracks', function(assert) {
 
   // Text track looks good
   assert.equal(this.player.remoteTextTracks().length, 1);
-  assert.equal(this.player.remoteTextTracks()[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTrackEls().trackElements_[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTracks()[0].kind, 'captions');
+  assert.equal(this.player.remoteTextTracks()[0].language, 'fr');
   assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
 
   // Do a snapshot, as if an ad is starting
@@ -437,12 +439,15 @@ QUnit.test('Snapshot and text tracks', function(assert) {
 
   // Snapshot reflects the text track
   assert.equal(this.player.ads.snapshot.suppressedTracks.length, 1);
-  assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.src, trackSrc);
+  assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.kind, 'captions');
+  assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.language, 'fr');
   assert.equal(this.player.ads.snapshot.suppressedTracks[0].mode, 'showing');
 
   // Meanwhile, track is intact, just disabled
   assert.equal(this.player.remoteTextTracks().length, 1);
-  assert.equal(this.player.remoteTextTracks()[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTrackEls().trackElements_[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTracks()[0].kind, 'captions');
+  assert.equal(this.player.remoteTextTracks()[0].language, 'fr');
   assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
 
   // Restore the snapshot, as if an ad is ending
@@ -450,7 +455,9 @@ QUnit.test('Snapshot and text tracks', function(assert) {
 
   // Everything is back to normal
   assert.equal(this.player.remoteTextTracks().length, 1);
-  assert.equal(this.player.remoteTextTracks()[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTrackEls().trackElements_[0].src, trackSrc);
+  assert.equal(this.player.remoteTextTracks()[0].kind, 'captions');
+  assert.equal(this.player.remoteTextTracks()[0].language, 'fr');
   assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
 
 });
