@@ -38,7 +38,7 @@ const customFields = function(mediainfo, macros, customFieldsName) {
 //  - For example: {'{five}': 5}
 // Return value is is "string" with macros replaced
 //  - For example: adMacroReplacement('{player.id}') returns a string of the player id
-const adMacroReplacement = function(string, uriEncode, customMacros) {
+export default function adMacroReplacement(string, uriEncode, customMacros) {
 
   if (uriEncode === undefined) {
     uriEncode = false;
@@ -108,7 +108,4 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
   });
 
   return string;
-
-};
-
-module.exports = adMacroReplacement;
+}
