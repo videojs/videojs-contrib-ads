@@ -5,6 +5,8 @@ It does this by pausing the player immediately after a "play" where ads will be 
 then signalling that we should play after the ad is done.
 */
 
+import videojs from 'video.js';
+
 const cancelContentPlay = function(player) {
   if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing
