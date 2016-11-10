@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## 4.1.3
+
+* [@Ambroos](https://github.com/Ambroos): Add missing import of videojs
+* [@vdeshpande](https://github.com/vdeshpande): Fix for content playing behind ad on Android
+
 ## 4.1.2
 
 * [@incompl](http://github.com/incompl): Fix bug with snapshot and text tracks
