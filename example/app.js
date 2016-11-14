@@ -77,6 +77,9 @@
         if (evt === 'contentplayback') {
           li.className = 'content-adplugin-event';
         }
+        if (evt === 'adplay') {
+          player.trigger('ads-ad-started');
+        }
 
         li.innerHTML = str;
         log.insertBefore(li, log.firstChild);
