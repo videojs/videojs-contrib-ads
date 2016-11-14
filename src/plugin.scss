@@ -16,3 +16,13 @@ Styles for ad integrations.
 .vjs-ad-playing.vjs-ad-loading .vjs-loading-spinner {
   display: block;
 }
+
+// Hide the captions button during ad playback
+.vjs-ad-playing .vjs-captions-button {
+    display: none;
+}
+
+// Hide the audio track button during ad playback
+.vjs-ad-playing .vjs-audio-button {
+    display: none;
+}
