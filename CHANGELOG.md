@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## 4.1.4
+
+* [@marguinbc](https://github.com/marguinbc): Fix issue where blank div to prevent content flash covers ad on iPad
+* [@ldayananda](https://github.com/ldayananda): Fix to snapshot test to avoid relying on track src
+
 ## 4.1.3
 
 * [@Ambroos](https://github.com/Ambroos): Add missing import of videojs
