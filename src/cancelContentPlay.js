@@ -14,7 +14,7 @@ const cancelContentPlay = function(player) {
   }
 
   // Avoid content flash on non-iPad iOS
-  if (videojs.browser.IS_IOS) {
+  if (videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) {
 
     const width = player.currentWidth ? player.currentWidth() : player.width();
     const height = player.currentHeight ? player.currentHeight() : player.height();
