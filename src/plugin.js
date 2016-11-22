@@ -78,13 +78,10 @@ const contribAdsPlugin = function(options) {
   // Set up redispatching of player events
   player.on(videoEvents, redispatch);
 
-  // "vjs-has-started" should be present at the end of a video. In this case we need
-  // to re-add it manually.
-  // Not sure why this happens on pause, I've never seen a case where that is needed.
-  player.on(['pause', 'ended'], function() {
-    if (player.ads.state === 'content-resuming' &&
-        player.ads.snapshot &&
-        player.ads.snapshot.ended) {
+  // "vjs-has-started" should be present at the end of a video. This makes sure it's
+  // always there.
+  player.on('ended', function() {
+    if (!player.hasClass('vjs-has-started')) {
       player.addClass('vjs-has-started');
     }
   });
@@ -116,12 +113,23 @@ const contribAdsPlugin = function(options) {
     player.removeClass('vjs-ad-loading');
   });
 
-  // replace the ad initializer with the ad namespace
+  // Replace the plugin constructor with the ad namespace
   player.ads = {
     state: 'content-set',
     disableNextSnapshotRestore: false,
 
+    // This is set to true if the content has ended once. After that, the user can
+    // seek backwards and replay content, but _contentHasEnded remains true.
+    _contentHasEnded: false,
+
     VERSION: '__VERSION__',
+
+    initialize() {
+      videojs.log('Initialize!');
+      player.ads.disableNextSnapshotRestore = false;
+      player.ads._contentHasEnded = false;
+      player.ads.snapshot = null;
+    },
 
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
@@ -208,6 +216,9 @@ const contribAdsPlugin = function(options) {
 
   // Start sending contentupdate events for this player
   initializeContentupdate(player);
+
+  // Global contentupdate handler for resetting plugin state
+  player.on('contentupdate', player.ads.initialize);
 
   // Ad Playback State Machine
   const states = {
@@ -395,7 +406,7 @@ const contribAdsPlugin = function(options) {
     },
     'content-resuming': {
       enter() {
-        if (this.snapshot && this.snapshot.ended) {
+        if (this._contentHasEnded) {
           window.clearTimeout(player.ads._fireEndedTimeout);
           // in some cases, ads are played in a swf or another video element
           // so we do not get an ended event in this state automatically.
@@ -526,18 +537,20 @@ const contribAdsPlugin = function(options) {
           } else {
             this.state = 'ads-ready?';
           }
-          // When a new source is loaded into the player, we should remove the snapshot
-          // to avoid confusing player state with the new content's state
-          // i.e When new content is set, the player should fire the ended event
-          if (this.snapshot && this.snapshot.ended) {
-            this.snapshot = null;
-          }
         },
         contentended() {
-          if (player.ads.snapshot && player.ads.snapshot.ended) {
-            // player has already been here. content has really ended. good-bye
+
+          // If _contentHasEnded is true it means we already checked for postrolls and
+          // played postrolls if needed, so now we're ready to send an ended event
+          if (this._contentHasEnded) {
+            // Causes ended event to trigger in content-resuming.enter.
+            // From there, the ended event event is not redispatched.
+            // Then we end up back in content-playback state.
+            this.state = 'content-resuming';
             return;
           }
+
+          this._contentHasEnded = true;
           this.state = 'postroll?';
         }
       }
