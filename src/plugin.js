@@ -125,7 +125,6 @@ const contribAdsPlugin = function(options) {
     VERSION: '__VERSION__',
 
     initialize() {
-      videojs.log('Initialize!');
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentHasEnded = false;
       player.ads.snapshot = null;
