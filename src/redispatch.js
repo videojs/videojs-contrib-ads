@@ -110,7 +110,7 @@ const redispatch = function(event) {
       return prefixEvent(this, 'content', event);
 
     // Content resuming after postroll
-    } else if (this.ads.snapshot && this.ads.snapshot.ended) {
+    } else if (this.ads._contentHasEnded) {
 
       // Don't prefix `pause` and `ended` events
       // They don't always happen during content-resuming, but they might.
