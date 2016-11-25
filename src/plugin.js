@@ -170,8 +170,7 @@ const contribAdsPlugin = function(options) {
       let currentSrcChanged;
 
       if (!this.snapshot) {
-        throw new Error(
-          'You cannot use videoElementRecycled while there is no snapshot.');
+        return false;
       }
 
       srcChanged = player.src() !== this.snapshot.src;
@@ -342,7 +341,7 @@ const contribAdsPlugin = function(options) {
         // add css to the element to indicate and ad is playing.
         player.addClass('vjs-ad-playing');
 
-        // We should remove the vjs-live class if it has been added in order to 
+        // We should remove the vjs-live class if it has been added in order to
         // show the adprogress control bar on Android devices for falsely
         // determined LIVE videos due to the duration incorrectly reported as Infinity
         if (player.hasClass('vjs-live')) {
