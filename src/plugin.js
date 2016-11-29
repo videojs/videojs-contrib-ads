@@ -124,7 +124,7 @@ const contribAdsPlugin = function(options) {
 
     VERSION: '__VERSION__',
 
-    initialize() {
+    reset() {
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentHasEnded = false;
       player.ads.snapshot = null;
@@ -217,7 +217,7 @@ const contribAdsPlugin = function(options) {
   initializeContentupdate(player);
 
   // Global contentupdate handler for resetting plugin state
-  player.on('contentupdate', player.ads.initialize);
+  player.on('contentupdate', player.ads.reset);
 
   // Ad Playback State Machine
   const states = {
