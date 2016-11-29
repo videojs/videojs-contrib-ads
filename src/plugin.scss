@@ -3,12 +3,15 @@ Styles for ad integrations.
 */
 
 // Prevent seeking during ad playback
-.vjs-ad-playing.vjs-ad-playing .vjs-progress-control::after {
-  pointer-events: auto;
+.vjs-ad-playing.vjs-ad-playing .vjs-progress-control:after {
   width: 100%;
   height: 100%;
   position: absolute;
-  content: "\000a0"
+  content: " ";
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 // Make the progress bar yellow for ads
