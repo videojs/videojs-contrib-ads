@@ -536,6 +536,10 @@ const contribAdsPlugin = function(options) {
         contentended() {
           if (player.ads.snapshot && player.ads.snapshot.ended) {
             // player has already been here. content has really ended. good-bye
+            // Also if after the video ends, user scrubs back and tries to play content, 
+            // we need to set the ad state to the following in order to generate the 
+            // ended event again on replay of the video without a reload of the page
+            this.state = 'content-resuming';
             return;
           }
           this.state = 'postroll?';
