@@ -95,7 +95,7 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
-    if (player.currentSrc() === player.ads.snapshot.currentSrc) {
+    if (player.ads.snapshot && player.ads.snapshot.currentSrc === player.currentSrc()) {
       return;
     }
 
@@ -169,8 +169,12 @@ const contribAdsPlugin = function(options) {
       let srcChanged;
       let currentSrcChanged;
 
+      if (player.ads.shouldPlayContentBehindAd(player)) {
+        return true;
+      }
       if (!this.snapshot) {
-        return false;
+        throw new Error(
+          'You cannot use videoElementRecycled while there is no snapshot.');
       }
 
       srcChanged = player.src() !== this.snapshot.src;
