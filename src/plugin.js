@@ -170,7 +170,7 @@ const contribAdsPlugin = function(options) {
       let currentSrcChanged;
 
       if (player.ads.shouldPlayContentBehindAd(player)) {
-        return true;
+        return false;
       }
       if (!this.snapshot) {
         throw new Error(
@@ -375,12 +375,12 @@ const contribAdsPlugin = function(options) {
         if (player.ads.isLive(player)) {
          player.addClass('vjs-live');
         }
+
         if (!player.ads.shouldPlayContentBehindAd(player)) {
           snapshot.restorePlayerSnapshot(player, this.snapshot);
         }
-
         // Reset the volume to pre-ad levels
-        if (player.ads.shouldPlayContentBehindAd(player)) {
+        else {
           player.volume(this.preAdVolume_);
         }
 
