@@ -9,9 +9,8 @@ all other player events.
 
 import videojs from 'video.js';
 
-// Stop propogation for an event, then send a new event with the type of the original
-// event with the given prefix added.
-const prefixEvent = (player, prefix, event) => {
+// Stop propogation for an event
+const cancelEvent = (player, event) => {
   // Pretend we called stopImmediatePropagation because we want the native
   // element events to continue propagating
   event.isImmediatePropagationStopped = function() {
@@ -21,6 +20,12 @@ const prefixEvent = (player, prefix, event) => {
   event.isPropagationStopped = function() {
     return true;
   };
+}
+
+// Stop propogation for an event, then send a new event with the type of the original
+// event with the given prefix added.
+const prefixEvent = (player, prefix, event) => {
+  cancelEvent(player, event);
   player.trigger({
     type: prefix + event.type,
     state: player.ads.state,
@@ -74,10 +79,7 @@ const redispatch = function(event) {
   } else if (event.type === 'playing' &&
       this.ads.state === 'ad-playback' &&
       this.ads.videoElementRecycled()) {
-
-    // Triggering an event prevents the unprefixed one from firing.
-    // "adcontentplaying" is only seen in this very specific condition.
-    prefixEvent(this, 'adcontent', event);
+    cancelEvent(this, event);
     return;
 
   // When ad is playing in content tech, prefix everything with "ad".
