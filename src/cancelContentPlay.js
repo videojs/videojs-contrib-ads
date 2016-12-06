@@ -14,7 +14,7 @@ const cancelContentPlay = function(player) {
   }
 
   // Avoid content flash on non-iPad iOS
-  if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) && (!player.el_.hasAttribute('playsinline'))) {
+  if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) && !player.el_.hasAttribute('playsinline')) {
 
     const width = player.currentWidth ? player.currentWidth() : player.width();
     const height = player.currentHeight ? player.currentHeight() : player.height();
@@ -41,7 +41,7 @@ const cancelContentPlay = function(player) {
     // On iOS 10 on iPhone, playsinline is added when pinching to return from
     // fullscreen. Detect fullscreen change, remove placeholder and show player.
     player.on('fullscreenchange', function () {
-      if (player.el_.hasAttribute('playsinline') && placehoder) {
+      if (player.el_.hasAttribute('playsinline') && placeholder) {
         player.el_.style.display = 'block';
         placeholder.remove();
       }
