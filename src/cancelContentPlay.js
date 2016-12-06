@@ -13,7 +13,7 @@ const cancelContentPlay = function(player) {
     return;
   }
 
-  // Avoid content flash on non-iPad iOS
+  // Avoid content flash on non-iPad iOS and iPhones on iOS10 with playsinline
   if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) && !player.el_.hasAttribute('playsinline')) {
 
     const width = player.currentWidth ? player.currentWidth() : player.width();
