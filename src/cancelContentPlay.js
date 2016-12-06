@@ -37,6 +37,16 @@ const cancelContentPlay = function(player) {
       player.el_.style.display = 'block';
       placeholder.remove();
     });
+
+    // On iOS 10 on iPhone, playsinline is added when pinching to return from
+    // fullscreen. Detect fullscreen change, remove placeholder and show player.
+    player.on('fullscreenchange', function () {
+      if (player.el_.hasAttribute('playsinline') && placehoder) {
+        player.el_.style.display = 'block';
+        placeholder.remove();
+      }
+    })
+
   }
 
   // The timeout is necessary because pausing a video element while processing a `play`
