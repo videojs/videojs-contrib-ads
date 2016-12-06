@@ -1068,7 +1068,24 @@ QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
     this.player.trigger('playing');
     assert.strictEqual(this.player.ads.isLive(this.player), true, 'Content is LIVE');
     assert.ok(this.player.hasClass('vjs-live'), 'We should be having vjs-live class here');
-    
+});
+
+QUnit.test('Plugin state resets after contentupdate', function(assert) {
+
+  assert.equal(this.player.ads.disableNextSnapshotRestore, false);
+  assert.equal(this.player.ads._contentHasEnded, false);
+  assert.equal(this.player.ads.snapshot, null);
+
+  this.player.ads.disableNextSnapshotRestore = true;
+  this.player.ads._contentHasEnded = true;
+  this.player.ads.snapshot = {};
+
+  this.player.trigger('contentupdate');
+
+  assert.equal(this.player.ads.disableNextSnapshotRestore, false);
+  assert.equal(this.player.ads._contentHasEnded, false);
+  assert.equal(this.player.ads.snapshot, null);
+
 });
 
 }(window, window.QUnit));
