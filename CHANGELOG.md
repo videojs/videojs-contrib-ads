@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+## 4.1.5
+
+* [@incompl](http://github.com/incompl): Hide captions and audio track buttons during ads
+* [@incompl](http://github.com/incompl): Prevent ad clickthrough when clicking progress bar during ad
+* [@incompl](http://github.com/incompl): Trigger ended event for successive times the content ends after the first time
+
 ## 4.1.4
 
 * [@marguinbc](https://github.com/marguinbc): Fix issue where blank div to prevent content flash covers ad on iPad
