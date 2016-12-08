@@ -38,10 +38,10 @@ const cancelContentPlay = function(player) {
       placeholder.remove();
     });
 
-    // On iOS 10 on iPhone, playsinline is added when pinching to return from
-    // fullscreen. Detect fullscreen change, remove placeholder and show player.
+    // Detect fullscreen change, remove placeholder and show player.
+    // On iOS 10 Safari is supposed to also add playsinline to the player
     player.on('fullscreenchange', function () {
-      if (player.el_.hasAttribute('playsinline') && placeholder) {
+      if (placeholder) {
         player.el_.style.display = 'block';
         placeholder.remove();
       }
