@@ -102,6 +102,24 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
       }
     } else {
       player.currentTime(snapshot.ended ? player.duration() : snapshot.currentTime);
+
+      // It's possible for the above line to not work because HLS is weird and the
+      // duration can change as more segments arrive. This may be fixable in HLS /
+      // video.js, but for now, here is our workaround.
+      if (snapshot.ended) {
+        let contentUpdated = false;
+        player.one('contentupdate', function() {
+          contentUpdated = true;
+        });
+        window.setTimeout(function() {
+          if (contentUpdated) {
+            return;
+          }
+          if (player.currentTime() < player.duration()) {
+            player.currentTime(player.duration());
+          }
+        }, 500);
+      }
     }
 
     // Resume playback if this wasn't a postroll
