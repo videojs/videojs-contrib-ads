@@ -32,16 +32,16 @@ const cancelContentPlay = function(player) {
     player.el_.style.display = 'none';
 
     // Unhide the player and remove the placeholder once we're ready to move on.
-    player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
+    player.one(['adstart', 'adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
                 'playing'], function() {
       player.el_.style.display = 'block';
       placeholder.remove();
     });
 
-    // Detect fullscreen change, remove placeholder and show player.
-    // On iOS 10 Safari is supposed to also add playsinline to the player
+    // Detect fullscreen change, if returning from fullscreen and placeholder exists,
+    // remove placeholder and show player whether or not playsinline was attached.
     player.on('fullscreenchange', function () {
-      if (placeholder) {
+      if (placeholder && player.hasClass('vjs-fullscreen')) {
         player.el_.style.display = 'block';
         placeholder.remove();
       }
