@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## 4.1.6
+
+* [@marguinbc](http://github.com/marguinbc): Fix placeholder div on ios10 playsinline
+* [@incompl](http://github.com/incompl): No longer send an undocumented `adcontentplaying` event, which was only sent to cancel an extra `adplaying` event. Code has been refactored to not need this extra event.
+
 ## 4.1.5
 
 * [@incompl](http://github.com/incompl): Hide captions and audio track buttons during ads
