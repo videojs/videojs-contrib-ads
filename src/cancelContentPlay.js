@@ -13,8 +13,8 @@ const cancelContentPlay = function(player) {
     return;
   }
 
-  // Avoid content flash on non-iPad iOS
-  if (videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) {
+  // Avoid content flash on non-iPad iOS and iPhones on iOS10 with playsinline
+  if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) && !player.el_.hasAttribute('playsinline')) {
 
     const width = player.currentWidth ? player.currentWidth() : player.width();
     const height = player.currentHeight ? player.currentHeight() : player.height();
@@ -32,11 +32,21 @@ const cancelContentPlay = function(player) {
     player.el_.style.display = 'none';
 
     // Unhide the player and remove the placeholder once we're ready to move on.
-    player.one(['adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
+    player.one(['adstart', 'adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
                 'playing'], function() {
       player.el_.style.display = 'block';
       placeholder.remove();
     });
+
+    // Detect fullscreen change, if returning from fullscreen and placeholder exists,
+    // remove placeholder and show player whether or not playsinline was attached.
+    player.on('fullscreenchange', function () {
+      if (placeholder && player.hasClass('vjs-fullscreen')) {
+        player.el_.style.display = 'block';
+        placeholder.remove();
+      }
+    })
+
   }
 
   // The timeout is necessary because pausing a video element while processing a `play`
