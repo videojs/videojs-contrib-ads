@@ -406,7 +406,9 @@ const contribAdsPlugin = function(options) {
         ended() {
           // On platforms where the video element is not reused
           // we can get an ended event when content ends during ad playback.
-          this._contentHasEnded = true;
+          if (!videoElementRecycled()) {
+            this._contentHasEnded = true;
+          }
         }
       }
     },
