@@ -92,7 +92,7 @@ cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
     // Continue processing supported cue
     } else {
       cueId = this.getCueId(player, cue);
-      startTime = Math.floor(cue.startTime);
+      startTime = cue.startTime;
 
       // Skip ad if cue was already used
       if (cueIncluded(player, cueId)) {

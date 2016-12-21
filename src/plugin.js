@@ -402,6 +402,11 @@ const contribAdsPlugin = function(options) {
           this.state = 'content-resuming';
           // Trigger 'adend' to notify that we are exiting 'ad-playback'
           player.trigger('adend');
+        },
+        ended() {
+          // On platforms where the video element is not reused
+          // we can get an ended event when content ends during ad playback.
+          this._contentHasEnded = true;
         }
       }
     },
