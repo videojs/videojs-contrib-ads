@@ -64,7 +64,7 @@ cueTextTracks.getSupportedAdCue = function(player, cue) {
 * @param cue The cue to extract an ID from
 * @returns The first occurance of 'id' in the object @override if this is not the desired cue id
 **/
-cueTextTracks.getCueId = function(cue) {
+cueTextTracks.getCueId = function(player, cue) {
   return cue.id;
 };
 

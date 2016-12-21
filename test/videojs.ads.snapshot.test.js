@@ -411,10 +411,28 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 
 QUnit.test('Snapshot and text tracks', function(assert) {
   const trackSrc = 'http://solutions.brightcove.com/' +
-    'bcls/captions/adding_captions_to_videos_french.vtt'
+    'bcls/captions/adding_captions_to_videos_french.vtt';
+  const originalAddTrack = this.player.addTextTrack;
+  const originalTextTracks = this.player.textTracks;
+  let mockTracks = [];
 
   // No text tracks at start
   assert.equal(this.player.remoteTextTracks().length, 0);
+  assert.equal(this.player.textTracks().length, 0);
+
+  // This is mocked because of native text track behavior
+  this.player.addTextTrack = function(kind, label, language) {
+    mockTracks.push({
+      kind: kind,
+      label: label,
+      language: language,
+      mode: 'showing',
+      addEventListener: function() {}
+    });
+  }
+  this.player.textTracks = function() {
+    return mockTracks;
+  }
 
   // Add a text track
   this.player.addRemoteTextTrack({
@@ -424,8 +442,12 @@ QUnit.test('Snapshot and text tracks', function(assert) {
     src: trackSrc
   });
 
+  this.player.addTextTrack('captions', 'Spanish', 'es');
+
   // Show our new text track, since it's disabled by default
   this.player.remoteTextTracks()[0].mode = 'showing';
+
+  this.player.textTracks()[0].mode = 'showing';
 
   // Text track looks good
   assert.equal(this.player.remoteTextTracks().length, 1);
@@ -434,13 +456,23 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.remoteTextTracks()[0].language, 'fr');
   assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
 
+  assert.equal(this.player.textTracks().length, 1);
+  assert.equal(this.player.textTracks()[0].kind, 'captions');
+  assert.equal(this.player.textTracks()[0].language, 'es');
+  assert.equal(this.player.textTracks()[0].mode, 'showing');
+
   // Do a snapshot, as if an ad is starting
   this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
 
   // Snapshot reflects the text track
+  assert.equal(this.player.ads.snapshot.suppressedRemoteTracks.length, 1);
+  assert.equal(this.player.ads.snapshot.suppressedRemoteTracks[0].track.kind, 'captions');
+  assert.equal(this.player.ads.snapshot.suppressedRemoteTracks[0].track.language, 'fr');
+  assert.equal(this.player.ads.snapshot.suppressedRemoteTracks[0].mode, 'showing');
+
   assert.equal(this.player.ads.snapshot.suppressedTracks.length, 1);
   assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.kind, 'captions');
-  assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.language, 'fr');
+  assert.equal(this.player.ads.snapshot.suppressedTracks[0].track.language, 'es');
   assert.equal(this.player.ads.snapshot.suppressedTracks[0].mode, 'showing');
 
   // Meanwhile, track is intact, just disabled
@@ -449,6 +481,11 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.remoteTextTracks()[0].kind, 'captions');
   assert.equal(this.player.remoteTextTracks()[0].language, 'fr');
   assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
+
+  assert.equal(this.player.textTracks().length, 1);
+  assert.equal(this.player.textTracks()[0].kind, 'captions');
+  assert.equal(this.player.textTracks()[0].language, 'es');
+  assert.equal(this.player.textTracks()[0].mode, 'disabled');
 
   // Restore the snapshot, as if an ad is ending
   snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
@@ -460,4 +497,12 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.remoteTextTracks()[0].language, 'fr');
   assert.equal(this.player.remoteTextTracks()[0].mode, 'showing');
 
+  assert.equal(this.player.textTracks().length, 1);
+  assert.equal(this.player.textTracks()[0].kind, 'captions');
+  assert.equal(this.player.textTracks()[0].language, 'es');
+  assert.equal(this.player.textTracks()[0].mode, 'showing');
+
+  // Resetting mocked methods
+  this.player.addTextTrack = originalAddTrack;
+  this.player.textTracks = originalTextTracks;
 });
