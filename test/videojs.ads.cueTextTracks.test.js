@@ -23,13 +23,13 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
     this.player.ads.cueTextTracks.getCueId = function(cue) {
       return cue.id;
     };
-    this.player.ads.cueTextTracks.setTrackMode = function(track) {
+    this.player.ads.cueTextTracks.setMetadataTrackMode = function(track) {
       track.mode = 'hidden';
     };
   }
 }));
 
-QUnit.test('runs processTrack callback as tracks are added', function(assert) {
+QUnit.test('runs processMetadataTrack callback as tracks are added', function(assert) {
   var tt = this.tt;
   this.player.textTracks = function() {
     return {
@@ -38,39 +38,39 @@ QUnit.test('runs processTrack callback as tracks are added', function(assert) {
     };
   };
 
-  var processTrackSpy = sinon.spy();
+  var processMetadataTrackSpy = sinon.spy();
   var cueTextTracks = this.player.ads.cueTextTracks;
 
-  cueTextTracks.process(this.player, processTrackSpy);
-  assert.strictEqual(processTrackSpy.callCount, 1);
+  cueTextTracks.processMetadataTracks(this.player, processMetadataTrackSpy);
+  assert.strictEqual(processMetadataTrackSpy.callCount, 1);
 });
 
-QUnit.test('does not call processTrack callback until tracks available', function(assert) {
-  var processTrackSpy = sinon.spy();
+QUnit.test('does not call processMetadataTrack callback until tracks available', function(assert) {
+  var processMetadataTrackSpy = sinon.spy();
   var cueTextTracks = this.player.ads.cueTextTracks;
 
-  cueTextTracks.process(this.player, processTrackSpy);
-  assert.strictEqual(processTrackSpy.callCount, 0);
+  cueTextTracks.processMetadataTracks(this.player, processMetadataTrackSpy);
+  assert.strictEqual(processMetadataTrackSpy.callCount, 0);
 
   var addTrackEvent = {
     track: this.tt,
     type: 'addtrack'
   };
   this.player.textTracks().trigger(addTrackEvent);
-  assert.strictEqual(processTrackSpy.callCount, 1);
+  assert.strictEqual(processMetadataTrackSpy.callCount, 1);
 });
 
-QUnit.test('setTrackMode should work when overriden', function(assert) {
+QUnit.test('setMetadataTrackMode should work when overriden', function(assert) {
   var tt = this.tt;
   var cueTextTracks = this.player.ads.cueTextTracks;
 
-  cueTextTracks.setTrackMode(tt);
+  cueTextTracks.setMetadataTrackMode(tt);
   assert.strictEqual(tt.mode, 'hidden');
 
-  cueTextTracks.setTrackMode = function(track) {
+  cueTextTracks.setMetadataTrackMode = function(track) {
     track.mode = 'disabled';
   };
-  cueTextTracks.setTrackMode(tt);
+  cueTextTracks.setMetadataTrackMode(tt);
   assert.strictEqual(tt.mode, 'disabled');
 });
 

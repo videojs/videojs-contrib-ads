@@ -1,5 +1,5 @@
 /**
-* This feature allows metadata text tracks to be manipulated once available, @see process.
+* This feature allows metadata text tracks to be manipulated once available, @see processMetadataTracks.
 * It also allows ad implementations to leverage ad cues coming through
 * text tracks, @see processAdTrack
 **/
@@ -12,14 +12,14 @@ const cueTextTracks = {};
 * This feature allows metadata text tracks to be manipulated once they are available,
 * usually after the 'loadstart' event is observed on the player
 * @param player A reference to a player
-* @param processTrack A method that performs some operations on a metadata text track
+* @param processMetadataTrack A callback that performs some operations on a metadata text track
 **/
-cueTextTracks.process = function(player, processTrack) {
+cueTextTracks.processMetadataTracks = function(player, processMetadataTrack) {
   const tracks = player.textTracks();
-  const prepareTrack = function(track) {
+  const setModeAndProcess = function(track) {
     if (track.kind === 'metadata') {
-      cueTextTracks.setTrackMode(track);
-      processTrack(player, track);
+      cueTextTracks.setMetadataTrackMode(track);
+      processMetadataTrack(player, track);
     }
   };
 
@@ -27,7 +27,7 @@ cueTextTracks.process = function(player, processTrack) {
   if (tracks.length > 0) {
     for (let i = 0; i < tracks.length; i++) {
       const track = tracks[i];
-      prepareTrack(track);
+      setModeAndProcess(track);
     }
   // Wait until text tracks are added
   // We avoid always setting the event handler in case
@@ -36,7 +36,7 @@ cueTextTracks.process = function(player, processTrack) {
   } else {
     tracks.addEventListener('addtrack', (event) => {
       const track = event.track;
-      prepareTrack(track);
+      setModeAndProcess(track);
     });
   }
 };
@@ -47,7 +47,7 @@ cueTextTracks.process = function(player, processTrack) {
 * Default behavior is to do nothing, @override if this is not desired
 * @param track The text track to set the mode on
 */
-cueTextTracks.setTrackMode = function(track) {
+cueTextTracks.setMetadataTrackMode = function(track) {
   return;
 };
 
@@ -100,8 +100,8 @@ cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
       startTime = cue.startTime;
 
       // Skip ad if cue was already used
-      if (cueIncluded(player, cueId)) {
-        videojs.log('Skipping already included ad with ID ' + cueId);
+      if (cueAlreadySeen(player, cueId)) {
+        videojs.log('Skipping ad already seen with ID ' + cueId);
         return;
       }
 
@@ -109,7 +109,7 @@ cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
       processCue(player, cueData, cueId, startTime);
 
       // Indicate that this cue has been used
-      setCueIncluded(player, cueId);
+      setCueAlreadySeen(player, cueId);
     }
 
     // Optional dynamic ad cancellation
@@ -123,7 +123,7 @@ cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
 * Checks whether a cue has already been used
 * @param cueId The Id associated with a cue
 **/
-const cueIncluded = function(player, cueId) {
+const cueAlreadySeen = function(player, cueId) {
   return (cueId !== undefined) && player.ads.includedCues[cueId];
 };
 
@@ -131,7 +131,7 @@ const cueIncluded = function(player, cueId) {
 * Indicates that a cue has been used
 * @param cueId The Id associated with a cue
 **/
-const setCueIncluded = function(player, cueId) {
+const setCueAlreadySeen = function(player, cueId) {
   if (cueId !== undefined && cueId !== '') {
     player.ads.includedCues[cueId] = true;
   }

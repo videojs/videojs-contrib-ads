@@ -170,12 +170,12 @@ An optional feature that allows the manipulation of metadata tracks, specificall
 
 For example, an ad integration may want to make an ad request when a cuepoint change has been observed. To do this, an ad integration would need to do something like this:
 
-`player.ads.cueTextTracks.process(player, processTrack)`
+`player.ads.cueTextTracks.processMetadataTracks(player, processMetadataTrack)`
 
-where processTrack could be something like this:
+where processMetadataTrack could be something like this:
 
 ```
-function processTrack(player, track) {
+function processMetadataTrack(player, track) {
   track.addEventListener('cuechange', function() {
     var cues = this.cues;
     var processCue = function() {
@@ -195,12 +195,12 @@ function processTrack(player, track) {
 
 For more information on the utility methods that are available, see [cueTextTracks.js](https://github.com/videojs/videojs-contrib-ads/blob/master/src/cueTextTracks.js).
 
-### setTrackMode
+### setMetadataTrackMode
 
-A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad integrations should be careful about setting the mode of tracks in these cases and shadow `setTrackMode` to determine which tracks are safe to change. For example, if all tracks should be hidden:
+A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad integrations should be careful about setting the mode of tracks in these cases and shadow `setMetadataTrackMode` to determine which tracks are safe to change. For example, if all tracks should be hidden:
 
 ```
-player.ads.cueTextTracks.setTrackMode = function(track) {
+player.ads.cueTextTracks.setMetadataTrackMode = function(track) {
   // Hide the tracks so they are enabled and get updated
   // but are not shown in the UI
   track.mode = 'hidden';
