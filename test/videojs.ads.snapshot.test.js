@@ -421,6 +421,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks().length, 0);
 
   // This is mocked because of native text track behavior
+  // which may not have the added track available immediately
   this.player.addTextTrack = function(kind, label, language) {
     mockTracks.push({
       kind: kind,

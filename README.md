@@ -168,7 +168,7 @@ A macro such as {pageVariable.foobar} allows the user access the value of any pr
 
 An optional feature that allows the manipulation of metadata tracks, specifically in the case of working with advertising cue points.
 
-For example, an ad integration may want to make an ad request when a cuepoint change has been observed. To do this, an ad integration would need to do somthing like this:
+For example, an ad integration may want to make an ad request when a cuepoint change has been observed. To do this, an ad integration would need to do something like this:
 
 `player.ads.cueTextTracks.process(player, processTrack)`
 

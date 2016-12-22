@@ -30,6 +30,9 @@ cueTextTracks.process = function(player, processTrack) {
       prepareTrack(track);
     }
   // Wait until text tracks are added
+  // We avoid always setting the event handler in case
+  // integrations decide to handle this separately
+  // with a different handler for the same event
   } else {
     tracks.addEventListener('addtrack', (event) => {
       const track = event.track;
@@ -81,7 +84,9 @@ cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
   // loop over set of cues
   for (let i = 0; i < cues.length; i++) {
     const cue = cues[i];
-    let cueData, cueId, startTime;
+    let cueData;
+    let cueId;
+    let startTime;
 
     // Exit if this is not a supported cue
     cueData = this.getSupportedAdCue(player, cue);
