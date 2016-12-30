@@ -1,3 +1,5 @@
+/* global window */
+
 /*
 The snapshot feature is responsible for saving the player state before an ad, then
 restoring the player state after an ad.
@@ -12,7 +14,9 @@ const snapshot = {};
  * video playback. The result of this function can be passed to
  * restorePlayerSnapshot with a player to return the player to the state it
  * was in when this function was invoked.
- * @param {object} player The videojs player object
+ *
+ * @param {Object} player The videojs player object
+ * @return {Object} snapshot
  */
 snapshot.getPlayerSnapshot = function(player) {
 
@@ -32,7 +36,7 @@ snapshot.getPlayerSnapshot = function(player) {
   const tech = player.$('.vjs-tech');
   const tracks = player.remoteTextTracks ? player.remoteTextTracks() : [];
   const suppressedTracks = [];
-  const snapshot = {
+  const snapshotObject = {
     ended: player.ended(),
     currentSrc: player.currentSrc(),
     src: player.src(),
@@ -41,8 +45,8 @@ snapshot.getPlayerSnapshot = function(player) {
   };
 
   if (tech) {
-    snapshot.nativePoster = tech.poster;
-    snapshot.style = tech.getAttribute('style');
+    snapshotObject.nativePoster = tech.poster;
+    snapshotObject.style = tech.getAttribute('style');
   }
 
   for (let i = 0; i < tracks.length; i++) {
@@ -54,17 +58,19 @@ snapshot.getPlayerSnapshot = function(player) {
     });
     track.mode = 'disabled';
   }
-  snapshot.suppressedTracks = suppressedTracks;
+  snapshotObject.suppressedTracks = suppressedTracks;
 
-  return snapshot;
+  return snapshotObject;
 };
 
 /**
  * Attempts to modify the specified player so that its state is equivalent to
  * the state of the snapshot.
- * @param {object} snapshot - the player state to apply
+ *
+ * @param {Object} player - the player
+ * @param {Object} snapshotObject - the player state to apply
  */
-snapshot.restorePlayerSnapshot = function(player, snapshot) {
+snapshot.restorePlayerSnapshot = function(player, snapshotObject) {
 
   if (player.ads.disableNextSnapshotRestore === true) {
     player.ads.disableNextSnapshotRestore = false;
@@ -77,9 +83,9 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
   // the number of[ remaining attempts to restore the snapshot
   let attempts = 20;
 
-  const suppressedTracks = snapshot.suppressedTracks;
+  const suppressedTracks = snapshotObject.suppressedTracks;
   let trackSnapshot;
-  let restoreTracks = function() {
+  const restoreTracks = function() {
     for (let i = 0; i < suppressedTracks.length; i++) {
       trackSnapshot = suppressedTracks[i];
       trackSnapshot.track.mode = trackSnapshot.mode;
@@ -91,21 +97,23 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
     let currentTime;
 
     if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
-      if (snapshot.currentTime < 0) {
+      if (snapshotObject.currentTime < 0) {
         // Playback was behind real time, so seek backwards to match
         if (player.seekable().length > 0) {
-          currentTime = player.seekable().end(0) + snapshot.currentTime;
+          currentTime = player.seekable().end(0) + snapshotObject.currentTime;
         } else {
           currentTime = player.currentTime();
         }
         player.currentTime(currentTime);
       }
+    } else if (snapshotObject.ended) {
+      player.currentTime(player.duration());
     } else {
-      player.currentTime(snapshot.ended ? player.duration() : snapshot.currentTime);
+      player.currentTime(snapshotObject.currentTime);
     }
 
     // Resume playback if this wasn't a postroll
-    if (!snapshot.ended) {
+    if (!snapshotObject.ended) {
       player.play();
     }
   };
@@ -158,13 +166,13 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
     }
   };
 
-  if (snapshot.nativePoster) {
-    tech.poster = snapshot.nativePoster;
+  if (snapshotObject.nativePoster) {
+    tech.poster = snapshotObject.nativePoster;
   }
 
-  if ('style' in snapshot) {
+  if ('style' in snapshotObject) {
     // overwrite all css style properties to restore state precisely
-    tech.setAttribute('style', snapshot.style || '');
+    tech.setAttribute('style', snapshotObject.style || '');
   }
 
   // Determine whether the player needs to be restored to its state
@@ -177,7 +185,7 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
     player.one('contentloadedmetadata', restoreTracks);
 
     // if the src changed for ad playback, reset it
-    player.src({ src: snapshot.currentSrc, type: snapshot.type });
+    player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
     // safari requires a call to `load` to pick up a changed source
     player.load();
     // and then resume from the snapshots time once the original src has loaded
@@ -185,7 +193,7 @@ snapshot.restorePlayerSnapshot = function(player, snapshot) {
     // Reace the `canplay` event with a timeout.
     player.one('contentcanplay', tryToResume);
     player.ads.tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
-  } else if (!player.ended() || !snapshot.ended) {
+  } else if (!player.ended() || !snapshotObject.ended) {
     // if we didn't change the src, just restore the tracks
     restoreTracks();
     // the src didn't change and this wasn't a postroll

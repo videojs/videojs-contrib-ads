@@ -1,3 +1,5 @@
+/* global window */
+
 /*
 This feature sends a `contentupdate` event when the player source changes.
 */

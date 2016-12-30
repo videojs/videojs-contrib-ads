@@ -81,7 +81,7 @@
     "sinon": "~1.14.0",
     "uglify-js": "^2.6.1",
     "video.js": "^5.3.0",
-    "videojs-standard": "^4.0.0"
+    "videojs-standard": "^6.0.0"
   },
   "keywords": [
     "videojs",
