@@ -36,7 +36,7 @@ const cancelContentPlay = function(player) {
     player.el_.style.display = 'none';
 
     // Unhide the player and remove the placeholder once we're ready to move on.
-    player.one(['adstart', 'adplaying', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
+    player.one(['adstart', 'adtimeout', 'adserror', 'adscanceled', 'adskip',
                 'playing'], function() {
       player.el_.style.display = 'block';
       placeholder.remove();
@@ -45,7 +45,7 @@ const cancelContentPlay = function(player) {
     // Detect fullscreen change, if returning from fullscreen and placeholder exists,
     // remove placeholder and show player whether or not playsinline was attached.
     player.on('fullscreenchange', function() {
-      if (placeholder && player.hasClass('vjs-fullscreen')) {
+      if (placeholder && !player.isFullscreen()) {
         player.el_.style.display = 'block';
         placeholder.remove();
       }
