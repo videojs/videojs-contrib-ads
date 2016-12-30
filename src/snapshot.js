@@ -1,9 +1,9 @@
-/* global window */
-
 /*
 The snapshot feature is responsible for saving the player state before an ad, then
 restoring the player state after an ad.
 */
+
+import window from 'global/window';
 
 import videojs from 'video.js';
 

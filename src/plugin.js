@@ -1,9 +1,9 @@
-/* global window */
-
 /*
 This main plugin file is responsible for integration logic and enabling the features
 that live in in separate files.
 */
+
+import window from 'global/window';
 
 import videojs from 'video.js';
 

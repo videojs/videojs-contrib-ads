@@ -1,9 +1,10 @@
-/* global document,window */
-
 /*
 This feature provides an optional method for ad integrations to insert run-time values
 into an ad server URL or configuration.
 */
+
+import window from 'global/window';
+import document from 'global/document';
 
 import videojs from 'video.js';
 

@@ -1,11 +1,12 @@
-/* global document,window */
-
 /*
 This feature makes sure the player is paused during ad loading.
 
 It does this by pausing the player immediately after a "play" where ads will be requested,
 then signalling that we should play after the ad is done.
 */
+
+import window from 'global/window';
+import document from 'global/document';
 
 import videojs from 'video.js';
 
