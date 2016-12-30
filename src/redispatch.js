@@ -7,8 +7,6 @@ such `ended` events and prefix them so they are sent as `adended`, and so on wit
 all other player events.
 */
 
-import videojs from 'video.js';
-
 // Stop propogation for an event
 const cancelEvent = (player, event) => {
   // Pretend we called stopImmediatePropagation because we want the native
@@ -20,7 +18,7 @@ const cancelEvent = (player, event) => {
   event.isPropagationStopped = function() {
     return true;
   };
-}
+};
 
 // Stop propogation for an event, then send a new event with the type of the original
 // event with the given prefix added.
@@ -31,7 +29,7 @@ const prefixEvent = (player, prefix, event) => {
     state: player.ads.state,
     originalEvent: event
   });
-}
+};
 
 // Handle a player event, either by redispatching it with a prefix, or by
 // letting it go on its way without any meddling.
@@ -134,6 +132,6 @@ const redispatch = function(event) {
     }
 
   }
-}
+};
 
 module.exports = redispatch;

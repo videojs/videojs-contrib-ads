@@ -2,6 +2,8 @@
 This feature sends a `contentupdate` event when the player source changes.
 */
 
+import window from 'global/window';
+
 // Start sending contentupdate events
 const initializeContentupdate = function(player) {
 

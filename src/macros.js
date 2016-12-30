@@ -3,6 +3,9 @@ This feature provides an optional method for ad integrations to insert run-time 
 into an ad server URL or configuration.
 */
 
+import window from 'global/window';
+import document from 'global/document';
+
 import videojs from 'video.js';
 
 // Return URI encoded version of value if uriEncode is true
@@ -11,22 +14,22 @@ const uriEncodeIfNeeded = function(value, uriEncode) {
     return encodeURIComponent(value);
   }
   return value;
-}
+};
 
 // Add custom field macros to macros object
 // based on given name for custom fields property of mediainfo object.
 const customFields = function(mediainfo, macros, customFieldsName) {
   if (mediainfo && mediainfo[customFieldsName]) {
-    let customFields = mediainfo[customFieldsName];
-    let fieldNames = Object.keys(customFields);
+    const fields = mediainfo[customFieldsName];
+    const fieldNames = Object.keys(fields);
 
     for (let i = 0; i < fieldNames.length; i++) {
       const tag = '{mediainfo.' + customFieldsName + '.' + fieldNames[i] + '}';
 
-      macros[tag] = customFields[fieldNames[i]];
+      macros[tag] = fields[fieldNames[i]];
     }
   }
-}
+};
 
 // Public method that integrations use for ad macros.
 // "string" is any string with macros to be replaced
@@ -68,7 +71,7 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
 
   // Go through all the replacement macros and apply them to the string.
   // This will replace all occurrences of the replacement macros.
-  for (let i in macros) {
+  for (const i in macros) {
     string = string.split(i).join(uriEncodeIfNeeded(macros[i], uriEncode));
   }
 
@@ -76,7 +79,7 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
   string = string.replace(/{pageVariable\.([^}]+)}/g, function(match, name) {
     let value;
     let context = window;
-    let names = name.split('.');
+    const names = name.split('.');
 
     // Iterate down multiple levels of selector without using eval
     // This makes things like pageVariable.foo.bar work
@@ -106,6 +109,6 @@ const adMacroReplacement = function(string, uriEncode, customMacros) {
 
   return string;
 
-}
+};
 
 module.exports = adMacroReplacement;

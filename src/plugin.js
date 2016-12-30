@@ -3,6 +3,8 @@ This main plugin file is responsible for integration logic and enabling the feat
 that live in in separate files.
 */
 
+import window from 'global/window';
+
 import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
@@ -18,7 +20,8 @@ const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
  * reusing a video element for multiple videos, the poster image will briefly
  * reappear while the new source loads. Removing the attribute ahead of time
  * prevents the poster from showing up between videos.
- * @param {object} player The videojs player object
+ *
+ * @param {Object} player The videojs player object
  */
 const removeNativePoster = function(player) {
   const tech = player.$('.vjs-tech');
@@ -173,16 +176,13 @@ const contribAdsPlugin = function(options) {
     // We test both src and currentSrc because changing the src attribute to a URL that
     // AdBlocker is intercepting doesn't update currentSrc.
     videoElementRecycled() {
-      let srcChanged;
-      let currentSrcChanged;
-
       if (!this.snapshot) {
         throw new Error(
           'You cannot use videoElementRecycled while there is no snapshot.');
       }
 
-      srcChanged = player.src() !== this.snapshot.src;
-      currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
+      const srcChanged = player.src() !== this.snapshot.src;
+      const currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
 
       return srcChanged || currentSrcChanged;
     },
@@ -352,7 +352,7 @@ const contribAdsPlugin = function(options) {
         // add css to the element to indicate and ad is playing.
         player.addClass('vjs-ad-playing');
 
-        // We should remove the vjs-live class if it has been added in order to 
+        // We should remove the vjs-live class if it has been added in order to
         // show the adprogress control bar on Android devices for falsely
         // determined LIVE videos due to the duration incorrectly reported as Infinity
         if (player.hasClass('vjs-live')) {
@@ -380,7 +380,7 @@ const contribAdsPlugin = function(options) {
         // If we dont do this, then for a LIVE Video, we will get an incorrect
         // styled control, which displays the time for the video
         if (player.ads.isLive(player)) {
-         player.addClass('vjs-live');
+          player.addClass('vjs-live');
         }
         if (!player.ads.shouldPlayContentBehindAd(player)) {
           snapshot.restorePlayerSnapshot(player, this.snapshot);
@@ -528,7 +528,7 @@ const contribAdsPlugin = function(options) {
           // So instead of checking if the sources have changed in the play handler
           // and calling cancelContentPlay() there we call it here.
           // This does not happen on Desktop as the sources do get updated in time.
-          if(!player.ads.shouldPlayContentBehindAd(player)) {
+          if (!player.ads.shouldPlayContentBehindAd(player)) {
             cancelContentPlay(player);
           }
           if (player.paused()) {
@@ -558,7 +558,7 @@ const contribAdsPlugin = function(options) {
 
   const processEvent = function(event) {
 
-    let state = player.ads.state;
+    const state = player.ads.state;
 
     // Execute the current state's handler for this event
     const eventHandlers = states[state].events;

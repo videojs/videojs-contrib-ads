@@ -5,6 +5,9 @@ It does this by pausing the player immediately after a "play" where ads will be 
 then signalling that we should play after the ad is done.
 */
 
+import window from 'global/window';
+import document from 'global/document';
+
 import videojs from 'video.js';
 
 const cancelContentPlay = function(player) {
@@ -14,7 +17,8 @@ const cancelContentPlay = function(player) {
   }
 
   // Avoid content flash on non-iPad iOS and iPhones on iOS10 with playsinline
-  if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) && !player.el_.hasAttribute('playsinline')) {
+  if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) &&
+      !player.el_.hasAttribute('playsinline')) {
 
     const width = player.currentWidth ? player.currentWidth() : player.width();
     const height = player.currentHeight ? player.currentHeight() : player.height();
@@ -40,12 +44,12 @@ const cancelContentPlay = function(player) {
 
     // Detect fullscreen change, if returning from fullscreen and placeholder exists,
     // remove placeholder and show player whether or not playsinline was attached.
-    player.on('fullscreenchange', function () {
+    player.on('fullscreenchange', function() {
       if (placeholder && player.hasClass('vjs-fullscreen')) {
         player.el_.style.display = 'block';
         placeholder.remove();
       }
-    })
+    });
 
   }
 
