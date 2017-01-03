@@ -34,7 +34,9 @@ snapshot.getPlayerSnapshot = function(player) {
   }
 
   const tech = player.$('.vjs-tech');
-  const tracks = player.remoteTextTracks ? player.remoteTextTracks() : [];
+  const remoteTracks = player.remoteTextTracks ? player.remoteTextTracks() : [];
+  const tracks = player.textTracks ? player.textTracks() : [];
+  const suppressedRemoteTracks = [];
   const suppressedTracks = [];
   const snapshotObject = {
     ended: player.ended(),
@@ -48,6 +50,17 @@ snapshot.getPlayerSnapshot = function(player) {
     snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
   }
+
+  for (let i = 0; i < remoteTracks.length; i++) {
+    const track = remoteTracks[i];
+
+    suppressedRemoteTracks.push({
+      track,
+      mode: track.mode
+    });
+    track.mode = 'disabled';
+  }
+  snapshotObject.suppressedRemoteTracks = suppressedRemoteTracks;
 
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
@@ -83,9 +96,15 @@ snapshot.restorePlayerSnapshot = function(player, snapshotObject) {
   // the number of[ remaining attempts to restore the snapshot
   let attempts = 20;
 
+  const suppressedRemoteTracks = snapshotObject.suppressedRemoteTracks;
   const suppressedTracks = snapshotObject.suppressedTracks;
   let trackSnapshot;
   const restoreTracks = function() {
+    for (let i = 0; i < suppressedRemoteTracks.length; i++) {
+      trackSnapshot = suppressedRemoteTracks[i];
+      trackSnapshot.track.mode = trackSnapshot.mode;
+    }
+
     for (let i = 0; i < suppressedTracks.length; i++) {
       trackSnapshot = suppressedTracks[i];
       trackSnapshot.track.mode = trackSnapshot.mode;
@@ -200,7 +219,6 @@ snapshot.restorePlayerSnapshot = function(player, snapshotObject) {
     // just resume playback at the current time.
     player.play();
   }
-
 };
 
 module.exports = snapshot;
