@@ -33,5 +33,4 @@ export default function initializeContentupdate(player) {
   player.on('loadstart', checkSrc);
   // check immediately in case we missed the loadstart
   window.setTimeout(checkSrc, 1);
-
-};
+}

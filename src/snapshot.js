@@ -70,7 +70,7 @@ export function getPlayerSnapshot(player) {
   snapshotObject.suppressedTracks = suppressedTracks;
 
   return snapshotObject;
-};
+}
 
 /**
  * Attempts to modify the specified player so that its state is equivalent to
@@ -214,4 +214,4 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     // just resume playback at the current time.
     player.play();
   }
-};
+}

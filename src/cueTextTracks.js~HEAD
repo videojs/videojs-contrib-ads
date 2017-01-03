@@ -7,6 +7,8 @@
 
 import videojs from 'video.js';
 
+const cueTextTracks = {};
+
 /**
 * This feature allows metadata text tracks to be manipulated once they are available,
 * usually after the 'loadstart' event is observed on the player
@@ -14,11 +16,11 @@ import videojs from 'video.js';
 * @param processMetadataTrack A callback that performs some operations on a
 * metadata text track
 **/
-export function processMetadataTracks(player, processMetadataTrack) {
+cueTextTracks.processMetadataTracks = function(player, processMetadataTrack) {
   const tracks = player.textTracks();
   const setModeAndProcess = function(track) {
     if (track.kind === 'metadata') {
-      player.ads.cueTextTracks.setMetadataTrackMode(track);
+      cueTextTracks.setMetadataTrackMode(track);
       processMetadataTrack(player, track);
     }
   };
@@ -41,7 +43,7 @@ export function processMetadataTracks(player, processMetadataTrack) {
       setModeAndProcess(track);
     });
   }
-}
+};
 
 /**
 * Sets the track mode to one of 'disabled', 'hidden' or 'showing'
@@ -49,9 +51,9 @@ export function processMetadataTracks(player, processMetadataTrack) {
 * Default behavior is to do nothing, @override if this is not desired
 * @param track The text track to set the mode on
 */
-export function setMetadataTrackMode(track) {
+cueTextTracks.setMetadataTrackMode = function(track) {
   return;
-}
+};
 
 /**
 * Determines whether cue is an ad cue and returns the cue data.
@@ -60,9 +62,9 @@ export function setMetadataTrackMode(track) {
 * Returns the given cue by default @override if futher processing is required
 * @return the cueData in JSON if cue is a supported ad cue, or -1 if not
 **/
-export function getSupportedAdCue(player, cue) {
+cueTextTracks.getSupportedAdCue = function(player, cue) {
   return cue;
-}
+};
 
 /**
 * Gets the id associated with a cue.
@@ -70,9 +72,9 @@ export function getSupportedAdCue(player, cue) {
 * @returns The first occurance of 'id' in the object,
 * @override if this is not the desired cue id
 **/
-export function getCueId(player, cue) {
+cueTextTracks.getCueId = function(player, cue) {
   return cue.id;
-}
+};
 
 /**
 * Checks whether a cue has already been used
@@ -96,11 +98,11 @@ const setCueAlreadySeen = function(player, cueId) {
 * This feature allows ad metadata tracks to be manipulated in ad implementations
 * @param player A reference to the player
 * @param cues The set of cues to work with
-* @param processCue A method that uses a cue to make some
-* ad request in the ad implementation
+* @param processCue A method that uses a cue to make some ad request
+* in the ad implementation
 * @param [cancelAds] A method that dynamically cancels ads in the ad implementation
 **/
-export function processAdTrack(player, cues, processCue, cancelAds) {
+cueTextTracks.processAdTrack = function(player, cues, processCue, cancelAds) {
   player.ads.includedCues = {};
 
   // loop over set of cues
@@ -135,4 +137,7 @@ export function processAdTrack(player, cues, processCue, cancelAds) {
       cancelAds(player, cueData);
     }
   }
-}
+};
+
+module.exports = cueTextTracks;
+

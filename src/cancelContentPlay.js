@@ -68,4 +68,4 @@ export default function cancelContentPlay(player) {
     // When the 'content-playback' state is entered, this will let us know to play
     player.ads.cancelledPlay = true;
   }, 1);
-};
+}
