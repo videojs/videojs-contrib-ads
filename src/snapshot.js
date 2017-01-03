@@ -60,7 +60,7 @@ snapshot.getPlayerSnapshot = function(player) {
     });
     track.mode = 'disabled';
   }
-  snapshot.suppressedRemoteTracks = suppressedRemoteTracks;
+  snapshotObject.suppressedRemoteTracks = suppressedRemoteTracks;
 
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
