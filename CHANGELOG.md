@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## 4.2.0
+
+* [@ldayananda](https://github.com/ldayananda): Adding a new module to process metadata tracks for ad cue point manipulation
+* [@incompl](http://github.com/incompl): Update videojs-standard dependency
+
 ## 4.1.6
 
 * [@marguinbc](http://github.com/marguinbc): Fix placeholder div on ios10 playsinline
