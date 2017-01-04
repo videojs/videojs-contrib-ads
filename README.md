@@ -33,6 +33,12 @@ videojs('video', {}, function() {
 </script>
 ```
 
+### CDN Link
+
+You may also use the Javascript and CSS links from the following to get started:
+[https://cdnjs.com/libraries/videojs-contrib-ads](https://cdnjs.com/libraries/videojs-contrib-ads)
+
+
 With this basic structure in place, you're ready to develop an ad integration.
 
 ## Developing an Integration
