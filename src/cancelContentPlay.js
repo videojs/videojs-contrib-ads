@@ -28,7 +28,9 @@ const cancelContentPlay = function(player) {
 
     placeholder.style.width = width + 'px';
     placeholder.style.height = height + 'px';
+    placeholder.style.top = '0';
     placeholder.style.background = 'black';
+    placeholder.style.position = 'absolute';
     player.el_.parentNode.insertBefore(placeholder, player.el_);
 
     // Hide the player. While in full-screen video playback mode on iOS, this
