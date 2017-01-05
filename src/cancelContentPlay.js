@@ -10,7 +10,7 @@ import document from 'global/document';
 
 import videojs from 'video.js';
 
-const cancelContentPlay = function(player) {
+export default function cancelContentPlay(player) {
   if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing
     return;
@@ -68,6 +68,4 @@ const cancelContentPlay = function(player) {
     // When the 'content-playback' state is entered, this will let us know to play
     player.ads.cancelledPlay = true;
   }, 1);
-};
-
-module.exports = cancelContentPlay;
+}

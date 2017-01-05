@@ -33,7 +33,7 @@ const prefixEvent = (player, prefix, event) => {
 
 // Handle a player event, either by redispatching it with a prefix, or by
 // letting it go on its way without any meddling.
-const redispatch = function(event) {
+export default function redispatch(event) {
 
   // We do a quick play/pause before we check for prerolls. This creates a "playing"
   // event. This conditional block prefixes that event so it's "adplaying" if it
@@ -132,6 +132,4 @@ const redispatch = function(event) {
     }
 
   }
-};
-
-module.exports = redispatch;
+}

@@ -7,18 +7,14 @@ import window from 'global/window';
 
 import videojs from 'video.js';
 
-const snapshot = {};
-
 /**
  * Returns an object that captures the portions of player state relevant to
  * video playback. The result of this function can be passed to
  * restorePlayerSnapshot with a player to return the player to the state it
  * was in when this function was invoked.
- *
  * @param {Object} player The videojs player object
- * @return {Object} snapshot
  */
-snapshot.getPlayerSnapshot = function(player) {
+export function getPlayerSnapshot(player) {
 
   let currentTime;
 
@@ -74,16 +70,15 @@ snapshot.getPlayerSnapshot = function(player) {
   snapshotObject.suppressedTracks = suppressedTracks;
 
   return snapshotObject;
-};
+}
 
 /**
  * Attempts to modify the specified player so that its state is equivalent to
  * the state of the snapshot.
- *
- * @param {Object} player - the player
+ * @param {Object} player - the videojs player object
  * @param {Object} snapshotObject - the player state to apply
  */
-snapshot.restorePlayerSnapshot = function(player, snapshotObject) {
+export function restorePlayerSnapshot(player, snapshotObject) {
 
   if (player.ads.disableNextSnapshotRestore === true) {
     player.ads.disableNextSnapshotRestore = false;
@@ -219,6 +214,4 @@ snapshot.restorePlayerSnapshot = function(player, snapshotObject) {
     // just resume playback at the current time.
     player.play();
   }
-};
-
-module.exports = snapshot;
+}

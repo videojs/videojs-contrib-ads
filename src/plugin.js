@@ -8,11 +8,11 @@ import window from 'global/window';
 import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
-import snapshot from './snapshot.js';
+import * as snapshot from './snapshot.js';
 import initializeContentupdate from './contentupdate.js';
 import cancelContentPlay from './cancelContentPlay.js';
 import adMacroReplacement from './macros.js';
-import cueTextTracks from './cueTextTracks.js';
+import * as cueTextTracks from './cueTextTracks.js';
 
 const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
 
