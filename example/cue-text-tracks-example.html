@@ -23,12 +23,13 @@
 
   <video
     id="examplePlayer"
-    class="video-js vjs-default-skin"
+    class="video-js"
     width="640"
     height="264"
     poster="http://vjs.zencdn.net/v/oceans.png"
-    autoplay
-    controls>
+    preload="auto"
+    controls
+    data-setup="{}">
     <source src="http://vjs.zencdn.net/v/oceans.mp4" type='video/mp4' />
     <source src="http://vjs.zencdn.net/v/oceans.webm" type='video/webm' />
     <source src="http://vjs.zencdn.net/v/oceans.ogv" type='video/ogg' />
@@ -46,7 +47,10 @@
 
       var player = this;
       var adServerUrl = "inventory.json";
+      var originalSrc = player.currentSrc();
       var state = {};
+
+
 
       // asynchronous method for requesting ad inventory
       var requestAds = function() {
@@ -75,6 +79,47 @@
 
       };
 
+      var cueChangeHandler = function(event) {
+        if (!this.activeCues || this.activeCues.length === 0) {
+          return;
+        }
+        var cues = new Array(this.activeCues[this.activeCues.length - 1]);
+
+        videojs.log('CUE CHANGED', event, 'at', player.currentTime());
+        videojs.log('**', 'the chosen cue is', cues);
+
+        // Make an ad request
+        var processCue = function(player, cue, cueId, startTime) {
+
+          if (cue.text === 'ad') {
+            videojs.log('**', 'processing the cue', cue.id, 'at', cue.startTime);
+
+            player.controlBar.progressControl.seekBar.playProgressBar.addClass('cue-text-track');
+
+            if (!player.paused()) {
+              playAd();
+            }
+          }
+
+        };
+
+        // Optional method to dynamically cancel ads
+        var cancelAds = function(player, cue) {
+
+          if (cue.text === 'adCancel' && state.adPlaying) {
+            videojs.log('**', 'canceling the ads');
+
+            player.controlBar.progressControl.seekBar.playProgressBar.removeClass('cue-text-track');
+            state.adPlaying = false;
+            player.ads.endLinearAdMode();
+          }
+        };
+
+        // Process the cues in this track as ad cues using `processCue`
+        // Cancel ads dynamically using `cancelAds`
+        player.ads.cueTextTracks.processAdTrack(player, cues, processCue, cancelAds);
+      };
+
       // play an ad, given an opportunity
       var playAd = function() {
         videojs.log('**', 'playing an ad');
@@ -88,6 +133,8 @@
         player.ads.startLinearAdMode();
         state.adPlaying = true;
 
+        // make sure the track is disabled during ads
+        player.textTracks()[0].mode = 'disabled';
 
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
@@ -99,6 +146,13 @@
           // play your linear ad content, then when it's finished ...
           player.ads.endLinearAdMode();
           state.adPlaying = false;
+
+          videojs.log('switching back to content', player.currentSrc(), originalSrc);
+          player.src(originalSrc);
+
+          // FIXME, why didn't this work?
+          // re-enable the text track
+          player.textTracks()[0].mode = 'hidden';
         });
       };
 
@@ -107,31 +161,23 @@
         debug: true
       });
 
-      // indicate that there will be no preroll
-      // player.trigger('nopreroll');
-      // player.trigger('nopostroll');
+      // indicate that there will be no preroll and postroll
+      player.trigger('nopreroll');
+      player.trigger('nopostroll');
 
       // request ad inventory whenever the player gets new content to play
-      player.on('contentupdate', requestAds);
-
-      // if there's already content loaded, request an add immediately
-      if (player.currentSrc()) {
+      if (player.currentSrc() && player.paused()) {
         requestAds();
       }
 
-      // player.on('contentended', function() {
-      //   if (player.ads.state === 'postroll?') {
-      //     playAd();
-      //   }
-      // });
+      var processMetadataTrack = function(player, track) {
+        videojs.log('**', 'processMetadataTrack');
 
-      // Listen for a new text track and start processing it's cues
-      player.textTracks().addEventListener('addtrack', function() {
-        videojs.log('added track', player.textTracks());
+        track.addEventListener('cuechange', cueChangeHandler);
+      }
 
-        // Process the cue text tracks on the player using `processTrack`
-        player.ads.cueTextTracks.process(player, processTrack);
-      });
+      // Set up to process metadata cues
+      player.ads.cueTextTracks.processMetadataTracks(player, processMetadataTrack);
 
       // Set up a base text track to use for our ad cuepoints
       player.addRemoteTextTrack({
@@ -139,54 +185,9 @@
         src: './testcuepoint.vtt'
       });
 
-      var processTrack = function(player, track) {
-        videojs.log('**', 'processTrack');
-
-        track.addEventListener('cuechange', function(event) {
-          if (!this.activeCues || this.activeCues.length === 0) {
-            return;
-          }
-
-          console.log('CUE CHANGED', event, 'at', player.currentTime());
-          var cues = new Array(this.activeCues[this.activeCues.length - 1]);
-          videojs.log('**', 'the chosen cue is', cues);
-
-          // Make an ad request
-          var processCue = function(player, cue, cueId, startTime) {
-
-            if (cue.text === 'ad') {
-              videojs.log('**', 'processing the cue', cue.id, 'at', cue.startTime);
-
-              player.controlBar.progressControl.seekBar.playProgressBar.addClass('cue-text-track');
-              playAd();
-            }
-
-          };
-
-          // Optional method to dynamically cancel ads
-          var cancelAds = function(player, cue) {
-
-            if (cue.text === 'adCancel' && state.adPlaying) {
-              videojs.log('**', 'canceling the ads');
-
-              player.controlBar.progressControl.seekBar.playProgressBar.removeClass('cue-text-track');
-              state.adPlaying = false;
-              player.ads.endLinearAdMode();
-
-            }
-
-          };
-
-          // Process the cues in this track as ad cues using `processCue`
-          // Cancel ads dynamically using `cancelAds`
-          player.ads.cueTextTracks.processAdTrack(player, cues, processCue, cancelAds);
-
-        });
-      }
-
       // Implement an interface for understanding the adCues
 
-      player.ads.cueTextTracks.setTrackMode = function(track) {
+      player.ads.cueTextTracks.setMetadataTrackMode = function(track) {
         // The cues are invisible, so set them to hidden so they can be updated
         track.mode = 'hidden';
       };
