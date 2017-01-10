@@ -206,8 +206,32 @@ const contribAdsPlugin = function(options) {
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
              somePlayer.duration() === Infinity;
-    }
+    },
 
+    // Return true if the ad should NOT autoplay on iPhone on iOS 10 and above.
+    // This is only true if the player does not have autoplay, playsinline
+    // and muted attributes or player settings. Otherwise, we should attempt
+    // to autoplay the ad.  Also pauses the player if it has started playing and
+    // removes the autoplay attribute or player setting.
+    cancelAutoplayAdOnIOS(somePlayer) {
+      if( videojs.IS_IPHONE && player.el_.hasAttribute('playsinline')
+        && (player.autoplay() || player.el_.hasAttribute('autoplay'))
+        && (!player.muted() || !player.el_.hasAttribute('muted'))) {
+
+          if (!player.paused()) {
+            player.pause();
+          }
+          if (player.autoplay() === true) {
+            player.autoplay(false);
+          }
+          if (player.el_.hasAttribute('autoplay')) {
+            player.el_.removeAttribute('autoplay');
+          }
+        return true;
+      } else {
+        return false;
+      }
+    }
   };
 
   player.ads.stitchedAds(settings.stitchedAds);
@@ -232,10 +256,12 @@ const contribAdsPlugin = function(options) {
           this.state = 'ads-ready';
         },
         play() {
-          this.state = 'ads-ready?';
-          cancelContentPlay(player);
-          // remove the poster so it doesn't flash between videos
-          removeNativePoster(player);
+          if (!player.ads.cancelAutoplayAdOnIOS(player)) {
+            this.state = 'ads-ready?';
+            cancelContentPlay(player);
+            // remove the poster so it doesn't flash between videos
+            removeNativePoster(player);
+          }
         },
         adserror() {
           this.state = 'content-playback';
