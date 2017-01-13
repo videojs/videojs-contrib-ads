@@ -19,7 +19,7 @@ const nameify = (str) =>
 const srces = {
   css: 'src/plugin.scss',
   js: 'src/plugin.js',
-  tests: glob.sync('test/**/*.test.js')
+  tests: glob.sync('test/**/test.*.js')
 };
 
 const dests = {

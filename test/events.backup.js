@@ -1,3 +1,5 @@
+import '../example/app.js';
+
 // Old integration tests that were disabled years ago and are out of date.
 // To try to fix them, start by renaming to videojs.ads.events.test.js so they run again.
 
