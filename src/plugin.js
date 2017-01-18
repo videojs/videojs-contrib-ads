@@ -214,23 +214,22 @@ const contribAdsPlugin = function(options) {
     // to autoplay the ad.  Also pauses the player if it has started playing and
     // removes the autoplay attribute or player setting.
     cancelAutoplayAdOnIOS(somePlayer) {
-      if( videojs.IS_IPHONE && player.el_.hasAttribute('playsinline')
-        && (player.autoplay() || player.el_.hasAttribute('autoplay'))
-        && (!player.muted() || !player.el_.hasAttribute('muted'))) {
+      if (videojs.IS_IPHONE && player.el_.hasAttribute('playsinline') &&
+        (player.autoplay() || player.el_.hasAttribute('autoplay')) &&
+        (!player.muted() || !player.el_.hasAttribute('muted'))) {
 
-          if (!player.paused()) {
-            player.pause();
-          }
-          if (player.autoplay() === true) {
-            player.autoplay(false);
-          }
-          if (player.el_.hasAttribute('autoplay')) {
-            player.el_.removeAttribute('autoplay');
-          }
+        if (!player.paused()) {
+          player.pause();
+        }
+        if (player.autoplay() === true) {
+          player.autoplay(false);
+        }
+        if (player.el_.hasAttribute('autoplay')) {
+          player.el_.removeAttribute('autoplay');
+        }
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
   };
 
