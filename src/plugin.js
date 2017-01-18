@@ -256,6 +256,9 @@ const contribAdsPlugin = function(options) {
           this.state = 'ads-ready';
         },
         play() {
+          // play should only be triggered in content-set for initial
+          // playback using an autoplay player. Normally, play occurs
+          // during ads-ready, ads-ready?, or preroll?
           if (!player.ads.cancelAutoplayAdOnIOS(player)) {
             this.state = 'ads-ready?';
             cancelContentPlay(player);
