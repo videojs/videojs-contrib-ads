@@ -258,11 +258,6 @@ Here's a state diagram which shows the states of the ads plugin and how it trans
 
 ![](ad-states.png)
 
-The ads plugin starts in the `init` state and immediately transitions to `content-set` if a video is loaded.
-Transitions with solid arrows are traversed when an event with the appropriate type is triggered on the player.
-Dotted-line arrows indicate a transition that occurs when a timeout expires.
-The timeline at right shows how the ads plugin communicates with your integration.
-
 ## Plugin Options
 
 The ad framework can be configured with custom settings by providing a settings object at initialization:
