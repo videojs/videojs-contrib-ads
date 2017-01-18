@@ -87,3 +87,9 @@ QUnit.test('playing event in different ad states', function(assert) {
   assert.equal(this.redispatch('playing'), 'ignored');
 
 });
+
+QUnit.test('playing is cancelled during ad playback if video element is recycled', function(assert) {
+  this.player.ads.state = 'ad-playback';
+  this.player.ads.videoElementRecycled = () => true;
+  assert.equal(this.redispatch('playing'), 'cancelled');
+});
