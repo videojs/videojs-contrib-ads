@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+## 4.2.1
+
+* [@incompl](https://github.com/incompl): Revert progress bar clickthrough CSS
+* [@ldayananda](https://github.com/ldayananda): Started using ES6 exports
+
 ## 4.2.0
 
 * [@ldayananda](https://github.com/ldayananda): Adding a new module to process metadata tracks for ad cue point manipulation
