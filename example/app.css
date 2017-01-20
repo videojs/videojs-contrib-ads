@@ -14,6 +14,6 @@ ol {
   white-space: pre;
 }
 
-.vjs-ad-playing.vjs-ad-playing .vjs-play-progress.vjs-slider-bar.cue-text-track {
+.vjs-play-progress.vjs-slider-bar.cue-text-track {
   background-color: #ff0000;
 }

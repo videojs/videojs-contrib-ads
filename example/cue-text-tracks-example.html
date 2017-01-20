@@ -34,27 +34,34 @@
     <source src="http://vjs.zencdn.net/v/oceans.webm" type='video/webm' />
     <source src="http://vjs.zencdn.net/v/oceans.ogv" type='video/ogg' />
   </video>
+  <video
+    id="exampleAdContainer"
+    class="video-js"
+    width="640"
+    height="264"
+    preload="auto"
+    controls>
+  </video>
 
   <h2>Cue Text Tracks</h2>
 
   <p>
-    If the following option is selected, the ad progress bar will
-    change color to <font color="red">red</font>.
+    During ads, the control bar will be <font color="red">red</font>.
   </p>
 
   <script>
     videojs('examplePlayer').ready(function() {
 
       var player = this;
+      var adContainer = videojs('exampleAdContainer');
       var adServerUrl = "inventory.json";
       var originalSrc = player.currentSrc();
       var state = {};
-
-
+      var playedCues = {};
 
       // asynchronous method for requesting ad inventory
       var requestAds = function() {
-        videojs.log('**', 'requesting an ad');
+        videojs.log('example', 'Requesting an ad');
 
         // reset plugin state
         state = {};
@@ -79,39 +86,57 @@
 
       };
 
+      var switchMode = function(mode, src) {
+        // switch to ad mode
+        if (mode === 'ad') {
+          videojs.log('example', 'going into ad mode', src.src);
+
+          // show ad container, hide content player
+          adContainer.src(src);
+          adContainer.removeChild('bigPlayButton');
+          adContainer.el_.style.display = 'block';
+          adContainer.play();
+          player.el_.style.display = 'none';
+
+        } else if (mode === 'content') {
+          videojs.log('example', 'going into content mode', src);
+
+          // hide ad container, show content player
+          player.src(src);
+          player.removeChild('bigPlayButton');
+          player.el_.style.display = 'block';
+          player.currentTime(state.currentTime);
+          player.play();
+          adContainer.el_.style.display = 'none';
+        }
+      };
+
       var cueChangeHandler = function(event) {
-        if (!this.activeCues || this.activeCues.length === 0) {
+        if (state.adPlaying || !this.activeCues || this.activeCues.length === 0) {
           return;
         }
         var cues = new Array(this.activeCues[this.activeCues.length - 1]);
 
-        videojs.log('CUE CHANGED', event, 'at', player.currentTime());
-        videojs.log('**', 'the chosen cue is', cues);
+        videojs.log('example', 'a cue change fired at', player.currentTime(),
+          'cue is', cues[0], 'at', cues[0].startTime);
 
         // Make an ad request
         var processCue = function(player, cue, cueId, startTime) {
-
-          if (cue.text === 'ad') {
-            videojs.log('**', 'processing the cue', cue.id, 'at', cue.startTime);
-
-            player.controlBar.progressControl.seekBar.playProgressBar.addClass('cue-text-track');
-
-            if (!player.paused()) {
-              playAd();
-            }
+          if (cue.text != 'ad' || player.paused() ||
+            state.adPlaying || playedCues[cueId]) {
+            return;
           }
 
+          playAd();
+          playedCues[cueId] = true;
         };
 
         // Optional method to dynamically cancel ads
         var cancelAds = function(player, cue) {
-
           if (cue.text === 'adCancel' && state.adPlaying) {
-            videojs.log('**', 'canceling the ads');
-
-            player.controlBar.progressControl.seekBar.playProgressBar.removeClass('cue-text-track');
             state.adPlaying = false;
             player.ads.endLinearAdMode();
+            switchMode('content', originalSrc);
           }
         };
 
@@ -122,8 +147,6 @@
 
       // play an ad, given an opportunity
       var playAd = function() {
-        videojs.log('**', 'playing an ad');
-
         // short-circuit if we don't have any ad inventory to play
         if (!state.inventory || state.inventory.length === 0) {
           return;
@@ -132,49 +155,26 @@
         // tell ads plugin we're ready to play our ad
         player.ads.startLinearAdMode();
         state.adPlaying = true;
-
-        // make sure the track is disabled during ads
-        player.textTracks()[0].mode = 'disabled';
+        state.currentTime = player.currentTime();
 
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
-        videojs.log('switching to ad', player.currentSrc(), media);
-        player.src(media);
-
-        // when it's finished
-        player.one('adended', function() {
-          // play your linear ad content, then when it's finished ...
-          player.ads.endLinearAdMode();
-          state.adPlaying = false;
-
-          videojs.log('switching back to content', player.currentSrc(), originalSrc);
-          player.src(originalSrc);
-
-          // FIXME, why didn't this work?
-          // re-enable the text track
-          player.textTracks()[0].mode = 'hidden';
-        });
+        switchMode('ad', media);
       };
+
+      var processMetadataTrack = function(player, track) {
+        track.addEventListener('cuechange', cueChangeHandler);
+      }
+
+      // Initial Set up
+      adContainer.el_.style.display = 'none';
+      adContainer.removeChild('bigPlayButton');
+      adContainer.controlBar.progressControl.seekBar.playProgressBar.addClass('cue-text-track');
 
       // initialize the ads plugin, passing in any relevant options
       player.ads({
         debug: true
       });
-
-      // indicate that there will be no preroll and postroll
-      player.trigger('nopreroll');
-      player.trigger('nopostroll');
-
-      // request ad inventory whenever the player gets new content to play
-      if (player.currentSrc() && player.paused()) {
-        requestAds();
-      }
-
-      var processMetadataTrack = function(player, track) {
-        videojs.log('**', 'processMetadataTrack');
-
-        track.addEventListener('cuechange', cueChangeHandler);
-      }
 
       // Set up to process metadata cues
       player.ads.cueTextTracks.processMetadataTracks(player, processMetadataTrack);
@@ -184,6 +184,30 @@
         kind: 'metadata',
         src: './testcuepoint.vtt'
       });
+
+      // indicate that there will be no preroll and postroll
+      player.trigger('nopreroll');
+      player.trigger('nopostroll');
+
+      // Set up to return from ads
+      adContainer.on('ended', function(e) {
+        if (!state.adPlaying) {
+          return;
+        }
+
+        // play your linear ad content, then when it's finished ...
+        player.ads.endLinearAdMode();
+        state.adPlaying = false;
+        switchMode('content', originalSrc);
+
+        // re-enable the text track
+        player.textTracks()[0].mode = 'hidden';
+      });
+
+      // request ad inventory whenever the player gets new content to play
+      if (player.currentSrc() && player.paused()) {
+        requestAds();
+      }
 
       // Implement an interface for understanding the adCues
 
@@ -203,7 +227,7 @@
 
       player.ads.cueTextTracks.getCueId = function (player, cue) {
         // Return the topmost id
-        return cue.id;
+        return Number(cue.id);
       };
 
     });
