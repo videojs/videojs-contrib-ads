@@ -36,7 +36,7 @@
   </video>
   <video
     id="exampleAdContainer"
-    class="video-js"
+    class="video-js ad-container vjs-hidden"
     width="640"
     height="264"
     preload="auto"
@@ -47,6 +47,7 @@
 
   <p>
     During ads, the control bar will be <font color="red">red</font>.
+    Open the developer console to view logs.
   </p>
 
   <script>
@@ -89,25 +90,28 @@
       var switchMode = function(mode, src) {
         // switch to ad mode
         if (mode === 'ad') {
-          videojs.log('example', 'going into ad mode', src.src);
+          videojs.log('example', 'Going into ad mode with', src.src);
+
+          // pause content immediately
+          player.pause();
 
           // show ad container, hide content player
           adContainer.src(src);
-          adContainer.removeChild('bigPlayButton');
-          adContainer.el_.style.display = 'block';
+          adContainer.removeClass('vjs-hidden');
+          player.addClass('vjs-hidden');
+
+          // play ad
           adContainer.play();
-          player.el_.style.display = 'none';
 
         } else if (mode === 'content') {
-          videojs.log('example', 'going into content mode', src);
+          videojs.log('example', 'Going into content mode with', src);
 
           // hide ad container, show content player
-          player.src(src);
-          player.removeChild('bigPlayButton');
-          player.el_.style.display = 'block';
-          player.currentTime(state.currentTime);
+          player.removeClass('vjs-hidden');
+          adContainer.addClass('vjs-hidden');
+
+          // resume content
           player.play();
-          adContainer.el_.style.display = 'none';
         }
       };
 
@@ -117,7 +121,7 @@
         }
         var cues = new Array(this.activeCues[this.activeCues.length - 1]);
 
-        videojs.log('example', 'a cue change fired at', player.currentTime(),
+        videojs.log('example', 'A cue change fired at', player.currentTime(),
           'cue is', cues[0], 'at', cues[0].startTime);
 
         // Make an ad request
@@ -155,7 +159,6 @@
         // tell ads plugin we're ready to play our ad
         player.ads.startLinearAdMode();
         state.adPlaying = true;
-        state.currentTime = player.currentTime();
 
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
@@ -165,11 +168,6 @@
       var processMetadataTrack = function(player, track) {
         track.addEventListener('cuechange', cueChangeHandler);
       }
-
-      // Initial Set up
-      adContainer.el_.style.display = 'none';
-      adContainer.removeChild('bigPlayButton');
-      adContainer.controlBar.progressControl.seekBar.playProgressBar.addClass('cue-text-track');
 
       // initialize the ads plugin, passing in any relevant options
       player.ads({

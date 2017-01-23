@@ -14,6 +14,12 @@ ol {
   white-space: pre;
 }
 
-.vjs-play-progress.vjs-slider-bar.cue-text-track {
+/* cue-text-tracks-example Styles */
+
+.ad-container .vjs-play-progress.vjs-slider-bar {
   background-color: #ff0000;
+}
+
+.ad-container .vjs-big-play-button {
+  display: none;
 }
