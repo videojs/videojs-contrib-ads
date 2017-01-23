@@ -425,6 +425,8 @@ const contribAdsPlugin = function(options) {
         contentupdate() {
           this.state = 'content-set';
         },
+
+        // This is for stitched ads only.
         contentresumed() {
           this.state = 'content-playback';
         },
