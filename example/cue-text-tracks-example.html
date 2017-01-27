@@ -119,7 +119,8 @@
         if (state.adPlaying || !this.activeCues || this.activeCues.length === 0) {
           return;
         }
-        var cues = new Array(this.activeCues[this.activeCues.length - 1]);
+        var activeCue = this.activeCues[this.activeCues.length - 1];
+        var cues = [activeCue];
 
         videojs.log('example', 'A cue change fired at', player.currentTime(),
           'cue is', cues[0], 'at', cues[0].startTime);
