@@ -126,12 +126,17 @@ const contribAdsPlugin = function(options) {
     // seek backwards and replay content, but _contentHasEnded remains true.
     _contentHasEnded: false,
 
+    // This is an estimation of the current ad type being played
+    // This is private, do not rely on its presence or behavior!
+    _adType: null,
+
     VERSION: '__VERSION__',
 
     reset() {
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentHasEnded = false;
       player.ads.snapshot = null;
+      player.ads._adType = null;
     },
 
     // Call this when an ad response has been received and there are
@@ -291,6 +296,7 @@ const contribAdsPlugin = function(options) {
         },
         adstart() {
           this.state = 'ad-playback';
+          player.ads._adType = 'preroll';
         },
         adskip() {
           this.state = 'content-playback';
@@ -397,6 +403,7 @@ const contribAdsPlugin = function(options) {
       events: {
         adend() {
           this.state = 'content-resuming';
+          player.ads._adType = null;
         },
         adserror() {
           this.state = 'content-resuming';
@@ -464,6 +471,7 @@ const contribAdsPlugin = function(options) {
       events: {
         adstart() {
           this.state = 'ad-playback';
+          player.ads._adType = 'postroll';
         },
         adskip() {
           this.state = 'content-resuming';
@@ -523,6 +531,7 @@ const contribAdsPlugin = function(options) {
         },
         adstart() {
           this.state = 'ad-playback';
+          player.ads._adType = 'midroll';
         },
         contentupdate() {
           // We know sources have changed, so we call CancelContentPlay
