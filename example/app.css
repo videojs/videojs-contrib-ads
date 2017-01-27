@@ -13,3 +13,13 @@ ol {
   font-family: monospace;
   white-space: pre;
 }
+
+/* cue-text-tracks-example Styles */
+
+.ad-container .vjs-play-progress.vjs-slider-bar {
+  background-color: #ff0000;
+}
+
+.ad-container .vjs-big-play-button {
+  display: none;
+}

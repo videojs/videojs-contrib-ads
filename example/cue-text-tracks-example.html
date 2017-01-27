@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Example Ad Integration</title>
+  <!-- Load local video.js -->
+  <link rel="stylesheet" href="../node_modules/video.js/dist/video-js.css">
+  <script src="../node_modules/video.js/dist/video.js"></script>
+  <!-- Load local ads plugin. -->
+  <link rel="stylesheet" href="../dist/videojs.ads.css">
+  <script src="../dist/videojs.ads.js"></script>
+  <!-- Load example ads integraiton. -->
+  <script src="example-integration.js"></script>
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+
+  <h1>Cue Text Tracks Example</h1>
+
+  <p>This page uses the built files, so you must do a local build before the
+    example will work.</p>
+
+  <video
+    id="examplePlayer"
+    class="video-js"
+    width="640"
+    height="264"
+    poster="http://vjs.zencdn.net/v/oceans.png"
+    preload="auto"
+    controls
+    data-setup="{}">
+    <source src="http://vjs.zencdn.net/v/oceans.mp4" type='video/mp4' />
+    <source src="http://vjs.zencdn.net/v/oceans.webm" type='video/webm' />
+    <source src="http://vjs.zencdn.net/v/oceans.ogv" type='video/ogg' />
+  </video>
+  <video
+    id="exampleAdContainer"
+    class="video-js ad-container vjs-hidden"
+    width="640"
+    height="264"
+    preload="auto"
+    controls>
+  </video>
+
+  <h2>Cue Text Tracks</h2>
+
+  <p>
+    During ads, the control bar will be <font color="red">red</font>.
+    Open the developer console to view logs.
+  </p>
+
+  <script>
+    videojs('examplePlayer').ready(function() {
+
+      var player = this;
+      var adContainer = videojs('exampleAdContainer');
+      var adServerUrl = "inventory.json";
+      var originalSrc = player.currentSrc();
+      var state = {};
+      var playedCues = {};
+
+      // asynchronous method for requesting ad inventory
+      var requestAds = function() {
+        videojs.log('example', 'Requesting an ad');
+
+        // reset plugin state
+        state = {};
+
+        // fetch ad inventory
+        // the 'src' parameter is ignored by the example inventory.json flat file,
+        // but this shows how you might send player information along to the ad server.
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", adServerUrl + "?src=" + encodeURIComponent(player.currentSrc()));
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            try {
+              state.inventory = JSON.parse(xhr.responseText);
+              player.trigger('adsready');
+            } catch (err) {
+              throw new Error('Couldn\'t parse inventory response as JSON');
+            }
+          }
+        };
+        xhr.send(null);
+
+      };
+
+      var switchMode = function(mode, src) {
+        // switch to ad mode
+        if (mode === 'ad') {
+          videojs.log('example', 'Going into ad mode with', src.src);
+
+          // pause content immediately
+          player.pause();
+
+          // show ad container, hide content player
+          adContainer.src(src);
+          adContainer.removeClass('vjs-hidden');
+          player.addClass('vjs-hidden');
+
+          // play ad
+          adContainer.play();
+
+        } else if (mode === 'content') {
+          videojs.log('example', 'Going into content mode with', src);
+
+          // hide ad container, show content player
+          player.removeClass('vjs-hidden');
+          adContainer.addClass('vjs-hidden');
+
+          // resume content
+          player.play();
+        }
+      };
+
+      var cueChangeHandler = function(event) {
+        if (state.adPlaying || !this.activeCues || this.activeCues.length === 0) {
+          return;
+        }
+        var activeCue = this.activeCues[this.activeCues.length - 1];
+        var cues = [activeCue];
+
+        videojs.log('example', 'A cue change fired at', player.currentTime(),
+          'cue is', cues[0], 'at', cues[0].startTime);
+
+        // Make an ad request
+        var processCue = function(player, cue, cueId, startTime) {
+          if (cue.text != 'ad' || player.paused() ||
+            state.adPlaying || playedCues[cueId]) {
+            return;
+          }
+
+          playAd();
+          playedCues[cueId] = true;
+        };
+
+        // Optional method to dynamically cancel ads
+        var cancelAds = function(player, cue) {
+          if (cue.text === 'adCancel' && state.adPlaying) {
+            state.adPlaying = false;
+            player.ads.endLinearAdMode();
+            switchMode('content', originalSrc);
+          }
+        };
+
+        // Process the cues in this track as ad cues using `processCue`
+        // Cancel ads dynamically using `cancelAds`
+        player.ads.cueTextTracks.processAdTrack(player, cues, processCue, cancelAds);
+      };
+
+      // play an ad, given an opportunity
+      var playAd = function() {
+        // short-circuit if we don't have any ad inventory to play
+        if (!state.inventory || state.inventory.length === 0) {
+          return;
+        }
+
+        // tell ads plugin we're ready to play our ad
+        player.ads.startLinearAdMode();
+        state.adPlaying = true;
+
+        // tell videojs to load the ad
+        var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
+        switchMode('ad', media);
+      };
+
+      var processMetadataTrack = function(player, track) {
+        track.addEventListener('cuechange', cueChangeHandler);
+      }
+
+      // initialize the ads plugin, passing in any relevant options
+      player.ads({
+        debug: true
+      });
+
+      // Set up to process metadata cues
+      player.ads.cueTextTracks.processMetadataTracks(player, processMetadataTrack);
+
+      // Set up a base text track to use for our ad cuepoints
+      player.addRemoteTextTrack({
+        kind: 'metadata',
+        src: './testcuepoint.vtt'
+      });
+
+      // indicate that there will be no preroll and postroll
+      player.trigger('nopreroll');
+      player.trigger('nopostroll');
+
+      // Set up to return from ads
+      adContainer.on('ended', function(e) {
+        if (!state.adPlaying) {
+          return;
+        }
+
+        // play your linear ad content, then when it's finished ...
+        player.ads.endLinearAdMode();
+        state.adPlaying = false;
+        switchMode('content', originalSrc);
+
+        // re-enable the text track
+        player.textTracks()[0].mode = 'hidden';
+      });
+
+      // request ad inventory whenever the player gets new content to play
+      if (player.currentSrc() && player.paused()) {
+        requestAds();
+      }
+
+      // Implement an interface for understanding the adCues
+
+      player.ads.cueTextTracks.setMetadataTrackMode = function(track) {
+        // The cues are invisible, so set them to hidden so they can be updated
+        track.mode = 'hidden';
+      };
+
+      player.ads.cueTextTracks.getSupportedAdCue = function(player, cue) {
+        // Make sure this is an ad cue
+        if (cue.text === 'ad' || cue.text === 'adCancel') {
+          return cue;
+        }
+
+        return -1;
+      };
+
+      player.ads.cueTextTracks.getCueId = function (player, cue) {
+        // Return the topmost id
+        return Number(cue.id);
+      };
+
+    });
+  </script>
+
+</body>
