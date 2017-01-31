@@ -531,7 +531,10 @@ const contribAdsPlugin = function(options) {
         },
         adstart() {
           this.state = 'ad-playback';
-          player.ads._adType = 'midroll';
+          // This is a special case in which preroll is specifically set
+          if (player.ads._adType !== 'preroll') {
+            player.ads._adType = 'midroll';
+          }
         },
         contentupdate() {
           // We know sources have changed, so we call CancelContentPlay
