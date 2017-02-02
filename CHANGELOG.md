@@ -1,4 +1,10 @@
-## CHANGELOG
+# CHANGELOG
+
+## 4.2.2
+
+* [@incompl](https://github.com/incompl): Re-fix iOS content flash
+* [@ldayananda](https://github.com/ldayananda): Added cuepoints example
+* [@incompl](https://github.com/incompl): Documented contentresumed event
 
 ## 4.2.1
 
