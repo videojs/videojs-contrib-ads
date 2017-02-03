@@ -15,7 +15,7 @@
     });
 
     var log = document.querySelector('.log');
-    var Html5 = videojs.getComponent('Html5');
+    var Html5 = videojs.getTech('Html5');
     Html5.Events.concat(Html5.Events.map(function(evt) {
       return 'ad' + evt;
     })).concat(Html5.Events.map(function(evt) {

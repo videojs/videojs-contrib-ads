@@ -1,3 +1,4 @@
+import videojs from 'video.js';
 import * as snapshot from '../src/snapshot.js';
 
 QUnit.module('Video Snapshot', window.sharedModuleHooks({
@@ -53,32 +54,6 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   this.player.trigger('canplay');
   assert.strictEqual(setTimeoutSpy.callCount, 1, 'restoring the time should be delayed');
   assert.strictEqual(this.video.currentTime, 0, 'currentTime is not modified');
-  window.setTimeout.restore();
-});
-
-QUnit.test('tries to restore the play state up to 20 times', function(assert) {
-  var setTimeoutSpy;
-
-  assert.expect(1);
-
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-
-  // the video plays to time 100
-  this.video.currentTime = 100;
-  this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
-  setTimeoutSpy = sinon.spy(window, 'setTimeout');
-
-  // the ad resets the current time
-  this.video.currentTime = 0;
-  this.player.ads.endLinearAdMode();
-  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
-  this.player.trigger('canplay');
-
-  // We expect 20 timeouts at 50ms each.
-  this.clock.tick(1000);
-  assert.strictEqual(setTimeoutSpy.callCount, 20, 'seekable was tried multiple times');
   window.setTimeout.restore();
 });
 

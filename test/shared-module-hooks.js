@@ -8,7 +8,7 @@
  * @return {Object}
  */
 window.sharedModuleHooks = (function(){
-  var Html5 = videojs.getComponent('Html5');
+  var Html5 = videojs.getTech('Html5');
 
   var backup = {
     Html5: {
