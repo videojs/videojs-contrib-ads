@@ -57,41 +57,6 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   window.setTimeout.restore();
 });
 
-QUnit.test('tries to restore the play state up to 20 times', function(assert) {
-  var setTimeoutSpy;
-
-  assert.expect(1);
-
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-
-  // the video plays to time 100
-  this.video.currentTime = 100;
-  this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
-
-  // Clear the call stack.
-  this.clock.tick(1);
-
-  setTimeoutSpy = sinon.spy(window, 'setTimeout');
-
-  // the ad resets the current time
-  this.video.currentTime = 0;
-  this.player.ads.endLinearAdMode();
-  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
-  this.player.trigger('canplay');
-
-  // We expect 20 timeouts at 50ms each.
-  this.clock.tick(1000);
-
-  // More aspects of the Video.js 6 player are asynchronous. This accounts for
-  // that difference.
-  var expectedCount = (videojs.use) ? 23 : 20;
-
-  assert.strictEqual(setTimeoutSpy.callCount, expectedCount, 'seekable was tried multiple times');
-  window.setTimeout.restore();
-});
-
 QUnit.test('the current time is restored at the end of an ad', function(assert) {
   assert.expect(1);
 
