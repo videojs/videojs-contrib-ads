@@ -56,7 +56,7 @@ var relevantEvents = (function (events) {
     ]).filter(function(event) {
       return filteredEvents.indexOf(event) === -1;
     });
-}(videojs.getComponent('Html5').Events));
+}(videojs.getTech('Html5').Events));
 
 /**
  * Attaches a listener to track occurrences of `relevantEvents` on a player

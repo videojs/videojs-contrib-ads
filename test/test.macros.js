@@ -47,14 +47,18 @@ QUnit.test('timestamp', function(assert) {
 QUnit.test('document.referrer', function(assert) {
   var result = this.player.ads.adMacroReplacement('{document.referrer}');
 
-  assert.ok(result.match(/http:\/\/localhost:\d+\/\?id=\d+/),
+  assert.equal(
+    result,
+    document.referrer,
     '"' + result + '" was the document.referrer');
 });
 
 QUnit.test('window.location.href', function(assert) {
   var result = this.player.ads.adMacroReplacement('{window.location.href}');
 
-  assert.ok(result.match(/http:\/\/localhost:\d+\/context.html/),
+  assert.equal(
+    result,
+    window.location.href,
     '"' + result + '" was the window.location.href');
 });
 

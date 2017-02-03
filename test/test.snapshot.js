@@ -1,3 +1,4 @@
+import videojs from 'video.js';
 import * as snapshot from '../src/snapshot.js';
 
 QUnit.module('Video Snapshot', window.sharedModuleHooks({
@@ -68,6 +69,10 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
   this.video.currentTime = 100;
   this.player.ads.startLinearAdMode();
   this.player.src('//example.com/ad.mp4');
+
+  // Clear the call stack.
+  this.clock.tick(1);
+
   setTimeoutSpy = sinon.spy(window, 'setTimeout');
 
   // the ad resets the current time
@@ -78,7 +83,12 @@ QUnit.test('tries to restore the play state up to 20 times', function(assert) {
 
   // We expect 20 timeouts at 50ms each.
   this.clock.tick(1000);
-  assert.strictEqual(setTimeoutSpy.callCount, 20, 'seekable was tried multiple times');
+
+  // More aspects of the Video.js 6 player are asynchronous. This accounts for
+  // that difference.
+  var expectedCount = (videojs.use) ? 23 : 20;
+
+  assert.strictEqual(setTimeoutSpy.callCount, expectedCount, 'seekable was tried multiple times');
   window.setTimeout.restore();
 });
 

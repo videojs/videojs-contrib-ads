@@ -14,7 +14,7 @@ import cancelContentPlay from './cancelContentPlay.js';
 import adMacroReplacement from './macros.js';
 import * as cueTextTracks from './cueTextTracks.js';
 
-const VIDEO_EVENTS = videojs.getComponent('Html5').Events;
+const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
 /**
  * Remove the poster attribute from the video element tech, if present. When
@@ -633,5 +633,7 @@ const contribAdsPlugin = function(options) {
 
 };
 
+const registerPlugin = videojs.registerPlugin || videojs.plugin;
+
 // Register this plugin with videojs
-videojs.plugin('ads', contribAdsPlugin);
+registerPlugin('ads', contribAdsPlugin);

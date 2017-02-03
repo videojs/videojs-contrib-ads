@@ -7,13 +7,15 @@
 (function(window, document, vjs, undefined) {
 "use strict";
 
+  var registerPlugin = vjs.registerPlugin || vjs.plugin;
+
   /**
    * Register the ad integration plugin.
    * To initialize for a player, call player.exampleAds().
    *
    * @param {mixed} options Hash of obtions for the exampleAds plugin.
    */
-  vjs.plugin('exampleAds', function(options){
+  registerPlugin('exampleAds', function(options){
 
     var
 
@@ -38,7 +40,7 @@
 
         // reset plugin state
         state = {};
-        
+
         // fetch ad inventory
         // the 'src' parameter is ignored by the example inventory.json flat file,
         // but this shows how you might send player information along to the ad server.
