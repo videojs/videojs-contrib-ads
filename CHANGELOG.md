@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.3
+
+* [@misteroneill](https://github.com/misteroneill): Video.js 5/6 cross-compatibility
+
 ## 4.2.2
 
 * [@incompl](https://github.com/incompl): Re-fix iOS content flash
