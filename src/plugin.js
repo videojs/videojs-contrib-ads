@@ -213,14 +213,12 @@ const contribAdsPlugin = function(options) {
     // and muted attributes or player settings. Otherwise, we should attempt
     // to autoplay the ad.  Also pauses the player if it has started playing and
     // removes the autoplay attribute or player setting.
+    // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3970
     cancelAutoplayAdOnIOS(somePlayer) {
       if (videojs.IS_IPHONE && player.el_.hasAttribute('playsinline') &&
         (player.autoplay() || player.el_.hasAttribute('autoplay')) &&
         (!player.muted() || !player.el_.hasAttribute('muted'))) {
 
-        if (!player.paused()) {
-          player.pause();
-        }
         if (player.autoplay() === true) {
           player.autoplay(false);
         }
@@ -263,6 +261,10 @@ const contribAdsPlugin = function(options) {
             cancelContentPlay(player);
             // remove the poster so it doesn't flash between videos
             removeNativePoster(player);
+          } else {
+            if (!player.paused()) {
+              player.pause();
+            }
           }
         },
         adserror() {
