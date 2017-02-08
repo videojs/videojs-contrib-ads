@@ -1,38 +1,27 @@
 module.exports = function(config) {
-  var
-    plugins = [],
-    detectBrowsers = {
-      enabled: false,
-      usePhantomJS: false
-    },
-    addBrowserLauncher = function(browser) {
-      plugins.push('karma-' + browser.toLowerCase() + '-launcher');
-    };
-
-  if (process.env.TRAVIS) {
-    // Travis needs to run them in Firefox.
-    // Additionally, the tests don't pass in Safari.
-    config.browsers = ['Firefox'];
-
-  } else {
-    // If no browsers are specified, we enable `karma-detect-browsers`
-    // This detects all browsers available for testing
-    plugins.push('karma-detect-browsers');
-    config.browsers = ['Chrome', 'Firefox', 'IE'];
-
-    detectBrowsers.enabled = true;
-    detectBrowsers.postDetection = function(browsers) {
+  var detectBrowsers = {
+    enabled: false,
+    usePhantomJS: false,
+    postDetection: function(browsers) {
       var i = browsers.indexOf('Safari');
+
       if (i !== -1) {
         browsers.splice(i, 1);
       }
 
       return browsers;
-    };
+    }
+  };
 
-    config.browsers.forEach(addBrowserLauncher);
-    plugins.push('karma-qunit');
-    config.plugins = plugins;
+  // On Travis CI, we can only run in Firefox.
+  if (process.env.TRAVIS) {
+    config.browsers = ['Firefox', 'travisChrome'];
+  }
+
+  // If no browsers are specified, we enable `karma-detect-browsers`
+  // this will detect all browsers that are available for testing
+  if (!config.browsers.length) {
+    detectBrowsers.enabled = true;
   }
 
   config.set({
@@ -50,7 +39,12 @@ module.exports = function(config) {
       'test/shared-module-hooks.js',
       'test/dist/bundle.js'
     ],
-
+    customLaunchers: {
+      travisChrome: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    },
     detectBrowsers: detectBrowsers,
     reporters: ['dots'],
     port: 9876,
@@ -60,3 +54,4 @@ module.exports = function(config) {
     concurrency: Infinity
   });
 };
+
