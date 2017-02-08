@@ -261,10 +261,8 @@ const contribAdsPlugin = function(options) {
             cancelContentPlay(player);
             // remove the poster so it doesn't flash between videos
             removeNativePoster(player);
-          } else {
-            if (!player.paused()) {
-              player.pause();
-            }
+          } else if (!player.paused()) {
+            player.pause();
           }
         },
         adserror() {
