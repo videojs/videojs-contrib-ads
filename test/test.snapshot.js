@@ -20,17 +20,18 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
 }));
 
 QUnit.test('restores the original video src after ads', function(assert) {
-  var originalSrc;
+  var originalSrc = 'http://example.com/original.mp4';
 
   assert.expect(1);
 
-  originalSrc = this.player.tech_.src();
+  this.player.src(originalSrc);
+
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
   this.player.src('//example.com/ad.mp4');
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(this.player.tech_.src(), originalSrc, 'the original src is restored');
+  assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
 });
 
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
