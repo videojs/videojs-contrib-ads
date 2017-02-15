@@ -37,7 +37,7 @@ export function getPlayerSnapshot(player) {
   const snapshotObject = {
     ended: player.ended(),
     currentSrc: player.currentSrc(),
-    src: player.src(),
+    src: player.tech_.src(),
     currentTime,
     type: player.currentType()
   };

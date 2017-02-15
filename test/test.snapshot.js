@@ -24,13 +24,13 @@ QUnit.test('restores the original video src after ads', function(assert) {
 
   assert.expect(1);
 
-  originalSrc = this.player.currentSrc();
+  originalSrc = this.player.tech_.src();
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
   this.player.src('//example.com/ad.mp4');
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
+  assert.strictEqual(this.player.tech_.src(), originalSrc, 'the original src is restored');
 });
 
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
@@ -273,12 +273,20 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   // `src` gets called internally to set the source back to its original
   // value when the player snapshot is restored when `endLinearAdMode`
   // is called.
+  this.player.tech_.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+
   this.player.src = function(source) {
     if (source === undefined) {
       return 'ad.mp4';
     }
     updatedSrc = source;
   };
+
 
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
