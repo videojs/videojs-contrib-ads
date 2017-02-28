@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.4
+
+* [@ldayananda](https://github.com/ldayananda): No longer take a postroll snapshot when we already know there will not be a postroll
+
 ## 4.2.3
 
 * [@misteroneill](https://github.com/misteroneill): Video.js 5/6 cross-compatibility
