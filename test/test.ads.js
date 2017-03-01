@@ -1055,7 +1055,7 @@ QUnit.test('Check incorrect addition of vjs-live during ad-playback', function(a
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
   assert.strictEqual(this.player.hasClass('vjs-live'), false, 'We have the correct class');
-  
+
 });
 
 QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
@@ -1086,6 +1086,69 @@ QUnit.test('Plugin state resets after contentupdate', function(assert) {
   assert.equal(this.player.ads._contentHasEnded, false);
   assert.equal(this.player.ads.snapshot, null);
 
+});
+
+QUnit.test('Plugin sets adType as expected', function(assert) {
+
+  // adType is unset originally
+  assert.strictEqual(this.player.ads.adType, null);
+
+  // begins in content-set, preroll happens, adType is preroll
+  this.player.ads.state = 'content-set';
+  this.player.trigger('adsready');
+  assert.strictEqual(this.player.ads.state, 'ads-ready');
+  assert.strictEqual(this.player.ads.adType, null);
+  this.player.trigger('play');
+  this.clock.tick(1);
+  assert.strictEqual(this.player.ads.state, 'preroll?');
+  assert.strictEqual(this.player.ads.adType, null);
+
+  // ad starts and finishes
+  this.player.trigger('adstart');
+  assert.strictEqual(this.player.ads.adType, 'preroll');
+  this.player.trigger('adend');
+  this.clock.tick(1);
+  assert.strictEqual(this.player.ads.adType, null);
+
+  // content is playing, midroll starts
+  this.player.trigger('playing');
+  this.clock.tick(1);
+  this.player.trigger('adstart');
+  assert.strictEqual(this.player.ads.adType, 'midroll');
+
+  // midroll ends, content is playing
+  this.player.trigger('adend');
+  this.clock.tick(1);
+  assert.strictEqual(this.player.ads.adType, null);
+  this.player.trigger('playing');
+  this.clock.tick(1);
+
+  // postroll starts
+  this.player.trigger('contentended');
+  this.clock.tick(1);
+  this.player.trigger('adstart');
+  assert.strictEqual(this.player.ads.adType, 'postroll');
+
+  // postroll ends
+  this.player.trigger('adend');
+  this.clock.tick(1);
+  assert.strictEqual(this.player.ads.adType, null);
+  this.clock.tick(1);
+
+  // reset values
+  this.player.trigger('contentupdate');
+  assert.strictEqual(this.player.ads.state, 'content-set');
+  assert.strictEqual(this.player.ads.adType, null);
+
+  // check preroll case where play is observed
+  this.player.trigger('play');
+  assert.strictEqual(this.player.ads.state, 'ads-ready?');
+  assert.strictEqual(this.player.ads.adType, null);
+  this.player.trigger('adsready');
+  assert.strictEqual(this.player.ads.state, 'preroll?');
+  assert.strictEqual(this.player.ads.adType, null);
+  this.player.trigger('adstart');
+  assert.strictEqual(this.player.ads.adType, 'preroll');
 });
 
 }(window, window.QUnit));
