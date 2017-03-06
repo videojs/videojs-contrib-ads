@@ -1,6 +1,15 @@
 # CHANGELOG
 
+## 4.2.5
+
+* [@ldayananda](https://github.com/ldayananda): Adding a way to estimate adType
+* [@ldayananda](https://github.com/ldayananda): Adding back support for es3
+* [@ldayananda](https://github.com/ldayananda): Reverting "No longer take a postroll snapshot when we already know there will not be a postroll" to fix a bug with missing `ended` events.
+
+
 ## 4.2.4
+
+This version introduces a bug with missing `ended` events. It is fixed in the next version.
 
 * [@ldayananda](https://github.com/ldayananda): No longer take a postroll snapshot when we already know there will not be a postroll
 
