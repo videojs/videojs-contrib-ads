@@ -22,7 +22,7 @@
     "build:js:bannerize": "bannerize dist/videojs.ads.js --banner=scripts/banner.ejs",
     "build:js:browserify": "browserify . -g browserify-shim -s videojs-contrib-ads -o dist/videojs.ads.js",
     "build:js:collapse": "bundle-collapser dist/videojs.ads.js -o dist/videojs.ads.min.js",
-    "build:js:uglify": "uglifyjs dist/videojs.ads.min.js --comments --mangle --compress -o dist/videojs.ads.min.js",
+    "build:js:uglify": "uglifyjs dist/videojs.ads.min.js --comments --mangle --compress --support-ie8 -o dist/videojs.ads.min.js",
     "build:test": "babel-node scripts/build-test.js",
     "clean": "rimraf dist test/dist es5 && mkdirp dist test/dist es5",
     "lint": "vjsstandard src",
@@ -39,6 +39,7 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
+    "babel-preset-es3": "~1.0.1",
     "babel-cli": "^6.14.0",
     "babel-plugin-transform-object-assign": "^6.8.0",
     "babel-preset-es2015": "^6.14.0",

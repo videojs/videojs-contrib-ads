@@ -60,7 +60,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        banner: '<%= banner %>'
+        banner: '<%= banner %>',
+        screwIE8: false
       },
       dist: {
         src: '<%= concat.dist.dest %>',
