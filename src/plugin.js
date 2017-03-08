@@ -447,6 +447,7 @@ const contribAdsPlugin = function(options) {
     },
     'postroll?': {
       enter() {
+        this.snapshot = snapshot.getPlayerSnapshot(player);
         if (player.ads.nopostroll_) {
           window.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
@@ -456,8 +457,6 @@ const contribAdsPlugin = function(options) {
             player.trigger('ended');
           }, 1);
         } else {
-          // Only take a snapshot when there might be a postroll
-          this.snapshot = snapshot.getPlayerSnapshot(player);
           player.addClass('vjs-ad-loading');
 
           player.ads.adTimeoutTimeout = window.setTimeout(function() {
