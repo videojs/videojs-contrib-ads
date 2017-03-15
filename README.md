@@ -120,7 +120,7 @@ For example, an ad integration that supports this feature might accept an ad ser
 
 In the ad integration, it would use the videojs-contrib-ads macro feature to process that URL like this:
 
-`serverUrl = player.ads.adMacroReplacement(serverUrl, true);`
+`serverUrl = player.ads.adMacroReplacement(serverUrl, true, customMacros);`
 
 This would result in a server URL like this:
 
@@ -132,7 +132,7 @@ adMacroReplacement takes 3 arguments:
 
 1. The string that has macros to be replaced.
 2. `true` if the macro values should be URI encoded when they are inserted, else `false` (default `false`)
-3. An object that defines additional macros, such as `{'{five}': 5}` (default `{}`)
+3. An optional object that defines additional macros, such as `{'{five}': 5}` (default `{}`)
 
 #### Static Macros
 
