@@ -120,7 +120,7 @@ For example, an ad integration that supports this feature might accept an ad ser
 
 In the ad integration, it would use the videojs-contrib-ads macro feature to process that URL like this:
 
-`serverUrl = player.ads.adMacroReplacement(serverUrl, true, customMacros);`
+`serverUrl = player.ads.adMacroReplacement(serverUrl, true, additionalMacros);`
 
 This would result in a server URL like this:
 
