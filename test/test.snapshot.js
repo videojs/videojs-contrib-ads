@@ -20,11 +20,12 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
 }));
 
 QUnit.test('restores the original video src after ads', function(assert) {
-  var originalSrc;
+  var originalSrc = 'http://example.com/original.mp4';
 
   assert.expect(1);
 
-  originalSrc = this.player.currentSrc();
+  this.player.src(originalSrc);
+
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
@@ -273,12 +274,20 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   // `src` gets called internally to set the source back to its original
   // value when the player snapshot is restored when `endLinearAdMode`
   // is called.
+  this.player.tech_.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+
   this.player.src = function(source) {
     if (source === undefined) {
       return 'ad.mp4';
     }
     updatedSrc = source;
   };
+
 
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');

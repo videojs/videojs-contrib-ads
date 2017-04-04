@@ -187,7 +187,7 @@ const contribAdsPlugin = function(options) {
           'You cannot use videoElementRecycled while there is no snapshot.');
       }
 
-      const srcChanged = player.src() !== this.snapshot.src;
+      const srcChanged = player.tech_.src() !== this.snapshot.src;
       const currentSrcChanged = player.currentSrc() !== this.snapshot.currentSrc;
 
       return srcChanged || currentSrcChanged;
