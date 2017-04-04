@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 4.2.6
+* [@brandonocasey](https://github.com/brandonocasey): Cross-compatibility between Video.js 5 and 6
+
 ## 4.2.5
 
 * [@ldayananda](https://github.com/ldayananda): Adding a way to estimate adType
