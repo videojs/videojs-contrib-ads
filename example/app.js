@@ -28,6 +28,7 @@
       // events emitted by third party ad implementors
       'adsready',
       'adscanceled',
+      'adplaying',
       'adstart',  // startLinearAdMode()
       'adend'     // endLinearAdMode()
 
