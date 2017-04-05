@@ -23,7 +23,7 @@ QUnit.module('Events', {
   }
 });
 
-QUnit.test('playing', function(assert) {
+QUnit.skip('playing', function(assert) {
   var done = assert.async();
   var playingCount = 0;
 
