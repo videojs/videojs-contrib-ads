@@ -127,15 +127,15 @@ export function processAdTrack(player, cues, processCue, cancelAds) {
       return;
     }
 
+    // Optional dynamic ad cancellation
+    if (cancelAds) {
+      cancelAds(player, cueData, cueId, startTime);
+    }
+
     // Process cue as an ad cue
     processCue(player, cueData, cueId, startTime);
 
     // Indicate that this cue has been used
     setCueAlreadySeen(player, cueId);
-
-    // Optional dynamic ad cancellation
-    if (cancelAds !== undefined) {
-      cancelAds(player, cueData, cueId, startTime);
-    }
   }
 }
