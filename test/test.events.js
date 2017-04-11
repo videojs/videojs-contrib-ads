@@ -4,7 +4,6 @@ import '../example/example-integration.js';
 
 QUnit.module('Events', {
   beforeEach: function() {
-    // Create video element and player.
     this.video = document.createElement('video');
 
     document.getElementById('qunit-fixture').appendChild(this.video);
@@ -15,34 +14,41 @@ QUnit.module('Events', {
       src: 'http://vjs.zencdn.net/v/oceans.mp4',
       type: 'video/mp4'
     });
+
+    this.player.exampleAds({
+      'adServerUrl': '/base/test/inventory.json'
+    });
   },
 
   afterEach: function() {
-    // Kill the player and its element (i.e. `this.video`).
     this.player.dispose();
   }
 });
 
-QUnit.skip('playing', function(assert) {
+QUnit.test('playing event: 1+ after preroll, 0 before', function(assert) {
   var done = assert.async();
-  var playingCount = 0;
 
-  this.player.exampleAds({
-    'adServerUrl': '/base/test/inventory.json'
+  var beforePreroll = true;
+  var playingBeforePreroll = 0;
+  var playingAfterPreroll = 0;
+
+  this.player.on('adend', () => {
+    beforePreroll = false;
   });
 
   this.player.on('playing', () => {
-    playingCount++;
+    if (beforePreroll) {
+      playingBeforePreroll++;
+    } else {
+      playingAfterPreroll++;
+    }
   });
-
-  window.setInterval(function() {
-    videojs.log(this.player.ads.state);
-  }.bind(this), 100);
 
   this.player.play();
 
   window.setTimeout(function() {
-    assert.equal(playingCount, 1);
+    assert.equal(playingBeforePreroll, 0, 'no playing before preroll');
+    assert.ok(playingAfterPreroll > 0, 'playing after preroll');
     done();
   }, 5000);
 
