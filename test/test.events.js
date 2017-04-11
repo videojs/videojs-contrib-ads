@@ -11,8 +11,8 @@ QUnit.module('Events', {
     this.player = videojs(this.video);
 
     this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.mp4',
-      type: 'video/mp4'
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
     });
 
     this.player.exampleAds({
@@ -25,7 +25,7 @@ QUnit.module('Events', {
   }
 });
 
-QUnit.test('playing event: 1+ after preroll, 0 before', function(assert) {
+QUnit.test('playing event and prerolls: 1+ after preroll, 0 before', function(assert) {
   var done = assert.async();
 
   var beforePreroll = true;
