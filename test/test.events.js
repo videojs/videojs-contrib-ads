@@ -46,10 +46,12 @@ QUnit.test('playing event: 1+ after preroll, 0 before', function(assert) {
 
   this.player.play();
 
-  window.setTimeout(function() {
-    assert.equal(playingBeforePreroll, 0, 'no playing before preroll');
-    assert.ok(playingAfterPreroll > 0, 'playing after preroll');
-    done();
-  }, 5000);
+  this.player.on('timeupdate', () => {
+    if (this.player.currentTime() > 1) {
+      assert.equal(playingBeforePreroll, 0, 'no playing before preroll');
+      assert.ok(playingAfterPreroll > 0, 'playing after preroll');
+      done();
+    }
+  });
 
 });
