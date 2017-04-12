@@ -44,7 +44,10 @@ QUnit.test('playing event and prerolls: 1+ after preroll, 0 before', function(as
     }
   });
 
-  this.player.play();
+  this.player.on(['error', 'aderror'], () => {
+    assert.ok(false, 'no errors');
+    done();
+  });
 
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 1) {
@@ -53,5 +56,7 @@ QUnit.test('playing event and prerolls: 1+ after preroll, 0 before', function(as
       done();
     }
   });
+
+  this.player.play();
 
 });

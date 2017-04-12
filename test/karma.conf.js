@@ -41,7 +41,7 @@ module.exports = function(config) {
 
       // Test Data
       {pattern: 'test/inventory.json', included: false, served: true},
-      {pattern: 'example/superclip-low.mp4', included: false, served: true}
+      {pattern: 'example/superclip-low.webm', included: false, served: true}
     ],
     customLaunchers: {
       travisChrome: {
