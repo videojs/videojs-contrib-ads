@@ -491,6 +491,12 @@ const contribAdsPlugin = function(options) {
             player.trigger('ended');
           }, 1);
         },
+        nopostroll() {
+          this.state = 'content-resuming';
+          window.setTimeout(function() {
+            player.trigger('ended');
+          }, 1);
+        },
         contentupdate() {
           this.state = 'ads-ready?';
         }
@@ -633,7 +639,8 @@ const contribAdsPlugin = function(options) {
     'adsready',
     'adserror',
     'adscanceled',
-    'nopreroll'
+    'nopreroll',
+    'nopostroll'
 
   ]), processEvent);
 

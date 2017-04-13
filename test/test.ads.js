@@ -934,6 +934,15 @@ QUnit.test('ad impl can notify contrib-ads there is no postroll', function(asser
 
 });
 
+QUnit.test('ad impl can notify contrib-ads there is no postroll even after contentended', function(assert) {
+
+  this.player.ads.state = 'postroll?';
+  this.player.trigger('contentended');
+  this.player.trigger('nopostroll');
+  assert.strictEqual(this.player.ads.state, 'content-resuming', 'no longer in postroll?');
+
+});
+
 QUnit.test('ended event is sent with postroll', function(assert) {
 
   var ended = sinon.spy();
