@@ -12,7 +12,7 @@ QUnit.test('begins in content-set', function(assert) {
   assert.strictEqual(this.player.ads.state, 'content-set');
 });
 
-QUnit.test('pauses to wait for prerolls when the plugin loads before play', function(assert) {
+QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
   var spy = sinon.spy(this.player, 'pause');
 
   assert.expect(1);
@@ -29,7 +29,7 @@ QUnit.test('pauses to wait for prerolls when the plugin loads before play', func
   assert.strictEqual(spy.callCount, 2, 'play attempts are paused');
 });
 
-QUnit.test('pauses to wait for prerolls when the plugin loads after play', function(assert) {
+QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
   var pauseSpy;
 
   assert.expect(1);

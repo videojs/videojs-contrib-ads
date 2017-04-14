@@ -215,6 +215,46 @@ const contribAdsPlugin = function(options) {
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
              somePlayer.duration() === Infinity;
+    },
+
+    // Returns true if player is in ad mode.
+    //
+    // Ad mode definition:
+    // If content playback is blocked by the ad plugin.
+    //
+    // Examples of ad mode:
+    //
+    // * Waiting to find out if an ad is going to play while content would normally be
+    //   playing.
+    // * Waiting for an ad to start playing while content would normally be playing.
+    // * An ad is playing (even if content is also playing)
+    // * An ad has completed and content is about to resume, but content has not resumed
+    //   yet.
+    //
+    // Examples of not ad mode:
+    //
+    // * Content playback has not been requested
+    // * Content playback is paused
+    // * An asynchronous ad request is ongoing while content is playing
+    // * A non-linear ad is active
+    isInAdMode() {
+
+             // Saw "play" but not "adsready"
+      return player.ads.state === 'ads-ready?' ||
+
+             // Waiting to learn about preroll
+             player.ads.state === 'preroll?' ||
+
+             // A linear ad is active
+             player.ads.state === 'ad-playback' ||
+
+             // Content is not playing again yet
+             player.ads.state === 'content-resuming';
+    },
+
+    // Returns true if content is resuming after an ad. This is part of ad mode.
+    isContentResuming() {
+      return player.ads.state === 'content-resuming';
     }
 
   };
