@@ -23,8 +23,8 @@ export default function cancelContentPlay(player) {
     // The placeholder's styling should match the player's
     const width = player.currentWidth ? player.currentWidth() : player.width();
     const height = player.currentHeight ? player.currentHeight() : player.height();
-    const position = getComputedStyle(player.el_).position;
-    const top = getComputedStyle(player.el_).top;
+    const position = window.getComputedStyle(player.el_).position;
+    const top = window.getComputedStyle(player.el_).top;
 
     // A placeholder black box will be shown in the document while the player is hidden.
     const placeholder = document.createElement('div');
