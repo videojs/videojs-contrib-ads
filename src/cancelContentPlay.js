@@ -20,8 +20,11 @@ export default function cancelContentPlay(player) {
   if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) &&
       !player.el_.hasAttribute('playsinline')) {
 
+    // The placeholder's styling should match the player's
     const width = player.currentWidth ? player.currentWidth() : player.width();
     const height = player.currentHeight ? player.currentHeight() : player.height();
+    const position = getComputedStyle(player.el_).position;
+    const top = getComputedStyle(player.el_).top;
 
     // A placeholder black box will be shown in the document while the player is hidden.
     const placeholder = document.createElement('div');
@@ -29,11 +32,8 @@ export default function cancelContentPlay(player) {
     placeholder.style.width = width + 'px';
     placeholder.style.height = height + 'px';
     placeholder.style.background = 'black';
-
-    // The placeholder should be given the same position and top values as the player div
-    // it is replacing in order to prevent vertical spacing problems with responsive embeds
-    placeholder.style.position = 'absolute';
-    placeholder.style.top = '0px';
+    placeholder.style.position = position;
+    placeholder.style.top = top;
     player.el_.parentNode.insertBefore(placeholder, player.el_);
 
     // Hide the player. While in full-screen video playback mode on iOS, this
