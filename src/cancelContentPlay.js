@@ -30,8 +30,8 @@ export default function cancelContentPlay(player) {
     placeholder.style.height = height + 'px';
     placeholder.style.background = 'black';
 
-    // The placeholder should be given the same position and top values as the
-    // player div it is replacing to prevent vertical spacing problems with responsive embeds
+    // The placeholder should be given the same position and top values as the player div
+    // it is replacing in order to prevent vertical spacing problems with responsive embeds
     placeholder.style.position = 'absolute';
     placeholder.style.top = '0px';
     player.el_.parentNode.insertBefore(placeholder, player.el_);
