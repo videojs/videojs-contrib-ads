@@ -29,6 +29,11 @@ export default function cancelContentPlay(player) {
     placeholder.style.width = width + 'px';
     placeholder.style.height = height + 'px';
     placeholder.style.background = 'black';
+
+    // The placeholder should be given the same position and top values as the
+    // player div it is replacing to prevent vertical spacing problems with responsive embeds
+    placeholder.style.position = 'absolute';
+    placeholder.style.top = '0px';
     player.el_.parentNode.insertBefore(placeholder, player.el_);
 
     // Hide the player. While in full-screen video playback mode on iOS, this
