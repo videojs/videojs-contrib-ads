@@ -6,6 +6,19 @@ Styles for ad integrations.
   pointer-events: none;
 }
 
+// Make the progress control pseudo element transparent and enable pointer-events
+// This ensures a transparent layer on top of the ad progress bar thus making sure
+// clickthroughs are prevented and also users do not interact with the actual
+// ad progress control
+.vjs-ad-playing.vjs-ad-playing .vjs-progress-control::after {
+  pointer-events: auto;
+  background: transparent;
+  top: -0.5em;
+  width: 100%;
+  position: inherit;
+  content: "\000a0"
+}
+
 // Make the progress bar yellow for ads
 .vjs-ad-playing.vjs-ad-playing .vjs-play-progress {
   background-color: #ffe400;
