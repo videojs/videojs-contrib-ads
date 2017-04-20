@@ -122,6 +122,10 @@ const contribAdsPlugin = function(options) {
     state: 'content-set',
     disableNextSnapshotRestore: false,
 
+    // This is true if we have finished actual content playback but haven't dealt with
+    // postrolls or ended events yet.
+    _postrollMode: false,
+
     // This is set to true if the content has ended once. After that, the user can
     // seek backwards and replay content, but _contentHasEnded remains true.
     _contentHasEnded: false,
@@ -491,6 +495,7 @@ const contribAdsPlugin = function(options) {
     },
     'postroll?': {
       enter() {
+        player.ads._postrollMode = true;
         this.snapshot = snapshot.getPlayerSnapshot(player);
         if (player.ads.nopostroll_) {
           window.setTimeout(function() {

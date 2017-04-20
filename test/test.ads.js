@@ -930,7 +930,7 @@ QUnit.test('ad impl can notify contrib-ads there is no postroll', function(asser
   this.player.ads.state = 'content-playback';
   this.player.trigger('contentended');
   this.clock.tick(5);
-  assert.strictEqual(this.player.ads.state, 'content-resuming', 'no longer in postroll?');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'no longer in postroll?');
 
 });
 
