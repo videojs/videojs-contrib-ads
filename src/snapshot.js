@@ -34,6 +34,8 @@ export function getPlayerSnapshot(player) {
   const tracks = player.textTracks ? player.textTracks() : [];
   const suppressedRemoteTracks = [];
   const suppressedTracks = [];
+
+  // Why not just include `currentSource: player.currentSource()` to get the whole object?
   const snapshotObject = {
     ended: player.ended(),
     currentSrc: player.currentSrc(),
@@ -45,8 +47,10 @@ export function getPlayerSnapshot(player) {
   if (tech) {
     snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
-    if (player.tech_.currentSource_.withCredentials) {
-      snapshotObject.withCredentials = player.tech_.currentSource_.withCredentials;
+
+    // Why does `player.currentSource().withCredentials` work but not `player.tech_.currentSource_.withCredentials`?
+    if (player.currentSource().withCredentials) {
+      snapshotObject.withCredentials = player.currentSource().withCredentials;
     }
   }
 
@@ -202,7 +206,13 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     player.one('contentloadedmetadata', restoreTracks);
 
     // if the src changed for ad playback, reset it
-    player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type, withCredentials: snapshotObject.withCredentials });
+    // only restore withCredentials if it is in the snapshot
+    if (snapshotObject.withCredentials) {
+      player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type, withCredentials: snapshotObject.withCredentials });
+    } else {
+      player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
+    }
+
     // safari requires a call to `load` to pick up a changed source
     player.load();
     // and then resume from the snapshots time once the original src has loaded
