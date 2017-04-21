@@ -7,8 +7,9 @@ such `ended` events and prefix them so they are sent as `adended`, and so on wit
 all other player events.
 */
 
-// Cancel an event
-// Stops propogation for player event while native events continue propogating
+// Cancel an event.
+// Video.js wraps native events. This technique stops propagation for the Video.js event
+// (AKA player event or wrapper event) while native events continue propagating.
 const cancelEvent = (player, event) => {
   event.isImmediatePropagationStopped = function() {
     return true;
@@ -39,13 +40,14 @@ const prefixEvent = (player, prefix, event) => {
 // * Normal playing event when there is no preroll
 // * No playing event before preroll
 // * At least one playing event after preroll
+// * A single adplaying event when an ad begins
 const handlePlaying = (player, event) => {
   if (player.ads.isInAdMode()) {
 
     if (player.ads.isContentResuming()) {
 
-      // Prefix playing event when resuming after postroll.
-      if (player.ads._postrollMode) {
+      // Prefix playing event when switching back to content after postroll.
+      if (player.ads._contentEnding) {
         prefixEvent(player, 'content', event);
       }
 
@@ -54,7 +56,7 @@ const handlePlaying = (player, event) => {
     } else if (player.ads.videoElementRecycled()) {
       cancelEvent(player, event);
 
-    // Prefix playing events due to ads.
+    // Prefix all other playing events during ads.
     } else {
       prefixEvent(player, 'ad', event);
     }
@@ -99,7 +101,7 @@ const handleLoadStart = (player, event) => {
   if (player.ads.isInAdMode()) {
     if (player.ads.isContentResuming()) {
 
-      // Loadstart due to content source change
+      // Loadstart due to content source change is unprefixed
       if (player.currentSrc() !== player.ads.contentSrc) {
         return;
       }
