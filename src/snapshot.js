@@ -45,6 +45,9 @@ export function getPlayerSnapshot(player) {
   if (tech) {
     snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
+    if (player.tech_.currentSource_.withCredentials) {
+      snapshotObject.withCredentials = player.tech_.currentSource_.withCredentials;
+    }
   }
 
   for (let i = 0; i < remoteTracks.length; i++) {
@@ -199,7 +202,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     player.one('contentloadedmetadata', restoreTracks);
 
     // if the src changed for ad playback, reset it
-    player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
+    player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type, withCredentials: snapshotObject.withCredentials });
     // safari requires a call to `load` to pick up a changed source
     player.load();
     // and then resume from the snapshots time once the original src has loaded
