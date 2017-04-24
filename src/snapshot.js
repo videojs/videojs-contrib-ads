@@ -35,7 +35,6 @@ export function getPlayerSnapshot(player) {
   const suppressedRemoteTracks = [];
   const suppressedTracks = [];
 
-  // Why not just include `currentSource: player.currentSource()` to get the whole object?
   const snapshotObject = {
     ended: player.ended(),
     currentSrc: player.currentSrc(),
