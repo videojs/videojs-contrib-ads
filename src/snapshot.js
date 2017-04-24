@@ -48,8 +48,7 @@ export function getPlayerSnapshot(player) {
     snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
 
-    // Why does `player.currentSource().withCredentials` work but not `player.tech_.currentSource_.withCredentials`?
-    if (player.currentSource().withCredentials) {
+    if (player.currentSource().withCredentials !== undefined) {
       snapshotObject.withCredentials = player.currentSource().withCredentials;
     }
   }
@@ -207,7 +206,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
 
     // if the src changed for ad playback, reset it
     // only restore withCredentials if it is in the snapshot
-    if (snapshotObject.withCredentials) {
+    if ('withCredentials' in snapshotObject) {
       player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type, withCredentials: snapshotObject.withCredentials });
     } else {
       player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
