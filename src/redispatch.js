@@ -131,7 +131,7 @@ const handleLoadStart = (player, event) => {
 // architecture, this will always cause the content to play. Therefor, contrib-ads must
 // always cancelContentPlay if there is any possible chance the play caused the content
 // to play, even if we are technically in ad mode. In order for that to happen, play
-// events need to be unprefixed. The ideal solution is to have a way to intercept play 
+// events need to be unprefixed. The ideal solution is to have a way to intercept play
 // events rather than "cancel" them by pausing after each one. To be continued...
 const handlePlay = (player, event) => {
   if (player.ads._inLinearAdMode) {
