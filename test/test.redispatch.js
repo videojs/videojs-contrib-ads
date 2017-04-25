@@ -77,10 +77,9 @@ QUnit.test('playing event in different ad states', function(assert) {
 
 });
 
-// More information in this comment: https://github.com/videojs/videojs-contrib-ads/blob/320243d316cd6dc7f45146eab68c2b759d841578/src/redispatch.js#L73-L76
-QUnit.test('playing is cancelled during ad playback if video element is recycled', function(assert) {
+QUnit.test('no adplaying event during ad playback if content play was cancelled', function(assert) {
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
-  this.player.ads.videoElementRecycled = () => true;
+  this.player.ads._cancelledPlay = true;
   assert.equal(this.redispatch('playing'), 'cancelled');
 });

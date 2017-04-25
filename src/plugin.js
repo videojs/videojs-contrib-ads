@@ -131,6 +131,9 @@ const contribAdsPlugin = function(options) {
     // remains true.
     _contentHasEnded: false,
 
+    // The next loadstart is due to an expected and legitimate play
+    _dontPrefixNextLoadstart: false,
+
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
     adType: null,
@@ -147,6 +150,7 @@ const contribAdsPlugin = function(options) {
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
+      player.ads._inLinearAdMode = true;
       if (player.ads.state === 'preroll?' ||
           player.ads.state === 'content-playback' ||
           player.ads.state === 'postroll?') {
@@ -156,6 +160,7 @@ const contribAdsPlugin = function(options) {
 
     // Call this when a linear ad pod has finished playing.
     endLinearAdMode() {
+      player.ads._inLinearAdMode = false;
       if (player.ads.state === 'ad-playback') {
         player.trigger('adend');
         // In the case of an empty ad response, we want to make sure that
@@ -260,6 +265,11 @@ const contribAdsPlugin = function(options) {
     // Returns true if content is resuming after an ad. This is part of ad mode.
     isContentResuming() {
       return player.ads.state === 'content-resuming';
+    },
+
+    // Returns true if ad is playing This is part of ad mode.
+    isAdPlaying() {
+      return player.ads.state === 'ad-playback';
     }
 
   };
@@ -363,6 +373,7 @@ const contribAdsPlugin = function(options) {
     },
     'ads-ready?': {
       enter() {
+        player.ads._dontPrefixNextLoadstart = true;
         player.addClass('vjs-ad-loading');
         player.ads.adTimeoutTimeout = window.setTimeout(function() {
           player.trigger('adtimeout');
@@ -564,8 +575,8 @@ const contribAdsPlugin = function(options) {
         });
 
         // Play the content
-        if (player.ads.cancelledPlay) {
-          player.ads.cancelledPlay = false;
+        if (player.ads._cancelledPlay) {
+          player.ads._cancelledPlay = false;
           if (player.paused()) {
             player.play();
           }

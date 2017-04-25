@@ -51,9 +51,8 @@ const handlePlaying = (player, event) => {
         prefixEvent(player, 'content', event);
       }
 
-    // If content video element is used for ads, adplaying was already sent by
-    // cancelContentPlay. Avoid sending another.
-    } else if (player.ads.videoElementRecycled()) {
+    // adplaying was already sent due to cancelContentPlay. Avoid sending another.
+    } else if (player.ads._cancelledPlay) {
       cancelEvent(player, event);
 
     // Prefix all other playing events during ads.
@@ -94,8 +93,9 @@ const handleEnded = (player, event) => {
 
 // Loadstart event
 // Requirements:
+// * Initial content loadstart is not prefixed
 // * Loadstart due to snapshot restore is prefixed
-// * Loadstart due to ad is prefixed
+// * Loadstart due to ad loading is prefixed
 // * Loadstart due to content source change is not prefixed
 const handleLoadStart = (player, event) => {
   if (player.ads.isInAdMode()) {
@@ -109,6 +109,9 @@ const handleLoadStart = (player, event) => {
       // Loadstart due to snapshot restore
       prefixEvent(player, 'content', event);
 
+    } else if (player.ads._dontPrefixNextLoadstart) {
+      player.ads._dontPrefixNextLoadstart = false;
+
     } else {
 
       // Loadstart for ad
@@ -120,9 +123,22 @@ const handleLoadStart = (player, event) => {
 
 // Play event
 // Requirements:
-// * Play events are never prefixed
+// * Play events have the "ad" prefix during linear ad mode
+// * Play events have the "content" prefix during content resuming
+// Why is it linear ad mode instead of ad mode? I'm glad you asked.
+// Play requests are unique because they represent user intention to play. It happens
+// because the user clicked play, or someone called player.play(), etc. With our current
+// architecture, this will always cause the content to play. Therefor, contrib-ads must
+// always cancelContentPlay if there is any possible chance the play caused the content
+// to play, even if we are technically in ad mode. In order for that to happen, play
+// events need to be unprefixed. The ideal solution is to have a way to intercept play 
+// events rather than "cancel" them by pausing after each one. To be continued...
 const handlePlay = (player, event) => {
-  return;
+  if (player.ads._inLinearAdMode) {
+    prefixEvent(player, 'ad', event);
+  } else if (player.ads.isContentResuming()) {
+    prefixEvent(player, 'content', event);
+  }
 };
 
 // Handle a player event, either by redispatching it with a prefix, or by

@@ -748,6 +748,7 @@ QUnit.test('player events during prerolls are prefixed if tech is reused for ad'
   });
 
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
 
   this.player.ads.snapshot = {
@@ -777,6 +778,7 @@ QUnit.test('player events during midrolls are prefixed if tech is reused for ad'
 
   // play a midroll
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
   this.player.ads.startLinearAdMode();
@@ -808,6 +810,7 @@ QUnit.test('player events during postrolls are prefixed if tech is reused for ad
 
   // play a postroll
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
   this.player.trigger('ended');
@@ -842,6 +845,7 @@ QUnit.test('player events during stitched ads are prefixed', function(assert) {
 
   // play a midroll
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
   this.player.ads.startLinearAdMode();
