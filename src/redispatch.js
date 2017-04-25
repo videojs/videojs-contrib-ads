@@ -123,18 +123,19 @@ const handleLoadStart = (player, event) => {
 
 // Play event
 // Requirements:
-// * Play events have the "ad" prefix during linear ad mode
-// * Play events have the "content" prefix during content resuming
-// Why is it linear ad mode instead of ad mode? I'm glad you asked.
-// Play requests are unique because they represent user intention to play. It happens
-// because the user clicked play, or someone called player.play(), etc. With our current
-// architecture, this will always cause the content to play. Therefor, contrib-ads must
-// always cancelContentPlay if there is any possible chance the play caused the content
-// to play, even if we are technically in ad mode. In order for that to happen, play
-// events need to be unprefixed. The ideal solution is to have a way to intercept play
-// events rather than "cancel" them by pausing after each one. To be continued...
+// * Play events have the "ad" prefix when an ad is playing
+// * Play events have the "content" prefix when content is resuming
+// Play requests are unique because they represent user intention to play. They happen
+// because the user clicked play, or someone called player.play(), etc. It could happen
+// multiple times during ad loading, regardless of where we are in the process. With our
+// current architecture, this will always cause the content to play. Therefor, contrib-ads
+// must always cancelContentPlay if there is any possible chance the play caused the
+// content to play, even if we are technically in ad mode. In order for that to happen,
+// play events need to be unprefixed until the last possible moment. A better solution
+// would be to have a way to intercept play events rather than "cancel" them by pausing
+// after each one. To be continued...
 const handlePlay = (player, event) => {
-  if (player.ads._inLinearAdMode) {
+  if (player.ads.isAdPlaying()) {
     prefixEvent(player, 'ad', event);
   } else if (player.ads.isContentResuming()) {
     prefixEvent(player, 'content', event);

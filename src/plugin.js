@@ -267,9 +267,11 @@ const contribAdsPlugin = function(options) {
       return player.ads.state === 'content-resuming';
     },
 
-    // Returns true if ad is playing This is part of ad mode.
+    // Returns true if a linear ad is playing. This is part of ad mode.
+    // This relies on startLinearAdMode and endLinearAdMode because that is the
+    // most authoritative way of determinining if an ad is playing.
     isAdPlaying() {
-      return player.ads.state === 'ad-playback';
+      return this._inLinearAdMode;
     }
 
   };

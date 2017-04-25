@@ -25,7 +25,7 @@ QUnit.module('Events', {
   }
 });
 
-QUnit.test('playing event and prerolls: 1+ after preroll, 0 before', function(assert) {
+QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(assert) {
   var done = assert.async();
 
   var beforePreroll = true;
@@ -86,7 +86,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
 
 });
 
-QUnit.test('loadstart event and prerolls: 0 after preroll, 1 before', function(assert) {
+QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {
   var done = assert.async();
 
   var beforePreroll = true;
@@ -158,7 +158,7 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
 
 });
 
-QUnit.test('Prefixed events during preroll', function(assert) {
+QUnit.test('Ad event prefixing around preroll', function(assert) {
   var done = assert.async();
 
   var seenInAdMode = [];
@@ -201,7 +201,7 @@ QUnit.test('Prefixed events during preroll', function(assert) {
       });
 
       // None of these events are prefixed after the preroll
-      assert.equal(seenOutsideAdMode.length, 0, 'no prefixed events outside ad mode');
+      assert.equal(seenOutsideAdMode.length, 0, 'no ad events outside ad mode');
 
       done();
     }
@@ -211,11 +211,12 @@ QUnit.test('Prefixed events during preroll', function(assert) {
 
 });
 
-QUnit.test('Unprefixed events', function(assert) {
+QUnit.test('Event prefixing and prerolls', function(assert) {
   var done = assert.async();
 
   var beforePreroll = true;
   var seenInAdMode = [];
+  var seenInContentResuming = [];
   var seenOutsideAdModeBefore = [];
   var seenOutsideAdModeAfter = [];
 
@@ -224,7 +225,6 @@ QUnit.test('Unprefixed events', function(assert) {
   });
 
   var events = [
-    'loadstart',
     'suspend',
     'abort',
     'error',
@@ -234,14 +234,11 @@ QUnit.test('Unprefixed events', function(assert) {
     'loadeddata',
     'canplay',
     'canplaythrough',
-    'playing',
     'waiting',
     'seeking',
-    'ended',
     'durationchange',
     'timeupdate',
     'progress',
-    'play',
     'pause',
     'ratechange',
     'volumechange',
@@ -258,9 +255,13 @@ QUnit.test('Unprefixed events', function(assert) {
   }));
 
   this.player.on(events, (e) => {
-    var str = e.type + ' ' + this.player.ads.state + ' ' + new Date().getTime();
+    var str = e.type;
     if (this.player.ads.isInAdMode()) {
-      seenInAdMode.push(str);
+      if (this.player.ads.isContentResuming()) {
+        seenInContentResuming.push(str);
+      } else {
+        seenInAdMode.push(str);
+      }
     } else {
       if (beforePreroll) {
         seenOutsideAdModeBefore.push(str);
@@ -278,14 +279,27 @@ QUnit.test('Unprefixed events', function(assert) {
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 1) {
 
-      // Prefixed events during or before preroll
-      // adEvents.forEach((event) => {
-      //   assert.ok(seenBeforePreroll.indexOf(event) > -1, event + ' during preroll');
-      // });
-      assert.ok(true, 'good');
+      seenOutsideAdModeBefore.forEach((event) => {
+        videojs.log(event + ' before ad mode');
+        assert.ok(!/^ad/.test(event), event + ' has no ad prefix before preroll');
+        assert.ok(!/^content/.test(event), event + ' has no content prefix before preroll');
+      });
 
-      // None of these events are prefixed after the preroll
-      // assert.equal(seenAfterPreroll.length, 0, 'no prefixed events after preroll');
+      seenInAdMode.forEach((event) => {
+        videojs.log(event + ' during ad mode');
+        assert.ok(/^ad/.test(event), event + ' has ad prefix during preroll');
+      });
+
+      seenInContentResuming.forEach((event) => {
+        videojs.log(event + ' during content resuming');
+        assert.ok(/^content/.test(event), event + ' has content prefix during preroll');
+      });
+
+      seenOutsideAdModeAfter.forEach((event) => {
+        videojs.log(event + ' after ad mode');
+        assert.ok(!/^ad/.test(event), event + ' has no ad prefix after preroll');
+        assert.ok(!/^content/.test(event), event + ' has no content prefix after preroll');
+      });
 
       done();
     }
