@@ -34,9 +34,9 @@
       // accept initialization options
       adServerUrl = (options && options.adServerUrl) || "inventory.json",
       midrollPoint = (options && options.midrollPoint) || 15,
-      playPreroll = (options && options.playPreroll) || true,
-      playMidroll = (options && options.playMidroll) || true,
-      playPostroll = (options && options.playPostroll) || true,
+      playPreroll = options && options.playPreroll !== undefined ? options.playPreroll : true,
+      playMidroll = options && options.playMidroll !== undefined ? options.playMidroll : true,
+      playPostroll = options && options.playPostroll !== undefined ? options.playPostroll : true,
 
       // asynchronous method for requesting ad inventory
       requestAds = function() {
@@ -107,7 +107,7 @@
 
     // play an ad the first time there's a preroll opportunity
     player.on('readyforpreroll', function() {
-      if (!state.prerollPlayed & playPreroll) {
+      if (!state.prerollPlayed && playPreroll) {
         state.prerollPlayed = true;
         playAd();
       }
@@ -128,7 +128,7 @@
       }
 
       state.lastTime = currentTime;
-      if (opportunity) {
+      if (opportunity && playMidroll) {
         state.midrollPlayed = true;
         playAd();
       }

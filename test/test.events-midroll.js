@@ -1,0 +1,132 @@
+import QUnit from 'qunit';
+import videojs from 'video.js';
+import '../example/example-integration.js';
+
+QUnit.module('Events', {
+  beforeEach: function() {
+    this.video = document.createElement('video');
+
+    document.getElementById('qunit-fixture').appendChild(this.video);
+
+    this.player = videojs(this.video);
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
+    });
+
+    this.player.exampleAds({
+      'adServerUrl': '/base/test/inventory.json',
+      'playPreroll': false,
+      'midrollPoint': 1
+    });
+  },
+
+  afterEach: function() {
+    this.player.dispose();
+  }
+});
+
+QUnit.test('Midrolls', function(assert) {
+  var done = assert.async();
+
+  var beforeMidroll = true;
+  var seenInAdMode = [];
+  var seenInContentResuming = [];
+  var seenOutsideAdModeBefore = [];
+  var seenOutsideAdModeAfter = [];
+
+  this.player.on('adend', () => {
+    beforeMidroll = false;
+  });
+
+  var events = [
+    'suspend',
+    'abort',
+    'error',
+    'emptied',
+    'stalled',
+    'loadedmetadata',
+    'loadeddata',
+    'canplay',
+    'canplaythrough',
+    'waiting',
+    'seeking',
+    'durationchange',
+    'progress',
+    'pause',
+    'ratechange',
+    'volumechange',
+    'firstplay',
+    'suspend',
+    'playing',
+    'ended',
+
+    // TODO:
+    // timeupdate
+    // loadstart
+    // play
+
+  ];
+
+  events = events.concat(events.map(function(e) {
+    return 'ad' + e;
+  }));
+
+  events = events.concat(events.map(function(e) {
+    return 'content' + e;
+  }));
+
+  videojs.log('--- GO --- ');
+
+  this.player.on(events, (e) => {
+    videojs.log(e.type + ' ' + this.player.ads.state);
+    var str = e.type;
+    if (this.player.ads.isInAdMode()) {
+      if (this.player.ads.isContentResuming()) {
+        seenInContentResuming.push(str);
+      } else {
+        seenInAdMode.push(str);
+      }
+    } else {
+      if (beforeMidroll) {
+        seenOutsideAdModeBefore.push(str);
+      } else {
+        seenOutsideAdModeAfter.push(str);
+      }
+    }
+  });
+
+  this.player.on(['error', 'aderror'], () => {
+    assert.ok(false, 'no errors');
+    done();
+  });
+
+  this.player.on('timeupdate', () => {
+    if (this.player.currentTime() > 2) {
+
+      seenOutsideAdModeBefore.forEach((event) => {
+        assert.ok(!/^ad/.test(event), event + ' has no ad prefix before midroll');
+        assert.ok(!/^content/.test(event), event + ' has no content prefix before midroll');
+      });
+
+      seenInAdMode.forEach((event) => {
+        assert.ok(/^ad/.test(event), event + ' has ad prefix during midroll');
+      });
+
+      seenInContentResuming.forEach((event) => {
+        assert.ok(/^content/.test(event), event + ' has content prefix during midroll');
+      });
+
+      seenOutsideAdModeAfter.forEach((event) => {
+        assert.ok(!/^ad/.test(event), event + ' has no ad prefix after midroll');
+        assert.ok(!/^content/.test(event), event + ' has no content prefix after midroll');
+      });
+
+      done();
+    }
+  });
+
+  this.player.play();
+
+});

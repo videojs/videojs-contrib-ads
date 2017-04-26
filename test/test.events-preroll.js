@@ -99,12 +99,6 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     beforePreroll = false;
   });
 
-  this.player.on(['loadstart', 'adloadstart', 'contentloadstart'], (e) => {
-    info += '[' + e.type + ' ' +
-      this.player.ads.isInAdMode() + ' ' +
-      this.player.ads._dontPrefixNextLoadstart + '] ';
-  });
-
   this.player.on('loadstart', () => {
     if (beforePreroll) {
       loadstartBeforePreroll++;
@@ -168,100 +162,6 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
 });
 
 QUnit.test('Event prefixing and prerolls', function(assert) {
-  var done = assert.async();
-
-  var beforePreroll = true;
-  var seenInAdMode = [];
-  var seenInContentResuming = [];
-  var seenOutsideAdModeBefore = [];
-  var seenOutsideAdModeAfter = [];
-
-  this.player.on('adend', () => {
-    beforePreroll = false;
-  });
-
-  var events = [
-    'suspend',
-    'abort',
-    'error',
-    'emptied',
-    'stalled',
-    'loadedmetadata',
-    'loadeddata',
-    'canplay',
-    'canplaythrough',
-    'waiting',
-    'seeking',
-    'durationchange',
-    'timeupdate',
-    'progress',
-    'pause',
-    'ratechange',
-    'volumechange',
-    'firstplay',
-    'suspend'
-  ];
-
-  events = events.concat(events.map(function(e) {
-    return 'ad' + e;
-  }));
-
-  events = events.concat(events.map(function(e) {
-    return 'content' + e;
-  }));
-
-  this.player.on(events, (e) => {
-    var str = e.type;
-    if (this.player.ads.isInAdMode()) {
-      if (this.player.ads.isContentResuming()) {
-        seenInContentResuming.push(str);
-      } else {
-        seenInAdMode.push(str);
-      }
-    } else {
-      if (beforePreroll) {
-        seenOutsideAdModeBefore.push(str);
-      } else {
-        seenOutsideAdModeAfter.push(str);
-      }
-    }
-  });
-
-  this.player.on(['error', 'aderror'], () => {
-    assert.ok(false, 'no errors');
-    done();
-  });
-
-  this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 1) {
-
-      seenOutsideAdModeBefore.forEach((event) => {
-        assert.ok(!/^ad/.test(event), event + ' has no ad prefix before preroll');
-        assert.ok(!/^content/.test(event), event + ' has no content prefix before preroll');
-      });
-
-      seenInAdMode.forEach((event) => {
-        assert.ok(/^ad/.test(event), event + ' has ad prefix during preroll');
-      });
-
-      seenInContentResuming.forEach((event) => {
-        assert.ok(/^content/.test(event), event + ' has content prefix during preroll');
-      });
-
-      seenOutsideAdModeAfter.forEach((event) => {
-        assert.ok(!/^ad/.test(event), event + ' has no ad prefix after preroll');
-        assert.ok(!/^content/.test(event), event + ' has no content prefix after preroll');
-      });
-
-      done();
-    }
-  });
-
-  this.player.play();
-
-});
-
-QUnit.skip('Midrolls', function(assert) {
   var done = assert.async();
 
   var beforePreroll = true;
