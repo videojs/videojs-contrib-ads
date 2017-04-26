@@ -158,59 +158,6 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
 
 });
 
-QUnit.test('Ad event prefixing around preroll', function(assert) {
-  var done = assert.async();
-
-  var seenInAdMode = [];
-  var seenOutsideAdMode = [];
-
-  var adEvents = [
-    'ademptied',
-    'adtimeupdate',
-    'adloadstart',
-    'adfirstplay',
-    'adwaiting',
-    'addurationchange',
-    'adloadedmetadata',
-    'adprogress',
-    'adsuspend',
-    'adloadeddata',
-    'adcanplay',
-    'adcanplaythrough'
-  ];
-
-  this.player.on(adEvents, (e) => {
-    if (this.player.ads.isInAdMode()) {
-      seenInAdMode.push(e.type);
-    } else {
-      seenOutsideAdMode.push(e.type);
-    }
-  });
-
-  this.player.on(['error', 'aderror'], () => {
-    assert.ok(false, 'no errors');
-    done();
-  });
-
-  this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 1) {
-
-      // Prefixed events during or before preroll
-      adEvents.forEach((event) => {
-        assert.ok(seenInAdMode.indexOf(event) > -1, event + ' during preroll');
-      });
-
-      // None of these events are prefixed after the preroll
-      assert.equal(seenOutsideAdMode.length, 0, 'no ad events outside ad mode');
-
-      done();
-    }
-  });
-
-  this.player.play();
-
-});
-
 QUnit.test('Event prefixing and prerolls', function(assert) {
   var done = assert.async();
 
@@ -280,23 +227,19 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
     if (this.player.currentTime() > 1) {
 
       seenOutsideAdModeBefore.forEach((event) => {
-        videojs.log(event + ' before ad mode');
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix before preroll');
         assert.ok(!/^content/.test(event), event + ' has no content prefix before preroll');
       });
 
       seenInAdMode.forEach((event) => {
-        videojs.log(event + ' during ad mode');
         assert.ok(/^ad/.test(event), event + ' has ad prefix during preroll');
       });
 
       seenInContentResuming.forEach((event) => {
-        videojs.log(event + ' during content resuming');
         assert.ok(/^content/.test(event), event + ' has content prefix during preroll');
       });
 
       seenOutsideAdModeAfter.forEach((event) => {
-        videojs.log(event + ' after ad mode');
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix after preroll');
         assert.ok(!/^content/.test(event), event + ' has no content prefix after preroll');
       });
