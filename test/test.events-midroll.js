@@ -1,3 +1,12 @@
+/*
+
+TODO:
+* timeupdate, adtimeupdate, contenttimeupdate
+* loadstart, adloadstart, contentloadstart
+* play, adplay, contentplay
+
+*/
+
 import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
@@ -61,11 +70,6 @@ QUnit.test('Midrolls', function(assert) {
     'suspend',
     'playing',
     'ended',
-
-    // TODO:
-    // timeupdate
-    // loadstart
-    // play
 
   ];
 

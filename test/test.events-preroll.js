@@ -1,3 +1,13 @@
+/*
+
+TODO:
+* adplay, contentplay
+* adplaying, contentplaying
+* adloadstart, contentloadstart
+* adended, contentended
+
+*/
+
 import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
