@@ -89,12 +89,20 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
 QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {
   var done = assert.async();
 
+  var info = '';
+
   var beforePreroll = true;
   var loadstartBeforePreroll = 0;
   var loadstartAfterPreroll = 0;
 
   this.player.on('adend', () => {
     beforePreroll = false;
+  });
+
+  this.player.on(['loadstart', 'adloadstart', 'contentloadstart'], (e) => {
+    info += '[' + e.type + ' ' +
+      this.player.ads.isInAdMode() + ' ' +
+      this.player.ads._dontPrefixNextLoadstart + '] ';
   });
 
   this.player.on('loadstart', () => {
@@ -112,8 +120,9 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
 
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 1) {
-      assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll');
-      assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll');
+      videojs.log(info);
+      assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll ' + info);
+      assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll ' + info);
       done();
     }
   });
