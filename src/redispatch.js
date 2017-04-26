@@ -112,7 +112,7 @@ const handleLoadStart = (player, event) => {
     } else if (player.ads._dontPrefixNextLoadstart) {
       player.ads._dontPrefixNextLoadstart = false;
 
-    } else {
+    } else if (player.ads.isAdPlaying()) {
 
       // Loadstart for ad
       prefixEvent(player, 'ad', event);
