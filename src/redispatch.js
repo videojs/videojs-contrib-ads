@@ -100,6 +100,7 @@ const handleEnded = (player, event) => {
 const handleLoadStart = (player, event) => {
 
   // Don't prefix first loadstart event. The timing for this one can vary wildly.
+  // For example, the content loadstart was sometimes happening during ad playback.
   if (player.ads._dontPrefixNextLoadstart) {
     player.ads._dontPrefixNextLoadstart = false;
 

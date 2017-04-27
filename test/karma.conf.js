@@ -55,7 +55,8 @@ module.exports = function(config) {
     colors: true,
     autoWatch: false,
     singleRun: true,
-    concurrency: Infinity
+    concurrency: Infinity,
+    browserNoActivityTimeout: 20000
   });
 };
 
