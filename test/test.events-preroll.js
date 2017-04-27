@@ -131,6 +131,7 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     }
   });
 
+  videojs.log('======Commence Loadstart Preroll Test======');
   this.player.play();
 
 });
