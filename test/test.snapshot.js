@@ -363,10 +363,13 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   this.player.trigger('play');
 
   // change the source to an ad
-  this.player.src({
-    src: 'http://example.com/ad.mp4',
-    type: 'video/mp4'
-  });
+  // this.player.src({
+  //   src: 'http://example.com/ad.mp4',
+  //   type: 'video/mp4'
+  // });
+  this.player.currentSrc = function() {
+    return 'http://example.com/movie.mp4';
+  };
 
   this.player.ads.contentSrc = 'somethingelse';
   this.player.trigger('loadstart');

@@ -126,6 +126,8 @@ const handleLoadStart = (player, event) => {
       prefixEvent(player, 'ad', event);
 
     }
+  } else {
+    player.ads._dontPrefixNextLoadstart = false;
   }
 };
 
