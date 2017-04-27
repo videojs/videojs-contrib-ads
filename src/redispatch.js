@@ -120,7 +120,7 @@ const handleLoadStart = (player, event) => {
       player.ads._dontPrefixNextLoadstart = false;
 
     } else if (player.ads.isAdPlaying()) {
-      videojs.log('6');
+      videojs.log('6 ' + player.ads.state);
 
       // Loadstart for ad
       prefixEvent(player, 'ad', event);
