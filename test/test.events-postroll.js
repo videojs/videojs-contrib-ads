@@ -4,7 +4,7 @@ TODO:
 * timeupdate, adtimeupdate, contenttimeupdate
 * loadstart, adloadstart, contentloadstart
 * play, adplay, contentplay
-
+* contentended
 */
 
 import QUnit from 'qunit';
@@ -27,7 +27,7 @@ QUnit.module('Events', {
     this.player.exampleAds({
       'adServerUrl': '/base/test/inventory.json',
       'playPreroll': false,
-      'midrollPoint': 1
+      'playMidroll': false
     });
   },
 
@@ -36,17 +36,17 @@ QUnit.module('Events', {
   }
 });
 
-QUnit.test('Midrolls', function(assert) {
+QUnit.test('Postrolls', function(assert) {
   var done = assert.async();
 
-  var beforeMidroll = true;
+  var beforePostroll = true;
   var seenInAdMode = [];
   var seenInContentResuming = [];
   var seenOutsideAdModeBefore = [];
   var seenOutsideAdModeAfter = [];
 
   this.player.on('adend', () => {
-    beforeMidroll = false;
+    beforePostroll = false;
   });
 
   var events = [
@@ -81,6 +81,9 @@ QUnit.test('Midrolls', function(assert) {
   }));
 
   this.player.on(events, (e) => {
+    if (e.type === 'contentended') {
+      return;
+    }
     var str = e.type;
     if (this.player.ads.isInAdMode()) {
       if (this.player.ads.isContentResuming()) {
@@ -89,7 +92,7 @@ QUnit.test('Midrolls', function(assert) {
         seenInAdMode.push(str);
       }
     } else {
-      if (beforeMidroll) {
+      if (beforePostroll) {
         seenOutsideAdModeBefore.push(str);
       } else {
         seenOutsideAdModeAfter.push(str);
@@ -102,29 +105,32 @@ QUnit.test('Midrolls', function(assert) {
     done();
   });
 
-  this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 2) {
+  this.player.on('ended', () => {
 
-      seenOutsideAdModeBefore.forEach((event) => {
-        assert.ok(!/^ad/.test(event), event + ' has no ad prefix before midroll');
-        assert.ok(!/^content/.test(event), event + ' has no content prefix before midroll');
-      });
+    seenOutsideAdModeBefore.forEach((event) => {
+      assert.ok(!/^ad/.test(event), event + ' has no ad prefix before postroll');
+      assert.ok(!/^content/.test(event), event + ' has no content prefix before postroll');
+    });
 
-      seenInAdMode.forEach((event) => {
-        assert.ok(/^ad/.test(event), event + ' has ad prefix during midroll');
-      });
+    seenInAdMode.forEach((event) => {
+      assert.ok(/^ad/.test(event), event + ' has ad prefix during postroll');
+    });
 
-      seenInContentResuming.forEach((event) => {
-        assert.ok(/^content/.test(event), event + ' has content prefix during midroll');
-      });
+    seenInContentResuming.forEach((event) => {
+      assert.ok(/^content/.test(event), event + ' has content prefix during postroll');
+    });
 
-      seenOutsideAdModeAfter.forEach((event) => {
-        assert.ok(!/^ad/.test(event), event + ' has no ad prefix after midroll');
-        assert.ok(!/^content/.test(event), event + ' has no content prefix after midroll');
-      });
+    seenOutsideAdModeAfter.forEach((event) => {
+      assert.ok(!/^ad/.test(event), event + ' has no ad prefix after postroll');
+      assert.ok(!/^content/.test(event), event + ' has no content prefix after postroll');
+    });
 
-      done();
-    }
+    done();
+  });
+
+  // Seek to end once we're ready so postroll can play quickly
+  this.player.one('playing', () => {
+    this.player.currentTime(46);
   });
 
   this.player.play();
