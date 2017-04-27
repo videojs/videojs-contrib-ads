@@ -374,6 +374,7 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   this.player.ads.endLinearAdMode();
 
   // make it appear that the tech is ready to seek
+  videojs.log('~~~~THE TEST HAS BEGUN~~~~~');
   this.player.ads.contentSrc = 'http://example.com/movie.mp4';
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
