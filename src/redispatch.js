@@ -7,8 +7,6 @@ such `ended` events and prefix them so they are sent as `adended`, and so on wit
 all other player events.
 */
 
-import videojs from 'video.js';
-
 // Cancel an event.
 // Video.js wraps native events. This technique stops propagation for the Video.js event
 // (AKA player event or wrapper event) while native events continue propagating.
@@ -100,34 +98,29 @@ const handleEnded = (player, event) => {
 // * Loadstart due to ad loading is prefixed
 // * Loadstart due to content source change is not prefixed
 const handleLoadStart = (player, event) => {
-  videojs.log('1');
-  if (player.ads.isInAdMode()) {
-    videojs.log('2 ' + player.ads._dontPrefixNextLoadstart);
+
+  // Don't prefix first loadstart event. The timing for this one can vary wildly.
+  if (player.ads._dontPrefixNextLoadstart) {
+    player.ads._dontPrefixNextLoadstart = false;
+
+  // Ad mode
+  } else if (player.ads.isInAdMode()) {
     if (player.ads.isContentResuming()) {
-      videojs.log('3 ' + player.currentSrc());
 
       // Loadstart due to content source change is unprefixed
       if (player.currentSrc() !== player.ads.contentSrc) {
-        videojs.log('4');
         return;
       }
 
       // Loadstart due to snapshot restore
       prefixEvent(player, 'content', event);
 
-    } else if (player.ads._dontPrefixNextLoadstart) {
-      videojs.log('5');
-      player.ads._dontPrefixNextLoadstart = false;
-
     } else if (player.ads.isAdPlaying()) {
-      videojs.log('6 ' + player.ads.state);
 
       // Loadstart for ad
       prefixEvent(player, 'ad', event);
 
     }
-  } else {
-    player.ads._dontPrefixNextLoadstart = false;
   }
 };
 

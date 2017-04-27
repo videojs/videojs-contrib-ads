@@ -362,11 +362,6 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   this.player.trigger('adsready');
   this.player.trigger('play');
 
-  // change the source to an ad
-  // this.player.src({
-  //   src: 'http://example.com/ad.mp4',
-  //   type: 'video/mp4'
-  // });
   this.player.currentSrc = function() {
     return 'http://example.com/movie.mp4';
   };
@@ -377,7 +372,6 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
   this.player.ads.endLinearAdMode();
 
   // make it appear that the tech is ready to seek
-  videojs.log('~~~~THE TEST HAS BEGUN~~~~~');
   this.player.ads.contentSrc = 'http://example.com/movie.mp4';
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
