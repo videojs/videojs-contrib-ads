@@ -102,7 +102,7 @@ const handleEnded = (player, event) => {
 const handleLoadStart = (player, event) => {
   videojs.log('1');
   if (player.ads.isInAdMode()) {
-    videojs.log('2');
+    videojs.log('2 ' + player.ads._dontPrefixNextLoadstart);
     if (player.ads.isContentResuming()) {
       videojs.log('3 ' + player.currentSrc());
 

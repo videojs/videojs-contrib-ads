@@ -109,12 +109,17 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     beforePreroll = false;
   });
 
-  this.player.on('loadstart', () => {
-    if (beforePreroll) {
+  // TODO make this just loadstart again
+  this.player.on(['loadstart', 'adloadstart', 'contentloadstart'], (e) => {
+    videojs.log('A ' + e.type + ' OCCURS ' + this.player.ads.state);
+    if (e.type === 'loadstart' && beforePreroll) {
+      videojs.log('beforePreroll');
       loadstartBeforePreroll++;
-    } else {
+    } else if (e.type === 'loadstart') {
+      videojs.log('afterPreroll');
       loadstartAfterPreroll++;
     }
+    videojs.log('nice');
   });
 
   this.player.on(['error', 'aderror'], () => {

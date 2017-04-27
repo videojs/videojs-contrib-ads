@@ -368,8 +368,6 @@ QUnit.test('player events during snapshot restoration are prefixed', function(as
     type: 'video/mp4'
   });
 
-  this.clock.tick(1);
-
   this.player.ads.contentSrc = 'somethingelse';
   this.player.trigger('loadstart');
   assert.strictEqual(spy.callCount, 0, 'did not fire contentloadstart');
