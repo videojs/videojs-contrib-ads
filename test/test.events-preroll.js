@@ -36,6 +36,7 @@ QUnit.module('Events', {
 });
 
 QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(assert) {
+  videojs.log('playing and preroll');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -72,6 +73,7 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
 });
 
 QUnit.test('ended event and prerolls: not even once', function(assert) {
+  videojs.log('ended and preroll');
   var done = assert.async();
 
   var ended = 0;
@@ -97,6 +99,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
 });
 
 QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {
+  videojs.log('loadstart and preroll');
   var done = assert.async();
 
   var info = '';
@@ -143,6 +146,7 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
 });
 
 QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert) {
+  videojs.log('play and preroll');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -179,6 +183,7 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
 });
 
 QUnit.test('Event prefixing and prerolls', function(assert) {
+  videojs.log('prefixing and preroll');
   var done = assert.async();
 
   var beforePreroll = true;
