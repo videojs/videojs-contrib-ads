@@ -50,12 +50,12 @@ module.exports = function(config) {
       }
     },
     detectBrowsers: detectBrowsers,
-    reporters: ['dots'],
+    reporters: ['spec'],
     port: 9876,
     colors: true,
     autoWatch: false,
     singleRun: true,
-    concurrency: Infinity,
+    concurrency: 1,
     browserNoActivityTimeout: 20000
   });
 };

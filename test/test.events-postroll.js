@@ -29,10 +29,6 @@ QUnit.module('Events', {
       'playPreroll': false,
       'playMidroll': false
     });
-  },
-
-  afterEach: function() {
-    this.player.dispose();
   }
 });
 

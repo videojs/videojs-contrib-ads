@@ -28,10 +28,6 @@ QUnit.module('Events', {
     this.player.exampleAds({
       'adServerUrl': '/base/test/inventory.json'
     });
-  },
-
-  afterEach: function() {
-    this.player.dispose();
   }
 });
 
