@@ -15,7 +15,9 @@ QUnit.module('Events', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    document.getElementById('qunit-fixture').appendChild(this.video);
+    this.fixture = document.createElement('div');
+    document.querySelector('body').appendChild(this.fixture);
+    this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
 
@@ -29,6 +31,11 @@ QUnit.module('Events', {
       'playPreroll': false,
       'midrollPoint': 1
     });
+  },
+
+  afterEach: function() {
+    this.player.dispose();
+    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 
