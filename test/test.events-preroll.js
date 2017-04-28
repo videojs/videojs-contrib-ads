@@ -105,8 +105,6 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
   videojs.log('loadstart and preroll');
   var done = assert.async();
 
-  var info = '';
-
   var beforePreroll = true;
   var loadstartBeforePreroll = 0;
   var loadstartAfterPreroll = 0;
@@ -115,17 +113,12 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     beforePreroll = false;
   });
 
-  // TODO make this just loadstart again
-  this.player.on(['loadstart', 'adloadstart', 'contentloadstart'], (e) => {
-    videojs.log('A ' + e.type + ' OCCURS ' + this.player.ads.state);
-    if (e.type === 'loadstart' && beforePreroll) {
-      videojs.log('beforePreroll');
+  this.player.on('loadstart', (e) => {
+    if (beforePreroll) {
       loadstartBeforePreroll++;
-    } else if (e.type === 'loadstart') {
-      videojs.log('afterPreroll');
+    } else {
       loadstartAfterPreroll++;
     }
-    videojs.log('nice');
   });
 
   this.player.on(['error', 'aderror'], () => {
@@ -133,12 +126,11 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     done();
   });
 
-  this.player.on(['timeupdate', 'contenttimeupdate', 'adtimeupdate'], (e) => {
-    videojs.log('PREROLL TEST TIMEUPDATE ' + e.type);
-    if (this.player.currentTime() > 1 && e.type === 'timeupdate') {
-      videojs.log(info);
-      assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll ' + info);
-      assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll ' + info);
+  this.player.on('timeupdate', (e) => {
+    videojs.log('PREROLL TEST TIMEUPDATE');
+    if (this.player.currentTime() > 1) {
+      assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll');
+      assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll');
       done();
     }
   });

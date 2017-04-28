@@ -65,6 +65,7 @@
 
       // play an ad, given an opportunity
       playAd = function() {
+        videojs.log('playAd');
 
         // short-circuit if we don't have any ad inventory to play
         if (!state.inventory || state.inventory.length === 0) {
@@ -77,10 +78,12 @@
 
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
+        videojs.log('player.src');
         player.src(media);
 
         // when it's finished
         player.one('adended', function() {
+          videojs.log('adended');
           // play your linear ad content, then when it's finished ...
           player.ads.endLinearAdMode();
           state.adPlaying = false;
@@ -107,6 +110,7 @@
 
     // play an ad the first time there's a preroll opportunity
     player.on('readyforpreroll', function() {
+      videojs.log('readyforpreroll');
       if (!state.prerollPlayed && playPreroll) {
         state.prerollPlayed = true;
         playAd();
