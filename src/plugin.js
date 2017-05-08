@@ -350,7 +350,6 @@ const contribAdsPlugin = function(options) {
       },
       leave() {
         window.clearTimeout(player.ads.adTimeoutTimeout);
-        // player.ads._dontPrefixNextLoadstart = false;
       },
       events: {
         play() {
@@ -376,7 +375,6 @@ const contribAdsPlugin = function(options) {
     },
     'ads-ready?': {
       enter() {
-        // player.ads._dontPrefixNextLoadstart = true;
         player.addClass('vjs-ad-loading');
         player.ads.adTimeoutTimeout = window.setTimeout(function() {
           player.trigger('adtimeout');
