@@ -200,8 +200,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
 
     // if the src changed for ad playback, reset it
     player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
-    // safari requires a call to `load` to pick up a changed source
-    player.load();
+
     // and then resume from the snapshots time once the original src has loaded
     // in some browsers (firefox) `canplay` may not fire correctly.
     // Reace the `canplay` event with a timeout.
