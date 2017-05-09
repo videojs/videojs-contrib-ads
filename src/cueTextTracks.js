@@ -24,23 +24,14 @@ export function processMetadataTracks(player, processMetadataTrack) {
   };
 
   // Text tracks are available
-  if (tracks.length > 0) {
-    for (let i = 0; i < tracks.length; i++) {
-      const track = tracks[i];
-
-      setModeAndProcess(track);
-    }
-  // Wait until text tracks are added
-  // We avoid always setting the event handler in case
-  // integrations decide to handle this separately
-  // with a different handler for the same event
-  } else {
-    tracks.addEventListener('addtrack', (event) => {
-      const track = event.track;
-
-      setModeAndProcess(track);
-    });
+  for (let i = 0; i < tracks.length; i++) {
+    setModeAndProcess(tracks[i]);
   }
+
+  // Wait until text tracks are added
+  tracks.addEventListener('addtrack', (event) => {
+    setModeAndProcess(event.track);
+  });
 }
 
 /**
