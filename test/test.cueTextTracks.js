@@ -33,8 +33,12 @@ QUnit.test('runs processMetadataTrack callback as tracks are added', function(as
   var tt = this.tt;
   this.player.textTracks = function() {
     return {
-      length: 1,
-      0: tt
+      length: 0,
+      addEventListener: function(event, cb) {
+        if (event === 'addtrack') {
+          cb.apply(this, [{track: tt}]);
+        }
+      }
     };
   };
 
