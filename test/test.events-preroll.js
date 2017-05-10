@@ -12,11 +12,13 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
 
-function debugTimeupdate(player) {
-  videojs.log('DEBUG TIMEUPDATE');
-  videojs.log('Current time: ' + player.currentTime());
-  videojs.log('Paused: ' + player.paused());
-  videojs.log('Source: ' + player.currentSource().src);
+function debug(player) {
+  return setInterval(function() {
+    videojs.log('DEBUG TIMEUPDATE');
+    videojs.log('Current time: ' + player.currentTime());
+    videojs.log('Paused: ' + player.paused());
+    videojs.log('Source: ' + player.currentSource().src);
+  }, 100);
 }
 
 QUnit.module('Events', {
@@ -37,11 +39,14 @@ QUnit.module('Events', {
     this.player.exampleAds({
       'adServerUrl': '/base/test/inventory.json'
     });
+
+    this.debugInterval = debug(this.player);
   },
 
   afterEach: function() {
     this.player.dispose();
     this.fixture.parentNode.removeChild(this.fixture);
+    clearInterval(this.debugInterval);
   }
 });
 
@@ -71,7 +76,6 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
   });
 
   this.player.on('timeupdate', () => {
-    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(playingBeforePreroll, 0, 'no playing before preroll');
       assert.ok(playingAfterPreroll > 0, 'playing after preroll');
@@ -99,7 +103,6 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
-    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(ended, 0, 'no ended events');
       done();
@@ -136,7 +139,6 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
   });
 
   this.player.on('timeupdate', (e) => {
-    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll');
       assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll');
@@ -174,7 +176,6 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
   });
 
   this.player.on('timeupdate', () => {
-    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(playBeforePreroll, 1, 'play before preroll'); // 2
       assert.equal(playAfterPreroll, 0, 'play after preroll');
@@ -253,7 +254,6 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
-    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
 
       seenOutsideAdModeBefore.forEach((event) => {

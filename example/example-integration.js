@@ -66,8 +66,11 @@
       // play an ad, given an opportunity
       playAd = function() {
 
+        videojs.log('playAd');
+
         // short-circuit if we don't have any ad inventory to play
         if (!state.inventory || state.inventory.length === 0) {
+          videojs.log('No inventory');
           return;
         }
 
@@ -107,6 +110,7 @@
 
     // play an ad the first time there's a preroll opportunity
     player.on('readyforpreroll', function() {
+      videojs.log('readyforpreroll');
       if (!state.prerollPlayed && playPreroll) {
         state.prerollPlayed = true;
         playAd();
