@@ -128,6 +128,9 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
 
   this.player.on('timeupdate', (e) => {
     videojs.log('PREROLL TEST TIMEUPDATE');
+    videojs.log('Current time: ' + this.player.currentTime());
+    videojs.log('Paused: ' + this.player.paused());
+    videojs.log('Source: ' + this.player.currentSource().src);
     if (this.player.currentTime() > 1) {
       assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll');
       assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll');

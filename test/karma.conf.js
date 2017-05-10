@@ -50,7 +50,7 @@ module.exports = function(config) {
       }
     },
     detectBrowsers: detectBrowsers,
-    reporters: ['spec'],
+    reporters: ['dots'],
     port: 9876,
     colors: true,
     autoWatch: false,
