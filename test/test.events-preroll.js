@@ -12,6 +12,13 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
 
+function debugTimeupdate(player) {
+  videojs.log('DEBUG TIMEUPDATE');
+  videojs.log('Current time: ' + player.currentTime());
+  videojs.log('Paused: ' + player.paused());
+  videojs.log('Source: ' + player.currentSource().src);
+}
+
 QUnit.module('Events', {
   beforeEach: function() {
     this.video = document.createElement('video');
@@ -39,7 +46,7 @@ QUnit.module('Events', {
 });
 
 QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(assert) {
-  videojs.log('playing and preroll');
+  videojs.log('playing event and prerolls: 0 before preroll, 1+ after');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -64,6 +71,7 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
   });
 
   this.player.on('timeupdate', () => {
+    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(playingBeforePreroll, 0, 'no playing before preroll');
       assert.ok(playingAfterPreroll > 0, 'playing after preroll');
@@ -76,7 +84,7 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
 });
 
 QUnit.test('ended event and prerolls: not even once', function(assert) {
-  videojs.log('ended and preroll');
+  videojs.log('ended event and prerolls: not even once');
   var done = assert.async();
 
   var ended = 0;
@@ -91,6 +99,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
+    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(ended, 0, 'no ended events');
       done();
@@ -102,7 +111,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
 });
 
 QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {
-  videojs.log('loadstart and preroll');
+  videojs.log('loadstart event and prerolls: 1 before preroll, 0 after');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -127,10 +136,7 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
   });
 
   this.player.on('timeupdate', (e) => {
-    videojs.log('PREROLL TEST TIMEUPDATE');
-    videojs.log('Current time: ' + this.player.currentTime());
-    videojs.log('Paused: ' + this.player.paused());
-    videojs.log('Source: ' + this.player.currentSource().src);
+    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll');
       assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll');
@@ -138,13 +144,12 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     }
   });
 
-  videojs.log('======Commence Loadstart Preroll Test======');
   this.player.play();
 
 });
 
 QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert) {
-  videojs.log('play and preroll');
+  videojs.log('play event and prerolls: 1 before preroll, 0 after');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -169,6 +174,7 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
   });
 
   this.player.on('timeupdate', () => {
+    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
       assert.equal(playBeforePreroll, 1, 'play before preroll'); // 2
       assert.equal(playAfterPreroll, 0, 'play after preroll');
@@ -181,7 +187,7 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
 });
 
 QUnit.test('Event prefixing and prerolls', function(assert) {
-  videojs.log('prefixing and preroll');
+  videojs.log('Event prefixing and prerolls');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -247,6 +253,7 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
+    debugTimeupdate(this.player);
     if (this.player.currentTime() > 1) {
 
       seenOutsideAdModeBefore.forEach((event) => {
