@@ -98,6 +98,7 @@
         videojs.log('setting media', media);
 
         player.one('canplay', function() {
+          videojs.log('canplay')
           if (player.paused()) {
             videojs.log('Ad is paused on canplay, playing it!');
             player.play();

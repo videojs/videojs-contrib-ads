@@ -18,6 +18,7 @@ function debug(player) {
     videojs.log('Current time: ' + player.currentTime());
     videojs.log('Paused: ' + player.paused());
     videojs.log('Source: ' + player.currentSource().src);
+    videojs.log('Readystate: ' + player.readyState());
   }, 1000);
 }
 
