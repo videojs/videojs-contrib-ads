@@ -102,6 +102,14 @@ const contribAdsPlugin = function(options) {
       return;
     }
 
+    if (player.ads._calledPlayForAd) {
+      videojs.log('already played ad');
+      return;
+    }
+
+    videojs.log('playing ad now');
+    player.ads._calledPlayForAd = true;
+
     player.play();
   });
 
@@ -158,6 +166,7 @@ const contribAdsPlugin = function(options) {
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
+      player.ads._calledPlayForAd = false;
       player.ads._inLinearAdMode = true;
       if (player.ads.state === 'preroll?' ||
           player.ads.state === 'content-playback' ||
