@@ -96,27 +96,11 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function(e) {
-    videojs.log('PLAY AD', e.type);
     if (player.currentSrc() === player.ads.snapshot.currentSrc) {
-      videojs.log('woop same src');
       return;
     }
-
-    if (player.ads._calledPlayForAd) {
-      videojs.log('already played ad');
-      return;
-    }
-
-    videojs.log('playing ad now');
-    player.ads._calledPlayForAd = true;
 
     player.play();
-  });
-
-  player.on(['addurationchange', 'adcanplay',
-             'contentdurationchange', 'contentcanplay',
-             'durationchange', 'canplay'], function(e) {
-    videojs.log('COULD PLAY', e.type);
   });
 
   player.on('nopreroll', function() {
@@ -166,7 +150,6 @@ const contribAdsPlugin = function(options) {
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
-      player.ads._calledPlayForAd = false;
       player.ads._inLinearAdMode = true;
       if (player.ads.state === 'preroll?' ||
           player.ads.state === 'content-playback' ||

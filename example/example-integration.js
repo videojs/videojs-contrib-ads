@@ -66,53 +66,25 @@
       // play an ad, given an opportunity
       playAd = function() {
 
-        videojs.log('playAd');
-
         // short-circuit if we don't have any ad inventory to play
         if (!state.inventory || state.inventory.length === 0) {
-          videojs.log('No inventory');
+          videojs.log('No inventory to play.');
           return;
         }
-
-        videojs.log('startLinearAdMode ' + player.ads.startLinearAdMode);
 
         // tell ads plugin we're ready to play our ad
         player.ads.startLinearAdMode();
 
-        videojs.log('adPlaying');
-
         state.adPlaying = true;
 
-        videojs.log('about to set media');
-        videojs.log(state);
-        videojs.log(state.inventory);
-        videojs.log(state.inventory.length);
-
-        var num = Math.floor(Math.random() * state.inventory.length);
-
-        videojs.log(num);
-
         // tell videojs to load the ad
-        var media = state.inventory[num];
-
-        videojs.log('setting media', media);
-
-        player.one('canplay', function() {
-          videojs.log('canplay')
-          if (player.paused()) {
-            videojs.log('Ad is paused on canplay, playing it!');
-            player.play();
-          }
-        });
+        var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
 
         player.src(media);
-
-        videojs.log('set media');
 
         // when it's finished
         player.one('adended', function() {
           // play your linear ad content, then when it's finished ...
-          videojs.log('endLinearAdMode');
           player.ads.endLinearAdMode();
           state.adPlaying = false;
         });
@@ -138,7 +110,6 @@
 
     // play an ad the first time there's a preroll opportunity
     player.on('readyforpreroll', function() {
-      videojs.log('readyforpreroll');
       if (!state.prerollPlayed && playPreroll) {
         state.prerollPlayed = true;
         playAd();

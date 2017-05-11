@@ -12,16 +12,6 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
 
-function debug(player) {
-  return setInterval(function() {
-    videojs.log('DEBUG TIMEUPDATE');
-    videojs.log('Current time: ' + player.currentTime());
-    videojs.log('Paused: ' + player.paused());
-    videojs.log('Source: ' + player.currentSource().src);
-    videojs.log('Readystate: ' + player.readyState());
-  }, 1000);
-}
-
 QUnit.module('Events', {
   beforeEach: function() {
     this.video = document.createElement('video');
@@ -41,18 +31,15 @@ QUnit.module('Events', {
       'adServerUrl': '/base/test/inventory.json'
     });
 
-    this.debugInterval = debug(this.player);
   },
 
   afterEach: function() {
     this.player.dispose();
     this.fixture.parentNode.removeChild(this.fixture);
-    clearInterval(this.debugInterval);
   }
 });
 
 QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(assert) {
-  videojs.log('playing event and prerolls: 0 before preroll, 1+ after');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -89,7 +76,6 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
 });
 
 QUnit.test('ended event and prerolls: not even once', function(assert) {
-  videojs.log('ended event and prerolls: not even once');
   var done = assert.async();
 
   var ended = 0;
@@ -115,7 +101,6 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
 });
 
 QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {
-  videojs.log('loadstart event and prerolls: 1 before preroll, 0 after');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -152,7 +137,6 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
 });
 
 QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert) {
-  videojs.log('play event and prerolls: 1 before preroll, 0 after');
   var done = assert.async();
 
   var beforePreroll = true;
@@ -189,7 +173,6 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
 });
 
 QUnit.test('Event prefixing and prerolls', function(assert) {
-  videojs.log('Event prefixing and prerolls');
   var done = assert.async();
 
   var beforePreroll = true;
