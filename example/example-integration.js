@@ -74,17 +74,37 @@
           return;
         }
 
+        videojs.log('startLinearAdMode ' + player.ads.startLinearAdMode);
+
         // tell ads plugin we're ready to play our ad
         player.ads.startLinearAdMode();
+
+        videojs.log('adPlaying');
+
         state.adPlaying = true;
 
+        videojs.log('about to set media');
+        videojs.log(state);
+        videojs.log(state.inventory);
+        videojs.log(state.inventory.length);
+
+        var num = Math.floor(Math.random() * state.inventory.length);
+
+        videojs.log(num);
+
         // tell videojs to load the ad
-        var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
+        var media = state.inventory[num];
+
+        videojs.log('setting media', media);
+
         player.src(media);
+
+        videojs.log('set media');
 
         // when it's finished
         player.one('adended', function() {
           // play your linear ad content, then when it's finished ...
+          videojs.log('endLinearAdMode');
           player.ads.endLinearAdMode();
           state.adPlaying = false;
         });

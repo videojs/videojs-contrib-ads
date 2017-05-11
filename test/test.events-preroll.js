@@ -18,7 +18,7 @@ function debug(player) {
     videojs.log('Current time: ' + player.currentTime());
     videojs.log('Paused: ' + player.paused());
     videojs.log('Source: ' + player.currentSource().src);
-  }, 100);
+  }, 1000);
 }
 
 QUnit.module('Events', {
