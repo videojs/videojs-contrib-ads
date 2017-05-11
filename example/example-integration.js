@@ -97,6 +97,13 @@
 
         videojs.log('setting media', media);
 
+        player.one('canplay', function() {
+          if (player.paused()) {
+            videojs.log('Ad is paused on canplay, playing it!');
+            player.play();
+          }
+        });
+
         player.src(media);
 
         videojs.log('set media');
