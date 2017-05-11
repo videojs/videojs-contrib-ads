@@ -183,8 +183,7 @@ const contribAdsPlugin = function(options) {
     // AdBlocker is intercepting doesn't update currentSrc.
     videoElementRecycled() {
       if (!this.snapshot) {
-        throw new Error(
-          'You cannot use videoElementRecycled while there is no snapshot.');
+        return false;
       }
 
       const srcChanged = player.tech_.src() !== this.snapshot.src;
