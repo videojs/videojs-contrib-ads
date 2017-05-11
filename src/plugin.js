@@ -95,12 +95,20 @@ const contribAdsPlugin = function(options) {
   // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
-  player.on(['addurationchange', 'adcanplay'], function() {
+  player.on(['addurationchange', 'adcanplay'], function(e) {
+    videojs.log('PLAY AD', e.type);
     if (player.currentSrc() === player.ads.snapshot.currentSrc) {
+      videojs.log('woop same src');
       return;
     }
 
     player.play();
+  });
+
+  player.on(['addurationchange', 'adcanplay',
+             'contentdurationchange', 'contentcanplay',
+             'durationchange', 'canplay'], function(e) {
+    videojs.log('COULD PLAY', e.type);
   });
 
   player.on('nopreroll', function() {
