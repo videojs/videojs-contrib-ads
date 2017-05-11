@@ -74,12 +74,10 @@
 
         // tell ads plugin we're ready to play our ad
         player.ads.startLinearAdMode();
-
         state.adPlaying = true;
 
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
-
         player.src(media);
 
         // when it's finished

@@ -95,7 +95,7 @@ const contribAdsPlugin = function(options) {
   // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
-  player.on(['addurationchange', 'adcanplay'], function(e) {
+  player.on(['addurationchange', 'adcanplay'], function() {
     if (player.currentSrc() === player.ads.snapshot.currentSrc) {
       return;
     }
