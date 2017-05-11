@@ -30,7 +30,7 @@ notifications:
       - "chat.freenode.net#videojs"
     use_notice: true
 addons:
-  firefox: latest-esr
+  firefox: latest
   apt:
     sources:
     - google-chrome
