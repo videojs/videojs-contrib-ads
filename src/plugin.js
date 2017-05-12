@@ -182,8 +182,13 @@ const contribAdsPlugin = function(options) {
     // We test both src and currentSrc because changing the src attribute to a URL that
     // AdBlocker is intercepting doesn't update currentSrc.
     videoElementRecycled() {
-      if (!this.snapshot) {
+      if (player.ads.shouldPlayContentBehindAd(player)) {
         return false;
+      }
+
+      if (!this.snapshot) {
+        throw new Error(
+          'You cannot use videoElementRecycled while there is no snapshot.');
       }
 
       const srcChanged = player.tech_.src() !== this.snapshot.src;
