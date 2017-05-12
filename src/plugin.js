@@ -96,7 +96,7 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
-    if (player.currentSrc() === player.ads.snapshot.currentSrc) {
+    if (player.ads.snapshot && player.currentSrc() === player.ads.snapshot.currentSrc) {
       return;
     }
 
@@ -117,6 +117,11 @@ const contribAdsPlugin = function(options) {
     player.removeClass('vjs-ad-loading');
   });
 
+  // Restart the cancelContentPlay process.
+  player.on('playing', () => {
+    player.ads._cancelledPlay = false;
+  });
+
   // Replace the plugin constructor with the ad namespace
   player.ads = {
     state: 'content-set',
@@ -131,7 +136,7 @@ const contribAdsPlugin = function(options) {
     // remains true.
     _contentHasEnded: false,
 
-    // The next loadstart is due to an expected and legitimate play
+    // The first loadstart is expected and legitimate, don't prefix it
     _dontPrefixNextLoadstart: true,
 
     // This is an estimation of the current ad type being played
@@ -140,9 +145,12 @@ const contribAdsPlugin = function(options) {
 
     VERSION: '__VERSION__',
 
+    // TODO reset state to content-set here instead of in every contentupdate case
     reset() {
       player.ads.disableNextSnapshotRestore = false;
+      player.ads._contentEnding = false;
       player.ads._contentHasEnded = false;
+      player.ads._dontPrefixNextLoadstart = true;
       player.ads.snapshot = null;
       player.ads.adType = null;
     },
@@ -150,18 +158,18 @@ const contribAdsPlugin = function(options) {
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
-      player.ads._inLinearAdMode = true;
       if (player.ads.state === 'preroll?' ||
           player.ads.state === 'content-playback' ||
           player.ads.state === 'postroll?') {
+        player.ads._inLinearAdMode = true;
         player.trigger('adstart');
       }
     },
 
     // Call this when a linear ad pod has finished playing.
     endLinearAdMode() {
-      player.ads._inLinearAdMode = false;
       if (player.ads.state === 'ad-playback') {
+        player.ads._inLinearAdMode = false;
         player.trigger('adend');
         // In the case of an empty ad response, we want to make sure that
         // the vjs-ad-loading class is always removed. We could probably check for
@@ -577,7 +585,6 @@ const contribAdsPlugin = function(options) {
 
         // Play the content
         if (player.ads._cancelledPlay) {
-          player.ads._cancelledPlay = false;
           if (player.paused()) {
             player.play();
           }

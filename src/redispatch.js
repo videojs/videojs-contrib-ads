@@ -71,12 +71,12 @@ const handleEnded = (player, event) => {
   if (player.ads.isInAdMode()) {
     if (player.ads.isContentResuming()) {
 
-      // The final and true ended event
+      // The final and true ended event after postroll.
       if (player.ads._contentHasEnded) {
         return;
       }
 
-      // Prefix ended during content resuming
+      // Content ending before postroll.
       prefixEvent(player, 'content', event);
 
     } else {
@@ -108,7 +108,10 @@ const handleLoadStart = (player, event) => {
   } else if (player.ads.isInAdMode()) {
     if (player.ads.isContentResuming()) {
 
-      // Loadstart due to content source change is unprefixed
+      // Don't prefix loadstart after source change during content resuming.
+      // This can happen if the source changes very quickly after ads
+      // finish on a high latency connection. It's true, I got it to
+      // happen with Chrome 58 set to simulate GPRS (500ms, 50kb/s, 20kb/s).
       if (player.currentSrc() !== player.ads.contentSrc) {
         return;
       }
