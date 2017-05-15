@@ -11,7 +11,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
 
-QUnit.module('Events', {
+QUnit.module('Events and Postrolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
@@ -39,7 +39,58 @@ QUnit.module('Events', {
   }
 });
 
-QUnit.test('Postrolls', function(assert) {
+QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(assert) {
+  var done = assert.async();
+
+  var beforePostroll = true;
+  var endedBeforePostroll = 0;
+  var endedAfterPostroll = 0;
+
+  this.player.on('adend', () => {
+    videojs.log('##### adend');
+    beforePostroll = false;
+  });
+
+  this.player.on('ended', () => {
+    if (beforePostroll) {
+      videojs.log('##### ended before');
+      endedBeforePostroll++;
+    } else {
+      videojs.log('##### ended after');
+      endedAfterPostroll++;
+    }
+  });
+
+  this.player.on(['error', 'aderror'], () => {
+    assert.ok(false, 'no errors');
+    done();
+  });
+
+  this.player.one('ended', () => {
+    videojs.log('##### first ended');
+    if (beforePostroll) {
+      videojs.log('##### first ended before postroll');
+      assert.ok(false, 'ended before postroll!');
+    }
+    // Run checks after a pause in case there are multiple ended events.
+    setTimeout(() => {
+      videojs.log('##### go time', endedBeforePostroll, endedAfterPostroll);
+      assert.equal(endedBeforePostroll, 0, 'no ended before postroll');
+      assert.equal(endedAfterPostroll, 1, 'exactly one ended after postroll');
+      done();
+    }, 1000);
+  });
+
+  // Seek to end once we're ready so postroll can play quickly
+  this.player.one('playing', () => {
+    this.player.currentTime(46);
+  });
+
+  this.player.play();
+
+});
+
+QUnit.test('Event prefixing and postrolls', function(assert) {
   var done = assert.async();
 
   var beforePostroll = true;

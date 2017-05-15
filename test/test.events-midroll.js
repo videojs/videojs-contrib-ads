@@ -11,7 +11,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
 
-QUnit.module('Events', {
+QUnit.module('Events and Midrolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 

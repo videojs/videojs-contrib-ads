@@ -7,6 +7,8 @@ such `ended` events and prefix them so they are sent as `adended`, and so on wit
 all other player events.
 */
 
+import videojs from 'video.js';
+
 // Cancel an event.
 // Video.js wraps native events. This technique stops propagation for the Video.js event
 // (AKA player event or wrapper event) while native events continue propagating.
@@ -69,21 +71,16 @@ const handlePlaying = (player, event) => {
 // * A single ended event after postroll
 const handleEnded = (player, event) => {
   if (player.ads.isInAdMode()) {
+
+    // The true ended event fired by plugin.js either after the postroll
+    // or because there was no postroll.
     if (player.ads.isContentResuming()) {
-
-      // The final and true ended event after postroll.
-      if (player.ads._contentHasEnded) {
-        return;
-      }
-
-      // Content ending before postroll.
-      prefixEvent(player, 'content', event);
-
-    } else {
-
-      // Prefix ended due to ad ending.
-      prefixEvent(player, 'ad', event);
+      return;
     }
+
+    // Prefix ended due to ad ending.
+    prefixEvent(player, 'ad', event);
+
   } else {
 
     // Prefix ended due to content ending.

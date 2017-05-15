@@ -12,7 +12,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../example/example-integration.js';
 
-QUnit.module('Events', {
+QUnit.module('Events and Prerolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
