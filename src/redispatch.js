@@ -7,8 +7,6 @@ such `ended` events and prefix them so they are sent as `adended`, and so on wit
 all other player events.
 */
 
-import videojs from 'video.js';
-
 // Cancel an event.
 // Video.js wraps native events. This technique stops propagation for the Video.js event
 // (AKA player event or wrapper event) while native events continue propagating.
