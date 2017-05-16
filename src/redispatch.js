@@ -89,37 +89,27 @@ const handleEnded = (player, event) => {
 // Loadstart event
 // Requirements:
 // * Initial content loadstart is not prefixed
-// * Loadstart due to snapshot restore is prefixed
 // * Loadstart due to ad loading is prefixed
 // * Loadstart due to content source change is not prefixed
+// * Loadstart due to content resuming is prefixed
+
 const handleLoadStart = (player, event) => {
 
-  // Don't prefix first loadstart event. The timing for this one can vary wildly.
-  // For example, the content loadstart was sometimes happening during ad playback.
-  if (player.ads._dontPrefixNextLoadstart) {
-    player.ads._dontPrefixNextLoadstart = false;
+  // Initial loadstart
+  if (!player.ads._hasThereEverBeenALoadStart) {
+    return;
 
-  // Ad mode
-  } else if (player.ads.isInAdMode()) {
-    if (player.ads.isContentResuming()) {
+  // Ad playing
+  } else if (player.ads.isAdPlaying()) {
+    prefixEvent(player, 'ad', event);
 
-      // Don't prefix loadstart after source change during content resuming.
-      // This can happen if the source changes very quickly after ads
-      // finish on a high latency connection. It's true, I got it to
-      // happen with Chrome 58 set to simulate GPRS (500ms, 50kb/s, 20kb/s).
-      if (player.currentSrc() !== player.ads.contentSrc) {
-        return;
-      }
+  // Source change
+  } else if (player.currentSrc() !== player.ads.contentSrc) {
+    return;
 
-      // Loadstart due to snapshot restore
-      prefixEvent(player, 'content', event);
-
-    } else if (player.ads.isAdPlaying()) {
-
-      // Loadstart for ad
-      prefixEvent(player, 'ad', event);
-
-    }
+  // Content resuming
+  } else {
+    prefixEvent(player, 'content', event);
   }
 };
 

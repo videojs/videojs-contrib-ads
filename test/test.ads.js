@@ -143,14 +143,15 @@ QUnit.test('moves to content-playback if a plugin does not finish initializing',
 });
 
 QUnit.test('calls start immediately on play when ads are ready', function(assert) {
-  var spy = sinon.spy();
+  var readyForPrerollSpy = sinon.spy();
 
   assert.expect(1);
 
-  this.player.on('readyforpreroll', spy);
+  this.player.on('readyforpreroll', readyForPrerollSpy);
   this.player.trigger('adsready');
+  this.player.trigger('loadstart');
   this.player.trigger('play');
-  assert.strictEqual(spy.callCount, 1, 'readyforpreroll was fired');
+  assert.strictEqual(readyForPrerollSpy.callCount, 1, 'readyforpreroll was fired');
 });
 
 QUnit.test('adds the ad-mode class when a preroll plays', function(assert) {

@@ -122,6 +122,10 @@ const contribAdsPlugin = function(options) {
     player.ads._cancelledPlay = false;
   });
 
+  player.one('loadstart', () => {
+    player.ads._hasThereEverBeenALoadStart = true;
+  });
+
   // Replace the plugin constructor with the ad namespace
   player.ads = {
     state: 'content-set',
@@ -136,8 +140,9 @@ const contribAdsPlugin = function(options) {
     // remains true.
     _contentHasEnded: false,
 
-    // The first loadstart is expected and legitimate, don't prefix it
-    _dontPrefixNextLoadstart: true,
+    // Tracks if loadstart has happened yet for the initial source. It is not reset
+    // on source changes.
+    _hasThereEverBeenALoadStart: false,
 
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
@@ -150,7 +155,6 @@ const contribAdsPlugin = function(options) {
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentEnding = false;
       player.ads._contentHasEnded = false;
-      player.ads._dontPrefixNextLoadstart = true;
       player.ads.snapshot = null;
       player.ads.adType = null;
     },
@@ -346,14 +350,26 @@ const contribAdsPlugin = function(options) {
             player.trigger('nopreroll');
           }, 1);
         } else {
-          // change class to show that we're waiting on ads
+          // Change class to show that we're waiting on ads
           player.addClass('vjs-ad-loading');
-          // schedule an adtimeout event to fire if we waited too long
+          // Schedule an adtimeout event to fire if we waited too long
           player.ads.adTimeoutTimeout = window.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.prerollTimeout);
-          // signal to ad plugin that it's their opportunity to play a preroll
-          player.trigger('readyforpreroll');
+
+          // Signal to ad plugin that it's their opportunity to play a preroll
+          if (player.ads._hasThereEverBeenALoadStart) {
+            player.trigger('readyforpreroll');
+
+          // Don't play preroll before loadstart, otherwise the content loadstart event
+          // will get misconstrued as an ad loadstart. This is only a concern for the
+          // initial source; for source changes the whole ad process is kicked off by
+          // loadstart so it has to have happened already.
+          } else {
+            player.one('loadstart', () => {
+              player.trigger('readyforpreroll');
+            });
+          }
         }
       },
       leave() {

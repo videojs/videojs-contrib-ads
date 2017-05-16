@@ -47,16 +47,13 @@ QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(ass
   var endedAfterPostroll = 0;
 
   this.player.on('adend', () => {
-    videojs.log('##### adend');
     beforePostroll = false;
   });
 
   this.player.on('ended', () => {
     if (beforePostroll) {
-      videojs.log('##### ended before');
       endedBeforePostroll++;
     } else {
-      videojs.log('##### ended after');
       endedAfterPostroll++;
     }
   });
@@ -67,14 +64,11 @@ QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(ass
   });
 
   this.player.one('ended', () => {
-    videojs.log('##### first ended');
     if (beforePostroll) {
-      videojs.log('##### first ended before postroll');
       assert.ok(false, 'ended before postroll!');
     }
     // Run checks after a pause in case there are multiple ended events.
     setTimeout(() => {
-      videojs.log('##### go time', endedBeforePostroll, endedAfterPostroll);
       assert.equal(endedBeforePostroll, 0, 'no ended before postroll');
       assert.equal(endedAfterPostroll, 1, 'exactly one ended after postroll');
       done();
