@@ -1,6 +1,12 @@
 # CHANGELOG
 
+## 4.2.7
+
+* [@nochev](http://github.com/nochev): Remove error throwing for live videos
+* [@alex-barstow](https://github.com/alex-barstow): Placeholder div's CSS position and top values now match the player's 
+
 ## 4.2.6
+
 * [@brandonocasey](https://github.com/brandonocasey): Cross-compatibility between Video.js 5 and 6
 
 ## 4.2.5
