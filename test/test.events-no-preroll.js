@@ -32,7 +32,6 @@ QUnit.module('Initial Events With No Preroll', {
 });
 
 QUnit.test('initial play event with no preroll: one please', function(assert) {
-  videojs.log('--- START TEST ---');
   var done = assert.async();
 
   var playEvents = 0;
@@ -49,7 +48,6 @@ QUnit.test('initial play event with no preroll: one please', function(assert) {
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 1) {
       assert.equal(playEvents, 1, '1 play event');
-      videojs.log('--- DONE TEST ---');
       done();
     }
   });
