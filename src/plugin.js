@@ -100,6 +100,12 @@ const contribAdsPlugin = function(options) {
       return;
     }
 
+    // If an ad isn't playing, don't try to play an ad. This could result from prefixed
+    // events when the player is blocked by a preroll check, but there is no preroll.
+    if (!player.ads.isAdPlaying()) {
+      return;
+    }
+
     player.play();
   });
 
@@ -143,6 +149,9 @@ const contribAdsPlugin = function(options) {
     // Tracks if loadstart has happened yet for the initial source. It is not reset
     // on source changes.
     _hasThereEverBeenALoadStart: false,
+
+    // Are we after startLinearAdMode and before endLinearAdMode?
+    _inLinearAdMode: false,
 
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
@@ -599,7 +608,9 @@ const contribAdsPlugin = function(options) {
           triggerevent: player.ads.triggerevent
         });
 
-        // Play the content
+        // Play the content if cancelContentPlay happened and we haven't played yet.
+        // This happens if there was no preroll or if it errored, timed out, etc.
+        // Otherwise snapshot restore would play.
         if (player.ads._cancelledPlay) {
           if (player.paused()) {
             player.play();

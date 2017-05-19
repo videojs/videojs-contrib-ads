@@ -127,9 +127,11 @@ const handleLoadStart = (player, event) => {
 // would be to have a way to intercept play events rather than "cancel" them by pausing
 // after each one. To be continued...
 const handlePlay = (player, event) => {
+  const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
+
   if (player.ads.isAdPlaying()) {
     prefixEvent(player, 'ad', event);
-  } else if (player.ads.isContentResuming()) {
+  } else if (player.ads.isContentResuming() || resumingAfterNoPreroll) {
     prefixEvent(player, 'content', event);
   }
 };
