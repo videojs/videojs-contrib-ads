@@ -47,12 +47,24 @@ export function setMetadataTrackMode(track) {
 /**
 * Determines whether cue is an ad cue and returns the cue data.
 * @param player A reference to the player
-* @param cue The cue to be checked
+* @param cue The full cue object
 * Returns the given cue by default @override if futher processing is required
-* @return the cueData in JSON if cue is a supported ad cue, or -1 if not
+* @return {Object} a useable ad cue or null if not supported
 **/
 export function getSupportedAdCue(player, cue) {
   return cue;
+}
+
+/**
+* Defines whether a cue is supported or not, potentially
+* based on the player settings
+* @param player A reference to the player
+* @param cue The cue to be checked
+* Default behavior is to return true, @override if this is not desired
+* @return {Boolean}
+*/
+export function isSupportedAdCue(player, cue) {
+  return true;
 }
 
 /**
@@ -100,7 +112,7 @@ export function processAdTrack(player, cues, processCue, cancelAds) {
     const cueData = this.getSupportedAdCue(player, cue);
 
     // Exit if this is not a supported cue
-    if (cueData === -1) {
+    if (!this.isSupportedAdCue(player, cue)) {
       videojs.log.warn('Skipping as this is not a supported ad cue.', cue);
       return;
     }
