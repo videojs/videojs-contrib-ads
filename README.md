@@ -442,8 +442,8 @@ if (player.ads.state  === 'ad-playback') {
 This project includes a feature called `redispatch` which will monitor all [media
 events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) and
 modify them with the goal of making the usage of ads transparent. For example, when an
-ad plays, an `adplaying` event will be sent rather than a `playing` event. Code that
-listens to the `playing` event will not see additional `playing` events due to an
+ad is playing, a `playing` event would be sent as an `adplaying` event. Code that
+listens to the `playing` event will not see `playing` events that result from an
 advertisement playing.
 
 In order for redispatch to work correctly, any ad plugin built using contrib-ads must be
