@@ -89,7 +89,7 @@ Returns true if player is in ad mode.
 * Waiting to find out if an ad is going to play while content would normally be
   playing.
 * Waiting for an ad to start playing while content would normally be playing.
-* A linear ad is playing (even if a hidden live stream is silently playing behind it)
+* A linear ad is playing
 * An ad has completed and content is about to resume, but content has not resumed
   yet.
 
