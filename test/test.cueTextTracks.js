@@ -156,7 +156,7 @@ QUnit.test('processAdTrack runs cancelAds callback', function(assert) {
   var processCue = function(player, cueData, cueId, startTime) {
     return;
   };
-  var cancelAds = function(player, cueData) {
+  var cancelAds = function(player, cueData, cueId, startTime) {
     cueData.callCount += 1;
   };
 
