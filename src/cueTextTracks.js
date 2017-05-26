@@ -135,7 +135,7 @@ export function processAdTrack(player, cues, processCue, cancelAds) {
 
     // Optional dynamic ad cancellation
     if (cancelAds !== undefined) {
-      cancelAds(player, cueData);
+      cancelAds(player, cueData, cueId, startTime);
     }
   }
 }
