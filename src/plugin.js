@@ -641,6 +641,25 @@ const contribAdsPlugin = function(options) {
 
   ]), processEvent);
 
+  // Clear timeouts when player is disposed
+  player.on('dispose', function() {
+    if (player.ads.adTimeoutTimeout) {
+      window.clearTimeout(player.ads.adTimeoutTimeout);
+    }
+
+    if (player.ads._fireEndedTimeout) {
+      window.clearTimeout(player.ads._fireEndedTimeout);
+    }
+
+    if (player.ads.cancelPlayTimeout) {
+      window.clearTimeout(player.ads.cancelPlayTimeout);
+    }
+
+    if (player.ads.tryToResumeTimeout_) {
+      player.clearTimeout(player.ads.tryToResumeTimeout_);
+    }
+  });
+
   // If we're autoplaying, the state machine will immidiately process
   // a synthetic play event
   if (!player.paused()) {
