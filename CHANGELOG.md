@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.8
+
+* [@nochev](http://github.com/nochev): Clear registered timeouts when player is disposed
+
 ## 4.2.7
 
 * [@nochev](http://github.com/nochev): Remove error throwing for live videos
