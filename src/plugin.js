@@ -96,7 +96,13 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
-    if (player.currentSrc() === player.ads.snapshot.currentSrc) {
+    if (player.ads.snapshot && player.currentSrc() === player.ads.snapshot.currentSrc) {
+      return;
+    }
+
+    // If an ad isn't playing, don't try to play an ad. This could result from prefixed
+    // events when the player is blocked by a preroll check, but there is no preroll.
+    if (!player.ads.isAdPlaying()) {
       return;
     }
 
@@ -117,14 +123,35 @@ const contribAdsPlugin = function(options) {
     player.removeClass('vjs-ad-loading');
   });
 
+  // Restart the cancelContentPlay process.
+  player.on('playing', () => {
+    player.ads._cancelledPlay = false;
+  });
+
+  player.one('loadstart', () => {
+    player.ads._hasThereEverBeenALoadStart = true;
+  });
+
   // Replace the plugin constructor with the ad namespace
   player.ads = {
     state: 'content-set',
     disableNextSnapshotRestore: false,
 
-    // This is set to true if the content has ended once. After that, the user can
-    // seek backwards and replay content, but _contentHasEnded remains true.
+    // This is true if we have finished actual content playback but haven't
+    // dealt with postrolls and officially ended yet
+    _contentEnding: false,
+
+    // This is set to true if the content has officially ended at least once.
+    // After that, the user can seek backwards and replay content, but _contentHasEnded
+    // remains true.
     _contentHasEnded: false,
+
+    // Tracks if loadstart has happened yet for the initial source. It is not reset
+    // on source changes.
+    _hasThereEverBeenALoadStart: false,
+
+    // Are we after startLinearAdMode and before endLinearAdMode?
+    _inLinearAdMode: false,
 
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
@@ -132,8 +159,10 @@ const contribAdsPlugin = function(options) {
 
     VERSION: '__VERSION__',
 
+    // TODO reset state to content-set here instead of in every contentupdate case
     reset() {
       player.ads.disableNextSnapshotRestore = false;
+      player.ads._contentEnding = false;
       player.ads._contentHasEnded = false;
       player.ads.snapshot = null;
       player.ads.adType = null;
@@ -145,6 +174,7 @@ const contribAdsPlugin = function(options) {
       if (player.ads.state === 'preroll?' ||
           player.ads.state === 'content-playback' ||
           player.ads.state === 'postroll?') {
+        player.ads._inLinearAdMode = true;
         player.trigger('adstart');
       }
     },
@@ -152,6 +182,7 @@ const contribAdsPlugin = function(options) {
     // Call this when a linear ad pod has finished playing.
     endLinearAdMode() {
       if (player.ads.state === 'ad-playback') {
+        player.ads._inLinearAdMode = false;
         player.trigger('adend');
         // In the case of an empty ad response, we want to make sure that
         // the vjs-ad-loading class is always removed. We could probably check for
@@ -215,6 +246,53 @@ const contribAdsPlugin = function(options) {
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
              somePlayer.duration() === Infinity;
+    },
+
+    // Returns true if player is in ad mode.
+    //
+    // Ad mode definition:
+    // If content playback is blocked by the ad plugin.
+    //
+    // Examples of ad mode:
+    //
+    // * Waiting to find out if an ad is going to play while content would normally be
+    //   playing.
+    // * Waiting for an ad to start playing while content would normally be playing.
+    // * An ad is playing (even if content is also playing)
+    // * An ad has completed and content is about to resume, but content has not resumed
+    //   yet.
+    //
+    // Examples of not ad mode:
+    //
+    // * Content playback has not been requested
+    // * Content playback is paused
+    // * An asynchronous ad request is ongoing while content is playing
+    // * A non-linear ad is active
+    isInAdMode() {
+
+             // Saw "play" but not "adsready"
+      return player.ads.state === 'ads-ready?' ||
+
+             // Waiting to learn about preroll
+             player.ads.state === 'preroll?' ||
+
+             // A linear ad is active
+             player.ads.state === 'ad-playback' ||
+
+             // Content is not playing again yet
+             player.ads.state === 'content-resuming';
+    },
+
+    // Returns true if content is resuming after an ad. This is part of ad mode.
+    isContentResuming() {
+      return player.ads.state === 'content-resuming';
+    },
+
+    // Returns true if a linear ad is playing. This is part of ad mode.
+    // This relies on startLinearAdMode and endLinearAdMode because that is the
+    // most authoritative way of determinining if an ad is playing.
+    isAdPlaying() {
+      return this._inLinearAdMode;
     }
 
   };
@@ -281,14 +359,26 @@ const contribAdsPlugin = function(options) {
             player.trigger('nopreroll');
           }, 1);
         } else {
-          // change class to show that we're waiting on ads
+          // Change class to show that we're waiting on ads
           player.addClass('vjs-ad-loading');
-          // schedule an adtimeout event to fire if we waited too long
+          // Schedule an adtimeout event to fire if we waited too long
           player.ads.adTimeoutTimeout = window.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.prerollTimeout);
-          // signal to ad plugin that it's their opportunity to play a preroll
-          player.trigger('readyforpreroll');
+
+          // Signal to ad plugin that it's their opportunity to play a preroll
+          if (player.ads._hasThereEverBeenALoadStart) {
+            player.trigger('readyforpreroll');
+
+          // Don't play preroll before loadstart, otherwise the content loadstart event
+          // will get misconstrued as an ad loadstart. This is only a concern for the
+          // initial source; for source changes the whole ad process is kicked off by
+          // loadstart so it has to have happened already.
+          } else {
+            player.one('loadstart', () => {
+              player.trigger('readyforpreroll');
+            });
+          }
         }
       },
       leave() {
@@ -451,6 +541,7 @@ const contribAdsPlugin = function(options) {
     },
     'postroll?': {
       enter() {
+        player.ads._contentEnding = true;
         this.snapshot = snapshot.getPlayerSnapshot(player);
         if (player.ads.nopostroll_) {
           window.setTimeout(function() {
@@ -517,9 +608,10 @@ const contribAdsPlugin = function(options) {
           triggerevent: player.ads.triggerevent
         });
 
-        // Play the content
-        if (player.ads.cancelledPlay) {
-          player.ads.cancelledPlay = false;
+        // Play the content if cancelContentPlay happened and we haven't played yet.
+        // This happens if there was no preroll or if it errored, timed out, etc.
+        // Otherwise snapshot restore would play.
+        if (player.ads._cancelledPlay) {
           if (player.paused()) {
             player.play();
           }
@@ -569,6 +661,7 @@ const contribAdsPlugin = function(options) {
             return;
           }
 
+          this._contentEnding = false;
           this._contentHasEnded = true;
           this.state = 'postroll?';
         }

@@ -12,7 +12,7 @@ QUnit.test('begins in content-set', function(assert) {
   assert.strictEqual(this.player.ads.state, 'content-set');
 });
 
-QUnit.test('pauses to wait for prerolls when the plugin loads before play', function(assert) {
+QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
   var spy = sinon.spy(this.player, 'pause');
 
   assert.expect(1);
@@ -29,7 +29,7 @@ QUnit.test('pauses to wait for prerolls when the plugin loads before play', func
   assert.strictEqual(spy.callCount, 2, 'play attempts are paused');
 });
 
-QUnit.test('pauses to wait for prerolls when the plugin loads after play', function(assert) {
+QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
   var pauseSpy;
 
   assert.expect(1);
@@ -143,14 +143,15 @@ QUnit.test('moves to content-playback if a plugin does not finish initializing',
 });
 
 QUnit.test('calls start immediately on play when ads are ready', function(assert) {
-  var spy = sinon.spy();
+  var readyForPrerollSpy = sinon.spy();
 
   assert.expect(1);
 
-  this.player.on('readyforpreroll', spy);
+  this.player.on('readyforpreroll', readyForPrerollSpy);
   this.player.trigger('adsready');
+  this.player.trigger('loadstart');
   this.player.trigger('play');
-  assert.strictEqual(spy.callCount, 1, 'readyforpreroll was fired');
+  assert.strictEqual(readyForPrerollSpy.callCount, 1, 'readyforpreroll was fired');
 });
 
 QUnit.test('adds the ad-mode class when a preroll plays', function(assert) {
@@ -748,6 +749,7 @@ QUnit.test('player events during prerolls are prefixed if tech is reused for ad'
   });
 
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
 
   this.player.ads.snapshot = {
@@ -777,6 +779,7 @@ QUnit.test('player events during midrolls are prefixed if tech is reused for ad'
 
   // play a midroll
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
   this.player.ads.startLinearAdMode();
@@ -808,6 +811,7 @@ QUnit.test('player events during postrolls are prefixed if tech is reused for ad
 
   // play a postroll
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
   this.player.trigger('ended');
@@ -842,6 +846,7 @@ QUnit.test('player events during stitched ads are prefixed', function(assert) {
 
   // play a midroll
   this.player.trigger('play');
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
   this.player.ads.startLinearAdMode();
@@ -930,7 +935,7 @@ QUnit.test('ad impl can notify contrib-ads there is no postroll', function(asser
   this.player.ads.state = 'content-playback';
   this.player.trigger('contentended');
   this.clock.tick(5);
-  assert.strictEqual(this.player.ads.state, 'content-resuming', 'no longer in postroll?');
+  assert.strictEqual(this.player.ads.state, 'content-playback', 'no longer in postroll?');
 
 });
 

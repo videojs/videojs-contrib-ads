@@ -13,9 +13,8 @@ module.exports = function(config) {
     }
   };
 
-  // On Travis CI, we can only run in Firefox.
   if (process.env.TRAVIS) {
-    config.browsers = ['Firefox', 'travisChrome'];
+    config.browsers = ['travisChrome'];
   }
 
   // If no browsers are specified, we enable `karma-detect-browsers`
@@ -37,7 +36,11 @@ module.exports = function(config) {
       'dist/videojs.ads.js',
       'dist/videojs.ads.css',
       'test/shared-module-hooks.js',
-      'test/dist/bundle.js'
+      'test/dist/bundle.js',
+
+      // Test Data
+      {pattern: 'test/inventory.json', included: false, served: true},
+      {pattern: 'example/superclip-low.webm', included: false, served: true}
     ],
     customLaunchers: {
       travisChrome: {
@@ -51,7 +54,13 @@ module.exports = function(config) {
     colors: true,
     autoWatch: false,
     singleRun: true,
-    concurrency: Infinity
+    concurrency: 1,
+    browserNoActivityTimeout: 20000,
+    client: {
+      qunit: {
+        testTimeout: 10000
+      }
+    }
   });
 };
 

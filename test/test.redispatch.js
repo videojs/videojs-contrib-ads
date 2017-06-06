@@ -63,34 +63,23 @@ QUnit.module('Redispatch', {
 
 QUnit.test('playing event in different ad states', function(assert) {
 
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => false;
   assert.equal(this.redispatch('playing'), 'ignored');
 
-  this.player.ads.state = 'ads-ready';
-  assert.equal(this.redispatch('playing'), 'ignored');
-
-  this.player.ads.state = 'preroll?';
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => false;
   assert.equal(this.redispatch('playing'), 'adplaying');
 
-  this.player.ads.state = 'ads-ready?';
-  assert.equal(this.redispatch('playing'), 'adplaying');
-
-  this.player.ads.state = 'ad-playback';
-  assert.equal(this.redispatch('playing'), 'adplaying');
-
-  this.player.ads.state = 'content-resuming';
-  assert.equal(this.redispatch('playing'), 'ignored');
-
-  this.player.ads.state = 'postroll?';
-  assert.equal(this.redispatch('playing'), 'ignored');
-
-  this.player.ads.state = 'content-playback';
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => true;
   assert.equal(this.redispatch('playing'), 'ignored');
 
 });
 
-// More information in this comment: https://github.com/videojs/videojs-contrib-ads/blob/320243d316cd6dc7f45146eab68c2b759d841578/src/redispatch.js#L73-L76
-QUnit.test('playing is cancelled during ad playback if video element is recycled', function(assert) {
-  this.player.ads.state = 'ad-playback';
-  this.player.ads.videoElementRecycled = () => true;
+QUnit.test('no adplaying event during ad playback if content play was cancelled', function(assert) {
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._cancelledPlay = true;
   assert.equal(this.redispatch('playing'), 'cancelled');
 });

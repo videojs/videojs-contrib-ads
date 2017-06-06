@@ -2,15 +2,15 @@
 The goal of this feature is to make player events work as an integrator would
 expect despite the presense of ads. For example, an integrator would expect
 an `ended` event to happen once the content is ended. If an `ended` event is sent
-as a result of an ad ending, that is a bug. The `redispatch` method should recognize
+as a result of a preroll ending, that is a bug. The `redispatch` method should recognize
 such `ended` events and prefix them so they are sent as `adended`, and so on with
 all other player events.
 */
 
-// Stop propogation for an event
+// Cancel an event.
+// Video.js wraps native events. This technique stops propagation for the Video.js event
+// (AKA player event or wrapper event) while native events continue propagating.
 const cancelEvent = (player, event) => {
-  // Pretend we called stopImmediatePropagation because we want the native
-  // element events to continue propagating
   event.isImmediatePropagationStopped = function() {
     return true;
   };
@@ -20,8 +20,12 @@ const cancelEvent = (player, event) => {
   };
 };
 
-// Stop propogation for an event, then send a new event with the type of the original
+// Redispatch an event with a prefix.
+// Cancels the event, then sends a new event with the type of the original
 // event with the given prefix added.
+// The inclusion of the "state" property should be removed in a future
+// major version update with instructions to migrate any code that relies on it.
+// It is an implementation detail and relying on it creates fragility.
 const prefixEvent = (player, prefix, event) => {
   cancelEvent(player, event);
   player.trigger({
@@ -31,105 +35,132 @@ const prefixEvent = (player, prefix, event) => {
   });
 };
 
+// Playing event
+// Requirements:
+// * Normal playing event when there is no preroll
+// * No playing event before preroll
+// * At least one playing event after preroll
+// * A single adplaying event when an ad begins
+const handlePlaying = (player, event) => {
+  if (player.ads.isInAdMode()) {
+
+    if (player.ads.isContentResuming()) {
+
+      // Prefix playing event when switching back to content after postroll.
+      if (player.ads._contentEnding) {
+        prefixEvent(player, 'content', event);
+      }
+
+    // adplaying was already sent due to cancelContentPlay. Avoid sending another.
+    } else if (player.ads._cancelledPlay) {
+      cancelEvent(player, event);
+
+    // Prefix all other playing events during ads.
+    } else {
+      prefixEvent(player, 'ad', event);
+    }
+  }
+};
+
+// Ended event
+// Requirements:
+// * A single ended event when there is no postroll
+// * No ended event before postroll
+// * A single ended event after postroll
+const handleEnded = (player, event) => {
+  if (player.ads.isInAdMode()) {
+
+    // The true ended event fired by plugin.js either after the postroll
+    // or because there was no postroll.
+    if (player.ads.isContentResuming()) {
+      return;
+    }
+
+    // Prefix ended due to ad ending.
+    prefixEvent(player, 'ad', event);
+
+  } else {
+
+    // Prefix ended due to content ending.
+    prefixEvent(player, 'content', event);
+  }
+};
+
+// Loadstart event
+// Requirements:
+// * Initial content loadstart is not prefixed
+// * Loadstart due to ad loading is prefixed
+// * Loadstart due to content source change is not prefixed
+// * Loadstart due to content resuming is prefixed
+
+const handleLoadStart = (player, event) => {
+
+  // Initial loadstart
+  if (!player.ads._hasThereEverBeenALoadStart) {
+    return;
+
+  // Ad playing
+  } else if (player.ads.isAdPlaying()) {
+    prefixEvent(player, 'ad', event);
+
+  // Source change
+  } else if (player.currentSrc() !== player.ads.contentSrc) {
+    return;
+
+  // Content resuming
+  } else {
+    prefixEvent(player, 'content', event);
+  }
+};
+
+// Play event
+// Requirements:
+// * Play events have the "ad" prefix when an ad is playing
+// * Play events have the "content" prefix when content is resuming
+// Play requests are unique because they represent user intention to play. They happen
+// because the user clicked play, or someone called player.play(), etc. It could happen
+// multiple times during ad loading, regardless of where we are in the process. With our
+// current architecture, this will always cause the content to play. Therefor, contrib-ads
+// must always cancelContentPlay if there is any possible chance the play caused the
+// content to play, even if we are technically in ad mode. In order for that to happen,
+// play events need to be unprefixed until the last possible moment. A better solution
+// would be to have a way to intercept play events rather than "cancel" them by pausing
+// after each one. To be continued...
+const handlePlay = (player, event) => {
+  const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
+
+  if (player.ads.isAdPlaying()) {
+    prefixEvent(player, 'ad', event);
+  } else if (player.ads.isContentResuming() || resumingAfterNoPreroll) {
+    prefixEvent(player, 'content', event);
+  }
+};
+
 // Handle a player event, either by redispatching it with a prefix, or by
 // letting it go on its way without any meddling.
 export default function redispatch(event) {
 
-  // We do a quick play/pause before we check for prerolls. This creates a "playing"
-  // event. This conditional block prefixes that event so it's "adplaying" if it
-  // happens while we're in the "preroll?" state. Not every browser is in the
-  // "preroll?" state for this event, so the following browsers come through here:
-  //  * iPad
-  //  * iPhone
-  //  * Android
-  //  * Safari
-  // This is too soon to check videoElementRecycled because there is no snapshot
-  // yet. We rely on the coincidence that all browsers for which
-  // videoElementRecycled would be true also happen to send their initial playing
-  // event during "preroll?"
-  if (event.type === 'playing' && this.ads.state === 'preroll?') {
-    prefixEvent(this, 'ad', event);
+  // Events with special treatment
+  if (event.type === 'playing') {
+    handlePlaying(this, event);
+  } else if (event.type === 'ended') {
+    handleEnded(this, event);
+  } else if (event.type === 'loadstart') {
+    handleLoadStart(this, event);
+  } else if (event.type === 'play') {
+    handlePlay(this, event);
 
-  // Here we send "adplaying" for browsers that send their initial "playing" event
-  // (caused by the the initial play/pause) during the "ad-playback" state.
-  // The following browsers come through here:
-  // * Chrome
-  // * IE11
-  // If the ad plays in the content tech (aka videoElementRecycled) there will be
-  // another playing event when the ad starts. We check videoElementRecycled to
-  // avoid a second adplaying event. Thankfully, at this point a snapshot exists
-  // so we can safely check videoElementRecycled.
-  } else if (event.type === 'playing' &&
-      this.ads.state === 'ad-playback' &&
-      !this.ads.videoElementRecycled()) {
-    prefixEvent(this, 'ad', event);
+  // Standard handling for all other events
+  } else if (this.ads.isInAdMode()) {
+    if (this.ads.isContentResuming()) {
 
-  // If the ad takes a long time to load, "playing" caused by play/pause can happen
-  // during "ads-ready?" instead of "preroll?" or "ad-playback", skipping the
-  // other conditions that would normally catch it
-  } else if (event.type === 'playing' && this.ads.state === 'ads-ready?') {
-    prefixEvent(this, 'ad', event);
+      // Event came from snapshot restore after an ad, use "content" prefix
+      prefixEvent(this, 'content', event);
+    } else {
 
-  // When an ad is playing in content tech, we would normally prefix
-  // "playing" with "ad" to send "adplaying". However, when we did a play/pause
-  // before the preroll, we already sent "adplaying". This condition prevents us
-  // from sending another.
-  } else if (event.type === 'playing' &&
-      this.ads.state === 'ad-playback' &&
-      this.ads.videoElementRecycled()) {
-    cancelEvent(this, event);
-    return;
-
-  // When ad is playing in content tech, prefix everything with "ad".
-  // This block catches many events such as emptied, play, timeupdate, and ended.
-  } else if (this.ads.state === 'ad-playback') {
-    if (this.ads.videoElementRecycled() || this.ads.stitchedAds()) {
+      // Event came from ad playback, use "ad" prefix
       prefixEvent(this, 'ad', event);
     }
-
-  // Send contentended if ended happens during content.
-  // We will make sure an ended event is sent after postrolls.
-  } else if (this.ads.state === 'content-playback' && event.type === 'ended') {
-    prefixEvent(this, 'content', event);
-
-  // Event prefixing during content resuming is complicated
-  } else if (this.ads.state === 'content-resuming') {
-
-    // This does not happen during normal circumstances. I wasn't able to reproduce
-    // it, but the working theory is that it handles cases where restoring the
-    // snapshot takes a long time, such as in iOS7 and older Firefox.
-    if (this.ads.snapshot &&
-        this.currentSrc() !== this.ads.snapshot.currentSrc) {
-
-      // Don't prefix `loadstart` event
-      if (event.type === 'loadstart') {
-        return;
-      }
-
-      // All other events get "content" prefix
-      return prefixEvent(this, 'content', event);
-
-    // Content resuming after postroll
-    } else if (this.ads.snapshot && this.ads.snapshot.ended) {
-
-      // Don't prefix `pause` and `ended` events
-      // They don't always happen during content-resuming, but they might.
-      // It seems to happen most often on iOS and Android.
-      if ((event.type === 'pause' ||
-          event.type === 'ended')) {
-        return;
-      }
-
-      // All other events get "content" prefix
-      return prefixEvent(this, 'content', event);
-
-    }
-
-    // Content resuming after preroll or midroll
-    // Events besides "playing" get "content" prefix
-    if (event.type !== 'playing') {
-      prefixEvent(this, 'content', event);
-    }
-
   }
+
 }
