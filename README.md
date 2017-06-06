@@ -5,7 +5,7 @@ It takes care of a number of concerns for you, reducing the code you have to wri
 
 Lead Maintainer: Greg Smith [https://github.com/incompl](https://github.com/incompl)
 
-Maintenance Status: Stable, in its own interesting way
+Maintenance Status: Stabler Than Ever
 
 ## Getting Started
 
@@ -487,9 +487,10 @@ that certain expectations are met. The next section describes those expectations
 
 ## Migration Guides
 
-* [Migrating to 2.0](migrating-to-2.0.md)
-* [Migrating to 3.0](migrating-to-3.0.md)
-* [Migrating to 4.0](migrating-to-4.0.md)
+* [Migrating to 2.0](migration-guides/migrating-to-2.0.md)
+* [Migrating to 3.0](migration-guides/migrating-to-3.0.md)
+* [Migrating to 4.0](migration-guides/migrating-to-4.0.md)
+* [Migrating to 5.0](migration-guides/migrating-to-5.0.md)
 
 ## Building
 

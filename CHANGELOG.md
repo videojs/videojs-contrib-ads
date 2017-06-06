@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 5.0.0
+
+Please refer to the [Migrating to 5.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migration-guides/migrating-to-5.0.md) guide when updating to this version.
+
+* [@incompl](http://github.com/incompl): Added integration tests for Redispatch
+* [@incompl](http://github.com/incompl): Added documentation for Redispatch
+* [@incompl](http://github.com/incompl): A more reliable and maintainable Redispatch implementation
+
 ## 4.2.8
 
 * [@nochev](http://github.com/nochev): Clear registered timeouts when player is disposed
@@ -81,7 +89,7 @@ This version introduces a bug with missing `ended` events. It is fixed in the ne
 
 ## 4.0.0
 
-Please refer to the [Migrating to 4.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migrating-to-4.0.md) guide when updating to this version.
+Please refer to the [Migrating to 4.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migration-guides/migrating-to-4.0.md) guide when updating to this version.
 
 * [@incompl](http://github.com/incompl): `playing` event no longer sent before preroll
 * [@incompl](http://github.com/incompl): `contentplayback` event removed
