@@ -981,6 +981,9 @@ QUnit.test('ended event is sent without postroll', function(assert) {
 
 QUnit.test('isLive', function(assert) {
 
+  // Make videojs.browser writeable
+  videojs.browser = Object.assign({}, videojs.browser);
+
   this.player.duration = function() {return 0;};
   videojs.browser.IOS_VERSION = '8';
   assert.strictEqual(this.player.ads.isLive(this.player), true);
@@ -1008,6 +1011,9 @@ QUnit.test('isLive', function(assert) {
 });
 
 QUnit.test('shouldPlayContentBehindAd', function(assert) {
+
+  // Make videojs.browser writeable
+  videojs.browser = Object.assign({}, videojs.browser);
 
   this.player.duration = function() {return Infinity;};
   videojs.browser.IS_IOS = true;
