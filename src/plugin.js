@@ -96,7 +96,7 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad-integrations from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
-    if (player.currentSrc() === player.ads.snapshot.currentSrc) {
+    if (player.ads.snapshot && player.ads.snapshot.currentSrc === player.currentSrc()) {
       return;
     }
 
@@ -186,6 +186,9 @@ const contribAdsPlugin = function(options) {
         return false;
       }
 
+      if (player.ads.shouldPlayContentBehindAd(player)) {
+        return false;
+      }
       if (!this.snapshot) {
         throw new Error(
           'You cannot use videoElementRecycled while there is no snapshot.');
@@ -394,12 +397,12 @@ const contribAdsPlugin = function(options) {
         if (player.ads.isLive(player)) {
           player.addClass('vjs-live');
         }
+
         if (!player.ads.shouldPlayContentBehindAd(player)) {
           snapshot.restorePlayerSnapshot(player, this.snapshot);
         }
-
         // Reset the volume to pre-ad levels
-        if (player.ads.shouldPlayContentBehindAd(player)) {
+        else {
           player.volume(this.preAdVolume_);
         }
 
