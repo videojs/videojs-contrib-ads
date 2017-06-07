@@ -34,6 +34,88 @@ QUnit.test('restores the original video src after ads', function(assert) {
   assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
 });
 
+QUnit.test('if withCredentials is present, restores the original video src withCredentials', function(assert) {
+  var updatedSrc;
+
+  this.player.currentSrc = function() {
+    return 'content.mp4';
+  };
+
+  this.player.currentType = function() {
+    return 'video/mp4';
+  };
+
+  this.player.currentSource = function() {
+    return {type: 'video/mp4', src: 'content.mp4', withCredentials: true};
+  }
+
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+  this.player.ads.startLinearAdMode();
+
+  // `src` gets called internally to set the source back to its original
+  // value when the player snapshot is restored when `endLinearAdMode`
+  // is called.
+  this.player.tech_.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+
+  this.player.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+
+  this.player.ads.endLinearAdMode();
+  this.player.trigger('playing');
+  assert.deepEqual(updatedSrc, {type: 'video/mp4', src: 'content.mp4', withCredentials: true}, 'withCredentials restored');
+});
+
+QUnit.test('if withCredentials is NOT present, restores the original video src without withCredentials', function(assert) {
+  var updatedSrc;
+
+  this.player.currentSrc = function() {
+    return 'content.mp4';
+  };
+
+  this.player.currentType = function() {
+    return 'video/mp4';
+  };
+
+  this.player.currentSource = function() {
+    return {type: 'video/mp4', src: 'content.mp4'};
+  }
+
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+  this.player.ads.startLinearAdMode();
+
+  // `src` gets called internally to set the source back to its original
+  // value when the player snapshot is restored when `endLinearAdMode`
+  // is called.
+  this.player.tech_.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+
+  this.player.src = function(source) {
+    if (source === undefined) {
+      return 'ad.mp4';
+    }
+    updatedSrc = source;
+  };
+
+  this.player.ads.endLinearAdMode();
+  this.player.trigger('playing');
+  assert.deepEqual(updatedSrc, {type: 'video/mp4', src: 'content.mp4'}, 'restored without withCredentials');
+});
+
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
   var setTimeoutSpy;
 
