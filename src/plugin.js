@@ -82,6 +82,19 @@ const contribAdsPlugin = function(options) {
   // Set up redispatching of player events
   player.on(videoEvents, redispatch);
 
+  // If we haven't seen a loadstart after 5 seconds, the plugin was not initialized
+  // correctly.
+  window.setTimeout(() => {
+    if (!player.ads._hasThereEverBeenALoadStart && player.src() !== '') {
+      videojs.log.error('videojs-contrib-ads has not seen a loadstart event 5 seconds ' +
+        'after being initialized, but a source is present. This indicates that ' +
+        'videojs-contrib-ads was initialized too late. It must be initialized ' +
+        'immediately after video.js in the same tick. As a result, some ads will not ' +
+        'play and some media events will be incorrect. For more information, see ' +
+        'https://github.com/videojs/videojs-contrib-ads#important-note-about-initialization');
+    }
+  }, 5000);
+
   // "vjs-has-started" should be present at the end of a video. This makes sure it's
   // always there.
   player.on('ended', function() {
