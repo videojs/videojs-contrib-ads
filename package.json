@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/videojs/videojs-contrib-ads.git"
   },
-  "version": "5.0.0",
+  "version": "5.0.1",
   "author": "Brightcove",
   "engines": {
     "node": ">= 0.8.0"
