@@ -1,12 +1,9 @@
 # CHANGELOG
 
-## 5.0.0
+## 5.0.1
 
-Please refer to the [Migrating to 5.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migration-guides/migrating-to-5.0.md) guide when updating to this version.
+* [@incompl](http://github.com/incompl): Emit an error if plugin is initialized too late. [More info](https://github.com/videojs/videojs-contrib-ads#important-note-about-initialization)
 
-* [@incompl](http://github.com/incompl): Added integration tests for Redispatch
-* [@incompl](http://github.com/incompl): Added documentation for Redispatch
-* [@incompl](http://github.com/incompl): A more reliable and maintainable Redispatch implementation
 
 ## 4.2.8
 
