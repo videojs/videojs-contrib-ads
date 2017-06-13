@@ -38,8 +38,16 @@ videojs('video', {}, function() {
 You may also use the Javascript and CSS links from the following to get started:
 [https://cdnjs.com/libraries/videojs-contrib-ads](https://cdnjs.com/libraries/videojs-contrib-ads)
 
-
 With this basic structure in place, you're ready to develop an ad integration.
+
+## Important Note About Initialization
+
+In order to function correctly, videojs-contrib-ads must be initialized immediately after video.js (in the same [tick](http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained/). This is for two reasons:
+
+* This plugin relies on `loadstart` events, and initializing the plugin late means the plugin may miss an initial `loadstart`.
+* For [Redispatch](#redispatch) to function it must be initialized before any other code that listens to media events.
+
+The plugin will emit an error if it detects that it it missed a `loadstart` event. If this happens, it is likely that downstream failures will occur, so it's important to resolve this issue.
 
 ## Developing an Integration
 
