@@ -466,9 +466,9 @@ that certain expectations are met. The next section describes those expectations
 ##### `play` events
 
  * Play events represent intention to play, such as clicking the play button.
- * Play events do not occur during [ad playback](#isAdPlaying).
- * Play events can happen during [ad mode](#isInAdMode) when [an ad is not currently
- playing](#isAdPlaying), but content will not play as a result.
+ * Play events do not occur during [ad playback](#isadplaying).
+ * Play events can happen during [ad mode](#isinadMode) when [an ad is not currently
+ playing](#isadplaying), but content will not play as a result.
 
 ##### `playing` events
 
@@ -491,7 +491,7 @@ that certain expectations are met. The next section describes those expectations
 ##### Other events
 
  * As a general rule, usual events are not sent if the plugin is in
- (ad mode)[#isInAdMode].
+ [ad mode](#isinadmode).
 
 ## Migration Guides
 
