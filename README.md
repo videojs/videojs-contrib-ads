@@ -467,7 +467,7 @@ that certain expectations are met. The next section describes those expectations
 
  * Play events represent intention to play, such as clicking the play button.
  * Play events do not occur during [ad playback](#isadplaying).
- * Play events can happen during [ad mode](#isinadMode) when [an ad is not currently
+ * Play events can happen during [ad mode](#isinadmode) when [an ad is not currently
  playing](#isadplaying), but content will not play as a result.
 
 ##### `playing` events
