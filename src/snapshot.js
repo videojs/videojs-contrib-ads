@@ -71,21 +71,21 @@ export function getPlayerSnapshot(player) {
 
   // iOS Safari will change caption mode to 'showing' or 'hidden' under certain conditions,
   // so this will re-disable them during ad playback in those cases.
+  if (!Array.isArray(tracks)) {
+    tracks.on('change', function changeHandler(event) {
+      if (player.ads.state === 'ad-playback') {
+        const trackList = event.target.tracks_;
 
-  // do we need to check that tracks is not an empty array (as seen in its declaration above)?
-  tracks.on('change', function changeHandler(event) {
-    if (player.ads.state === 'ad-playback') {
-      const trackList = event.target.tracks_;
-
-      trackList.forEach(track => {
-        if (track.mode === 'showing' || track.mode === 'hidden') {
-          track.mode = 'disabled';
-          console.log('track mode changed back to disabled');
-        }
-      })
-    }
-    this.off('change', changeHandler);
-  })
+        trackList.forEach(track => {
+          if (track.mode === 'showing' || track.mode === 'hidden') {
+            track.mode = 'disabled';
+            console.log('track mode changed back to disabled');
+          }
+        })
+      }
+      this.off('change', changeHandler);
+    });
+  }
 
   return snapshotObject;
 }
