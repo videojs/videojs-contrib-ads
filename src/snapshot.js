@@ -78,7 +78,7 @@ export function getPlayerSnapshot(player) {
         const trackList = event.target.tracks_;
 
         trackList.forEach(track => {
-          if (track.mode === 'showing' || track.mode === 'hidden') {
+          if (track.mode === 'showing') {
             track.mode = 'disabled';
           }
         })
