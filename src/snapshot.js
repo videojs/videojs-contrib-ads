@@ -81,7 +81,7 @@ export function getPlayerSnapshot(player) {
           if (track.mode === 'showing') {
             track.mode = 'disabled';
           }
-        })
+        });
       }
     });
   }
@@ -131,7 +131,6 @@ export function restorePlayerSnapshot(player, snapshotObject) {
       trackSnapshot.track.mode = trackSnapshot.mode;
     }
   };
-
 
   // finish restoring the playback state
   const resume = function() {
