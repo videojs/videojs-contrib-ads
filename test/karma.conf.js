@@ -55,7 +55,7 @@ module.exports = function(config) {
     autoWatch: false,
     singleRun: true,
     concurrency: 1,
-    browserNoActivityTimeout: 20000,
+    browserNoActivityTimeout: 300000,
     client: {
       qunit: {
         testTimeout: 10000
@@ -63,4 +63,3 @@ module.exports = function(config) {
     }
   });
 };
-
