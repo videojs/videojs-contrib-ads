@@ -86,7 +86,7 @@ export function getPlayerSnapshot(player) {
         }
       }
     }
-  }
+  };
 
   if (videojs.browser.IS_IOS && !Array.isArray(tracks)) {
     tracks.on('change', iOSTrackListChangeHandler);
