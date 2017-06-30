@@ -89,7 +89,7 @@ export function getPlayerSnapshot(player) {
   }
 
   if (videojs.browser.IS_IOS && !Array.isArray(tracks)) {
-    tracks.one('change', iOSTrackListChangeHandler);
+    tracks.on('change', iOSTrackListChangeHandler);
   }
 
   snapshotObject.trackChangeHandler = iOSTrackListChangeHandler;
