@@ -69,22 +69,30 @@ export function getPlayerSnapshot(player) {
   }
   snapshotObject.suppressedTracks = suppressedTracks;
 
-  // iOS Safari will change caption mode to 'showing' if a user previously
-  // turned captions on manually for that video source, so this will re-disable
-  // them in case that occurs during ad playback
-  if (videojs.browser.IS_IOS && !Array.isArray(tracks)) {
-    tracks.one('change', function(event) {
-      if (player.ads.state === 'ad-playback') {
-        const trackList = event.target.tracks_;
+  /**
+   * iOS Safari will change caption mode to 'showing' if a user previously
+   * turned captions on manually for that video source, so this TextTrackList
+   * 'change' event handler will re-disable them in case that occurs during ad playback
+   */
+  const iOSTrackListChangeHandler = function() {
+    if (player.ads.state === 'ad-playback') {
+      const textTrackList = player.textTracks();
 
-        trackList.forEach(track => {
-          if (track.mode === 'showing') {
-            track.mode = 'disabled';
-          }
-        });
+      for (let i = 0; i < textTrackList.length; i++) {
+        const track = textTrackList[i];
+
+        if (track.mode === 'showing') {
+          track.mode = 'disabled';
+        }
       }
-    });
+    }
   }
+
+  if (videojs.browser.IS_IOS && !Array.isArray(tracks)) {
+    tracks.one('change', iOSTrackListChangeHandler);
+  }
+
+  snapshotObject.trackChangeHandler = iOSTrackListChangeHandler;
 
   return snapshotObject;
 }
@@ -116,7 +124,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
   if (videojs.browser.IS_IOS) {
     const tracks = player.textTracks();
 
-    tracks.off('change');
+    tracks.off('change', snapshotObject.trackChangeHandler);
   }
 
   let trackSnapshot;
