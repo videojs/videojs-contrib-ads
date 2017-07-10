@@ -343,43 +343,6 @@ QUnit.test('When captions are enabled, the video\'s tracks will be disabled duri
   assert.strictEqual(showing, tracks.length, 'all tracks should be showing');
 });
 
-QUnit.test('player events during snapshot restoration are prefixed', function(assert) {
-  var spy = sinon.spy();
-
-  assert.expect(2);
-
-  this.player.on(['contentloadstart', 'contentloadedmetadata'], spy);
-
-  this.player.src({
-    src: 'http://example.com/movie.mp4',
-    type: 'video/mp4'
-  });
-
-  this.player.on('readyforpreroll', function() {
-    this.ads.startLinearAdMode();
-  });
-
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-
-  this.player.currentSrc = function() {
-    return 'http://example.com/movie.mp4';
-  };
-
-  this.player.ads.contentSrc = 'somethingelse';
-  this.player.trigger('loadstart');
-  assert.strictEqual(spy.callCount, 0, 'did not fire contentloadstart');
-  this.player.ads.endLinearAdMode();
-
-  // make it appear that the tech is ready to seek
-  this.player.ads._hasThereBeenALoadedData = true;
-  this.player.ads._hasThereBeenALoadedMetaData = true;
-  this.player.ads.contentSrc = 'http://example.com/movie.mp4';
-  this.player.trigger('loadstart');
-  this.player.trigger('loadedmetadata');
-  assert.strictEqual(spy.callCount, 2, 'fired "content" prefixed events');
-});
-
 QUnit.test('No snapshot if duration is Infinity', function(assert) {
   var originalSrc = 'foobar';
   var newSrc = 'barbaz';
