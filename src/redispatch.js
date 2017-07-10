@@ -95,7 +95,7 @@ const handleEnded = (player, event) => {
 const handleLoadEvent = (player, event) => {
 
   // Initial event
-  if (event.type === 'loadstart' && !player.ads._hasThereEverBeenALoadStart ||
+  if (event.type === 'loadstart' && !player.ads._hasThereBeenALoadStartDuringPlayerLife ||
       event.type === 'loadeddata' && !player.ads._hasThereBeenALoadedData ||
       event.type === 'loadedmetadata' && !player.ads._hasThereBeenALoadedMetaData) {
     return;
