@@ -145,6 +145,14 @@ const contribAdsPlugin = function(options) {
     player.ads._hasThereEverBeenALoadStart = true;
   });
 
+  player.on('loadeddata', () => {
+    player.ads._hasThereBeenALoadedData = true;
+  });
+
+  player.on('loadedmetadata', () => {
+    player.ads._hasThereBeenALoadedMetaData = true;
+  });
+
   // Replace the plugin constructor with the ad namespace
   player.ads = {
     state: 'content-set',
@@ -160,8 +168,16 @@ const contribAdsPlugin = function(options) {
     _contentHasEnded: false,
 
     // Tracks if loadstart has happened yet for the initial source. It is not reset
-    // on source changes.
+    // on source changes because loadstart is the event that signals to the ad plugin
+    // that the source has changed. Therefore, no special signaling is needed to know
+    // that there has been one for subsequent sources.
     _hasThereEverBeenALoadStart: false,
+
+    // Tracks if loadeddata has happened yet for the current source.
+    _hasThereBeenALoadedData: false,
+
+    // Tracks if loadedmetadata has happened yet for the current source.
+    _hasThereBeenALoadedMetaData: false,
 
     // Are we after startLinearAdMode and before endLinearAdMode?
     _inLinearAdMode: false,
@@ -179,6 +195,8 @@ const contribAdsPlugin = function(options) {
       player.ads._contentHasEnded = false;
       player.ads.snapshot = null;
       player.ads.adType = null;
+      player.ads._hasThereBeenALoadedData = false;
+      player.ads._hasThereBeenALoadedMetaData = false;
     },
 
     // Call this when an ad response has been received and there are

@@ -1,10 +1,10 @@
 /*
-
 TODO:
 * timeupdate, adtimeupdate, contenttimeupdate
 * loadstart, adloadstart, contentloadstart
 * play, adplay, contentplay
-
+* loadeddata, adloadeddata, contentloadeddata
+* loadedmetadata, adloadedmetadata, contentloadedmetadata
 */
 
 import QUnit from 'qunit';
@@ -58,8 +58,6 @@ QUnit.test('Midrolls', function(assert) {
     'error',
     'emptied',
     'stalled',
-    'loadedmetadata',
-    'loadeddata',
     'canplay',
     'canplaythrough',
     'waiting',

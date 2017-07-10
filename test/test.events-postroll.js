@@ -1,10 +1,11 @@
 /*
-
 TODO:
 * timeupdate, adtimeupdate, contenttimeupdate
 * loadstart, adloadstart, contentloadstart
 * play, adplay, contentplay
 * contentended
+* loadeddata, adloadeddata, contentloadeddata
+* loadedmetadata, adloadedmetadata, contentloadedmetadata
 */
 
 import QUnit from 'qunit';
@@ -103,8 +104,6 @@ QUnit.test('Event prefixing and postrolls', function(assert) {
     'error',
     'emptied',
     'stalled',
-    'loadedmetadata',
-    'loadeddata',
     'canplay',
     'canplaythrough',
     'waiting',

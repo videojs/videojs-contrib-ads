@@ -1,11 +1,11 @@
 /*
-
 TODO:
 * adplay, contentplay
 * adplaying, contentplaying
 * adloadstart, contentloadstart
 * adended, contentended
-
+* adloadeddata, contentloadeddata
+* adloadedmetadata, contentloadedmetadata
 */
 
 import QUnit from 'qunit';
@@ -136,6 +136,78 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
 
 });
 
+QUnit.test('loadedmetadata event and prerolls: 1 before preroll, 0 after', function(assert) {
+  var done = assert.async();
+
+  var beforePreroll = true;
+  var loadedmetadataBeforePreroll = 0;
+  var loadedmetadataAfterPreroll = 0;
+
+  this.player.on('adend', () => {
+    beforePreroll = false;
+  });
+
+  this.player.on('loadedmetadata', (e) => {
+    if (beforePreroll) {
+      loadedmetadataBeforePreroll++;
+    } else {
+      loadedmetadataAfterPreroll++;
+    }
+  });
+
+  this.player.on(['error', 'aderror'], () => {
+    assert.ok(false, 'no errors');
+    done();
+  });
+
+  this.player.on('timeupdate', (e) => {
+    if (this.player.currentTime() > 1) {
+      assert.equal(loadedmetadataBeforePreroll, 1, 'loadedmetadata before preroll');
+      assert.equal(loadedmetadataAfterPreroll, 0, 'loadedmetadata after preroll');
+      done();
+    }
+  });
+
+  this.player.play();
+
+});
+
+QUnit.test('loadeddata event and prerolls: 1 before preroll, 0 after', function(assert) {
+  var done = assert.async();
+
+  var beforePreroll = true;
+  var loadeddataBeforePreroll = 0;
+  var loadeddataAfterPreroll = 0;
+
+  this.player.on('adend', () => {
+    beforePreroll = false;
+  });
+
+  this.player.on('loadeddata', (e) => {
+    if (beforePreroll) {
+      loadeddataBeforePreroll++;
+    } else {
+      loadeddataAfterPreroll++;
+    }
+  });
+
+  this.player.on(['error', 'aderror'], () => {
+    assert.ok(false, 'no errors');
+    done();
+  });
+
+  this.player.on('timeupdate', (e) => {
+    if (this.player.currentTime() > 1) {
+      assert.equal(loadeddataBeforePreroll, 1, 'loadeddata before preroll');
+      assert.equal(loadeddataAfterPreroll, 0, 'loadeddata after preroll');
+      done();
+    }
+  });
+
+  this.player.play();
+
+});
+
 QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert) {
   var done = assert.async();
 
@@ -191,8 +263,6 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
     'error',
     'emptied',
     'stalled',
-    'loadedmetadata',
-    'loadeddata',
     'canplay',
     'canplaythrough',
     'waiting',
