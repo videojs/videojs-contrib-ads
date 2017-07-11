@@ -514,8 +514,8 @@ const contribAdsPlugin = function(options) {
         },
         adserror() {
           this.state = 'content-resuming';
-          // Trigger 'adend' to notify that we are exiting 'ad-playback'
           player.ads._inLinearAdMode = false;
+          // Trigger 'adend' to notify that we are exiting 'ad-playback'
           player.trigger('adend');
         }
       }
