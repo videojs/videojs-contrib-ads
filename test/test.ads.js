@@ -1163,3 +1163,13 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
 });
 
 }(window, window.QUnit));
+
+QUnit.test('adserror ends linear ad mode ', function(assert) {
+  assert.strictEqual(this.player.ads._inLinearAdMode, false, 'before ad');
+  this.player.trigger('play');
+  this.player.trigger('adsready');
+  this.player.ads.startLinearAdMode();
+  assert.strictEqual(this.player.ads._inLinearAdMode, true, 'during ad');
+  this.player.trigger('adserror');
+  assert.strictEqual(this.player.ads._inLinearAdMode, false, 'after adserror');
+});
