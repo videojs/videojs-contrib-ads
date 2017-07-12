@@ -513,10 +513,7 @@ const contribAdsPlugin = function(options) {
           player.ads.adType = null;
         },
         adserror() {
-          this.state = 'content-resuming';
-          player.ads._inLinearAdMode = false;
-          // Trigger 'adend' to notify that we are exiting 'ad-playback'
-          player.trigger('adend');
+          player.ads.endLinearAdMode();
         }
       }
     },
