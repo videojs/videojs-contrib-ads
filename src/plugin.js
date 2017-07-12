@@ -12,7 +12,7 @@ import * as snapshot from './snapshot.js';
 import initializeContentupdate from './contentupdate.js';
 import cancelContentPlay from './cancelContentPlay.js';
 import adMacroReplacement from './macros.js';
-import * as cueTextTracks from './cueTextTracks.js';
+import cueTextTracks from './cueTextTracks.js';
 
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
@@ -794,3 +794,5 @@ const registerPlugin = videojs.registerPlugin || videojs.plugin;
 
 // Register this plugin with videojs
 registerPlugin('ads', contribAdsPlugin);
+
+export default contribAdsPlugin;

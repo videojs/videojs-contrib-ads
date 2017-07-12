@@ -5,10 +5,12 @@ node_js:
   - 'node'
   - 'lts/argon'
 before_script:
-  # check if the current version is equal to the version for the env
+
+  # Check if the current version is equal to the major version for the env.
   - 'export IS_INSTALLED="$(npm list video.js | grep "video.js@$VJS")"'
-  # we have to add semi colons to the end of each line in the if
-  # as travis runs this all on one line
+
+  # We have to add semicolons to the end of each line in the if as Travis runs
+  # this all on one line.
   - 'if [ -z "$IS_INSTALLED" ]; then
       echo "INSTALLING video.js@>=$VJS.0.0-RC.0 <$(($VJS+1)).0.0";
       npm i "video.js@>=$VJS.0.0-RC.0 <\$(($VJS+1)).0.0";
@@ -21,16 +23,8 @@ before_script:
 env:
   - VJS=5
   - VJS=6
-notifications:
-  hipchat:
-    rooms:
-      secure: LFKhoG+dqdOWwAc6jAo7mY8Jz9/QOkwzJ96mruLHAbsBmIPJcgdiofd6UhZtEYQm8YbdgwDFV3GxsVd74euEXMT8Z60VEufH0LS3fqAO1DeyIteeewhWoD6WuGGRmFmwD3jOJyTJf0ZAnzfaTi7OjjTX25lwB/4cWMtSJMwHQ7I=
-  irc:
-    channels:
-      - "chat.freenode.net#videojs"
-    use_notice: true
 addons:
-  firefox: latest-esr
+  firefox: latest
   apt:
     sources:
     - google-chrome

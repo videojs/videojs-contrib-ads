@@ -1,6 +1,6 @@
-import {exec} from 'child_process';
-import fs from 'fs';
-import path from 'path';
+const exec = require('child_process').exec;
+const fs = require('fs');
+const path = require('path');
 
 /* eslint no-console: 0 */
 
