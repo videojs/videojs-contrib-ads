@@ -1,5 +1,3 @@
-(function(window, QUnit) {
-
 var timerExists = function(env, keyOrId) {
   var timerId = _.isNumber(keyOrId) ? keyOrId : env.player.ads[String(keyOrId)];
   return env.clock.timers.hasOwnProperty(String(timerId));
@@ -1161,8 +1159,6 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
   this.player.trigger('adstart');
   assert.strictEqual(this.player.ads.adType, 'preroll');
 });
-
-}(window, window.QUnit));
 
 QUnit.test('adserror ends linear ad mode ', function(assert) {
   assert.strictEqual(this.player.ads._inLinearAdMode, false, 'before ad');
