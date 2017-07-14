@@ -86,17 +86,18 @@ const handleEnded = (player, event) => {
   }
 };
 
-// Loadstart event
+// handleLoadEvent is used for loadstart, loadeddata, and loadedmetadata
 // Requirements:
-// * Initial content loadstart is not prefixed
-// * Loadstart due to ad loading is prefixed
-// * Loadstart due to content source change is not prefixed
-// * Loadstart due to content resuming is prefixed
+// * Initial event is not prefixed
+// * Event due to ad loading is prefixed
+// * Event due to content source change is not prefixed
+// * Event due to content resuming is prefixed
+const handleLoadEvent = (player, event) => {
 
-const handleLoadStart = (player, event) => {
-
-  // Initial loadstart
-  if (!player.ads._hasThereEverBeenALoadStart) {
+  // Initial event
+  if (event.type === 'loadstart' && !player.ads._hasThereBeenALoadStartDuringPlayerLife ||
+      event.type === 'loadeddata' && !player.ads._hasThereBeenALoadedData ||
+      event.type === 'loadedmetadata' && !player.ads._hasThereBeenALoadedMetaData) {
     return;
 
   // Ad playing
@@ -145,8 +146,10 @@ export default function redispatch(event) {
     handlePlaying(this, event);
   } else if (event.type === 'ended') {
     handleEnded(this, event);
-  } else if (event.type === 'loadstart') {
-    handleLoadStart(this, event);
+  } else if (event.type === 'loadstart' ||
+             event.type === 'loadeddata' ||
+             event.type === 'loadedmetadata') {
+    handleLoadEvent(this, event);
   } else if (event.type === 'play') {
     handlePlay(this, event);
 

@@ -85,7 +85,7 @@ const contribAdsPlugin = function(options) {
   // If we haven't seen a loadstart after 5 seconds, the plugin was not initialized
   // correctly.
   window.setTimeout(() => {
-    if (!player.ads._hasThereEverBeenALoadStart && player.src() !== '') {
+    if (!player.ads._hasThereBeenALoadStartDuringPlayerLife && player.src() !== '') {
       videojs.log.error('videojs-contrib-ads has not seen a loadstart event 5 seconds ' +
         'after being initialized, but a source is present. This indicates that ' +
         'videojs-contrib-ads was initialized too late. It must be initialized ' +
@@ -142,7 +142,15 @@ const contribAdsPlugin = function(options) {
   });
 
   player.one('loadstart', () => {
-    player.ads._hasThereEverBeenALoadStart = true;
+    player.ads._hasThereBeenALoadStartDuringPlayerLife = true;
+  });
+
+  player.on('loadeddata', () => {
+    player.ads._hasThereBeenALoadedData = true;
+  });
+
+  player.on('loadedmetadata', () => {
+    player.ads._hasThereBeenALoadedMetaData = true;
   });
 
   // Replace the plugin constructor with the ad namespace
@@ -160,8 +168,16 @@ const contribAdsPlugin = function(options) {
     _contentHasEnded: false,
 
     // Tracks if loadstart has happened yet for the initial source. It is not reset
-    // on source changes.
-    _hasThereEverBeenALoadStart: false,
+    // on source changes because loadstart is the event that signals to the ad plugin
+    // that the source has changed. Therefore, no special signaling is needed to know
+    // that there has been one for subsequent sources.
+    _hasThereBeenALoadStartDuringPlayerLife: false,
+
+    // Tracks if loadeddata has happened yet for the current source.
+    _hasThereBeenALoadedData: false,
+
+    // Tracks if loadedmetadata has happened yet for the current source.
+    _hasThereBeenALoadedMetaData: false,
 
     // Are we after startLinearAdMode and before endLinearAdMode?
     _inLinearAdMode: false,
@@ -179,6 +195,8 @@ const contribAdsPlugin = function(options) {
       player.ads._contentHasEnded = false;
       player.ads.snapshot = null;
       player.ads.adType = null;
+      player.ads._hasThereBeenALoadedData = false;
+      player.ads._hasThereBeenALoadedMetaData = false;
     },
 
     // Call this when an ad response has been received and there are
@@ -380,7 +398,7 @@ const contribAdsPlugin = function(options) {
           }, settings.prerollTimeout);
 
           // Signal to ad plugin that it's their opportunity to play a preroll
-          if (player.ads._hasThereEverBeenALoadStart) {
+          if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
             player.trigger('readyforpreroll');
 
           // Don't play preroll before loadstart, otherwise the content loadstart event
