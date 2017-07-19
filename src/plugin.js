@@ -531,9 +531,7 @@ const contribAdsPlugin = function(options) {
           player.ads.adType = null;
         },
         adserror() {
-          this.state = 'content-resuming';
-          // Trigger 'adend' to notify that we are exiting 'ad-playback'
-          player.trigger('adend');
+          player.ads.endLinearAdMode();
         }
       }
     },
