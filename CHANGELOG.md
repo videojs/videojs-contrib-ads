@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 5.0.2
+
+* Fixed dispatching of `loadeddata` and `loadedmetadata` events
+* Adserror ends linear ad mode
+
 ## 5.0.1
 
 * [@incompl](http://github.com/incompl): Emit an error if plugin is initialized too late. [More info](https://github.com/videojs/videojs-contrib-ads#important-note-about-initialization)
