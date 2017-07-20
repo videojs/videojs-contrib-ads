@@ -2,8 +2,8 @@
 
 ## 5.0.2
 
-* Fixed dispatching of `loadeddata` and `loadedmetadata` events
-* Adserror ends linear ad mode
+* [@incompl](http://github.com/incompl): Fixed dispatching of `loadeddata` and `loadedmetadata` events
+* [@incompl](http://github.com/incompl): Adserror ends linear ad mode
 
 ## 5.0.1
 
