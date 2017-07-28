@@ -75,7 +75,7 @@ export function getPlayerSnapshot(player) {
    * 'change' event handler will re-disable them in case that occurs during ad playback
    */
   const iOSTrackListChangeHandler = function() {
-    if (player.ads.state === 'ad-playback') {
+    if (player.ads.isAdPlaying()) {
       const textTrackList = player.textTracks();
 
       for (let i = 0; i < textTrackList.length; i++) {
