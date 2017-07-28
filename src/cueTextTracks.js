@@ -101,9 +101,9 @@ const setCueAlreadySeen = function(player, cueId) {
 * @param cues The set of cues to work with
 * @param processCue A method that uses a cue to make some
 * ad request in the ad implementation
-* @param [cancelAds] A method that dynamically cancels ads in the ad implementation
+* @param [cancelAdsHandler] A method that dynamically cancels ads in the ad implementation
 **/
-export function processAdTrack(player, cues, processCue, cancelAds) {
+export function processAdTrack(player, cues, processCue, cancelAdsHandler) {
   player.ads.includedCues = {};
 
   // loop over set of cues
@@ -127,15 +127,16 @@ export function processAdTrack(player, cues, processCue, cancelAds) {
       return;
     }
 
+    // Optional dynamic ad cancellation
+    if (cancelAdsHandler) {
+      cancelAdsHandler(player, cueData, cueId, startTime);
+    }
+
     // Process cue as an ad cue
     processCue(player, cueData, cueId, startTime);
 
     // Indicate that this cue has been used
     setCueAlreadySeen(player, cueId);
 
-    // Optional dynamic ad cancellation
-    if (cancelAds !== undefined) {
-      cancelAds(player, cueData, cueId, startTime);
-    }
   }
 }
