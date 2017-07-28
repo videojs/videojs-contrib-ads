@@ -137,5 +137,10 @@ export function processAdTrack(player, cues, processCue, cancelAdsHandler) {
 
     // Indicate that this cue has been used
     setCueAlreadySeen(player, cueId);
+
+    // Optional dynamic ad cancellation
+    if (cancelAds !== undefined) {
+      cancelAds(player, cueData, cueId, startTime);
+    }
   }
 }
