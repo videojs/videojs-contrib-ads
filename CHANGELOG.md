@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 5.0.3
+
+* [@ldayananda](http://github.com/ldayananda): Bugfixes for ad cancellation by cues
+* [@ldayananda](http://github.com/ldayananda): cueTextTracks should always listen to addtrack event
+
 ## 5.0.2
 
 * [@incompl](http://github.com/incompl): Fixed dispatching of `loadeddata` and `loadedmetadata` events
