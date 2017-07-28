@@ -33,6 +33,7 @@
     <source src="http://vjs.zencdn.net/v/oceans.mp4" type='video/mp4' />
     <source src="http://vjs.zencdn.net/v/oceans.webm" type='video/webm' />
     <source src="http://vjs.zencdn.net/v/oceans.ogv" type='video/ogg' />
+    <track kind="metadata"> </track>
   </video>
   <video
     id="exampleAdContainer"
@@ -177,6 +178,11 @@
 
       // Set up to process metadata cues
       player.ads.cueTextTracks.processMetadataTracks(player, processMetadataTrack);
+
+      // Log when the remote text track is added
+      player.textTracks().addEventListener('addtrack', function(event) {
+        videojs.log('example', 'a track was added');
+      });
 
       // Set up a base text track to use for our ad cuepoints
       player.addRemoteTextTrack({

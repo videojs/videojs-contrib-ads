@@ -31,18 +31,21 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
 
 QUnit.test('runs processMetadataTrack callback as tracks are added', function(assert) {
   var tt = this.tt;
-  this.player.textTracks = function() {
-    return {
-      length: 1,
-      0: tt
-    };
-  };
-
   var processMetadataTrackSpy = sinon.spy();
   var cueTextTracks = this.player.ads.cueTextTracks;
 
+  // Start by adding a text track before processing
+  this.player.addRemoteTextTrack(tt);
+
   cueTextTracks.processMetadataTracks(this.player, processMetadataTrackSpy);
   assert.strictEqual(processMetadataTrackSpy.callCount, 1);
+
+  // add a new text track after initial processing
+  this.player.textTracks().trigger({
+    track: this.tt,
+    type: 'addtrack'
+  });
+  assert.strictEqual(processMetadataTrackSpy.callCount, 2);
 });
 
 QUnit.test('does not call processMetadataTrack callback until tracks available', function(assert) {
@@ -153,7 +156,7 @@ QUnit.test('processAdTrack runs cancelAds callback', function(assert) {
   var processCue = function(player, cueData, cueId, startTime) {
     return;
   };
-  var cancelAds = function(player, cueData) {
+  var cancelAds = function(player, cueData, cueId, startTime) {
     cueData.callCount += 1;
   };
 
