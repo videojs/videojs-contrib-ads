@@ -179,7 +179,7 @@ const contribAdsPlugin = function(options) {
 
         textTrackList.removeEventListener('change', player.ads.snapshot.trackChangeHandler);
       }
-      
+
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentEnding = false;
       player.ads._contentHasEnded = false;
