@@ -88,7 +88,7 @@ export function getPlayerSnapshot(player) {
     }
   };
 
-  if (videojs.browser.IS_IOS && !Array.isArray(tracks)) {
+  if (videojs.browser.IS_IOS && player.tech_.featuresNativeTextTracks && !Array.isArray(tracks)) {
     tracks.addEventListener('change', iOSTrackListChangeHandler);
   }
 
@@ -120,7 +120,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
 
   // ensures that the iOS TextTrackList 'change' listener added in getPlayerSnapshot()
   // doesn't persist into main content
-  if (videojs.browser.IS_IOS) {
+  if (videojs.browser.IS_IOS && player.tech_.featuresNativeTextTracks) {
     const tracks = player.textTracks();
 
     tracks.removeEventListener('change', snapshotObject.trackChangeHandler);
