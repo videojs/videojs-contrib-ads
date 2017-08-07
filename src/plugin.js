@@ -174,9 +174,12 @@ const contribAdsPlugin = function(options) {
 
     // TODO reset state to content-set here instead of in every contentupdate case
     reset() {
-      const textTrackList = player.textTracks();
+      if (player.ads.snapshot.trackChangeHandler) {
+        const textTrackList = player.textTracks();
 
-      textTrackList.removeEventListener('change', player.ads.snapshot.trackChangeHandler);
+        textTrackList.removeEventListener('change', player.ads.snapshot.trackChangeHandler);
+      }
+      
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentEnding = false;
       player.ads._contentHasEnded = false;
