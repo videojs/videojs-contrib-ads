@@ -89,7 +89,7 @@ export function getPlayerSnapshot(player) {
   };
 
   if (videojs.browser.IS_IOS && !Array.isArray(tracks)) {
-    tracks.on('change', iOSTrackListChangeHandler);
+    tracks.addEventListener('change', iOSTrackListChangeHandler);
   }
 
   snapshotObject.trackChangeHandler = iOSTrackListChangeHandler;
@@ -104,7 +104,6 @@ export function getPlayerSnapshot(player) {
  * @param {Object} snapshotObject - the player state to apply
  */
 export function restorePlayerSnapshot(player, snapshotObject) {
-
   if (player.ads.disableNextSnapshotRestore === true) {
     player.ads.disableNextSnapshotRestore = false;
     return;
@@ -124,7 +123,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
   if (videojs.browser.IS_IOS) {
     const tracks = player.textTracks();
 
-    tracks.off('change', snapshotObject.trackChangeHandler);
+    tracks.removeEventListener('change', snapshotObject.trackChangeHandler);
   }
 
   let trackSnapshot;
