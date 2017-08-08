@@ -13,6 +13,7 @@ function initialize(player) {
       const textTrackList = player.textTracks();
 
       textTrackList.removeEventListener('change', player.ads.snapshot.trackChangeHandler);
+      player.ads.snapshotIOSTrackHandlerAdded_ = false;
     }
   });
 
@@ -105,7 +106,10 @@ export function getPlayerSnapshot(player) {
   };
 
   if (videojs.browser.IS_IOS && player.tech_.featuresNativeTextTracks && !Array.isArray(tracks)) {
-    tracks.addEventListener('change', iOSTrackListChangeHandler);
+    if (!player.ads.snapshotIOSTrackHandlerAdded_) {
+      tracks.addEventListener('change', iOSTrackListChangeHandler);
+      player.ads.snapshotIOSTrackHandlerAdded_ = true;
+    }
   }
 
   snapshotObject.trackChangeHandler = iOSTrackListChangeHandler;
@@ -140,6 +144,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     const tracks = player.textTracks();
 
     tracks.removeEventListener('change', snapshotObject.trackChangeHandler);
+    player.ads.snapshotIOSTrackHandlerAdded_ = false;
   }
 
   let trackSnapshot;
