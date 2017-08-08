@@ -7,6 +7,18 @@ import window from 'global/window';
 
 import videojs from 'video.js';
 
+function initialize(player) {
+  player.on('contentupdate', function() {
+    if (player.ads.snapshot.trackChangeHandler) {
+      const textTrackList = player.textTracks();
+
+      textTrackList.removeEventListener('change', player.ads.snapshot.trackChangeHandler);
+    }
+  });
+
+  player.ads.snapshotInitialized_ = true;
+}
+
 /**
  * Returns an object that captures the portions of player state relevant to
  * video playback. The result of this function can be passed to
@@ -15,6 +27,10 @@ import videojs from 'video.js';
  * @param {Object} player The videojs player object
  */
 export function getPlayerSnapshot(player) {
+
+  if (player.ads.snapshotInitialized_ === undefined) {
+    initialize(player);
+  }
 
   let currentTime;
 
