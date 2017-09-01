@@ -1,27 +1,12 @@
-import {exec} from 'child_process';
-import fs from 'fs';
-import path from 'path';
+const exec = require('child_process').exec;
+const fs = require('fs');
+const path = require('path');
+const semver = require('semver');
+const pkg = require('../package.json');
 
 /* eslint no-console: 0 */
 
-const pkg = require(path.join(__dirname, '../package.json'));
-
-/**
- * Determines whether or not the project has the CHANGELOG setup by checking
- * for the presence of a CHANGELOG.md file and the necessary dependency and
- * npm script.
- *
- * @return {Boolean}
- */
-const hasChangelog = () => {
-  try {
-    fs.statSync(path.join(__dirname, '../CHANGELOG.md'));
-  } catch (x) {
-    return false;
-  }
-  return pkg.devDependencies.hasOwnProperty('chg') &&
-    pkg.scripts.hasOwnProperty('change');
-};
+process.chdir(path.resolve(__dirname, '..'));
 
 /**
  * Determines whether or not the project has the Bower setup by checking for
@@ -31,7 +16,7 @@ const hasChangelog = () => {
  */
 const hasBower = () => {
   try {
-    fs.statSync(path.join(__dirname, '../bower.json'));
+    fs.statSync('./bower.json');
     return true;
   } catch (x) {
     return false;
@@ -40,9 +25,8 @@ const hasBower = () => {
 
 const commands = [];
 
-// If the project has a CHANGELOG, update it for the new release.
-if (hasChangelog()) {
-  commands.push(`chg release "${pkg.version}"`);
+if (!semver.prerelease(pkg.version)) {
+  commands.push('conventional-changelog -p videojs -i CHANGELOG.md -s');
   commands.push('git add CHANGELOG.md');
 }
 

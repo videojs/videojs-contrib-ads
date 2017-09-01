@@ -13,8 +13,9 @@ module.exports = function(config) {
     }
   };
 
+  // On Travis CI, we can only run in Firefox and Chrome; so, enforce that.
   if (process.env.TRAVIS) {
-    config.browsers = ['travisChrome'];
+    config.browsers = ['Firefox', 'travisChrome'];
   }
 
   // If no browsers are specified, we enable `karma-detect-browsers`
@@ -26,15 +27,14 @@ module.exports = function(config) {
   config.set({
     basePath: '..',
     frameworks: ['qunit', 'detectBrowsers'],
-
     files: [
-      'node_modules/lodash/index.js',
-      'node_modules/sinon/pkg/sinon.js',
-      'node_modules/sinon/pkg/sinon-ie.js',
-      'node_modules/video.js/dist/video.js',
       'node_modules/video.js/dist/video-js.css',
-      'dist/videojs.ads.js',
-      'dist/videojs.ads.css',
+      'node_modules/lodash/lodash.js',
+      'node_modules/es5-shim/es5-shim.js',
+      'node_modules/sinon/pkg/sinon.js',
+      'node_modules/video.js/dist/video.js',
+      'dist/videojs-contrib-ads.js',
+      'dist/videojs-contrib-ads.css',
       'test/shared-module-hooks.js',
       'test/dist/bundle.js',
 
