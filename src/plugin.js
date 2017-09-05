@@ -59,7 +59,11 @@ const defaults = {
   debug: false,
 
   // set this to true when using ads that are part of the content video
-  stitchedAds: false
+  stitchedAds: false,
+
+  // asynchronously pause the player during ad loading
+  // if the player is playing
+  doCancelPlayTimeout: true
 };
 
 const contribAdsPlugin = function(options) {
@@ -332,6 +336,7 @@ const contribAdsPlugin = function(options) {
 
   player.ads.cueTextTracks = cueTextTracks;
   player.ads.adMacroReplacement = adMacroReplacement.bind(player);
+  player.ads.doCancelPlayTimeout = settings.doCancelPlayTimeout;
 
   // Start sending contentupdate events for this player
   initializeContentupdate(player);
