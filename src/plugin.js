@@ -260,7 +260,7 @@ const contribAdsPlugin = function(options) {
 
     // Returns a boolean indicating if given player is in live mode.
     // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
-    isLive(somePlayer) {
+    isLive(somePlayer = player) {
       if (somePlayer.duration() === Infinity) {
         return true;
       } else if (videojs.browser.IOS_VERSION === '8' && somePlayer.duration() === 0) {
@@ -272,10 +272,16 @@ const contribAdsPlugin = function(options) {
     // Return true if content playback should mute and continue during ad breaks.
     // This is only done during live streams on platforms where it's supported.
     // This improves speed and accuracy when returning from an ad break.
-    shouldPlayContentBehindAd(somePlayer) {
+    shouldPlayContentBehindAd(somePlayer = player) {
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
              somePlayer.duration() === Infinity;
+    },
+
+    // Return true if the player should take and restore snapshots during ad
+    // playback cycles.
+    shouldUseSnapshots() {
+      return !this.shouldPlayContentBehindAd() && !this.stitchedAds();
     },
 
     // Returns true if player is in ad mode.
@@ -471,7 +477,7 @@ const contribAdsPlugin = function(options) {
     'ad-playback': {
       enter() {
         // capture current player state snapshot (playing, currentTime, src)
-        if (!player.ads.shouldPlayContentBehindAd(player)) {
+        if (player.ads.shouldUseSnapshots()) {
           this.snapshot = snapshot.getPlayerSnapshot(player);
         }
 
@@ -514,7 +520,7 @@ const contribAdsPlugin = function(options) {
         if (player.ads.isLive(player)) {
           player.addClass('vjs-live');
         }
-        if (!player.ads.shouldPlayContentBehindAd(player)) {
+        if (player.ads.shouldUseSnapshots()) {
           snapshot.restorePlayerSnapshot(player, this.snapshot);
         }
 
@@ -570,7 +576,12 @@ const contribAdsPlugin = function(options) {
     'postroll?': {
       enter() {
         player.ads._contentEnding = true;
-        this.snapshot = snapshot.getPlayerSnapshot(player);
+
+        // capture current player state snapshot (playing, currentTime, src)
+        if (player.ads.shouldUseSnapshots()) {
+          this.snapshot = snapshot.getPlayerSnapshot(player);
+        }
+
         if (player.ads.nopostroll_) {
           player.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
