@@ -11,8 +11,9 @@ import document from 'global/document';
 import videojs from 'video.js';
 
 export default function cancelContentPlay(player) {
-  if (player.ads.cancelPlayTimeout) {
-    // another cancellation is already in flight, so do nothing
+  if (player.ads.cancelPlayTimeout || player.ads.stitchedAds()) {
+    // another cancellation is already in flight or the player has stitched
+    // ads, so do nothing
     return;
   }
 
