@@ -2,8 +2,6 @@
 This feature sends a `contentupdate` event when the player source changes.
 */
 
-import window from 'global/window';
-
 // Start sending contentupdate events
 export default function initializeContentupdate(player) {
 
@@ -32,5 +30,5 @@ export default function initializeContentupdate(player) {
   // loadstart reliably indicates a new src has been set
   player.on('loadstart', checkSrc);
   // check immediately in case we missed the loadstart
-  window.setTimeout(checkSrc, 1);
+  player.setTimeout(checkSrc, 1);
 }
