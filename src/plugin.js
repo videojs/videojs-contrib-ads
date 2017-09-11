@@ -230,6 +230,10 @@ const contribAdsPlugin = function(options) {
       }
     },
 
+    // Get/set whether the content source includes stitched ads. This changes
+    // the behavior of contrib-ads to avoid behaviors that are required for
+    // client-side ad integrations (such as loading states, timeout handling,
+    // and player snapshotting).
     stitchedAds(arg) {
       if (arg !== undefined) {
         this._stitchedAds = !!arg;
@@ -383,7 +387,13 @@ const contribAdsPlugin = function(options) {
     },
     'preroll?': {
       enter() {
-        if (player.ads.nopreroll_) {
+
+        // With stitched ads, we won't need to wait for a preroll and we can
+        // allow the integration to call startLinearAdMode whenever it's ready.
+        if (player.ads.stitchedAds()) {
+          player.trigger('readyforpreroll');
+
+        } else if (player.ads.nopreroll_) {
           // This will start the ads manager in case there are later ads
           player.trigger('readyforpreroll');
 
@@ -443,14 +453,24 @@ const contribAdsPlugin = function(options) {
     },
     'ads-ready?': {
       enter() {
-        player.addClass('vjs-ad-loading');
-        player.ads.adTimeoutTimeout = player.setTimeout(function() {
-          player.trigger('adtimeout');
-        }, settings.timeout);
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        if (!player.ads.stitchedAds()) {
+          player.addClass('vjs-ad-loading');
+          player.ads.adTimeoutTimeout = player.setTimeout(function() {
+            player.trigger('adtimeout');
+          }, settings.timeout);
+        }
       },
       leave() {
-        player.clearTimeout(player.ads.adTimeoutTimeout);
-        player.removeClass('vjs-ad-loading');
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        if (!player.ads.stitchedAds()) {
+          player.clearTimeout(player.ads.adTimeoutTimeout);
+          player.removeClass('vjs-ad-loading');
+        }
       },
       events: {
         play() {
@@ -589,7 +609,10 @@ const contribAdsPlugin = function(options) {
             player.ads.state = 'content-resuming';
             player.trigger('ended');
           }, 1);
-        } else {
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        } else if (!player.ads.stitchedAds()) {
           player.addClass('vjs-ad-loading');
 
           player.ads.adTimeoutTimeout = player.setTimeout(function() {
@@ -598,8 +621,13 @@ const contribAdsPlugin = function(options) {
         }
       },
       leave() {
-        player.clearTimeout(player.ads.adTimeoutTimeout);
-        player.removeClass('vjs-ad-loading');
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        if (!player.ads.stitchedAds()) {
+          player.clearTimeout(player.ads.adTimeoutTimeout);
+          player.removeClass('vjs-ad-loading');
+        }
       },
       events: {
         adstart() {
