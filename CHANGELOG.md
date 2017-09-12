@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 5.1.0
+
+* [@misteroneill](http://github.com/misteroneill): Better support for multiple module systems
+* [@alex-barstow](http://github.com/alex-barstow): Fix issue where captions were showing during ads on iOS
+
 ## 5.0.3
 
 * [@ldayananda](http://github.com/ldayananda): Bugfixes for ad cancellation by cues
