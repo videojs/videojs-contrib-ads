@@ -1,3 +1,19 @@
+<a name="5.1.0"></a>
+# [5.1.0](https://github.com/videojs/videojs-contrib-ads/compare/v3.3.13...v5.1.0) (2017-09-12)
+
+### Bug Fixes
+
+* Fix mis-named dists and potentially breaking change in package.json 'main' field. ([#280](https://github.com/videojs/videojs-contrib-ads/issues/280)) ([7633161](https://github.com/videojs/videojs-contrib-ads/commit/7633161))
+* Remove old call to player.load() during snapshot restoration for players which share the video element with the ad integration. This is causing problems in Chrome/Edge with Video.js 6 due to the asynchronous nature of calling player.src(). ([#257](https://github.com/videojs/videojs-contrib-ads/issues/257)) ([afb3ccf](https://github.com/videojs/videojs-contrib-ads/commit/afb3ccf))
+
+### Chores
+
+* Cross-compatibility between Video.js 5 and 6 ([#241](https://github.com/videojs/videojs-contrib-ads/issues/241)) ([eec856a](https://github.com/videojs/videojs-contrib-ads/commit/eec856a))
+
+### Code Refactoring
+
+* Better support for multiple module systems. ([#272](https://github.com/videojs/videojs-contrib-ads/issues/272)) ([0da0c1c](https://github.com/videojs/videojs-contrib-ads/commit/0da0c1c))
+
 # CHANGELOG
 
 ## 5.1.0
