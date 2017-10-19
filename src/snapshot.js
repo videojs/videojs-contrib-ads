@@ -134,7 +134,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     // that it has served its purpose
     if (player.ads.shouldRemoveAutoplay_) {
       player.autoplay(false);
-      player.ads.shouldRemoveAutoplay_ = null;
+      player.ads.shouldRemoveAutoplay_ = false;
     }
   };
 
@@ -204,8 +204,8 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     // on ios7, fiddling with textTracks too early will cause safari to crash
     player.one('contentloadedmetadata', restoreTracks);
 
-    // This guarantees that Safari will preload the content so we can seek to
-    // the proper time before playing it
+    // Adding autoplay guarantees that Safari will preload the content so we can
+    // seek back to the correct time before playing it
     if (videojs.browser.IS_IOS && !player.autoplay()) {
       player.autoplay(true);
 
