@@ -130,7 +130,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
       player.play();
     }
 
-    // if we added autoplay to force content preloading on iOS, remove it now
+    // if we added autoplay to force content loading on iOS, remove it now
     // that it has served its purpose
     if (player.ads.shouldRemoveAutoplay_) {
       player.autoplay(false);
@@ -204,8 +204,8 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     // on ios7, fiddling with textTracks too early will cause safari to crash
     player.one('contentloadedmetadata', restoreTracks);
 
-    // Adding autoplay guarantees that Safari will preload the content so we can
-    // seek back to the correct time before playing it
+    // adding autoplay guarantees that Safari will load the content so we can
+    // seek back to the correct time after ads
     if (videojs.browser.IS_IOS && !player.autoplay()) {
       player.autoplay(true);
 
