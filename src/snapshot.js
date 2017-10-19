@@ -129,6 +129,13 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     if (!snapshotObject.ended) {
       player.play();
     }
+
+    // if we added autoplay to force content preloading on iOS, remove it now
+    // that it has served its purpose
+    if (player.ads.shouldRemoveAutoplay_) {
+      player.autoplay(false);
+      player.ads.shouldRemoveAutoplay_ = null;
+    }
   };
 
   // determine if the video element has loaded enough of the snapshot source
@@ -196,6 +203,16 @@ export function restorePlayerSnapshot(player, snapshotObject) {
   if (player.ads.videoElementRecycled()) {
     // on ios7, fiddling with textTracks too early will cause safari to crash
     player.one('contentloadedmetadata', restoreTracks);
+
+    // This guarantees that Safari will preload the content so we can seek to
+    // the proper time before playing it
+    if (videojs.browser.IS_IOS && !player.autoplay()) {
+      player.autoplay(true);
+
+      // if we get here, the player was not originally configured to autoplay,
+      // so we should remove it after it has served its purpose
+      player.ads.shouldRemoveAutoplay_ = true;
+    }
 
     // if the src changed for ad playback, reset it
     player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
