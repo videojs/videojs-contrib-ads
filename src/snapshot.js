@@ -9,7 +9,8 @@ import videojs from 'video.js';
 
 function initialize(player) {
   player.on('contentupdate', function() {
-    if (player.ads.snapshot.trackChangeHandler) {
+    if (player.ads.snapshotIOSTrackHandlerAdded_ &&
+      player.ads.snapshot && player.ads.snapshot.trackChangeHandler) {
       const textTrackList = player.textTracks();
 
       textTrackList.removeEventListener('change', player.ads.snapshot.trackChangeHandler);
