@@ -336,6 +336,9 @@ const contribAdsPlugin = function(options) {
   // Start sending contentupdate events for this player
   initializeContentupdate(player);
 
+  // Prepare the snapshot feature for use during ad playback
+  snapshot.initializeSnapshot(player);
+
   // Global contentupdate handler for resetting plugin state
   player.on('contentupdate', player.ads.reset);
 
