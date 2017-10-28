@@ -44,7 +44,6 @@ export function initializeSnapshot(player) {
   };
 
   player.ads._trackChangeDuringSnapshotHandler = iOSTrackListChangeHandler;
-  player.ads._snapshotInitialized = true;
 }
 
 /**
@@ -55,11 +54,6 @@ export function initializeSnapshot(player) {
  * @param {Object} player The videojs player object
  */
 export function getPlayerSnapshot(player) {
-
-  if (player.ads._snapshotInitialized === undefined) {
-    initializeSnapshot(player);
-  }
-
   let currentTime;
 
   if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
