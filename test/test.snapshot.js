@@ -440,6 +440,10 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks()[0].language, 'es');
   assert.equal(this.player.textTracks()[0].mode, 'disabled');
 
+  // Double check that the track remains disabled
+  assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
+  assert.equal(this.player.textTracks()[0].mode, 'disabled');
+
   // Restore the snapshot, as if an ad is ending
   snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
 
@@ -459,91 +463,3 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   this.player.addTextTrack = originalAddTrack;
   this.player.textTracks = originalTextTracks;
 });
-
-QUnit.test('Event Listeners added in snapshots are removed as expected', function(assert) {
-  const mockHandler = sinon.spy();
-  const originalHandler = this.player.ads._trackChangeDuringSnapshotHandler;
-  const tracks = this.player.textTracks();
-
-  // Replace the handler with the mock
-  this.player.ads._trackChangeDuringSnapshotHandler = mockHandler;
-
-  // Check that the snapshot hasn't been created and 
-  // the handler hasn't been added to the track list yet
-  assert.ok(!this.player.ads.snapshot);
-  assert.ok(!this.player.ads._snapshotIOSTrackHandlerAdded);
-  videojs.trigger(tracks, 'change');
-  assert.equal(mockHandler.callCount, 0);
-
-  // Make a snapshot, as if an ad is loading
-  this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
-
-  // Check the snapshot exists and the handler was added
-  assert.ok(this.player.ads.snapshot);
-  assert.equal(this.player.ads._snapshotIOSTrackHandlerAdded, true, 'handler was added');
-  // Check the change handler is called
-  videojs.trigger(tracks, 'change');
-  assert.equal(mockHandler.callCount, 1);
-
-  // Restore the snapshot, as if an ad is finishing
-  snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
-
-  // Check the snapshot is removed and the handler was removed
-  assert.ok(this.player.ads.snapshot, 'snapshot is left alone');
-  assert.equal(this.player.ads._snapshotIOSTrackHandlerAdded, false, 'handler was removed');
-  // Check the change handler is NOT called
-  videojs.trigger(tracks, 'change');
-  assert.equal(mockHandler.callCount, 1);
-
-  // Make another snapshot and confirm it is 
-  // removed when a new content source is loaded
-  this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
-  assert.ok(this.player.ads.snapshot);
-  assert.equal(this.player.ads._snapshotIOSTrackHandlerAdded, true, 'handler was added');
-  videojs.trigger(tracks, 'change');
-  assert.equal(mockHandler.callCount, 2);
-
-  this.player.trigger('contentupdate');
-
-  assert.ok(!this.player.ads.snapshot, 'snapshot is removed');
-  assert.equal(this.player.ads._snapshotIOSTrackHandlerAdded, false, 'handler was removed');
-
-  // Check the change handler is NOT called
-  videojs.trigger(tracks, 'change');
-  assert.equal(mockHandler.callCount, 2);
-
-  // Clean up
-  tracks.off('change', this.player.ads._trackChangeDuringSnapshotHandler);
-});
-
-if (videojs.browser.IS_IOS) {
-  QUnit.test('Check the trackChangeDuringSnapshotHandler takes effect on iOS', function(assert) {
-
-    // Since addTextTrack is async, wait for the addtrack event
-    this.player.textTracks().on('addtrack', function() {
-      // Confirm the track is added, set the mode to showing
-      assert.equal(this.player.textTracks().length, 1);
-      this.player.textTracks()[0].mode = 'showing';
-      assert.equal(this.player.textTracks()[0].mode, 'showing');
-
-      // Get the snapshot, make sure the mode is disabled now
-      this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
-      assert.equal(this.player.textTracks()[0].mode, 'disabled',
-        'snapshot sets tracks to disabled');
-
-      // Force the mode to showing
-      this.player.textTracks()[0].mode = 'showing';
-      videojs.trigger(this.player.textTracks(), 'change');
-      // Ad isn't playing so nothing will happen
-      assert.equal(this.player.textTracks()[0].mode, 'showing');
-
-      // Make it appear like an ad is playing and trigger change again
-      // the mode should go back to disabled
-      this.player.ads._inLinearAdMode = true;
-      videojs.trigger(this.player.textTracks(), 'change');
-      assert.equal(this.player.textTracks()[0].mode, 'disabled');
-    }.bind(this));
-
-    this.player.addTextTrack('captions', 'English', 'en');
-  });
-}

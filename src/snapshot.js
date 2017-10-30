@@ -8,42 +8,7 @@ import window from 'global/window';
 import videojs from 'video.js';
 
 export function initializeSnapshot(player) {
-  // This attempts to clean up event handlers added during snapshot object creation
-  player.on('contentupdate', function() {
-    const handler = player.ads._trackChangeDuringSnapshotHandler;
 
-    if (player.ads._snapshotIOSTrackHandlerAdded && handler) {
-      const textTrackList = player.textTracks();
-
-      textTrackList.removeEventListener('change', handler);
-      player.ads._snapshotIOSTrackHandlerAdded = false;
-    }
-  });
-
-  /**
-   * iOS Safari will change caption mode to 'showing' if a user previously
-   * turned captions on manually for that video source, so this TextTrackList
-   * 'change' event handler will re-disable them in case that occurs during ad playback
-   */
-  const iOSTrackListChangeHandler = function() {
-    const textTrackList = player.textTracks();
-
-    // Exit early if the platform does not match or this occurs during content
-    if (!player.ads.isAdPlaying() || !player.tech_.featuresNativeTextTracks ||
-      !videojs.browser.IS_IOS || Array.isArray(textTrackList)) {
-      return;
-    }
-
-    for (let i = 0; i < textTrackList.length; i++) {
-      const track = textTrackList[i];
-
-      if (track.mode === 'showing') {
-        track.mode = 'disabled';
-      }
-    }
-  };
-
-  player.ads._trackChangeDuringSnapshotHandler = iOSTrackListChangeHandler;
 }
 
 /**
@@ -107,14 +72,6 @@ export function getPlayerSnapshot(player) {
   }
   snapshotObject.suppressedTracks = suppressedTracks;
 
-  // iOS Safari will change caption mode to 'showing' if a user
-  // previously turned captions on manually for that video source.
-  // During ad playback, disable all showing content text tracks
-  if (!player.ads._snapshotIOSTrackHandlerAdded) {
-    tracks.addEventListener('change', player.ads._trackChangeDuringSnapshotHandler);
-    player.ads._snapshotIOSTrackHandlerAdded = true;
-  }
-
   return snapshotObject;
 }
 
@@ -138,13 +95,6 @@ export function restorePlayerSnapshot(player, snapshotObject) {
 
   const suppressedRemoteTracks = snapshotObject.suppressedRemoteTracks;
   const suppressedTracks = snapshotObject.suppressedTracks;
-
-  // Ensures that the iOS TextTrackList 'change' listener added in
-  // getPlayerSnapshot() doesn't persist into main content
-  const tracks = player.textTracks();
-
-  tracks.removeEventListener('change', player.ads._trackChangeDuringSnapshotHandler);
-  player.ads._snapshotIOSTrackHandlerAdded = false;
 
   let trackSnapshot;
   const restoreTracks = function() {
