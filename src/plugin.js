@@ -336,9 +336,6 @@ const contribAdsPlugin = function(options) {
   // Start sending contentupdate events for this player
   initializeContentupdate(player);
 
-  // Prepare the snapshot feature for use during ad playback
-  snapshot.initializeSnapshot(player);
-
   // Global contentupdate handler for resetting plugin state
   player.on('contentupdate', player.ads.reset);
 
@@ -813,9 +810,7 @@ const contribAdsPlugin = function(options) {
       player.clearTimeout(player.ads.tryToResumeTimeout_);
     }
 
-    if (player.ads._trackChangeDuringAdsHandler) {
-      player.textTracks().removeEventListener('change', player.ads._trackChangeDuringAdsHandler);
-    }
+    player.textTracks().removeEventListener('change', player.ads._trackChangeDuringAdsHandler);
   });
 
   // If we're autoplaying, the state machine will immidiately process

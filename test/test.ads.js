@@ -1191,7 +1191,8 @@ if (videojs.browser.IS_IOS) {
 
     }.bind(this));
 
-    // The mode should go back to disabled when the change happens
+    // The mode should go back to disabled when the change event happens as
+    // during ad playback we do not want the content captions to be visible on iOS
     tracks.on('change', function() {
       assert.equal(tracks[0].mode, 'disabled', 'Mode is reset to disabled');
 

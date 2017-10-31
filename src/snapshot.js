@@ -7,10 +7,6 @@ import window from 'global/window';
 
 import videojs from 'video.js';
 
-export function initializeSnapshot(player) {
-
-}
-
 /**
  * Returns an object that captures the portions of player state relevant to
  * video playback. The result of this function can be passed to
