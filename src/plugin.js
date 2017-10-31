@@ -740,34 +740,44 @@ const contribAdsPlugin = function(options) {
 
   };
 
+  // A utility method for textTrackChangeHandler to define the conditions
+  // when text tracks should be disabled.
+  // Currently this includes:
+  //  - on iOS with native text tracks, during an ad playing
+  const shouldDisableTracks = function() {
+    // If the platform matches iOS with native text tracks
+    // and this occurs during ad playback, we should disable tracks again.
+    // If shouldPlayContentBehindAd, no special handling is needed.
+    return !player.ads.shouldPlayContentBehindAd(player) &&
+            player.ads.isAdPlaying() &&
+            player.tech_.featuresNativeTextTracks &&
+            videojs.browser.IS_IOS &&
+            // older versions of video.js did not use an emulated textTrackList
+            !Array.isArray(player.textTracks());
+  };
+
   /**
    * iOS Safari will change caption mode to 'showing' if a user previously
    * turned captions on manually for that video source, so this TextTrackList
    * 'change' event handler will re-disable them in case that occurs during ad playback
    */
-  const iOSTrackListChangeHandler = function() {
+  const textTrackChangeHandler = function() {
     const textTrackList = player.textTracks();
 
-    // Exit early if the platform does not match or this occurs during content
-    // If shouldPlayContentBehindAd, no special handling is needed
-    if (player.ads.shouldPlayContentBehindAd(player) || !player.ads.isAdPlaying() ||
-      !player.tech_.featuresNativeTextTracks || !videojs.browser.IS_IOS ||
-      Array.isArray(textTrackList)) {
-      return;
-    }
+    if (shouldDisableTracks()) {
+      // We must double check all tracks
+      for (let i = 0; i < textTrackList.length; i++) {
+        const track = textTrackList[i];
 
-    for (let i = 0; i < textTrackList.length; i++) {
-      const track = textTrackList[i];
-
-      if (track.mode === 'showing') {
-        track.mode = 'disabled';
+        if (track.mode === 'showing') {
+          track.mode = 'disabled';
+        }
       }
     }
   };
 
-  player.ads._trackChangeDuringAdsHandler = iOSTrackListChangeHandler;
   // Add the listener to the text track list
-  player.textTracks().addEventListener('change', player.ads._trackChangeDuringAdsHandler);
+  player.textTracks().addEventListener('change', textTrackChangeHandler);
 
   // Register our handler for the events that the state machine will process
   player.on(VIDEO_EVENTS.concat([
@@ -810,7 +820,7 @@ const contribAdsPlugin = function(options) {
       player.clearTimeout(player.ads.tryToResumeTimeout_);
     }
 
-    player.textTracks().removeEventListener('change', player.ads._trackChangeDuringAdsHandler);
+    player.textTracks().removeEventListener('change', textTrackChangeHandler);
   });
 
   // If we're autoplaying, the state machine will immidiately process

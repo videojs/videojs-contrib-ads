@@ -1171,7 +1171,7 @@ QUnit.test('adserror ends linear ad mode ', function(assert) {
 });
 
 if (videojs.browser.IS_IOS) {
-  QUnit.test('Check the trackChangeDuringAdHandler takes effect on iOS', function(assert) {
+  QUnit.test('Check the textTrackChangeHandler takes effect on iOS', function(assert) {
     const tracks = this.player.textTracks();
 
     // Since addTextTrack is async, wait for the addtrack event
