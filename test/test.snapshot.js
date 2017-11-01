@@ -440,7 +440,8 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks()[0].language, 'es');
   assert.equal(this.player.textTracks()[0].mode, 'disabled');
 
-  // Double check that the track remains disabled
+  // Double check that the track remains disabled after 3s
+  this.clock.tick(3000);
   assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
   assert.equal(this.player.textTracks()[0].mode, 'disabled');
 
