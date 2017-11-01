@@ -777,7 +777,9 @@ const contribAdsPlugin = function(options) {
   };
 
   // Add the listener to the text track list
-  player.textTracks().addEventListener('change', textTrackChangeHandler);
+  player.ready(function() {
+    player.textTracks().addEventListener('change', textTrackChangeHandler);
+  });
 
   // Register our handler for the events that the state machine will process
   player.on(VIDEO_EVENTS.concat([
