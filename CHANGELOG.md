@@ -1,3 +1,10 @@
+<a name="5.1.1"></a>
+## [5.1.1](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.1) (2017-11-02)
+
+### Bug Fixes
+
+* snapshot.trackChangeHandler is undefined ([#293](https://github.com/videojs/videojs-contrib-ads/issues/293)) ([8a66140](https://github.com/videojs/videojs-contrib-ads/commit/8a66140))
+
 <a name="5.1.0"></a>
 # [5.1.0](https://github.com/videojs/videojs-contrib-ads/compare/v3.3.13...v5.1.0) (2017-09-12)
 
