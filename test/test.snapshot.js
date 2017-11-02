@@ -377,12 +377,15 @@ QUnit.test('Snapshot and text tracks', function(assert) {
       label: label,
       language: language,
       mode: 'showing',
-      addEventListener: function() {}
+      addEventListener: function() {},
+      removeEventListener: function() {}
     });
   }
   this.player.textTracks = function() {
     return mockTracks;
   }
+  this.player.textTracks().addEventListener = function() {};
+  this.player.textTracks().removeEventListener = function() {};
 
   // Add a text track
   this.player.addRemoteTextTrack({
@@ -435,6 +438,11 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks().length, 1);
   assert.equal(this.player.textTracks()[0].kind, 'captions');
   assert.equal(this.player.textTracks()[0].language, 'es');
+  assert.equal(this.player.textTracks()[0].mode, 'disabled');
+
+  // Double check that the track remains disabled after 3s
+  this.clock.tick(3000);
+  assert.equal(this.player.remoteTextTracks()[0].mode, 'disabled');
   assert.equal(this.player.textTracks()[0].mode, 'disabled');
 
   // Restore the snapshot, as if an ad is ending

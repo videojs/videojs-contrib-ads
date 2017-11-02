@@ -3,13 +3,10 @@ module.exports = function(config) {
     enabled: false,
     usePhantomJS: false,
     postDetection: function(browsers) {
-      var i = browsers.indexOf('Safari');
-
-      if (i !== -1) {
-        browsers.splice(i, 1);
-      }
-
-      return browsers;
+      const toRemove = ['Safari', 'SafariTechPreview'];
+      return browsers.filter((e) => {
+        return toRemove.indexOf(e) === -1;
+      });
     }
   };
 
