@@ -197,6 +197,7 @@ const contribAdsPlugin = function(options) {
       player.ads.adType = null;
       player.ads._hasThereBeenALoadedData = false;
       player.ads._hasThereBeenALoadedMetaData = false;
+      player.ads._cancelledPlay = false;
     },
 
     // Call this when an ad response has been received and there are
