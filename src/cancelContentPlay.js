@@ -16,48 +16,6 @@ export default function cancelContentPlay(player) {
     return;
   }
 
-  // Avoid content flash on non-iPad iOS and iPhones on iOS10 with playsinline
-  if ((videojs.browser.IS_IOS && videojs.browser.IS_IPHONE) &&
-      !player.el_.hasAttribute('playsinline')) {
-
-    // The placeholder's styling should match the player's
-    const width = player.currentWidth ? player.currentWidth() : player.width();
-    const height = player.currentHeight ? player.currentHeight() : player.height();
-    const position = window.getComputedStyle(player.el_).position;
-    const top = window.getComputedStyle(player.el_).top;
-
-    // A placeholder black box will be shown in the document while the player is hidden.
-    const placeholder = document.createElement('div');
-
-    placeholder.style.width = width + 'px';
-    placeholder.style.height = height + 'px';
-    placeholder.style.background = 'black';
-    placeholder.style.position = position;
-    placeholder.style.top = top;
-    player.el_.parentNode.insertBefore(placeholder, player.el_);
-
-    // Hide the player. While in full-screen video playback mode on iOS, this
-    // makes the player show a black screen instead of content flash.
-    player.el_.style.display = 'none';
-
-    // Unhide the player and remove the placeholder once we're ready to move on.
-    player.one(['adstart', 'adtimeout', 'adserror', 'adscanceled', 'adskip', 'playing'],
-      function() {
-        player.el_.style.display = 'block';
-        placeholder.remove();
-      });
-
-    // Detect fullscreen change, if returning from fullscreen and placeholder exists,
-    // remove placeholder and show player whether or not playsinline was attached.
-    player.on('fullscreenchange', function() {
-      if (placeholder && !player.isFullscreen()) {
-        player.el_.style.display = 'block';
-        placeholder.remove();
-      }
-    });
-
-  }
-
   // The timeout is necessary because pausing a video element while processing a `play`
   // event on iOS can cause the video element to continuously toggle between playing and
   // paused states.
