@@ -663,16 +663,6 @@ const contribAdsPlugin = function(options) {
           }
         },
         contentupdate() {
-          // We know sources have changed, so we call CancelContentPlay
-          // to avoid playback of video in the background of an ad. Playback Occurs on
-          // Android devices if we do not call cancelContentPlay. This is because
-          // the sources do not get updated in time on Android due to timing issues.
-          // So instead of checking if the sources have changed in the play handler
-          // and calling cancelContentPlay() there we call it here.
-          // This does not happen on Desktop as the sources do get updated in time.
-          if (!player.ads.shouldPlayContentBehindAd(player)) {
-            cancelContentPlay(player);
-          }
           if (player.paused()) {
             this.state = 'content-set';
           } else {
