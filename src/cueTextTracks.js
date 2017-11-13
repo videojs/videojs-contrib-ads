@@ -1,4 +1,4 @@
-/**
+/*
 * This feature allows metadata text tracks to be manipulated once available
 * @see processMetadataTracks.
 * It also allows ad implementations to leverage ad cues coming through
@@ -9,7 +9,7 @@ import videojs from 'video.js';
 
 const cueTextTracks = {};
 
-/**
+/*
 * This feature allows metadata text tracks to be manipulated once they are available,
 * usually after the 'loadstart' event is observed on the player
 * @param player A reference to a player
@@ -36,7 +36,7 @@ cueTextTracks.processMetadataTracks = function(player, processMetadataTrack) {
   });
 };
 
-/**
+/*
 * Sets the track mode to one of 'disabled', 'hidden' or 'showing'
 * @see https://github.com/videojs/video.js/blob/master/docs/guides/text-tracks.md
 * Default behavior is to do nothing, @override if this is not desired
@@ -46,7 +46,7 @@ cueTextTracks.setMetadataTrackMode = function(track) {
   return;
 };
 
-/**
+/*
 * Determines whether cue is an ad cue and returns the cue data.
 * @param player A reference to the player
 * @param cue The full cue object
@@ -57,7 +57,7 @@ cueTextTracks.getSupportedAdCue = function(player, cue) {
   return cue;
 };
 
-/**
+/*
 * Defines whether a cue is supported or not, potentially
 * based on the player settings
 * @param player A reference to the player
@@ -69,7 +69,7 @@ cueTextTracks.isSupportedAdCue = function(player, cue) {
   return true;
 };
 
-/**
+/*
 * Gets the id associated with a cue.
 * @param cue The cue to extract an ID from
 * @returns The first occurance of 'id' in the object,
@@ -79,7 +79,7 @@ cueTextTracks.getCueId = function(player, cue) {
   return cue.id;
 };
 
-/**
+/*
 * Checks whether a cue has already been used
 * @param cueId The Id associated with a cue
 **/
@@ -87,7 +87,7 @@ const cueAlreadySeen = function(player, cueId) {
   return (cueId !== undefined) && player.ads.includedCues[cueId];
 };
 
-/**
+/*
 * Indicates that a cue has been used
 * @param cueId The Id associated with a cue
 **/
@@ -97,7 +97,7 @@ const setCueAlreadySeen = function(player, cueId) {
   }
 };
 
-/**
+/*
 * This feature allows ad metadata tracks to be manipulated in ad implementations
 * @param player A reference to the player
 * @param cues The set of cues to work with

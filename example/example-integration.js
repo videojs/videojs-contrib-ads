@@ -1,4 +1,4 @@
-/**
+/*
  * Example ad integration using the videojs-ads plugin.
  *
  * For each content video, this plugin plays one preroll and one midroll.
@@ -9,7 +9,7 @@
 
   var registerPlugin = vjs.registerPlugin || vjs.plugin;
 
-  /**
+  /*
    * Register the ad integration plugin.
    * To initialize for a player, call player.exampleAds().
    *

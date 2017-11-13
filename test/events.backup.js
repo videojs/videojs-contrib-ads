@@ -5,7 +5,7 @@ import '../example/app.js';
 
 (function(){
 
-/**
+/*
  * Events which are explicitly ignored by player listeners in tests.
  *
  * @type {Array}
@@ -25,7 +25,7 @@ var filteredEvents = [
   'suspend'
 ];
 
-/**
+/*
  * All player events that are listened to in the testing process.
  *
  * @type {Array}
@@ -58,7 +58,7 @@ var relevantEvents = (function (events) {
     });
 }(videojs.getTech('Html5').Events));
 
-/**
+/*
  * Attaches a listener to track occurrences of `relevantEvents` on a player
  * in a testing context.
  *
@@ -73,7 +73,7 @@ var attachPlayerListeners = function(env) {
   });
 };
 
-/**
+/*
  * Asserts that elements in the first array occur in the same order as
  * in the second array. It's okay to have duplicates or intermediate
  * elements in the first array that don't occur in the second. An
@@ -108,7 +108,7 @@ var occurInOrder = function(assert, actual, expected) {
   );
 };
 
-/**
+/*
  * Counts the number of elements in an array that are strictly equal to the
  * specified element.
  *

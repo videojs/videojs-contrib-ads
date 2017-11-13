@@ -1,4 +1,4 @@
-/**
+/*
  * Composes per-module `beforeEach` and `afterEach` hooks with common/shared
  * hooks.
  *
