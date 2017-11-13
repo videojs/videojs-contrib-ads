@@ -4,7 +4,7 @@ const path = require('path');
 
 /* eslint no-console: 0 */
 
-/**
+/*
  * Determines whether or not the project has the Bower setup by checking for
  * the presence of a bower.json file.
  *

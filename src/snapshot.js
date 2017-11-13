@@ -7,7 +7,7 @@ import window from 'global/window';
 
 import videojs from 'video.js';
 
-/**
+/*
  * Returns an object that captures the portions of player state relevant to
  * video playback. The result of this function can be passed to
  * restorePlayerSnapshot with a player to return the player to the state it
@@ -71,7 +71,7 @@ export function getPlayerSnapshot(player) {
   return snapshotObject;
 }
 
-/**
+/*
  * Attempts to modify the specified player so that its state is equivalent to
  * the state of the snapshot.
  * @param {Object} player - the videojs player object

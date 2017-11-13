@@ -1,4 +1,4 @@
-/**
+/*
  * Rollup configuration for packaging the plugin in a module that is consumable
  * as the `src` of a `script` tag or via AMD or similar client-side loading.
  *

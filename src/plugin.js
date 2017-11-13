@@ -16,7 +16,7 @@ import cueTextTracks from './cueTextTracks.js';
 
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
-/**
+/*
  * Remove the poster attribute from the video element tech, if present. When
  * reusing a video element for multiple videos, the poster image will briefly
  * reappear while the new source loads. Removing the attribute ahead of time
@@ -302,7 +302,7 @@ const contribAdsPlugin = function(options) {
     // * A non-linear ad is active
     isInAdMode() {
 
-             // Saw "play" but not "adsready"
+      // Saw "play" but not "adsready"
       return player.ads.state === 'ads-ready?' ||
 
              // Waiting to learn about preroll
@@ -747,7 +747,7 @@ const contribAdsPlugin = function(options) {
             !Array.isArray(player.textTracks());
   };
 
-  /**
+  /*
    * iOS Safari will change caption mode to 'showing' if a user previously
    * turned captions on manually for that video source, so this TextTrackList
    * 'change' event handler will re-disable them in case that occurs during ad playback

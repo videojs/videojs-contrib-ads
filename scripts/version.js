@@ -8,7 +8,7 @@ const pkg = require('../package.json');
 
 process.chdir(path.resolve(__dirname, '..'));
 
-/**
+/*
  * Determines whether or not the project has the Bower setup by checking for
  * the presence of a bower.json file.
  *

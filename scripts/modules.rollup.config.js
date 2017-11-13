@@ -1,4 +1,4 @@
-/**
+/*
  * Rollup configuration for packaging the plugin in a module that is consumable
  * by either CommonJS (e.g. Node or Browserify) or ECMAScript (e.g. Rollup).
  *

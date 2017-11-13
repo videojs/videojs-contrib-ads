@@ -1,4 +1,4 @@
-/**
+/*
  * Rollup configuration for packaging the plugin in a test bundle.
  *
  * This includes all dependencies for both the plugin and its tests.
