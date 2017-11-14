@@ -32,7 +32,6 @@ const removeNativePoster = function(player) {
   }
 };
 
-
 const DESKTOP_SAFARI_VERSION = (function() {
   const USER_AGENT = window.navigator && window.navigator.userAgent || '';
   const match = USER_AGENT.match(/Version\/(\d+)/);
