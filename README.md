@@ -521,6 +521,12 @@ Inside you'll find the minified ads plugin file `videojs.ads.min.js`, the unmini
 
 A short list of features, fixes and changes for each release is available in [CHANGELOG.md](https://github.com/videojs/videojs-contrib-ads/blob/master/CHANGELOG.md).
 
+## Roadmap
+
+### Unplanned Major Version Update
+
+* Pause content video if there is a programmatic call to play (prefixed as adplay) while an ad is playing in an ad container (rather than content video element). Prefixing doesn't prevent the videojs behavior, so this would prevent the content from playing behind the ad. Right now, ad integrations I am aware of are doing this on their own, so this would require a migration to move the behavior into this project.
+
 ## License
 
 See [LICENSE-APACHE2](LICENSE-APACHE2).
