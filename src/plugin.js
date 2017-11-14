@@ -752,7 +752,7 @@ const contribAdsPlugin = function(options) {
     return !player.ads.shouldPlayContentBehindAd(player) &&
             player.ads.isAdPlaying() &&
             player.tech_.featuresNativeTextTracks &&
-            (videojs.browser.IS_IOS || DESKTOP_SAFARI_VERSION === 11) &&
+            (videojs.browser.IS_IOS || DESKTOP_SAFARI_VERSION >= 11) &&
             // older versions of video.js did not use an emulated textTrackList
             !Array.isArray(player.textTracks());
   };
