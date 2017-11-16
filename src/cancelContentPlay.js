@@ -6,9 +6,6 @@ then signalling that we should play after the ad is done.
 */
 
 import window from 'global/window';
-import document from 'global/document';
-
-import videojs from 'video.js';
 
 export default function cancelContentPlay(player) {
   if (player.ads.cancelPlayTimeout) {
