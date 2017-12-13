@@ -5,8 +5,6 @@ It does this by pausing the player immediately after a "play" where ads will be 
 then signalling that we should play after the ad is done.
 */
 
-import window from 'global/window';
-
 export default function cancelContentPlay(player) {
   if (player.ads.cancelPlayTimeout || player.ads.stitchedAds()) {
     // another cancellation is already in flight or the player has stitched
