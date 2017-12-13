@@ -278,7 +278,7 @@ QUnit.test('"contentupdate" should fire when src is changed in "content-resuming
   this.player.trigger('adtimeout');
   this.player.trigger('ended');
   this.player.trigger('adtimeout');
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
 
   // set src and trigger synthetic 'loadstart'
   this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
@@ -298,7 +298,7 @@ QUnit.test('"contentupdate" should fire when src is changed in "content-playback
   this.player.trigger('adtimeout');
   this.player.trigger('ended');
   this.player.trigger('adtimeout');
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
   this.player.trigger('ended');
 
   // set src and trigger synthetic 'loadstart'
@@ -485,7 +485,7 @@ QUnit.test('adserror in postroll? transitions to content-playback and fires ende
   this.player.trigger('ended');
   assert.strictEqual(this.player.ads.state, 'postroll?');
 
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
   this.player.trigger('adserror');
   assert.strictEqual(this.player.ads.state, 'content-resuming');
   assert.strictEqual(this.player.ads.triggerevent, 'adserror', 'adserror should be the trigger event');
@@ -506,7 +506,7 @@ QUnit.test('adtimeout in postroll? transitions to content-playback and fires end
   this.player.trigger('ended');
   assert.strictEqual(this.player.ads.state, 'postroll?');
 
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
   this.player.trigger('adtimeout');
   assert.strictEqual(this.player.ads.state, 'content-resuming');
   assert.strictEqual(this.player.ads.triggerevent, 'adtimeout', 'adtimeout should be the trigger event');
@@ -527,7 +527,7 @@ QUnit.test('adskip in postroll? transitions to content-playback and fires ended'
   this.player.trigger('ended');
   assert.strictEqual(this.player.ads.state, 'postroll?');
 
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
   this.player.trigger('adskip');
   assert.strictEqual(this.player.ads.state, 'content-resuming');
   assert.strictEqual(this.player.ads.triggerevent, 'adskip', 'adskip should be the trigger event');
@@ -553,7 +553,7 @@ QUnit.test('an "ended" event is fired in "content-resuming" via a timeout if not
   assert.strictEqual(this.player.ads.state, 'postroll?');
 
   this.player.ads.startLinearAdMode();
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.ads.state, 'content-resuming');
   assert.strictEqual(endedSpy.callCount, 0, 'we should not have gotten an ended event yet');
@@ -579,7 +579,7 @@ QUnit.test('an "ended" event is not fired in "content-resuming" via a timeout if
   assert.strictEqual(this.player.ads.state, 'postroll?');
 
   this.player.ads.startLinearAdMode();
-  this.player.ads.snapshot.ended = true;
+  // this.player.ads.snapshot.ended = true;
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.ads.state, 'content-resuming');
   assert.strictEqual(endedSpy.callCount, 0, 'we should not have gotten an ended event yet');
