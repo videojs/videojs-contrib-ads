@@ -117,6 +117,12 @@ const contribAdsPlugin = function(options) {
       return;
     }
 
+    // With stitched ads, you may see a durationchange at the end of ad playback
+    // when switching back to content mode. We shouldn't need to call play().
+    if (player.ads.stitchedAds()) {
+      return;
+    }
+
     player.play();
   });
 
