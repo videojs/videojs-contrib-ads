@@ -572,7 +572,7 @@ const contribAdsPlugin = function(options) {
     'postroll?': {
       enter() {
         player.ads._contentEnding = true;
-        
+
         if (player.ads.nopostroll_) {
           window.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
