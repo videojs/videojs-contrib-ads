@@ -104,7 +104,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
       }
 
     // Restore the video position after an ad.
-    // We check snapshotObject.ended because the content starts at the beginning again 
+    // We check snapshotObject.ended because the content starts at the beginning again
     // after being restored.
     } else if (snapshotObject.ended) {
       // For postrolls, seek to the player's current duration.
