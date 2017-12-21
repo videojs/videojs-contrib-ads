@@ -26,8 +26,8 @@ Styles for ad integrations.
     display: none;
 }
 
-/* Following is copied from https://github.com/videojs/video.js/blob/master/src/css/components/_loading.scss in order to
- this is needed to animate the spinner when ad specifically VPAIDs are loading.
+/* Following is copied from https://github.com/videojs/video.js/blob/master/src/css/components/_loading.scss 
+ this is needed to animate the spinner when ads, specifically VPAIDs, are loading.
  Long term solution is to add show/hide methods to the loading spinner component and move to displaying it via the methods rather than CSS.
 */
 .vjs-ad-loading .vjs-loading-spinner:before,
