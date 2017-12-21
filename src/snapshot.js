@@ -84,10 +84,13 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     }
   };
 
-  // finish restoring the playback state
+  // Finish restoring the playback state.
+  // This only happens if the content video element was reused for ad playback.
   const resume = function() {
     let currentTime;
 
+    // Live video on iOS has special logic to try to seek to the right place after
+    // an ad.
     if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
       if (snapshotObject.currentTime < 0) {
         // Playback was behind real time, so seek backwards to match
@@ -97,15 +100,20 @@ export function restorePlayerSnapshot(player, snapshotObject) {
           currentTime = player.currentTime();
         }
         player.currentTime(currentTime);
+        player.play();
       }
+
+    // Restore the video position after an ad.
+    // We check snapshotObject.ended because the content starts at the beginning again 
+    // after being restored.
     } else if (snapshotObject.ended) {
+      // For postrolls, seek to the player's current duration.
+      // It could be different from the snapshot's currentTime due to
+      // inaccuracy in HLS.
       player.currentTime(player.duration());
     } else {
+      // Prerolls and midrolls, just seek to the player time before the ad.
       player.currentTime(snapshotObject.currentTime);
-    }
-
-    // Resume playback if this wasn't a postroll
-    if (!snapshotObject.ended) {
       player.play();
     }
 
@@ -117,8 +125,9 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     }
   };
 
-  // determine if the video element has loaded enough of the snapshot source
-  // to be ready to apply the rest of the state
+  // Determine if the video element has loaded enough of the snapshot source
+  // to be ready to apply the rest of the state.
+  // This only happens if the content video element was reused for ad playback.
   const tryToResume = function() {
 
     // tryToResume can either have been called through the `contentcanplay`
