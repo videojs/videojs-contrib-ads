@@ -207,7 +207,9 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     // if we didn't change the src, just restore the tracks
     restoreTracks();
 
-    if (!player.ended() || !snapshotObject.ended) {
+    // we don't need to check snapshotObject.ended here because the content video
+    // element wasn't recycled
+    if (!player.ended()) {
       // the src didn't change and this wasn't a postroll
       // just resume playback at the current time.
       player.play();
