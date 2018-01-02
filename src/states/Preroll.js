@@ -1,3 +1,5 @@
+import window from 'global/window';
+
 import AdState from './abstract/AdState.js';
 
 export default class Preroll extends AdState {
