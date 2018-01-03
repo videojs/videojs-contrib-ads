@@ -138,11 +138,6 @@ const contribAdsPlugin = function(options) {
     player.removeClass('vjs-ad-loading');
   });
 
-  // Event handling for the current state.
-  player.on(['play', 'adsready'], (e) => {
-    player.ads.stateInstance.handleEvent(e.type);
-  });
-
   // Restart the cancelContentPlay process.
   player.on('playing', () => {
     player.ads._cancelledPlay = false;
@@ -425,7 +420,6 @@ const contribAdsPlugin = function(options) {
         }, settings.timeout);
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
         player.removeClass('vjs-ad-loading');
       },
       events: {
@@ -773,6 +767,13 @@ const contribAdsPlugin = function(options) {
     'nopreroll'
 
   ]), processEvent);
+
+  // Event handling for the current state.
+  // TODO this can be moved somewhere else after the state machine is removed.
+  // For now it has to be after it.
+  player.on(['play', 'adsready'], (e) => {
+    player.ads.stateInstance.handleEvent(e.type);
+  });
 
   // Clear timeouts and handlers when player is disposed
   player.on('dispose', function() {
