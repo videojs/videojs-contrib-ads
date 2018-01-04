@@ -35,7 +35,6 @@ QUnit.module('Events and Midrolls', {
 
   afterEach: function() {
     this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 

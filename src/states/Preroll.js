@@ -1,5 +1,3 @@
-import window from 'global/window';
-
 import AdState from './abstract/AdState.js';
 
 export default class Preroll extends AdState {
@@ -35,7 +33,7 @@ export default class Preroll extends AdState {
     // cancelPlayTimeout, causing the video to not pause for the ad
     // TODO A goal of the ad state refactor is to avoid this type of thing,
     // so we will revisit this.
-    window.setTimeout(function() {
+    player.setTimeout(function() {
       // Don't wait for a preroll
       player.trigger('nopreroll');
     }, 1);
@@ -48,7 +46,7 @@ export default class Preroll extends AdState {
     player.addClass('vjs-ad-loading');
 
     // Schedule an adtimeout event to fire if we waited too long
-    player.ads.adTimeoutTimeout = window.setTimeout(function() {
+    player.ads.adTimeoutTimeout = player.setTimeout(function() {
       player.trigger('adtimeout');
     }, player.ads.settings.prerollTimeout);
 

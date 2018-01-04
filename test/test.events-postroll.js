@@ -36,7 +36,6 @@ QUnit.module('Events and Postrolls', {
 
   afterEach: function() {
     this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 

@@ -27,7 +27,6 @@ QUnit.module('Initial Events With No Preroll', {
 
   afterEach: function() {
     this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 

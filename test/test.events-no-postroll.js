@@ -27,7 +27,6 @@ QUnit.module('Final Events With No Postroll', {
 
   afterEach: function() {
     this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 
