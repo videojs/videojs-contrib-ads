@@ -32,11 +32,6 @@ QUnit.module('Events and Postrolls', {
       'playPreroll': false,
       'playMidroll': false
     });
-  },
-
-  afterEach: function() {
-    this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 

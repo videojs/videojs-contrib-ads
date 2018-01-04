@@ -23,11 +23,6 @@ QUnit.module('Final Events With No Postroll', {
       'playMidroll': false,
       'playPostroll': false
     });
-  },
-
-  afterEach: function() {
-    this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 
