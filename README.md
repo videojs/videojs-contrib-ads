@@ -500,6 +500,18 @@ that certain expectations are met. The next section describes those expectations
 * [Migrating to 4.0](migration-guides/migrating-to-4.0.md)
 * [Migrating to 5.0](migration-guides/migrating-to-5.0.md)
 
+## Testing
+
+### Using command line
+
+```sh
+npm run test
+```
+
+### In browser
+
+Run `./node_modules/.bin/karma start --no-single-run --browsers Chrome test/karma.conf.js` then open `localhost:9876/debug.html`
+
 ## Building
 
 The ads plugin is designed to be built with `npm`.
