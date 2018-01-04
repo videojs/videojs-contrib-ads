@@ -3,8 +3,6 @@ This main plugin file is responsible for integration logic and enabling the feat
 that live in in separate files.
 */
 
-import window from 'global/window';
-
 import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
@@ -86,7 +84,7 @@ const contribAdsPlugin = function(options) {
 
   // If we haven't seen a loadstart after 5 seconds, the plugin was not initialized
   // correctly.
-  window.setTimeout(() => {
+  player.setTimeout(() => {
     if (!player.ads._hasThereBeenALoadStartDuringPlayerLife && player.src() !== '') {
       videojs.log.error('videojs-contrib-ads has not seen a loadstart event 5 seconds ' +
         'after being initialized, but a source is present. This indicates that ' +
@@ -388,7 +386,7 @@ const contribAdsPlugin = function(options) {
         // Preroll.TODO
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
+        player.clearTimeout(player.ads.adTimeoutTimeout);
       },
       events: {
         play() {
@@ -415,7 +413,7 @@ const contribAdsPlugin = function(options) {
     'ads-ready?': {
       enter() {
         player.addClass('vjs-ad-loading');
-        player.ads.adTimeoutTimeout = window.setTimeout(function() {
+        player.ads.adTimeoutTimeout = player.setTimeout(function() {
           player.trigger('adtimeout');
         }, settings.timeout);
       },
@@ -474,8 +472,8 @@ const contribAdsPlugin = function(options) {
         if (player.ads.cancelPlayTimeout) {
           // If we don't wait a tick, we could cancel the pause for cancelContentPlay,
           // resulting in content playback behind the ad
-          window.setTimeout(function() {
-            window.clearTimeout(player.ads.cancelPlayTimeout);
+          player.setTimeout(function() {
+            player.clearTimeout(player.ads.cancelPlayTimeout);
             player.ads.cancelPlayTimeout = null;
           }, 1);
         }
@@ -512,18 +510,18 @@ const contribAdsPlugin = function(options) {
     'content-resuming': {
       enter() {
         if (this._contentHasEnded) {
-          window.clearTimeout(player.ads._fireEndedTimeout);
+          player.clearTimeout(player.ads._fireEndedTimeout);
           // in some cases, ads are played in a swf or another video element
           // so we do not get an ended event in this state automatically.
           // If we don't get an ended event we can use, we need to trigger
           // one ourselves or else we won't actually ever end the current video.
-          player.ads._fireEndedTimeout = window.setTimeout(function() {
+          player.ads._fireEndedTimeout = player.setTimeout(function() {
             player.trigger('ended');
           }, 1000);
         }
       },
       leave() {
-        window.clearTimeout(player.ads._fireEndedTimeout);
+        player.clearTimeout(player.ads._fireEndedTimeout);
       },
       events: {
         contentupdate() {
@@ -547,7 +545,7 @@ const contribAdsPlugin = function(options) {
         player.ads._contentEnding = true;
 
         if (player.ads.nopostroll_) {
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
             // with plugins that relied on a postrollTimeout before nopostroll was
             // implemented
@@ -557,13 +555,13 @@ const contribAdsPlugin = function(options) {
         } else {
           player.addClass('vjs-ad-loading');
 
-          player.ads.adTimeoutTimeout = window.setTimeout(function() {
+          player.ads.adTimeoutTimeout = player.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.postrollTimeout);
         }
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
+        player.clearTimeout(player.ads.adTimeoutTimeout);
         player.removeClass('vjs-ad-loading');
       },
       events: {
@@ -573,19 +571,19 @@ const contribAdsPlugin = function(options) {
         },
         adskip() {
           this.state = 'content-resuming';
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             player.trigger('ended');
           }, 1);
         },
         adtimeout() {
           this.state = 'content-resuming';
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             player.trigger('ended');
           }, 1);
         },
         adserror() {
           this.state = 'content-resuming';
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             player.trigger('ended');
           }, 1);
         },
@@ -598,7 +596,7 @@ const contribAdsPlugin = function(options) {
       enter() {
         // make sure that any cancelPlayTimeout is cleared
         if (player.ads.cancelPlayTimeout) {
-          window.clearTimeout(player.ads.cancelPlayTimeout);
+          player.clearTimeout(player.ads.cancelPlayTimeout);
           player.ads.cancelPlayTimeout = null;
         }
 
@@ -778,15 +776,15 @@ const contribAdsPlugin = function(options) {
   // Clear timeouts and handlers when player is disposed
   player.on('dispose', function() {
     if (player.ads.adTimeoutTimeout) {
-      window.clearTimeout(player.ads.adTimeoutTimeout);
+      player.clearTimeout(player.ads.adTimeoutTimeout);
     }
 
     if (player.ads._fireEndedTimeout) {
-      window.clearTimeout(player.ads._fireEndedTimeout);
+      player.clearTimeout(player.ads._fireEndedTimeout);
     }
 
     if (player.ads.cancelPlayTimeout) {
-      window.clearTimeout(player.ads.cancelPlayTimeout);
+      player.clearTimeout(player.ads.cancelPlayTimeout);
     }
 
     if (player.ads.tryToResumeTimeout_) {
