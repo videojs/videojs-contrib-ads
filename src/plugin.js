@@ -16,22 +16,6 @@ import BeforePreroll from './states/BeforePreroll.js';
 
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
-/*
- * Remove the poster attribute from the video element tech, if present. When
- * reusing a video element for multiple videos, the poster image will briefly
- * reappear while the new source loads. Removing the attribute ahead of time
- * prevents the poster from showing up between videos.
- *
- * @param {Object} player The videojs player object
- */
-const removeNativePoster = function(player) {
-  const tech = player.$('.vjs-tech');
-
-  if (tech) {
-    tech.removeAttribute('poster');
-  }
-};
-
 // ---------------------------------------------------------------------------
 // Ad Framework
 // ---------------------------------------------------------------------------
@@ -226,9 +210,14 @@ const contribAdsPlugin = function(options) {
 
     // Call this when an ad response has been received but there are no
     // linear ads to be played (i.e. no ads available, or overlays).
-    // This has no effect if we are already in a linear ad mode.  Always
+    // This has no effect if we are already playing an ad.  Always
     // use endLinearAdMode() to exit from linear ad-playback state.
     skipLinearAdMode() {
+
+      player.ads.stateInstance.skipLinearAdMode();
+
+      // This event is no longer used by contrib-ads. It is only here for
+      // compatibility with old integrations that may expect it.
       if (player.ads.state !== 'ad-playback') {
         player.trigger('adskip');
       }
@@ -326,6 +315,22 @@ const contribAdsPlugin = function(options) {
     // most authoritative way of determinining if an ad is playing.
     isAdPlaying() {
       return this._inLinearAdMode;
+    },
+
+    /*
+     * Remove the poster attribute from the video element tech, if present. When
+     * reusing a video element for multiple videos, the poster image will briefly
+     * reappear while the new source loads. Removing the attribute ahead of time
+     * prevents the poster from showing up between videos.
+     *
+     * @param {Object} player The videojs player object
+     */
+    removeNativePoster() {
+      const tech = player.$('.vjs-tech');
+
+      if (tech) {
+        tech.removeAttribute('poster');
+      }
     }
 
   };
@@ -355,9 +360,6 @@ const contribAdsPlugin = function(options) {
         },
         play() {
           this.state = 'ads-ready?';
-          cancelContentPlay(player);
-          // remove the poster so it doesn't flash between videos
-          removeNativePoster(player);
         },
         adserror() {
           this.state = 'content-playback';
@@ -371,7 +373,6 @@ const contribAdsPlugin = function(options) {
       events: {
         play() {
           this.state = 'preroll?';
-          cancelContentPlay(player);
         },
         adskip() {
           this.state = 'content-playback';
@@ -383,7 +384,7 @@ const contribAdsPlugin = function(options) {
     },
     'preroll?': {
       enter() {
-        // Preroll.TODO
+        // See Preroll.js
       },
       leave() {
         player.clearTimeout(player.ads.adTimeoutTimeout);
@@ -465,7 +466,7 @@ const contribAdsPlugin = function(options) {
         }
 
         // remove the poster so it doesn't flash between ads
-        removeNativePoster(player);
+        player.ads.removeNativePoster();
 
         // We no longer need to supress play events once an ad is playing.
         // Clear it if we were.
@@ -769,7 +770,7 @@ const contribAdsPlugin = function(options) {
   // Event handling for the current state.
   // TODO this can be moved somewhere else after the state machine is removed.
   // For now it has to be after it.
-  player.on(['play', 'adsready'], (e) => {
+  player.on(['play', 'adsready', 'adscanceled', 'adskip', 'adserror'], (e) => {
     player.ads.stateInstance.handleEvent(e.type);
   });
 
