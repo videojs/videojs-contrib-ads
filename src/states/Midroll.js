@@ -4,7 +4,14 @@ export default class Midroll extends AdState {
 
   constructor() {
     super();
-    this.name = 'Midroll';
+    this.adType = 'midroll';
+  }
+
+  onAdsError() {
+    // TODO Why?
+    if (this.player.ads.isAdPlaying()) {
+      this.player.ads.endLinearAdMode();
+    }
   }
 
 }

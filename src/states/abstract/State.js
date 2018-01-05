@@ -13,10 +13,13 @@ export default class State {
   onAdsError() {}
   onAdSkip() {}
   onAdsCanceled() {}
+  onAdTimeout() {}
 
   /*
    * Method handlers. Different states can override these to provide behaviors.
    */
+  startLinearAdMode() {}
+  endLinearAdMode() {}
   skipLinearAdMode() {}
 
   /*
@@ -38,6 +41,16 @@ export default class State {
       this.onAdSkip();
     } else if (type === 'adscanceled') {
       this.onAdsCanceled();
+    } else if (type === 'adtimeout') {
+      this.onAdTimeout();
+    } else if (type === 'contentupdate') {
+      this.onContentUpdate();
+    } else if (type === 'contentresumed') {
+      this.onContentResumed();
+    } else if (type === 'playing') {
+      this.onPlaying();
+    } else if (type === 'ended') {
+      this.onEnded();
     }
   }
 

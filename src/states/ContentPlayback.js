@@ -4,7 +4,6 @@ export default class ContentPlayback extends ContentState {
 
   constructor(player) {
     super(player);
-    this.name = 'ContentPlayback';
   }
 
 }

@@ -4,7 +4,14 @@ export default class Postroll extends AdState {
 
   constructor() {
     super();
-    this.name = 'Postroll';
+    this.adType = 'postroll';
+  }
+
+  onAdsError() {
+    // TODO Why?
+    if (this.player.ads.isAdPlaying()) {
+      this.player.ads.endLinearAdMode();
+    }
   }
 
 }
