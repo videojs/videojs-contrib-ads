@@ -9,11 +9,15 @@ export default class State {
    * Event handlers. Different states can override these to provide behaviors.
    */
   onPlay() {}
+  onPlaying() {}
+  onEnded() {}
   onAdsReady() {}
   onAdsError() {}
   onAdSkip() {}
   onAdsCanceled() {}
   onAdTimeout() {}
+  onContentUpdate() {}
+  onContentResumed() {}
 
   /*
    * Method handlers. Different states can override these to provide behaviors.

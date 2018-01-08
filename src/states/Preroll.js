@@ -1,3 +1,5 @@
+import videojs from 'video.js';
+
 import AdState from './abstract/AdState.js';
 import ContentPlayback from './ContentPlayback.js';
 import cancelContentPlay from '../cancelContentPlay.js';
@@ -19,7 +21,9 @@ export default class Preroll extends AdState {
 
   constructor(player, adsReady) {
     super(player);
+    this.name = 'Preroll';
     this.adType = 'preroll';
+    videojs.log(this.name);
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.

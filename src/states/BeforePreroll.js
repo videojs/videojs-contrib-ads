@@ -1,3 +1,5 @@
+import videojs from 'video.js';
+
 import ContentState from './abstract/ContentState.js';
 import Preroll from './Preroll.js';
 import ContentPlayback from './ContentPlayback.js';
@@ -22,6 +24,7 @@ export default class BeforePreroll extends ContentState {
     super(player);
     this.name = 'BeforePreroll';
     this.adsReady = false;
+    videojs.log(this.name);
   }
 
   /*
