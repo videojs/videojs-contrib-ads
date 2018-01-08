@@ -701,8 +701,10 @@ const contribAdsPlugin = function(options) {
   // Event handling for the current state.
   // TODO this can be moved somewhere else after the state machine is removed.
   // For now it has to be after it.
-  player.on(['play', 'adsready', 'adscanceled', 'adskip', 'adserror',
-    'adtimeout'], (e) => {
+  player.on([
+    'play', 'playing', 'ended',
+    'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
+    'contentupdate', 'contentresumed'], (e) => {
     player.ads.stateInstance.handleEvent(e.type);
   });
 

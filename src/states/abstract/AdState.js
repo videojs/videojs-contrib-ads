@@ -1,3 +1,5 @@
+import videojs from 'video.js';
+
 import State from './State.js';
 import * as snapshot from '../../snapshot.js';
 import BeforePreroll from '../BeforePreroll.js';
@@ -76,6 +78,8 @@ export default class AdState extends State {
   endLinearAdMode() {
     const player = this.player;
 
+    videojs.log('endLinearAdMode');
+
     player.ads.adType = null;
 
     if (player.ads.state === 'ad-playback') {
@@ -98,19 +102,19 @@ export default class AdState extends State {
         player.addClass('vjs-live');
       }
       if (!player.ads.shouldPlayContentBehindAd(player)) {
-        snapshot.restorePlayerSnapshot(player, this.snapshot);
+        snapshot.restorePlayerSnapshot(player, player.ads.snapshot);
       }
 
       // Reset the volume to pre-ad levels
       if (player.ads.shouldPlayContentBehindAd(player)) {
-        player.volume(this.preAdVolume_);
+        player.volume(player.ads.preAdVolume_);
       }
 
       // We are now concerned with resuming the content
       this.contentResuming = true;
 
       // If content has ended, trigger an ended event
-      if (this._contentHasEnded) {
+      if (player.ads._contentHasEnded) {
         player.clearTimeout(player.ads._fireEndedTimeout);
         // in some cases, ads are played in a swf or another video element
         // so we do not get an ended event in this state automatically.
@@ -134,6 +138,7 @@ export default class AdState extends State {
   }
 
   onContentResumed() {
+    videojs.log('onContentResumed');
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
@@ -141,6 +146,7 @@ export default class AdState extends State {
   }
 
   onPlaying() {
+    videojs.log('onPlaying');
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
@@ -148,6 +154,7 @@ export default class AdState extends State {
   }
 
   onEnded() {
+    videojs.log('onEnded');
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
