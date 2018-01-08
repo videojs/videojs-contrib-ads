@@ -29,9 +29,7 @@ export function getPlayerSnapshot(player) {
   }
 
   const tech = player.$('.vjs-tech');
-  const remoteTracks = player.remoteTextTracks ? player.remoteTextTracks() : [];
   const tracks = player.textTracks ? player.textTracks() : [];
-  const suppressedRemoteTracks = [];
   const suppressedTracks = [];
   const snapshotObject = {
     ended: player.ended(),
@@ -45,17 +43,6 @@ export function getPlayerSnapshot(player) {
     snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
   }
-
-  for (let i = 0; i < remoteTracks.length; i++) {
-    const track = remoteTracks[i];
-
-    suppressedRemoteTracks.push({
-      track,
-      mode: track.mode
-    });
-    track.mode = 'disabled';
-  }
-  snapshotObject.suppressedRemoteTracks = suppressedRemoteTracks;
 
   for (let i = 0; i < tracks.length; i++) {
     const track = tracks[i];
@@ -89,16 +76,10 @@ export function restorePlayerSnapshot(player, snapshotObject) {
   // the number of[ remaining attempts to restore the snapshot
   let attempts = 20;
 
-  const suppressedRemoteTracks = snapshotObject.suppressedRemoteTracks;
   const suppressedTracks = snapshotObject.suppressedTracks;
 
   let trackSnapshot;
   const restoreTracks = function() {
-    for (let i = 0; i < suppressedRemoteTracks.length; i++) {
-      trackSnapshot = suppressedRemoteTracks[i];
-      trackSnapshot.track.mode = trackSnapshot.mode;
-    }
-
     for (let i = 0; i < suppressedTracks.length; i++) {
       trackSnapshot = suppressedTracks[i];
       trackSnapshot.track.mode = trackSnapshot.mode;
@@ -222,11 +203,16 @@ export function restorePlayerSnapshot(player, snapshotObject) {
     // Reace the `canplay` event with a timeout.
     player.one('contentcanplay', tryToResume);
     player.ads.tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
-  } else if (!player.ended() || !snapshotObject.ended) {
+  } else {
     // if we didn't change the src, just restore the tracks
     restoreTracks();
-    // the src didn't change and this wasn't a postroll
-    // just resume playback at the current time.
-    player.play();
+
+    // we don't need to check snapshotObject.ended here because the content video
+    // element wasn't recycled
+    if (!player.ended()) {
+      // the src didn't change and this wasn't a postroll
+      // just resume playback at the current time.
+      player.play();
+    }
   }
 }
