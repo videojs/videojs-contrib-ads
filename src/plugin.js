@@ -526,29 +526,7 @@ const contribAdsPlugin = function(options) {
     },
     'content-playback': {
       enter() {
-        // make sure that any cancelPlayTimeout is cleared
-        if (player.ads.cancelPlayTimeout) {
-          player.clearTimeout(player.ads.cancelPlayTimeout);
-          player.ads.cancelPlayTimeout = null;
-        }
-
-        // This was removed because now that "playing" is fixed to only play after
-        // preroll, any integration should just use the "playing" event. However,
-        // we found out some 3rd party code relied on this event, so we've temporarily
-        // added it back in to give people more time to update their code.
-        player.trigger({
-          type: 'contentplayback',
-          triggerevent: player.ads.triggerevent
-        });
-
-        // Play the content if cancelContentPlay happened and we haven't played yet.
-        // This happens if there was no preroll or if it errored, timed out, etc.
-        // Otherwise snapshot restore would play.
-        if (player.ads._cancelledPlay) {
-          if (player.paused()) {
-            player.play();
-          }
-        }
+        // Moved to ContentPlayback.js
       },
       events: {
         // In the case of a timeout, adsready might come in late.
@@ -556,7 +534,7 @@ const contribAdsPlugin = function(options) {
         // interrupt the content and start playing. An integration could
         // still decide to behave otherwise.
         adsready() {
-          player.trigger('readyforpreroll');
+          // player.trigger('readyforpreroll');
         },
         adstart() {
           this.state = 'ad-playback';
@@ -573,20 +551,9 @@ const contribAdsPlugin = function(options) {
           }
         },
         contentended() {
-
-          // If _contentHasEnded is true it means we already checked for postrolls and
-          // played postrolls if needed, so now we're ready to send an ended event
           if (this._contentHasEnded) {
-            // Causes ended event to trigger in content-resuming.enter.
-            // From there, the ended event event is not redispatched.
-            // Then we end up back in content-playback state.
             this.state = 'content-resuming';
-            return;
           }
-
-          this._contentEnding = false;
-          this._contentHasEnded = true;
-          this.state = 'postroll?';
         }
       }
     }
@@ -704,7 +671,7 @@ const contribAdsPlugin = function(options) {
   player.on([
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
-    'contentupdate', 'contentresumed'], (e) => {
+    'contentupdate', 'contentresumed', 'contentended'], (e) => {
     player.ads.stateInstance.handleEvent(e.type);
   });
 
