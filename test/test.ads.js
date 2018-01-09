@@ -58,11 +58,11 @@ QUnit.test('stops canceling play events when an ad is playing', function(assert)
   this.player.trigger('play');
   assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
   assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists after play');
 
   this.player.trigger('adsready');
   assert.strictEqual(setTimeoutSpy.callCount, 3, '`adTimeoutTimeout` was re-scheduled');
-  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
+  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists after adsready');
 
   this.clock.tick(1);
 
@@ -727,12 +727,17 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
 // ----------------------------------
 
 QUnit.test('player events during prerolls are prefixed if tech is reused for ad', function(assert) {
-  var prefixed, unprefixed;
-
-  assert.expect(2);
-
-  prefixed = sinon.spy();
-  unprefixed = sinon.spy();
+  var sawLoadstart = sinon.spy();
+  var sawPlaying = sinon.spy();
+  var sawPause = sinon.spy();
+  var sawEnded = sinon.spy();
+  var sawFirstplay = sinon.spy();
+  var sawLoadedalldata = sinon.spy();
+  var sawAdloadstart = sinon.spy();
+  var sawAdpause = sinon.spy();
+  var sawAdended = sinon.spy();
+  var sawAdfirstplay = sinon.spy();
+  var sawAdloadedalldata = sinon.spy();
 
   // play a preroll
   this.player.on('readyforpreroll', function() {
@@ -748,16 +753,34 @@ QUnit.test('player events during prerolls are prefixed if tech is reused for ad'
   };
 
   // simulate video events that should be prefixed
-  this.player.on(['loadstart', 'playing', 'pause', 'ended', 'firstplay', 'loadedalldata'], unprefixed);
-  this.player.on(['adloadstart', 'adpause', 'adended', 'adfirstplay', 'adloadedalldata'], prefixed);
+  this.player.on('loadstart', sawLoadstart);
+  this.player.on('playing', sawPlaying);
+  this.player.on('pause', sawPause);
+  this.player.on('ended', sawEnded);
+  this.player.on('firstplay', sawFirstplay);
+  this.player.on('loadedalldata', sawLoadedalldata);
+  this.player.on('adloadstart', sawAdloadstart);
+  this.player.on('adpause', sawAdpause);
+  this.player.on('adended', sawAdended);
+  this.player.on('adfirstplay', sawAdfirstplay);
+  this.player.on('adloadedalldata', sawAdloadedalldata);
   this.player.trigger('firstplay');
   this.player.trigger('loadstart');
   this.player.trigger('playing');
   this.player.trigger('loadedalldata');
   this.player.trigger('pause');
   this.player.trigger('ended');
-  assert.strictEqual(unprefixed.callCount, 0, 'no unprefixed events fired');
-  assert.strictEqual(prefixed.callCount, 5, 'prefixed events fired');
+  assert.strictEqual(sawLoadstart.callCount, 0, 'no loadstart fired');
+  assert.strictEqual(sawPlaying.callCount, 0, 'no playing fired');
+  assert.strictEqual(sawPause.callCount, 0, 'no pause fired');
+  assert.strictEqual(sawEnded.callCount, 0, 'no ended fired');
+  assert.strictEqual(sawFirstplay.callCount, 0, 'no firstplay fired');
+  assert.strictEqual(sawLoadedalldata.callCount, 0, 'no loadedalldata fired');
+  assert.strictEqual(sawAdloadstart.callCount, 1, 'adloadstart fired');
+  assert.strictEqual(sawAdpause.callCount, 1, 'adpause fired');
+  assert.strictEqual(sawAdended.callCount, 1, 'adended fired');
+  assert.strictEqual(sawAdfirstplay.callCount, 1, 'adfirstplay fired');
+  assert.strictEqual(sawAdloadedalldata.callCount, 1, 'adloadedalldata fired');
 });
 
 QUnit.test('player events during midrolls are prefixed if tech is reused for ad', function(assert) {
