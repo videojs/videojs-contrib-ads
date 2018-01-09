@@ -18,6 +18,7 @@ export default class State {
   onAdTimeout() {}
   onContentUpdate() {}
   onContentResumed() {}
+  onContentEnded() {}
 
   /*
    * Method handlers. Different states can override these to provide behaviors.
@@ -51,6 +52,8 @@ export default class State {
       this.onContentUpdate();
     } else if (type === 'contentresumed') {
       this.onContentResumed();
+    } else if (type === 'contentended') {
+      this.onContentEnded();
     } else if (type === 'playing') {
       this.onPlaying();
     } else if (type === 'ended') {

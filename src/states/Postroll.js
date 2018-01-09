@@ -4,8 +4,8 @@ import AdState from './abstract/AdState.js';
 
 export default class Postroll extends AdState {
 
-  constructor() {
-    super();
+  constructor(player) {
+    super(player);
     this.name = 'Postroll';
     this.adType = 'postroll';
     videojs.log(this.name);

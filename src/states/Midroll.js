@@ -1,21 +1,28 @@
-import videojs from 'video.js';
+// import videojs from 'video.js';
 
+// import AdState from './abstract/AdState.js';
 import AdState from './abstract/AdState.js';
 
-export default class Midroll extends AdState {
+videojs.log('AdState', AdState);
 
-  constructor() {
-    super();
-    this.name = 'Midroll';
-    this.adType = 'midroll';
-    videojs.log(this.name);
-  }
+// export default class Midroll {
 
-  onAdsError() {
-    // TODO Why?
-    if (this.player.ads.isAdPlaying()) {
-      this.player.ads.endLinearAdMode();
-    }
-  }
+  // constructor(player) {
+  //   super(player);
+  // }
 
-}
+  // constructor(player) {
+  //   super(player);
+  //   this.name = 'Midroll';
+  //   this.adType = 'midroll';
+  //   videojs.log(this.name);
+  // }
+
+  // onAdsError() {
+  //   // TODO Why?
+  //   if (this.player.ads.isAdPlaying()) {
+  //     this.player.ads.endLinearAdMode();
+  //   }
+  // }
+
+// }
