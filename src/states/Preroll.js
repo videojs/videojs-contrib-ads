@@ -1,7 +1,6 @@
 import videojs from 'video.js';
 
-import AdState from './abstract/AdState.js';
-import ContentPlayback from './ContentPlayback.js';
+import {AdState, ContentPlayback} from './RenameMe.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 
 /*

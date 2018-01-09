@@ -11,7 +11,7 @@ import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
 
-import BeforePreroll from './states/BeforePreroll.js';
+import {BeforePreroll} from './States/RenameMe.js';
 
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 

@@ -1,10 +1,6 @@
 import videojs from 'video.js';
 
-import ContentState from './abstract/ContentState.js';
-import BeforePreroll from './BeforePreroll.js';
-import Preroll from './Preroll.js';
-import Midroll from './Midroll.js';
-// import Postroll from './Postroll.js';
+import {ContentState, BeforePreroll, Preroll, Midroll, Postroll} from './RenameMe.js';
 
 export default class ContentPlayback extends ContentState {
 
@@ -64,7 +60,7 @@ export default class ContentPlayback extends ContentState {
     if (!player.ads._contentHasEnded) {
       player.ads._contentEnding = false;
       player.ads._contentHasEnded = true;
-      // player.ads.stateInstance = new Postroll(player);
+      player.ads.stateInstance = new Postroll(player);
 
     // If _contentHasEnded is true it means we already checked for postrolls and
     // played postrolls if needed, so now we're ready to send an ended event.
@@ -82,7 +78,7 @@ export default class ContentPlayback extends ContentState {
   startLinearAdMode() {
     const player = this.player;
 
-    // player.ads.stateInstance = new Midroll(player);
+    player.ads.stateInstance = new Midroll(player);
     player.ads.stateInstance.startLinearAdMode();
   }
 

@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import AdState from './abstract/AdState.js';
+import {AdState} from './RenameMe.js';
 
 export default class Postroll extends AdState {
 

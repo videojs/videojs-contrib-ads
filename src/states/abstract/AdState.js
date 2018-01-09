@@ -1,9 +1,7 @@
 import videojs from 'video.js';
 
-import State from './State.js';
 import * as snapshot from '../../snapshot.js';
-import BeforePreroll from '../BeforePreroll.js';
-import ContentPlayback from '../ContentPlayback.js';
+import {State, BeforePreroll, ContentPlayback} from '../RenameMe.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.

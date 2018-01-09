@@ -1,4 +1,4 @@
-import State from './State.js';
+import {State} from '../RenameMe.js';
 
 export default class ContentState extends State {
 
