@@ -159,9 +159,4 @@ export default class Preroll extends AdState {
     this.player.ads.stateInstance = new ContentPlayback(this.player);
   }
 
-  // TODO update me to not use the old state machine
-  isContentResuming() {
-    return this.player.ads.state === 'content-resuming';
-  }
-
 }

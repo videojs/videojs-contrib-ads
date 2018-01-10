@@ -66,6 +66,7 @@ export default class ContentPlayback extends ContentState {
       player.ads._contentEnding = false;
       player.ads._contentHasEnded = true;
       player.ads.stateInstance = new Postroll(player);
+      player.ads.stateInstance.onContentEnded();
 
     // If _contentHasEnded is true it means we already checked for postrolls and
     // played postrolls if needed, so now we're ready to send an ended event.

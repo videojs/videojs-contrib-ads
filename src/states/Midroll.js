@@ -19,9 +19,4 @@ export default class Midroll extends AdState {
     }
   }
 
-  // TODO update me to not use the old state machine
-  isContentResuming() {
-    return this.player.ads.state === 'content-resuming';
-  }
-
 }

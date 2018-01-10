@@ -11,13 +11,18 @@ export default class Postroll extends AdState {
     this.adType = 'postroll';
 
     videojs.log('Now in ' + this.name + ' state');
+  }
+
+  onContentEnded() {
+    const player = this.player;
 
     player.ads._contentEnding = true;
     player.ads.snapshot = snapshot.getPlayerSnapshot(player);
     if (player.ads.nopostroll_) {
-      player.setTimeout(function() {
+      player.setTimeout(() => {
         videojs.log('Triggered ended event: Postroll.ctor');
         this.contentResuming = true;
+        videojs.log('contentResuming true', this);
         player.trigger('ended');
         player.ads.stateInstance = new AdsDone(player);
       }, 1);
@@ -74,11 +79,6 @@ export default class Postroll extends AdState {
       player.trigger('ended');
       player.ads.stateInstance = new AdsDone(player);
     }, 1);
-  }
-
-  // TODO set contentResuming everywhere it's needed.
-  isContentResuming() {
-    return this.contentResuming;
   }
 
 }

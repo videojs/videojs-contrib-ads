@@ -68,6 +68,7 @@ const handlePlaying = (player, event) => {
 // * No ended event before postroll
 // * A single ended event after postroll
 const handleEnded = (player, event) => {
+  videojs.log('handleEnded', player.ads.isInAdMode(), player.ads.isContentResuming());
   if (player.ads.isInAdMode()) {
 
     // The true ended event fired by plugin.js either after the postroll

@@ -121,7 +121,7 @@ export default class AdState extends State {
         // If we don't get an ended event we can use, we need to trigger
         // one ourselves or else we won't actually ever end the current video.
         player.ads._fireEndedTimeout = player.setTimeout(function() {
-          videojs.log('Triggered ended event: AdState.endLinearAdMode');
+          videojs.log('Triggered ended event');
           player.trigger('ended');
         }, 1000);
       }
@@ -165,6 +165,12 @@ export default class AdState extends State {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
     }
+  }
+
+  // TODO set contentResuming everywhere it's needed.
+  isContentResuming() {
+    videojs.log('isContentResuming', this.name, this.contentResuming);
+    return this.contentResuming;
   }
 
 }
