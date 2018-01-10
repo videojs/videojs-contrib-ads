@@ -32,6 +32,16 @@ const removeNativePoster = function(player) {
   }
 };
 
+const DESKTOP_SAFARI_VERSION = (function() {
+  const USER_AGENT = window.navigator && window.navigator.userAgent || '';
+  const match = USER_AGENT.match(/Version\/(\d+)/);
+
+  if (match && match[1] && videojs.browser.IS_SAFARI && !videojs.browser.IS_IOS) {
+    return parseFloat(match[1]);
+  }
+  return null;
+}());
+
 // ---------------------------------------------------------------------------
 // Ad Framework
 // ---------------------------------------------------------------------------
@@ -742,7 +752,7 @@ const contribAdsPlugin = function(options) {
     return !player.ads.shouldPlayContentBehindAd(player) &&
             player.ads.isAdPlaying() &&
             player.tech_.featuresNativeTextTracks &&
-            videojs.browser.IS_IOS &&
+            (videojs.browser.IS_IOS || DESKTOP_SAFARI_VERSION >= 11) &&
             // older versions of video.js did not use an emulated textTrackList
             !Array.isArray(player.textTracks());
   };
