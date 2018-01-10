@@ -22,12 +22,13 @@ export default class Preroll extends AdState {
     super(player);
     this.name = 'Preroll';
     this.adType = 'preroll';
-    videojs.log(this.name);
+
+    videojs.log('Now in ' + this.name + ' state');
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
     if (adsReady) {
-      this.onAdsReady();
+      this.onAdsReady(true);
 
     // TODO This condition matches the old implementation, but does it make sense?
     } else {
@@ -44,7 +45,10 @@ export default class Preroll extends AdState {
   /*
    * Ad integration is ready. Let's get started on this preroll.
    */
-  onAdsReady() {
+  onAdsReady(noLog) {
+    if (noLog !== true) {
+      videojs.log('Received adsready event');
+    }
     this.player.removeClass('vjs-ad-loading');
     if (this.player.ads.nopreroll_) {
       this.noPreroll();
@@ -59,6 +63,7 @@ export default class Preroll extends AdState {
     // This will start the ads manager in case there are later ads
     // TODO We need to refactor this, we can definitely solve the ads manager
     // issue in a more intuitive way.
+    videojs.log('Triggered readyforpreroll event');
     player.trigger('readyforpreroll');
 
     // If we don't wait a tick, entering content-playback will cancel
@@ -84,6 +89,7 @@ export default class Preroll extends AdState {
 
     // Signal to ad plugin that it's their opportunity to play a preroll
     if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
+      videojs.log('Triggered readyforpreroll event');
       player.trigger('readyforpreroll');
 
     // Don't play preroll before loadstart, otherwise the content loadstart event
@@ -92,6 +98,7 @@ export default class Preroll extends AdState {
     // loadstart so it has to have happened already.
     } else {
       player.one('loadstart', () => {
+        videojs.log('Triggered readyforpreroll event');
         player.trigger('readyforpreroll');
       });
     }
@@ -150,6 +157,11 @@ export default class Preroll extends AdState {
     // TODO If we're in ad-playback or content-resuming it's too late.
     // Let's handle that case!
     this.player.ads.stateInstance = new ContentPlayback(this.player);
+  }
+
+  // TODO update me to not use the old state machine
+  isContentResuming() {
+    return this.player.ads.state === 'content-resuming';
   }
 
 }

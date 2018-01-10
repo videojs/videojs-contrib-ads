@@ -6,7 +6,6 @@ that live in in separate files.
 import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
-import * as snapshot from './snapshot.js';
 import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
@@ -280,23 +279,12 @@ const contribAdsPlugin = function(options) {
     // * An asynchronous ad request is ongoing while content is playing
     // * A non-linear ad is active
     isInAdMode() {
-
-      // Saw "play" but not "adsready"
-      return player.ads.state === 'ads-ready?' ||
-
-             // Waiting to learn about preroll
-             player.ads.state === 'preroll?' ||
-
-             // A linear ad is active
-             player.ads.state === 'ad-playback' ||
-
-             // Content is not playing again yet
-             player.ads.state === 'content-resuming';
+      return this.stateInstance.isAdState();
     },
 
     // Returns true if content is resuming after an ad. This is part of ad mode.
     isContentResuming() {
-      return player.ads.state === 'content-resuming';
+      return this.stateInstance.isContentResuming();
     },
 
     // Returns true if a linear ad is playing. This is part of ad mode.
@@ -474,27 +462,19 @@ const contribAdsPlugin = function(options) {
     },
     'postroll?': {
       enter() {
-        player.ads._contentEnding = true;
-
         if (player.ads.nopostroll_) {
           player.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
             // with plugins that relied on a postrollTimeout before nopostroll was
             // implemented
+            // TODO what do we do with this exactly
             player.ads.state = 'content-resuming';
-            player.trigger('ended');
           }, 1);
-        } else {
-          player.addClass('vjs-ad-loading');
-
-          player.ads.adTimeoutTimeout = player.setTimeout(function() {
-            player.trigger('adtimeout');
-          }, settings.postrollTimeout);
         }
       },
       leave() {
-        player.clearTimeout(player.ads.adTimeoutTimeout);
-        player.removeClass('vjs-ad-loading');
+        // player.clearTimeout(player.ads.adTimeoutTimeout);
+        // player.removeClass('vjs-ad-loading');
       },
       events: {
         adstart() {
@@ -503,21 +483,21 @@ const contribAdsPlugin = function(options) {
         },
         adskip() {
           this.state = 'content-resuming';
-          player.setTimeout(function() {
-            player.trigger('ended');
-          }, 1);
+          // player.setTimeout(function() {
+          //   player.trigger('ended');
+          // }, 1);
         },
         adtimeout() {
           this.state = 'content-resuming';
-          player.setTimeout(function() {
-            player.trigger('ended');
-          }, 1);
+          // player.setTimeout(function() {
+          //   player.trigger('ended');
+          // }, 1);
         },
         adserror() {
           this.state = 'content-resuming';
-          player.setTimeout(function() {
-            player.trigger('ended');
-          }, 1);
+          // player.setTimeout(function() {
+          //   player.trigger('ended');
+          // }, 1);
         },
         contentupdate() {
           this.state = 'ads-ready?';

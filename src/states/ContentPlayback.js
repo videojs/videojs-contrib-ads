@@ -7,7 +7,8 @@ export default class ContentPlayback extends ContentState {
   constructor(player) {
     super(player);
     this.name = 'ContentPlayback';
-    videojs.log(this.name);
+
+    videojs.log('Now in ' + this.name + ' state');
 
     // Cleanup for cancelContentPlay
     if (player.ads.cancelPlayTimeout) {
@@ -40,6 +41,8 @@ export default class ContentPlayback extends ContentState {
    * An integration could behave otherwise by ignoring this event.
    */
   onAdsReady() {
+    videojs.log('Received adsready event');
+    videojs.log('Triggered readyforpreroll event');
     this.player.trigger('readyforpreroll');
   }
 
@@ -56,6 +59,8 @@ export default class ContentPlayback extends ContentState {
   onContentEnded() {
     const player = this.player;
 
+    videojs.log('Received contentended event');
+
     // If _contentHasEnded is false it means we need to check for postrolls.
     if (!player.ads._contentHasEnded) {
       player.ads._contentEnding = false;
@@ -70,6 +75,7 @@ export default class ContentPlayback extends ContentState {
       // Causes ended event to trigger in content-resuming.enter.
       // From there, the ended event event is not redispatched.
       // Then we end up back in content-playback state.
+      videojs.log('Triggered ended event: ContentPlayback.onContentEnded');
       player.trigger('ended');
     }
 

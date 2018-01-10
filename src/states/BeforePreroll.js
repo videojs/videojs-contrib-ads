@@ -22,7 +22,8 @@ export default class BeforePreroll extends ContentState {
     super(player);
     this.name = 'BeforePreroll';
     this.adsReady = false;
-    videojs.log(this.name);
+
+    videojs.log('Now in ' + this.name + ' state');
   }
 
   /*
@@ -30,6 +31,7 @@ export default class BeforePreroll extends ContentState {
    * we record that adsready already happened so the Preroll state will know.
    */
   onAdsReady() {
+    videojs.log('Received adsready event');
     this.adsReady = true;
   }
 

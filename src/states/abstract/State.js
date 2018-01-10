@@ -11,26 +11,43 @@ export default class State {
   onPlay() {}
   onPlaying() {}
   onEnded() {}
-  onAdsReady() {}
+  onAdsReady() {
+    videojs.log('Unexpected adsready event');
+  }
   onAdsError() {}
   onAdSkip() {}
   onAdsCanceled() {}
   onAdTimeout() {}
   onContentUpdate() {}
   onContentResumed() {}
-  onContentEnded() {}
+  onContentEnded() {
+    videojs.log('Unexpected contentended event');
+  }
 
   /*
    * Method handlers. Different states can override these to provide behaviors.
    */
-  startLinearAdMode() {}
-  endLinearAdMode() {}
-  skipLinearAdMode() {}
+  startLinearAdMode() {
+    videojs.log('Unexpected startLinearAdMode invocation');
+  }
+  endLinearAdMode() {
+    videojs.log('Unexpected endLinearAdMode invocation');
+  }
+  skipLinearAdMode() {
+    videojs.log('Unexpected skipLinearAdMode invocation');
+  }
 
   /*
    * Overridden by ContentState and AdState. Should not be overriden elsewhere.
    */
   isAdState() {}
+
+  /*
+   * Overridden by PrerollState, MidrollState, and PostrollState.
+   */
+  isContentResuming() {
+    return false;
+  }
 
   /*
    * Invoke event handler methods when events come in.

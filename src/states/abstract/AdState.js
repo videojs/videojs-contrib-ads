@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
 import * as snapshot from '../../snapshot.js';
-import {State, BeforePreroll, ContentPlayback} from '../RenameMe.js';
+import {State, Preroll, BeforePreroll, ContentPlayback} from '../RenameMe.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
@@ -21,6 +21,8 @@ export default class AdState extends State {
 
   startLinearAdMode() {
     const player = this.player;
+
+    videojs.log('Starting linear ad mode');
 
     player.ads.adType = this.adType;
     player.clearTimeout(player.ads.adTimeoutTimeout);
@@ -76,7 +78,7 @@ export default class AdState extends State {
   endLinearAdMode() {
     const player = this.player;
 
-    videojs.log('endLinearAdMode');
+    videojs.log('Ending linear ad mode');
 
     player.ads.adType = null;
 
@@ -119,6 +121,7 @@ export default class AdState extends State {
         // If we don't get an ended event we can use, we need to trigger
         // one ourselves or else we won't actually ever end the current video.
         player.ads._fireEndedTimeout = player.setTimeout(function() {
+          videojs.log('Triggered ended event: AdState.endLinearAdMode');
           player.trigger('ended');
         }, 1000);
       }
@@ -133,10 +136,17 @@ export default class AdState extends State {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new BeforePreroll(this.player);
     }
+
+    // If the source changes while preparing for a postroll, go to Preroll state.
+    // This matches pre-refactor behavior, but I couldn't find specific justificaiton
+    // in the project history.
+    if (this.name === 'Postroll' && !this.player.ads._inLinearAdMode) {
+      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
+      this.player.ads.stateInstance = new Preroll(this.player);
+    }
   }
 
   onContentResumed() {
-    videojs.log('onContentResumed');
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
@@ -144,7 +154,6 @@ export default class AdState extends State {
   }
 
   onPlaying() {
-    videojs.log('onPlaying');
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
@@ -152,7 +161,6 @@ export default class AdState extends State {
   }
 
   onEnded() {
-    videojs.log('onEnded');
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);

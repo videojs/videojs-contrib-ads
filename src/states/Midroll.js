@@ -8,7 +8,8 @@ export default class Midroll extends AdState {
     super(player);
     this.name = 'Midroll';
     this.adType = 'midroll';
-    videojs.log(this.name);
+
+    videojs.log('Now in ' + this.name + ' state');
   }
 
   onAdsError() {
@@ -16,6 +17,11 @@ export default class Midroll extends AdState {
     if (this.player.ads.isAdPlaying()) {
       this.player.ads.endLinearAdMode();
     }
+  }
+
+  // TODO update me to not use the old state machine
+  isContentResuming() {
+    return this.player.ads.state === 'content-resuming';
   }
 
 }

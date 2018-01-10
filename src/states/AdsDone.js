@@ -7,7 +7,8 @@ export default class AdsDone extends ContentState {
   constructor(player) {
     super(player);
     this.name = 'AdsDone';
-    videojs.log(this.name);
+
+    videojs.log('Now in ' + this.name + ' state');
   }
 
 }
