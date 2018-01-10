@@ -66,7 +66,6 @@ export default class ContentPlayback extends ContentState {
       player.ads._contentEnding = false;
       player.ads._contentHasEnded = true;
       player.ads.stateInstance = new Postroll(player);
-      player.ads.stateInstance.onContentEnded();
 
     // If _contentHasEnded is true it means we already checked for postrolls and
     // played postrolls if needed, so now we're ready to send an ended event.
@@ -76,7 +75,7 @@ export default class ContentPlayback extends ContentState {
       // Causes ended event to trigger in content-resuming.enter.
       // From there, the ended event event is not redispatched.
       // Then we end up back in content-playback state.
-      videojs.log('Triggered ended event: ContentPlayback.onContentEnded');
+      videojs.log('Triggered ended event (contentended)');
       player.trigger('ended');
     }
 

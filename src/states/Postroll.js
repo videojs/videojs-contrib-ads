@@ -11,18 +11,13 @@ export default class Postroll extends AdState {
     this.adType = 'postroll';
 
     videojs.log('Now in ' + this.name + ' state');
-  }
-
-  onContentEnded() {
-    const player = this.player;
 
     player.ads._contentEnding = true;
     player.ads.snapshot = snapshot.getPlayerSnapshot(player);
     if (player.ads.nopostroll_) {
       player.setTimeout(() => {
-        videojs.log('Triggered ended event: Postroll.ctor');
+        videojs.log('Triggered ended event (no postroll)');
         this.contentResuming = true;
-        videojs.log('contentResuming true', this);
         player.trigger('ended');
         player.ads.stateInstance = new AdsDone(player);
       }, 1);
@@ -49,7 +44,7 @@ export default class Postroll extends AdState {
     player.clearTimeout(player.ads.adTimeoutTimeout);
     player.removeClass('vjs-ad-loading');
     player.setTimeout(function() {
-      videojs.log('Triggered ended event: Postroll.onAdSkip');
+      videojs.log('Triggered ended event (adskip)');
       player.trigger('ended');
       player.ads.stateInstance = new AdsDone(player);
     }, 1);
@@ -62,7 +57,7 @@ export default class Postroll extends AdState {
     player.clearTimeout(player.ads.adTimeoutTimeout);
     player.removeClass('vjs-ad-loading');
     player.setTimeout(function() {
-      videojs.log('Triggered ended event: Postroll.onAdTimeout', player.ads.state);
+      videojs.log('Triggered ended event (adtimeout)');
       player.trigger('ended');
       player.ads.stateInstance = new AdsDone(player);
     }, 1);
@@ -75,7 +70,7 @@ export default class Postroll extends AdState {
     player.clearTimeout(player.ads.adTimeoutTimeout);
     player.removeClass('vjs-ad-loading');
     player.setTimeout(function() {
-      videojs.log('Triggered ended event: Postroll.onAdsError');
+      videojs.log('Triggered ended event (adserror)');
       player.trigger('ended');
       player.ads.stateInstance = new AdsDone(player);
     }, 1);
