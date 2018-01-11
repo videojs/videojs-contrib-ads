@@ -572,11 +572,6 @@ const contribAdsPlugin = function(options) {
         states[newState].enter.apply(player.ads);
       }
 
-      // Debug log message for state changes
-      if (settings.debug) {
-        videojs.log('ads', player.ads.triggerevent + ' triggered: ' +
-          previousState + ' -> ' + newState);
-      }
     }
 
   };

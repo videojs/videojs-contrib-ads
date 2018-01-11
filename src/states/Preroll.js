@@ -29,17 +29,16 @@ export default class Preroll extends AdState {
     // wait until onAdsReady.
     if (adsReady) {
       this.onAdsReady(true);
-
-    // TODO This condition matches the old implementation, but does it make sense?
-    } else {
-      // Loading spinner from now until preroll or content resume.
-      player.addClass('vjs-ad-loading');
-
-      // Start the clock ticking for ad timeout
-      player.ads.adTimeoutTimeout = player.setTimeout(function() {
-        player.trigger('adtimeout');
-      }, player.ads.settings.timeout);
     }
+
+    // Loading spinner from now until preroll or content resume.
+    player.addClass('vjs-ad-loading');
+
+    // Start the clock ticking for ad timeout
+    // TODO this should be canceled in onAdsError et al
+    player.ads.adTimeoutTimeout = player.setTimeout(function() {
+      player.trigger('adtimeout');
+    }, player.ads.settings.timeout);
   }
 
   /*
@@ -49,7 +48,6 @@ export default class Preroll extends AdState {
     if (noLog !== true) {
       videojs.log('Received adsready event');
     }
-    this.player.removeClass('vjs-ad-loading');
     if (this.player.ads.nopreroll_) {
       this.noPreroll();
     } else {
@@ -79,14 +77,6 @@ export default class Preroll extends AdState {
   readyForPreroll() {
     const player = this.player;
 
-    // Change class to show that we're waiting on ads
-    player.addClass('vjs-ad-loading');
-
-    // Schedule an adtimeout event to fire if we waited too long
-    player.ads.adTimeoutTimeout = player.setTimeout(function() {
-      player.trigger('adtimeout');
-    }, player.ads.settings.prerollTimeout);
-
     // Signal to ad plugin that it's their opportunity to play a preroll
     if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
       videojs.log('Triggered readyforpreroll event');
@@ -108,6 +98,9 @@ export default class Preroll extends AdState {
    * Don't let the content play behind the ad!
    */
   onPlay() {
+
+    videojs.log('Received play event (Preroll)');
+
     // TODO is this in all 4 original states?
     cancelContentPlay(this.player);
   }
@@ -117,7 +110,6 @@ export default class Preroll extends AdState {
    * skipLinearAdMode does the same thing, but in a more robust way.
    */
   onAdsCanceled() {
-    // TODO is this in all 4 original states?
     this.player.removeClass('vjs-ad-loading');
     this.player.ads.stateInstance = new ContentPlayback(this.player);
   }

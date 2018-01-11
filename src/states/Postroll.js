@@ -12,67 +12,66 @@ export default class Postroll extends AdState {
 
     videojs.log('Now in ' + this.name + ' state');
 
+    // From now on, all playing events will be redispatched
     player.ads._contentEnding = true;
+
+    // TODO We should not need to take a snapshot here
     player.ads.snapshot = snapshot.getPlayerSnapshot(player);
-    if (player.ads.nopostroll_) {
+
+    // Start postroll process
+    if (!player.ads.nopostroll_) {
+      player.addClass('vjs-ad-loading');
+
+      player.ads.adTimeoutTimeout = player.setTimeout(function() {
+        player.trigger('adtimeout');
+      }, player.ads.settings.postrollTimeout);
+
+    // No postroll, ads are done
+    } else {
       player.setTimeout(() => {
         videojs.log('Triggered ended event (no postroll)');
         this.contentResuming = true;
         player.trigger('ended');
         player.ads.stateInstance = new AdsDone(player);
       }, 1);
-    } else {
-      player.addClass('vjs-ad-loading');
-
-      player.ads.adTimeoutTimeout = player.setTimeout(function() {
-        player.trigger('adtimeout');
-      }, player.ads.settings.postrollTimeout);
     }
   }
 
   onAdsError() {
-    // TODO Why?
+    // Ideally, ad integrations would call endLinearAdMode if there is an error.
+    // Historically we have not required this, so for adserror only
+    // we call endLinearAdMode in contrib-ads.
     if (this.player.ads.isAdPlaying()) {
       this.player.ads.endLinearAdMode();
     }
   }
 
   onAdSkip() {
-    const player = this.player;
-
-    this.contentResuming = true;
-    player.clearTimeout(player.ads.adTimeoutTimeout);
-    player.removeClass('vjs-ad-loading');
-    player.setTimeout(function() {
-      videojs.log('Triggered ended event (adskip)');
-      player.trigger('ended');
-      player.ads.stateInstance = new AdsDone(player);
-    }, 1);
+    videojs.log('Postroll abort (adskip)');
+    this.abort();
   }
 
   onAdTimeout() {
-    const player = this.player;
-
-    this.contentResuming = true;
-    player.clearTimeout(player.ads.adTimeoutTimeout);
-    player.removeClass('vjs-ad-loading');
-    player.setTimeout(function() {
-      videojs.log('Triggered ended event (adtimeout)');
-      player.trigger('ended');
-      player.ads.stateInstance = new AdsDone(player);
-    }, 1);
+    videojs.log('Postroll abort (adtimeout)');
+    this.abort();
   }
 
   onAdsError() {
+    videojs.log('Postroll abort (adserror)');
+    this.abort();
+  }
+
+  abort() {
     const player = this.player;
 
     this.contentResuming = true;
     player.clearTimeout(player.ads.adTimeoutTimeout);
     player.removeClass('vjs-ad-loading');
+
+    // TODO document why this timeout is here
     player.setTimeout(function() {
-      videojs.log('Triggered ended event (adserror)');
+      videojs.log('Triggered ended event (postroll abort)');
       player.trigger('ended');
-      player.ads.stateInstance = new AdsDone(player);
     }, 1);
   }
 

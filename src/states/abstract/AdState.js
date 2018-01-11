@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
 import * as snapshot from '../../snapshot.js';
-import {State, Preroll, BeforePreroll, ContentPlayback} from '../RenameMe.js';
+import {State, Preroll, BeforePreroll, ContentPlayback, AdsDone} from '../RenameMe.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
@@ -88,11 +88,7 @@ export default class AdState extends State {
       // No longer does anything, used to move us to content-resuming
       player.trigger('adend');
 
-      // In the case of an empty ad response, we want to make sure that
-      // the vjs-ad-loading class is always removed. We could probably check for
-      // duration on adPlayer for an empty ad but we remove it here just to make sure
       player.removeClass('vjs-ad-loading');
-
       player.removeClass('vjs-ad-playing');
 
       // We should add the vjs-live class back if the video is a LIVE video
@@ -163,7 +159,7 @@ export default class AdState extends State {
   onEnded() {
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
-      this.player.ads.stateInstance = new ContentPlayback(this.player);
+      this.player.ads.stateInstance = new AdsDone(this.player);
     }
   }
 

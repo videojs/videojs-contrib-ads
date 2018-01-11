@@ -100,7 +100,7 @@
     }
 
     player.on('contentended', function() {
-      if (!state.postrollPlayed && player.ads.state === 'postroll?' && playPostroll) {
+      if (!state.postrollPlayed && playPostroll) {
         state.postrollPlayed = true;
         playAd();
       }

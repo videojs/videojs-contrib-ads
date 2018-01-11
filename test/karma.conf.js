@@ -13,6 +13,8 @@ module.exports = function(config) {
   // On Travis CI, we can only run in Firefox and Chrome; so, enforce that.
   if (process.env.TRAVIS) {
     config.browsers = ['Firefox', 'travisChrome'];
+  } else {
+    config.browsers = ['Firefox', 'Chrome'];
   }
 
   // If no browsers are specified, we enable `karma-detect-browsers`
@@ -23,7 +25,7 @@ module.exports = function(config) {
 
   config.set({
     basePath: '..',
-    frameworks: ['qunit', 'detectBrowsers'],
+    frameworks: ['qunit'],
     files: [
       'node_modules/video.js/dist/video-js.css',
       'node_modules/lodash/lodash.js',
@@ -45,7 +47,6 @@ module.exports = function(config) {
         flags: ['--no-sandbox']
       }
     },
-    detectBrowsers: detectBrowsers,
     reporters: ['dots'],
     port: 9876,
     colors: true,

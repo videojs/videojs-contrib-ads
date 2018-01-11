@@ -1,3 +1,5 @@
+import videojs from 'video.js';
+
 export default class State {
 
   constructor(player) {
