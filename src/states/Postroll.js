@@ -18,7 +18,8 @@ export default class Postroll extends AdState {
     // TODO We should not need to take a snapshot here
     player.ads.snapshot = snapshot.getPlayerSnapshot(player);
 
-    // Start postroll process
+    // Start postroll process. A postroll will start if the integration calls
+    // startLinearAdMode. It's also possible the ad will time out, error, etc.
     if (!player.ads.nopostroll_) {
       player.addClass('vjs-ad-loading');
 
