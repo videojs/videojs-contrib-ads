@@ -8,7 +8,7 @@ export default class State {
   }
 
   /*
-   * Event handlers. Different states can override these to provide behaviors.
+   * Default event handlers. Different states can override these to provide behaviors.
    */
   onPlay() {}
   onPlaying() {}
@@ -17,7 +17,6 @@ export default class State {
     videojs.log('Unexpected adsready event');
   }
   onAdsError() {}
-  onAdSkip() {}
   onAdsCanceled() {}
   onAdTimeout() {}
   onContentUpdate() {}
@@ -61,8 +60,6 @@ export default class State {
       this.onAdsReady();
     } else if (type === 'adserror') {
       this.onAdsError();
-    } else if (type === 'adskip') {
-      this.onAdSkip();
     } else if (type === 'adscanceled') {
       this.onAdsCanceled();
     } else if (type === 'adtimeout') {

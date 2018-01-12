@@ -2,13 +2,13 @@ import videojs from 'video.js';
 
 import * as snapshot from '../snapshot.js';
 import {AdState} from './RenameMe.js';
+import AdBreak from '../AdBreak.js';
 
 export default class Postroll extends AdState {
 
   constructor(player) {
     super(player);
     this.name = 'Postroll';
-    this.adType = 'postroll';
 
     videojs.log('Now in ' + this.name + ' state');
 
@@ -46,9 +46,36 @@ export default class Postroll extends AdState {
     }
   }
 
-  onAdSkip() {
-    videojs.log('Postroll abort (adskip)');
-    this.abort();
+  startLinearAdMode() {
+    const player = this.player;
+
+    if (!player.ads.isAdPlaying() && !this.isContentResuming()) {
+      player.ads.adType = 'postroll';
+      this.adBreak = new AdBreak(player);
+      this.adBreak.start();
+    } else {
+      videojs.log('Unexpected startLinearAdMode invocation');
+    }
+  }
+
+  endLinearAdMode() {
+    if (this.adBreak) {
+      this.adBreak.end();
+      delete this.adBreak;
+      this.contentResuming = true;
+    }
+  }
+
+  skipLinearAdMode() {
+    const player = this.player;
+
+    if (player.ads.isAdPlaying() || this.isContentResuming()) {
+      videojs.log('Unexpected skipLinearAdMode invocation');
+    } else {
+      videojs.log('Postroll abort (skipLinearAdMode)');
+      player.trigger('adskip');
+      this.abort();
+    }
   }
 
   onAdTimeout() {

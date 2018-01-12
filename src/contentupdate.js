@@ -13,7 +13,7 @@ export default function initializeContentupdate(player) {
 
   // Check if a new src has been set, if so, trigger contentupdate
   const checkSrc = function() {
-    if (player.ads.state !== 'ad-playback') {
+    if (!player.ads._inLinearAdMode) {
       const src = player.currentSrc();
 
       if (src !== player.ads.contentSrc) {

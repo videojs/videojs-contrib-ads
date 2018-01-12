@@ -2,6 +2,7 @@ import videojs from 'video.js';
 
 import {AdState, ContentPlayback} from './RenameMe.js';
 import cancelContentPlay from '../cancelContentPlay.js';
+import AdBreak from '../AdBreak.js';
 
 /*
  * This state encapsulates checking for prerolls, preroll playback, and
@@ -21,7 +22,7 @@ export default class Preroll extends AdState {
   constructor(player, adsReady) {
     super(player);
     this.name = 'Preroll';
-    this.adType = 'preroll';
+    this.adsReady = false;
 
     videojs.log('Now in ' + this.name + ' state');
 
@@ -45,6 +46,7 @@ export default class Preroll extends AdState {
    * Ad integration is ready. Let's get started on this preroll.
    */
   onAdsReady(noLog) {
+    this.adsReady = true;
     if (noLog !== true) {
       videojs.log('Received adsready event');
     }
@@ -64,14 +66,7 @@ export default class Preroll extends AdState {
     videojs.log('Triggered readyforpreroll event');
     player.trigger('readyforpreroll');
 
-    // If we don't wait a tick, entering content-playback will cancel
-    // cancelPlayTimeout, causing the video to not pause for the ad
-    // TODO A goal of the ad state refactor is to avoid this type of thing,
-    // so we will revisit this.
-    player.setTimeout(function() {
-      // Don't wait for a preroll
-      player.trigger('nopreroll');
-    }, 1);
+    this.player.ads.stateInstance = new ContentPlayback(this.player);
   }
 
   readyForPreroll() {
@@ -127,14 +122,39 @@ export default class Preroll extends AdState {
     this.player.ads.stateInstance = new ContentPlayback(this.player);
   }
 
+  startLinearAdMode() {
+    const player = this.player;
+
+    if (this.adsReady && !player.ads.isAdPlaying() && !this.isContentResuming()) {
+      player.ads.adType = 'preroll';
+      this.adBreak = new AdBreak(player);
+      this.adBreak.start();
+    } else {
+      videojs.log('Unexpected startLinearAdMode invocation');
+    }
+  }
+
+  endLinearAdMode() {
+    if (this.adBreak) {
+      this.adBreak.end();
+      delete this.adBreak;
+      this.contentResuming = true;
+    }
+  }
+
   /*
    * Ad skipped by integration. Play content instead.
    */
   skipLinearAdMode() {
-    // TODO If we're in ad-playback or content-resuming it's too late.
-    // Let's handle that case!
-    this.player.removeClass('vjs-ad-loading');
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    const player = this.player;
+
+    if (player.ads.isAdPlaying() || this.isContentResuming()) {
+      videojs.log('Unexpected skipLinearAdMode invocation');
+    } else {
+      player.trigger('adskip');
+      this.player.removeClass('vjs-ad-loading');
+      this.player.ads.stateInstance = new ContentPlayback(this.player);
+    }
   }
 
   /*

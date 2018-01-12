@@ -439,7 +439,7 @@ Prevents videojs-contrib-ads from restoring the previous video source
 
 If you need to change the video source during ad playback, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads to restore to the previous video source.
 ```js
-if (player.ads.state  === 'ad-playback') {
+if (player.ads._inLinearAdMode) {
     player.ads.disableNextSnapshotRestore = true;
     player.src('another-video.mp4');
 }

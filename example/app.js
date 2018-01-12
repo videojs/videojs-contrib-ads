@@ -68,11 +68,10 @@
         li.className = 'content-event';
       }
 
-      str = '[' + (d) + '] ' +  padRight(19, '[' + (event.state ? event.state : player.ads.state + '*') + ']', ' ') + ' ' + evt;
+      str = evt;
 
       if (evt === 'contentupdate') {
-        str += "\toldValue: " + event.oldValue + "\n" +
-               "\tnewValue: " + event.newValue + "\n";
+        str += ' ' + event.oldValue + " -> " + event.newValue;
         li.className = 'content-adplugin-event';
       }
       if (evt === 'contentplayback') {

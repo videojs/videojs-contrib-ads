@@ -186,9 +186,7 @@ const contribAdsPlugin = function(options) {
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
-
       player.ads.stateInstance.startLinearAdMode();
-
     },
 
     // Call this when a linear ad pod has finished playing.
@@ -201,14 +199,7 @@ const contribAdsPlugin = function(options) {
     // This has no effect if we are already playing an ad.  Always
     // use endLinearAdMode() to exit from linear ad-playback state.
     skipLinearAdMode() {
-
       player.ads.stateInstance.skipLinearAdMode();
-
-      // This event is no longer used by contrib-ads. It is only here for
-      // compatibility with old integrations that may expect it.
-      if (player.ads.state !== 'ad-playback') {
-        player.trigger('adskip');
-      }
     },
 
     stitchedAds(arg) {
@@ -325,257 +316,6 @@ const contribAdsPlugin = function(options) {
   // Global contentupdate handler for resetting plugin state
   player.on('contentupdate', player.ads.reset);
 
-  // Ad Playback State Machine
-  const states = {
-    'content-set': {
-      events: {
-        adscanceled() {
-          this.state = 'content-playback';
-        },
-        adsready() {
-          this.state = 'ads-ready';
-        },
-        play() {
-          this.state = 'ads-ready?';
-        },
-        adserror() {
-          this.state = 'content-playback';
-        },
-        adskip() {
-          this.state = 'content-playback';
-        }
-      }
-    },
-    'ads-ready': {
-      events: {
-        play() {
-          this.state = 'preroll?';
-        },
-        adskip() {
-          this.state = 'content-playback';
-        },
-        adserror() {
-          this.state = 'content-playback';
-        }
-      }
-    },
-    'preroll?': {
-      enter() {
-        // See Preroll.js
-      },
-      leave() {
-        // player.clearTimeout(player.ads.adTimeoutTimeout);
-      },
-      events: {
-        play() {
-          // Moved cancelContentPlay to Preroll.js
-          // cancelContentPlay(player);
-        },
-        adstart() {
-          this.state = 'ad-playback';
-          // player.ads.adType = 'preroll';
-        },
-        adskip() {
-          this.state = 'content-playback';
-        },
-        adtimeout() {
-          this.state = 'content-playback';
-        },
-        adserror() {
-          this.state = 'content-playback';
-        },
-        nopreroll() {
-          this.state = 'content-playback';
-        }
-      }
-    },
-    'ads-ready?': {
-      enter() {
-        // player.addClass('vjs-ad-loading');
-        // player.ads.adTimeoutTimeout = player.setTimeout(function() {
-        //   player.trigger('adtimeout');
-        // }, settings.timeout);
-      },
-      leave() {
-        // player.removeClass('vjs-ad-loading');
-      },
-      events: {
-        play() {
-          // cancelContentPlay(player);
-        },
-        adscanceled() {
-          this.state = 'content-playback';
-        },
-        adsready() {
-          this.state = 'preroll?';
-        },
-        adskip() {
-          this.state = 'content-playback';
-        },
-        adtimeout() {
-          this.state = 'content-playback';
-        },
-        adserror() {
-          this.state = 'content-playback';
-        }
-      }
-    },
-    'ad-playback': {
-      enter() {
-        // See AdState.js
-      },
-      leave() {
-        // See AdState.js
-      },
-      events: {
-        adend() {
-          this.state = 'content-resuming';
-        },
-        adserror() {
-          // player.ads.endLinearAdMode();
-        }
-      }
-    },
-    'content-resuming': {
-      enter() {
-        // See AdState.js
-      },
-      leave() {
-        // player.clearTimeout(player.ads._fireEndedTimeout);
-      },
-      events: {
-        contentupdate() {
-          this.state = 'content-set';
-        },
-
-        // This is for stitched ads only.
-        contentresumed() {
-          this.state = 'content-playback';
-        },
-        playing() {
-          this.state = 'content-playback';
-        },
-        ended() {
-          this.state = 'content-playback';
-        }
-      }
-    },
-    'postroll?': {
-      enter() {
-        if (player.ads.nopostroll_) {
-          player.setTimeout(function() {
-            // content-resuming happens after the timeout for backward-compatibility
-            // with plugins that relied on a postrollTimeout before nopostroll was
-            // implemented
-            // TODO what do we do with this exactly
-            player.ads.state = 'content-resuming';
-          }, 1);
-        }
-      },
-      leave() {
-        // player.clearTimeout(player.ads.adTimeoutTimeout);
-        // player.removeClass('vjs-ad-loading');
-      },
-      events: {
-        adstart() {
-          this.state = 'ad-playback';
-          // player.ads.adType = 'postroll';
-        },
-        adskip() {
-          this.state = 'content-resuming';
-          // player.setTimeout(function() {
-          //   player.trigger('ended');
-          // }, 1);
-        },
-        adtimeout() {
-          this.state = 'content-resuming';
-          // player.setTimeout(function() {
-          //   player.trigger('ended');
-          // }, 1);
-        },
-        adserror() {
-          this.state = 'content-resuming';
-          // player.setTimeout(function() {
-          //   player.trigger('ended');
-          // }, 1);
-        },
-        contentupdate() {
-          this.state = 'ads-ready?';
-        }
-      }
-    },
-    'content-playback': {
-      enter() {
-        // Moved to ContentPlayback.js
-      },
-      events: {
-        // In the case of a timeout, adsready might come in late.
-        // This assumes the behavior that if an ad times out, it could still
-        // interrupt the content and start playing. An integration could
-        // still decide to behave otherwise.
-        adsready() {
-          // player.trigger('readyforpreroll');
-        },
-        adstart() {
-          this.state = 'ad-playback';
-          // This is a special case in which preroll is specifically set
-          // if (player.ads.adType !== 'preroll') {
-          //   player.ads.adType = 'midroll';
-          // }
-        },
-        contentupdate() {
-          if (player.paused()) {
-            this.state = 'content-set';
-          } else {
-            this.state = 'ads-ready?';
-          }
-        },
-        contentended() {
-          if (this._contentHasEnded) {
-            this.state = 'content-resuming';
-          }
-        }
-      }
-    }
-  };
-
-  const processEvent = function(event) {
-
-    const state = player.ads.state;
-
-    // Execute the current state's handler for this event
-    const eventHandlers = states[state].events;
-
-    if (eventHandlers) {
-      const handler = eventHandlers[event.type];
-
-      if (handler) {
-        handler.apply(player.ads);
-      }
-    }
-
-    // If the state has changed...
-    if (state !== player.ads.state) {
-      const previousState = state;
-      const newState = player.ads.state;
-
-      // Record the event that caused the state transition
-      player.ads.triggerevent = event.type;
-
-      // Execute "leave" method for the previous state
-      if (states[previousState].leave) {
-        states[previousState].leave.apply(player.ads);
-      }
-
-      // Execute "enter" method for the new state
-      if (states[newState].enter) {
-        states[newState].enter.apply(player.ads);
-      }
-
-    }
-
-  };
-
   // A utility method for textTrackChangeHandler to define the conditions
   // when text tracks should be disabled.
   // Currently this includes:
@@ -617,29 +357,6 @@ const contribAdsPlugin = function(options) {
     player.textTracks().addEventListener('change', textTrackChangeHandler);
   });
 
-  // Register our handler for the events that the state machine will process
-  player.on(VIDEO_EVENTS.concat([
-    // Events emitted by this plugin
-    'adtimeout',
-    'contentupdate',
-    'contentplaying',
-    'contentended',
-    'contentresumed',
-    // Triggered by startLinearAdMode()
-    'adstart',
-    // Triggered by endLinearAdMode()
-    'adend',
-    // Triggered by skipLinearAdMode()
-    'adskip',
-
-    // Events emitted by integrations
-    'adsready',
-    'adserror',
-    'adscanceled',
-    'nopreroll'
-
-  ]), processEvent);
-
   // Event handling for the current state.
   // TODO this can be moved somewhere else after the state machine is removed.
   // For now it has to be after it.
@@ -670,12 +387,6 @@ const contribAdsPlugin = function(options) {
 
     player.textTracks().removeEventListener('change', textTrackChangeHandler);
   });
-
-  // If we're autoplaying, the state machine will immidiately process
-  // a synthetic play event
-  if (!player.paused()) {
-    processEvent({type: 'play'});
-  }
 
 };
 

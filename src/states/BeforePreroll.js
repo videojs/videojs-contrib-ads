@@ -78,7 +78,10 @@ export default class BeforePreroll extends ContentState {
    * Ad mode skipped by integration. Play content instead.
    */
   skipLinearAdMode() {
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    const player = this.player;
+
+    player.trigger('adskip');
+    player.ads.stateInstance = new ContentPlayback(player);
   }
 
 }
