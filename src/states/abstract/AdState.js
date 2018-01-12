@@ -142,6 +142,11 @@ export default class AdState extends State {
     }
   }
 
+  /*
+   * If the integration does result in a playing event when resuming content after an ad,
+   * they should instead trigger a contentresumed event to signal that content should
+   * resume.
+   */
   onContentResumed() {
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
@@ -149,6 +154,9 @@ export default class AdState extends State {
     }
   }
 
+  /*
+   * This is the usual way for content to resume after a preroll or midroll.
+   */
   onPlaying() {
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
@@ -156,6 +164,9 @@ export default class AdState extends State {
     }
   }
 
+  /*
+   * This happens after a postroll.
+   */
   onEnded() {
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);

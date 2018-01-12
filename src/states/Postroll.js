@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
 import * as snapshot from '../snapshot.js';
-import {AdState, AdsDone} from './RenameMe.js';
+import {AdState} from './RenameMe.js';
 
 export default class Postroll extends AdState {
 
@@ -32,7 +32,6 @@ export default class Postroll extends AdState {
         videojs.log('Triggered ended event (no postroll)');
         this.contentResuming = true;
         player.trigger('ended');
-        player.ads.stateInstance = new AdsDone(player);
       }, 1);
     }
   }
