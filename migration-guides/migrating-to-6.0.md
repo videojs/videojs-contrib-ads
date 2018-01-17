@@ -11,4 +11,5 @@ that is triggered by linear ad mode ending. Integrations must not emit ended eve
 after the end of linear ad mode.
 * There will no longer be a `contentended` event when content ends after the first time content ends.
 * We no longer recommend checking `ads.state` in integration code. Existing checks will not continue to work. Methods have been added to replace such checks, such as `ads.isInAdMode()`.
-* The event parameter `triggerevent` has been removed. It is unlikely that integrations used it, but any usage must be migrated.
+* The event parameters `triggerevent` and `originalEvent` have been removed. It is unlikely that integrations used them, but any usage must be migrated.
+* We no longer trigger a `readyforpreroll` event after receiving a `nopreroll` event.

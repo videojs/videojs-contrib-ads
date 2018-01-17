@@ -35,9 +35,9 @@ export default class BeforePreroll extends ContentState {
   onPlay() {
     const player = this.player;
 
-    this.player.ads.stateInstance = new Preroll(player, this.adsReady);
-
     cancelContentPlay(player);
+
+    this.player.ads.stateInstance = new Preroll(player, this.adsReady);
 
     // This removes the poster so it doesn't flash between videos.
     // TODO This is only invoked if adsReady is false to match the pre-refactor

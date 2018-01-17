@@ -17,12 +17,6 @@ export default class Preroll extends AdState {
 
     videojs.log('Now in ' + this.name + ' state');
 
-    // If adsready already happened, lets get started. Otherwise,
-    // wait until onAdsReady.
-    if (adsReady) {
-      this.onAdsReady(true);
-    }
-
     // Loading spinner from now until preroll or content resume.
     player.addClass('vjs-ad-loading');
 
@@ -31,6 +25,12 @@ export default class Preroll extends AdState {
     player.ads.adTimeoutTimeout = player.setTimeout(function() {
       player.trigger('adtimeout');
     }, player.ads.settings.timeout);
+
+    // If adsready already happened, lets get started. Otherwise,
+    // wait until onAdsReady.
+    if (adsReady) {
+      this.onAdsReady(true);
+    }
   }
 
   /*
@@ -51,12 +51,8 @@ export default class Preroll extends AdState {
   noPreroll() {
     const player = this.player;
 
-    // This will start the ads manager in case there are later ads
-    // TODO We need to refactor this, we can definitely solve the ads manager
-    // issue in a more intuitive way.
-    videojs.log('Triggered readyforpreroll event');
-    player.trigger('readyforpreroll');
-
+    videojs.log('Skipping prerolls due to nopreroll event');
+    player.clearTimeout(player.ads.adTimeoutTimeout);
     this.player.ads.stateInstance = new ContentPlayback(this.player);
   }
 
@@ -96,6 +92,8 @@ export default class Preroll extends AdState {
    * skipLinearAdMode does the same thing, but in a more robust way.
    */
   onAdsCanceled() {
+    videojs.log('adscanceled (Preroll)');
+
     this.player.removeClass('vjs-ad-loading');
     this.player.ads.stateInstance = new ContentPlayback(this.player);
   }
@@ -104,6 +102,8 @@ export default class Preroll extends AdState {
    * An ad error occured. Play content instead.
    */
   onAdsError() {
+    videojs.log('adserror (Preroll)');
+
     // TODO Why?
     if (this.player.ads.isAdPlaying()) {
       this.player.ads.endLinearAdMode();
@@ -144,22 +144,28 @@ export default class Preroll extends AdState {
     } else {
       player.trigger('adskip');
       this.player.removeClass('vjs-ad-loading');
+
+      videojs.log('skipLinearAdMode (Preroll)');
       this.player.ads.stateInstance = new ContentPlayback(this.player);
     }
   }
 
   /*
-   * Prerolls missed their chance! Play content instead.
+   * Prerolls took too long! Play content instead.
    */
   onAdTimeout() {
     this.player.removeClass('vjs-ad-loading');
+
+    videojs.log('adtimeout (Preroll)');
     this.player.ads.stateInstance = new ContentPlayback(this.player);
   }
 
   onNoPreroll() {
-    // TODO If we're in ad-playback or content-resuming it's too late.
-    // Let's handle that case!
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    if (this.adsReady) {
+      videojs.log('Ignoring nopreroll event after both play and adsready');
+    } else {
+      this.noPreroll();
+    }
   }
 
 }

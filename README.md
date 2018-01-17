@@ -66,7 +66,7 @@ And here are the interaction points you use to send information to the ads plugi
 * `adplaying` (EVENT) - Trigger this event when an ads starts playing. If your integration triggers `playing` event when an ad begins, it will automatically be redispatched as `adplaying`.
 * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
 * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
-* `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ad. Otherwise, the player will wait until a timeout occurs before playing content. This event is optional, but can improve user experience.
+* `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ads to skip the preroll process completely. This event is optional, but can improve user experience. It is ignored if it is seen after `readyforpreroll`.
 * `nopostroll` (EVENT) - Trigger this event to indicate that there will be no postroll ad. Otherwise, contrib-ads will trigger an adtimeout event after content ends if there is no postroll.
 * `ads-ad-started` (EVENT) - Trigger this when each individual ad begins.
 * `contentresumed` (EVENT) - If your integration does not result in a "playing" event when resuming content after an ad, send this event to signal that content can resume. This was added to support stitched ads and is not normally necessary.

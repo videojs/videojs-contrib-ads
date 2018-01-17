@@ -41,9 +41,14 @@ export default class ContentPlayback extends ContentState {
    * An integration could behave otherwise by ignoring this event.
    */
   onAdsReady() {
-    videojs.log('Received adsready event');
-    videojs.log('Triggered readyforpreroll event');
-    this.player.trigger('readyforpreroll');
+    const player = this.player;
+
+    videojs.log('Received adsready event during content playback');
+
+    if (!player.ads.nopreroll_) {
+      videojs.log('Triggered readyforpreroll event');
+      player.trigger('readyforpreroll');
+    }
   }
 
   onContentEnded() {

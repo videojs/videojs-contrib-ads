@@ -24,6 +24,8 @@ export default class State {
   onContentEnded() {
     videojs.log('Unexpected contentended event');
   }
+  onNoPreroll() {}
+  onNoPostroll() {}
 
   /*
    * Method handlers. Different states can override these to provide behaviors.
@@ -74,6 +76,10 @@ export default class State {
       this.onPlaying();
     } else if (type === 'ended') {
       this.onEnded();
+    } else if (type === 'nopreroll') {
+      this.onNoPreroll();
+    } else if (type === 'nopostroll') {
+      this.onNoPostroll();
     }
   }
 
