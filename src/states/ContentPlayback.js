@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {ContentState, BeforePreroll, Preroll, Midroll, Postroll} from './RenameMe.js';
+import {ContentState, Midroll, Postroll} from './RenameMe.js';
 
 export default class ContentPlayback extends ContentState {
 
@@ -44,16 +44,6 @@ export default class ContentPlayback extends ContentState {
     videojs.log('Received adsready event');
     videojs.log('Triggered readyforpreroll event');
     this.player.trigger('readyforpreroll');
-  }
-
-  onContentUpdate() {
-    const player = this.player;
-
-    if (player.paused()) {
-      player.ads.stateInstance = new BeforePreroll(player);
-    } else {
-      player.ads.stateInstance = new Preroll(player, false);
-    }
   }
 
   onContentEnded() {

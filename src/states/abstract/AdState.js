@@ -20,7 +20,6 @@ export default class AdState extends State {
     // If the source changes while resuming content, go back to initial state
     // for the new source.
     if (this.contentResuming) {
-      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new BeforePreroll(this.player);
     }
 
@@ -28,7 +27,6 @@ export default class AdState extends State {
     // This matches pre-refactor behavior, but I couldn't find specific justificaiton
     // in the project history.
     if (this.name === 'Postroll' && !this.player.ads._inLinearAdMode) {
-      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new Preroll(this.player);
     }
   }
@@ -40,7 +38,6 @@ export default class AdState extends State {
    */
   onContentResumed() {
     if (this.contentResuming) {
-      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
     }
   }
@@ -51,7 +48,6 @@ export default class AdState extends State {
    */
   onPlaying() {
     if (this.contentResuming) {
-      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
     }
   }

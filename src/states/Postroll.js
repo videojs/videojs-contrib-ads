@@ -65,16 +65,10 @@ export default class Postroll extends AdState {
       this.adBreak.end();
       delete this.adBreak;
 
-      player.clearTimeout(player.ads._fireEndedTimeout);
-
-      // We may get an ended event from the ad ending. If that doesn't happen within
-      // a second, we will create our own ended event.
-      player.ads._fireEndedTimeout = player.setTimeout(function() {
-        videojs.log('Triggered ended event (endLinearAdMode)');
-        player.trigger('ended');
-      }, 1000);
-
       this.contentResuming = true;
+
+      videojs.log('Triggered ended event (endLinearAdMode)');
+      player.trigger('ended');
     }
   }
 
@@ -102,7 +96,6 @@ export default class Postroll extends AdState {
 
   onEnded() {
     if (this.contentResuming) {
-      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new AdsDone(this.player);
     } else {
       videojs.log('Unexpected ended event during postroll');

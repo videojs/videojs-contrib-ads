@@ -371,10 +371,6 @@ const contribAdsPlugin = function(options) {
       player.clearTimeout(player.ads.adTimeoutTimeout);
     }
 
-    if (player.ads._fireEndedTimeout) {
-      player.clearTimeout(player.ads._fireEndedTimeout);
-    }
-
     if (player.ads.cancelPlayTimeout) {
       player.clearTimeout(player.ads.cancelPlayTimeout);
     }

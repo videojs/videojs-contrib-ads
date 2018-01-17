@@ -365,13 +365,10 @@ QUnit.test('an "ended" event is fired after postroll if not fired naturally', fu
 
   this.player.ads.startLinearAdMode(); // start postroll
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(endedSpy.callCount, 0, 'no ended event right away');
-
-  this.clock.tick(1000);
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
 
-QUnit.test('natural ended event after postroll is allowed to happen', function(assert) {
+QUnit.test('ended events', function(assert) {
   var endedSpy = sinon.spy();
   this.player.on('ended', endedSpy);
 
@@ -383,15 +380,10 @@ QUnit.test('natural ended event after postroll is allowed to happen', function(a
   this.player.ads.startLinearAdMode(); // Postroll starts
   this.player.ads.endLinearAdMode();
 
-  assert.strictEqual(endedSpy.callCount, 0, 'no ended event yet');
-  this.player.trigger('ended');
-  assert.strictEqual(endedSpy.callCount, 1, 'natural end event was not redispatched');
-
-  this.clock.tick(1000);
-  assert.strictEqual(endedSpy.callCount, 1, 'no extra synthetic ended event after timeout');
+  assert.strictEqual(endedSpy.callCount, 1, 'ended event after postroll');
 
   this.player.trigger('ended');
-  assert.strictEqual(endedSpy.callCount, 2, 'ended events are normal after ads done');
+  assert.strictEqual(endedSpy.callCount, 2, 'ended event after ads done');
 });
 
 QUnit.test('adserror during ad playback triggers adend', function(assert) {
