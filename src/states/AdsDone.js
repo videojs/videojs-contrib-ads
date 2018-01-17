@@ -9,6 +9,9 @@ export default class AdsDone extends ContentState {
     this.name = 'AdsDone';
 
     videojs.log('Now in ' + this.name + ' state');
+
+    // From now on, `ended` events won't be redispatched
+    player.ads._contentHasEnded = true;
   }
 
 }

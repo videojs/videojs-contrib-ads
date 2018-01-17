@@ -389,6 +389,9 @@ QUnit.test('natural ended event after postroll is allowed to happen', function(a
 
   this.clock.tick(1000);
   assert.strictEqual(endedSpy.callCount, 1, 'no extra synthetic ended event after timeout');
+
+  this.player.trigger('ended');
+  assert.strictEqual(endedSpy.callCount, 2, 'ended events are normal after ads done');
 });
 
 QUnit.test('adserror during ad playback triggers adend', function(assert) {
@@ -898,13 +901,13 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
   // adType is unset originally
   assert.strictEqual(this.player.ads.adType, null);
 
-  // begins in content-set, preroll happens, adType is preroll
+  // before preroll
   this.player.trigger('adsready');
   assert.strictEqual(this.player.ads.adType, null);
   this.player.trigger('play');
   assert.strictEqual(this.player.ads.adType, null);
 
-  // ad starts and finishes
+  // preroll starts and finishes
   this.player.ads.startLinearAdMode();
   assert.strictEqual(this.player.ads.adType, 'preroll');
   this.player.ads.endLinearAdMode();

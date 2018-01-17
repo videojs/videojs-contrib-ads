@@ -7,15 +7,6 @@ import AdBreak from '../AdBreak.js';
 /*
  * This state encapsulates checking for prerolls, preroll playback, and
  * content restoration after a preroll.
- *
- * TODO: The below information is notes for the refactor and can be removed
- * afterwards.
- *
- * Previous states:
- * * ads-ready? (In new code: onAdsReady has not been invoked yet)
- * * preroll? (In new code: triggered readyforpreroll but no startLinearAdMode yet)
- * * ad-playback (In new (and old) code: player.ads._inLinearAdMode is true)
- * * content-resuming (In new code: AdState.contentResuming)
  */
 export default class Preroll extends AdState {
 

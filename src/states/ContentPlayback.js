@@ -60,25 +60,7 @@ export default class ContentPlayback extends ContentState {
     const player = this.player;
 
     videojs.log('Received contentended event');
-
-    // If _contentHasEnded is false it means we need to check for postrolls.
-    if (!player.ads._contentHasEnded) {
-      player.ads._contentEnding = false;
-      player.ads._contentHasEnded = true;
-      player.ads.stateInstance = new Postroll(player);
-
-    // If _contentHasEnded is true it means we already checked for postrolls and
-    // played postrolls if needed, so now we're ready to send an ended event.
-    } else {
-      // TODO make sure this is redispatched correctly
-      // Old comment:
-      // Causes ended event to trigger in content-resuming.enter.
-      // From there, the ended event event is not redispatched.
-      // Then we end up back in content-playback state.
-      videojs.log('Triggered ended event (contentended)');
-      player.trigger('ended');
-    }
-
+    player.ads.stateInstance = new Postroll(player);
   }
 
   startLinearAdMode() {

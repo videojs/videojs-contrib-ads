@@ -22,8 +22,6 @@ QUnit.module('Redispatch', {
       },
 
       ads: {
-        state: 'content-set',
-
         snapshot: {
           ended: false,
           currentSrc: 'my vid'

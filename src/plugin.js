@@ -138,7 +138,6 @@ const contribAdsPlugin = function(options) {
   // Replace the plugin constructor with the ad namespace
   player.ads = {
     settings,
-    state: 'content-set',
     disableNextSnapshotRestore: false,
 
     // This is true if we have finished actual content playback but haven't
@@ -171,7 +170,6 @@ const contribAdsPlugin = function(options) {
 
     VERSION: '__VERSION__',
 
-    // TODO reset state to content-set here instead of in every contentupdate case
     reset() {
       player.ads.disableNextSnapshotRestore = false;
       player.ads._contentEnding = false;

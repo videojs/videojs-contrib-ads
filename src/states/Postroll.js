@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
 import * as snapshot from '../snapshot.js';
-import {AdState} from './RenameMe.js';
+import {AdState, AdsDone} from './RenameMe.js';
 import AdBreak from '../AdBreak.js';
 
 export default class Postroll extends AdState {
@@ -12,7 +12,7 @@ export default class Postroll extends AdState {
 
     videojs.log('Now in ' + this.name + ' state');
 
-    // From now on, all playing events will be redispatched
+    // From now on, all `playing` events will be redispatched
     player.ads._contentEnding = true;
 
     // TODO We should not need to take a snapshot here
@@ -49,7 +49,7 @@ export default class Postroll extends AdState {
   startLinearAdMode() {
     const player = this.player;
 
-    if (!player.ads.isAdPlaying() && !this.isContentResuming()) {
+    if (!player.ads.isAdPlaying() && !this.contentResuming) {
       player.ads.adType = 'postroll';
       this.adBreak = new AdBreak(player);
       this.adBreak.start();
@@ -59,9 +59,21 @@ export default class Postroll extends AdState {
   }
 
   endLinearAdMode() {
+    const player = this.player;
+
     if (this.adBreak) {
       this.adBreak.end();
       delete this.adBreak;
+
+      player.clearTimeout(player.ads._fireEndedTimeout);
+
+      // We may get an ended event from the ad ending. If that doesn't happen within
+      // a second, we will create our own ended event.
+      player.ads._fireEndedTimeout = player.setTimeout(function() {
+        videojs.log('Triggered ended event (endLinearAdMode)');
+        player.trigger('ended');
+      }, 1000);
+
       this.contentResuming = true;
     }
   }
@@ -86,6 +98,15 @@ export default class Postroll extends AdState {
   onAdsError() {
     videojs.log('Postroll abort (adserror)');
     this.abort();
+  }
+
+  onEnded() {
+    if (this.contentResuming) {
+      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
+      this.player.ads.stateInstance = new AdsDone(this.player);
+    } else {
+      videojs.log('Unexpected ended event during postroll');
+    }
   }
 
   abort() {

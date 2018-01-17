@@ -70,7 +70,7 @@ export default class AdBreak {
 
     player.ads._inLinearAdMode = false;
 
-    // No longer does anything, used to move us to content-resuming
+    // Signals the end of the ad break to anyone listening.
     player.trigger('adend');
 
     player.removeClass('vjs-ad-loading');
@@ -91,18 +91,6 @@ export default class AdBreak {
       player.volume(player.ads.preAdVolume_);
     }
 
-    // If content has ended, trigger an ended event
-    if (player.ads._contentHasEnded) {
-      player.clearTimeout(player.ads._fireEndedTimeout);
-      // in some cases, ads are played in a swf or another video element
-      // so we do not get an ended event in this state automatically.
-      // If we don't get an ended event we can use, we need to trigger
-      // one ourselves or else we won't actually ever end the current video.
-      player.ads._fireEndedTimeout = player.setTimeout(function() {
-        videojs.log('Triggered ended event (endLinearAdMode)');
-        player.trigger('ended');
-      }, 1000);
-    }
   }
 
 }

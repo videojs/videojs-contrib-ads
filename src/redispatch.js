@@ -68,7 +68,7 @@ const handlePlaying = (player, event) => {
 const handleEnded = (player, event) => {
   if (player.ads.isInAdMode()) {
 
-    // The true ended event fired by plugin.js either after the postroll
+    // The true ended event fired either after the postroll
     // or because there was no postroll.
     if (player.ads.isContentResuming()) {
       return;
@@ -77,9 +77,8 @@ const handleEnded = (player, event) => {
     // Prefix ended due to ad ending.
     prefixEvent(player, 'ad', event);
 
-  } else {
-
-    // Prefix ended due to content ending.
+  // Prefix ended due to content ending before preroll check
+  } else if (!player.ads._contentHasEnded) {
     prefixEvent(player, 'content', event);
   }
 };

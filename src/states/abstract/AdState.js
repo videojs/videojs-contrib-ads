@@ -1,4 +1,4 @@
-import {State, Preroll, BeforePreroll, ContentPlayback, AdsDone} from '../RenameMe.js';
+import {State, Preroll, BeforePreroll, ContentPlayback} from '../RenameMe.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
@@ -53,16 +53,6 @@ export default class AdState extends State {
     if (this.contentResuming) {
       this.player.clearTimeout(this.player.ads._fireEndedTimeout);
       this.player.ads.stateInstance = new ContentPlayback(this.player);
-    }
-  }
-
-  /*
-   * This happens after a postroll.
-   */
-  onEnded() {
-    if (this.contentResuming) {
-      this.player.clearTimeout(this.player.ads._fireEndedTimeout);
-      this.player.ads.stateInstance = new AdsDone(this.player);
     }
   }
 

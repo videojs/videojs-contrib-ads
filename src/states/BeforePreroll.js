@@ -8,13 +8,6 @@ import cancelContentPlay from '../cancelContentPlay.js';
  * state until a "play" event is seen. After that, we enter the Preroll state to check for
  * prerolls. This happens regardless of whether or not any prerolls ultimately play.
  * Errors and other conditions may lead us directly from here to ContentPlayback.
- *
- * TODO: The below information is notes for the refactor and can be removed
- * afterwards.
- *
- * Previous states:
- * * content-set (In new code: BeforePreroll.adsready false)
- * * ads-ready (In new code: BeforePreroll.adsready true)
  */
 export default class BeforePreroll extends ContentState {
 
