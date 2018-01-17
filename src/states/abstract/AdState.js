@@ -47,6 +47,7 @@ export default class AdState extends State {
 
   /*
    * This is the usual way for content to resume after a preroll or midroll.
+   * TODO: Why does this happen here instead of on endLinearAdMode?
    */
   onPlaying() {
     if (this.contentResuming) {
