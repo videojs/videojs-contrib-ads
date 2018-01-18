@@ -10,7 +10,7 @@ import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
 
-import {BeforePreroll} from './States/RenameMe.js';
+import {BeforePreroll} from './states/RenameMe.js';
 
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
