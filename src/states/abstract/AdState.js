@@ -1,4 +1,4 @@
-import {State, ContentPlayback} from '../RenameMe.js';
+import {State, ContentPlayback} from '../States.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
@@ -27,8 +27,8 @@ export default class AdState extends State {
   }
 
   /*
-   * If the integration does result in a playing event when resuming content after an ad,
-   * they should instead trigger a contentresumed event to signal that content should
+   * If the integration does not result in a playing event when resuming content after an
+   * ad, they should instead trigger a contentresumed event to signal that content should
    * resume. The main use case for this is when ads are stitched into the content video.
    */
   onContentResumed() {

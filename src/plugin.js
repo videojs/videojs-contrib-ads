@@ -10,7 +10,7 @@ import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
 
-import {BeforePreroll} from './states/RenameMe.js';
+import {BeforePreroll} from './states/States.js';
 
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
@@ -97,7 +97,7 @@ const contribAdsPlugin = function(options) {
 
     // If an ad isn't playing, don't try to play an ad. This could result from prefixed
     // events when the player is blocked by a preroll check, but there is no preroll.
-    if (!player.ads.isAdPlaying()) {
+    if (!player.ads.inAdBreak()) {
       return;
     }
 
@@ -321,7 +321,7 @@ const contribAdsPlugin = function(options) {
     // and this occurs during ad playback, we should disable tracks again.
     // If shouldPlayContentBehindAd, no special handling is needed.
     return !player.ads.shouldPlayContentBehindAd(player) &&
-            player.ads.isAdPlaying() &&
+            player.ads.inAdBreak() &&
             player.tech_.featuresNativeTextTracks &&
             videojs.browser.IS_IOS &&
             // older versions of video.js did not use an emulated textTrackList

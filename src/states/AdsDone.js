@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {ContentState} from './RenameMe.js';
+import {ContentState} from './States.js';
 
 export default class AdsDone extends ContentState {
 

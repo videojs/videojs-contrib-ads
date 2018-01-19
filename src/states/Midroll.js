@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
-import {AdState} from './RenameMe.js';
-import AdBreak from '../AdBreak.js';
+import {AdState} from './States.js';
+import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 export default class Midroll extends AdState {
 
@@ -15,19 +15,19 @@ export default class Midroll extends AdState {
   startLinearAdMode() {
     const player = this.player;
 
-    if (!player.ads.isAdPlaying() && !this.isContentResuming()) {
+    if (!this.inAdBreak() && !this.isContentResuming()) {
       player.ads.adType = 'midroll';
-      this.adBreak = new AdBreak(player);
-      this.adBreak.start();
+      startAdBreak(player);
     } else {
       videojs.log('Unexpected startLinearAdMode invocation');
     }
   }
 
   endLinearAdMode() {
-    if (this.adBreak) {
-      this.adBreak.end();
-      delete this.adBreak;
+    const player = this.player;
+
+    if (this.inAdBreak()) {
+      endAdBreak(player);
       this.contentResuming = true;
     }
   }

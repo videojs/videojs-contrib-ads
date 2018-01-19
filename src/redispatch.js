@@ -98,7 +98,7 @@ const handleLoadEvent = (player, event) => {
     return;
 
   // Ad playing
-  } else if (player.ads.isAdPlaying()) {
+  } else if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
 
   // Source change

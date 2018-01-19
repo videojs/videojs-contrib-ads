@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
-import {AdState, BeforePreroll, Preroll, AdsDone} from './RenameMe.js';
-import AdBreak from '../AdBreak.js';
+import {AdState, BeforePreroll, Preroll, AdsDone} from './States.js';
+import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 export default class Postroll extends AdState {
 
@@ -37,7 +37,7 @@ export default class Postroll extends AdState {
     // Ideally, ad integrations would call endLinearAdMode if there is an error.
     // Historically we have not required this, so for adserror only
     // we call endLinearAdMode in contrib-ads.
-    if (this.player.ads.isAdPlaying()) {
+    if (this.player.ads.inAdBreak()) {
       this.player.ads.endLinearAdMode();
     }
   }
@@ -47,9 +47,8 @@ export default class Postroll extends AdState {
 
     if (!player.ads.isAdPlaying() && !this.contentResuming) {
       player.ads.adType = 'postroll';
-      this.adBreak = new AdBreak(player);
       player.clearTimeout(this._postrollTimeout);
-      this.adBreak.start();
+      startAdBreak(player);
     } else {
       videojs.log('Unexpected startLinearAdMode invocation');
     }
@@ -64,10 +63,9 @@ export default class Postroll extends AdState {
   endLinearAdMode() {
     const player = this.player;
 
-    if (this.adBreak) {
+    if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
-      this.adBreak.end();
-      delete this.adBreak;
+      endAdBreak(player);
 
       this.contentResuming = true;
 
@@ -79,7 +77,7 @@ export default class Postroll extends AdState {
   skipLinearAdMode() {
     const player = this.player;
 
-    if (player.ads.isAdPlaying() || this.isContentResuming()) {
+    if (player.ads.inAdBreak() || this.isContentResuming()) {
       videojs.log('Unexpected skipLinearAdMode invocation');
     } else {
       videojs.log('Postroll abort (skipLinearAdMode)');

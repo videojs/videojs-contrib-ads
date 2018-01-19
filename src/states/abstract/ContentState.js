@@ -1,4 +1,4 @@
-import {State, BeforePreroll, Preroll} from '../RenameMe.js';
+import {State, BeforePreroll, Preroll} from '../States.js';
 
 export default class ContentState extends State {
 

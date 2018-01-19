@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {ContentState, Preroll, ContentPlayback} from './RenameMe.js';
+import {ContentState, Preroll, ContentPlayback} from './States.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 
 /*

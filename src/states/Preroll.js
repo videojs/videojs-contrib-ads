@@ -1,8 +1,8 @@
 import videojs from 'video.js';
 
-import {AdState, BeforePreroll, ContentPlayback} from './RenameMe.js';
+import {AdState, BeforePreroll, ContentPlayback} from './States.js';
 import cancelContentPlay from '../cancelContentPlay.js';
-import AdBreak from '../AdBreak.js';
+import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 /*
  * This state encapsulates checking for prerolls, preroll playback, and
@@ -108,11 +108,10 @@ export default class Preroll extends AdState {
   startLinearAdMode() {
     const player = this.player;
 
-    if (this.adsReady && !player.ads.isAdPlaying() && !this.isContentResuming()) {
+    if (this.adsReady && !player.ads.inAdBreak() && !this.isContentResuming()) {
       player.clearTimeout(this._timeout);
       player.ads.adType = 'preroll';
-      this.adBreak = new AdBreak(player);
-      this.adBreak.start();
+      startAdBreak(player);
 
       // This removes the native poster so the ads don't show the content
       // poster if content element is used for ad playback.
@@ -131,10 +130,9 @@ export default class Preroll extends AdState {
   endLinearAdMode() {
     const player = this.player;
 
-    if (this.adBreak) {
+    if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
-      this.adBreak.end();
-      delete this.adBreak;
+      endAdBreak(player);
       this.contentResuming = true;
     }
   }
@@ -145,7 +143,7 @@ export default class Preroll extends AdState {
   skipLinearAdMode() {
     const player = this.player;
 
-    if (player.ads.isAdPlaying() || this.isContentResuming()) {
+    if (player.ads.inAdBreak() || this.isContentResuming()) {
       videojs.log('Unexpected skipLinearAdMode invocation');
     } else {
       player.trigger('adskip');

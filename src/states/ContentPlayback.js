@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {ContentState, Midroll, Postroll} from './RenameMe.js';
+import {ContentState, Midroll, Postroll} from './States.js';
 
 export default class ContentPlayback extends ContentState {
 
