@@ -139,6 +139,7 @@ const contribAdsPlugin = function(options) {
   // Restart the cancelContentPlay process.
   player.on('playing', () => {
     player.ads._cancelledPlay = false;
+    player.ads._pausedOnContentupdate = false;
   });
 
   player.one('loadstart', () => {
@@ -435,6 +436,9 @@ const contribAdsPlugin = function(options) {
         },
         nopreroll() {
           this.state = 'content-playback';
+        },
+        contentupdate() {
+          this.state = 'content-set';
         }
       }
     },
@@ -638,10 +642,10 @@ const contribAdsPlugin = function(options) {
           triggerevent: player.ads.triggerevent
         });
 
-        // Play the content if cancelContentPlay happened and we haven't played yet.
-        // This happens if there was no preroll or if it errored, timed out, etc.
-        // Otherwise snapshot restore would play.
-        if (player.ads._cancelledPlay) {
+        // Play the content if cancelContentPlay happened or we paused on 'contentupdate'
+        // and we haven't played yet. This happens if there was no preroll or if it
+        // errored, timed out, etc. Otherwise snapshot restore would play.
+        if (player.ads._cancelledPlay || player.ads._pausedOnContentupdate) {
           if (player.paused()) {
             player.play();
           }
@@ -666,6 +670,10 @@ const contribAdsPlugin = function(options) {
           if (player.paused()) {
             this.state = 'content-set';
           } else {
+            // If we get here we missed the 'play' event, so pause the player so
+            // that content doesn't start playing immediately after the source change
+            player.pause();
+            player.ads._pausedOnContentupdate = true;
             this.state = 'ads-ready?';
           }
         },
