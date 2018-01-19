@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {AdState, ContentPlayback} from './RenameMe.js';
+import {AdState, BeforePreroll, ContentPlayback} from './RenameMe.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 import AdBreak from '../AdBreak.js';
 
@@ -15,32 +15,33 @@ export default class Preroll extends AdState {
     this.name = 'Preroll';
     this.adsReady = false;
 
-    videojs.log('Now in ' + this.name + ' state');
+    videojs.log('Now in Preroll state');
 
-    // Loading spinner from now until preroll or content resume.
+    // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
     // Start the clock ticking for ad timeout
-    // TODO this should be canceled in onAdsError et al
-    player.ads.adTimeoutTimeout = player.setTimeout(function() {
+    this._timeout = player.setTimeout(function() {
       player.trigger('adtimeout');
     }, player.ads.settings.timeout);
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
     if (adsReady) {
-      this.onAdsReady(true);
+      this.handleAdsReady();
     }
+  }
+
+  onAdsReady() {
+    videojs.log('Received adsready event (Preroll)');
+    this.handleAdsReady();
   }
 
   /*
    * Ad integration is ready. Let's get started on this preroll.
    */
-  onAdsReady(noLog) {
+  handleAdsReady() {
     this.adsReady = true;
-    if (noLog !== true) {
-      videojs.log('Received adsready event');
-    }
     if (this.player.ads.nopreroll_) {
       this.noPreroll();
     } else {
@@ -49,11 +50,8 @@ export default class Preroll extends AdState {
   }
 
   noPreroll() {
-    const player = this.player;
-
     videojs.log('Skipping prerolls due to nopreroll event');
-    player.clearTimeout(player.ads.adTimeoutTimeout);
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    this.transitionTo(ContentPlayback);
   }
 
   readyForPreroll() {
@@ -77,56 +75,64 @@ export default class Preroll extends AdState {
   }
 
   /*
-   * Don't let the content play behind the ad!
+   * Don't allow the content to start playing while we're dealing with ads.
    */
   onPlay() {
-
     videojs.log('Received play event (Preroll)');
 
-    // TODO is this in all 4 original states?
-    cancelContentPlay(this.player);
+    if (!this.inAdBreak() && !this.isContentResuming()) {
+      cancelContentPlay(this.player);
+    }
   }
 
-  /*
-   * TODO The adscanceled event seems to be redundant. We should consider removing it.
-   * skipLinearAdMode does the same thing, but in a more robust way.
-   */
   onAdsCanceled() {
     videojs.log('adscanceled (Preroll)');
 
-    this.player.removeClass('vjs-ad-loading');
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    this.transitionTo(ContentPlayback);
   }
 
   /*
    * An ad error occured. Play content instead.
    */
   onAdsError() {
-    videojs.log('adserror (Preroll)');
-
-    // TODO Why?
-    if (this.player.ads.isAdPlaying()) {
+    // In the future, we may not want to do this automatically.
+    // Integrations should be able to choose to continue the ad break
+    // if there was an error.
+    if (this.inAdBreak()) {
       this.player.ads.endLinearAdMode();
     }
 
-    this.player.removeClass('vjs-ad-loading');
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    this.transitionTo(ContentPlayback);
   }
 
   startLinearAdMode() {
     const player = this.player;
 
     if (this.adsReady && !player.ads.isAdPlaying() && !this.isContentResuming()) {
+      player.clearTimeout(this._timeout);
       player.ads.adType = 'preroll';
       this.adBreak = new AdBreak(player);
       this.adBreak.start();
+
+      // This removes the native poster so the ads don't show the content
+      // poster if content element is used for ad playback.
+      player.ads.removeNativePoster();
     } else {
       videojs.log('Unexpected startLinearAdMode invocation');
     }
   }
 
+  onAdStarted() {
+    const player = this.player;
+
+    player.removeClass('vjs-ad-loading');
+  }
+
   endLinearAdMode() {
+    const player = this.player;
+
     if (this.adBreak) {
+      player.removeClass('vjs-ad-loading');
       this.adBreak.end();
       delete this.adBreak;
       this.contentResuming = true;
@@ -143,10 +149,9 @@ export default class Preroll extends AdState {
       videojs.log('Unexpected skipLinearAdMode invocation');
     } else {
       player.trigger('adskip');
-      this.player.removeClass('vjs-ad-loading');
 
       videojs.log('skipLinearAdMode (Preroll)');
-      this.player.ads.stateInstance = new ContentPlayback(this.player);
+      this.transitionTo(ContentPlayback);
     }
   }
 
@@ -154,10 +159,8 @@ export default class Preroll extends AdState {
    * Prerolls took too long! Play content instead.
    */
   onAdTimeout() {
-    this.player.removeClass('vjs-ad-loading');
-
     videojs.log('adtimeout (Preroll)');
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    this.transitionTo(ContentPlayback);
   }
 
   onNoPreroll() {
@@ -166,6 +169,19 @@ export default class Preroll extends AdState {
     } else {
       this.noPreroll();
     }
+  }
+
+  onContentUpdate() {
+    if (this.contentResuming) {
+      this.transitionTo(BeforePreroll);
+    }
+  }
+
+  cleanup() {
+    const player = this.player;
+
+    player.removeClass('vjs-ad-loading');
+    player.clearTimeout(this._timeout);
   }
 
 }

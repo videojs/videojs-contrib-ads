@@ -8,13 +8,7 @@ export default class ContentPlayback extends ContentState {
     super(player);
     this.name = 'ContentPlayback';
 
-    videojs.log('Now in ' + this.name + ' state');
-
-    // Cleanup for cancelContentPlay
-    if (player.ads.cancelPlayTimeout) {
-      player.clearTimeout(player.ads.cancelPlayTimeout);
-      player.ads.cancelPlayTimeout = null;
-    }
+    videojs.log('Now in ContentPlayback state');
 
     // The contentplayback event was removed because integrations should use the
     // "playing" event instead. However, we found out some 3rd party code relied
@@ -51,17 +45,21 @@ export default class ContentPlayback extends ContentState {
     }
   }
 
+  /*
+   * Content ended before postroll checks.
+   */
   onContentEnded() {
-    const player = this.player;
-
     videojs.log('Received contentended event');
-    player.ads.stateInstance = new Postroll(player);
+    this.transitionTo(Postroll);
   }
 
+  /*
+   * This is how midrolls start.
+   */
   startLinearAdMode() {
     const player = this.player;
 
-    player.ads.stateInstance = new Midroll(player);
+    this.transitionTo(Midroll);
     player.ads.stateInstance.startLinearAdMode();
   }
 

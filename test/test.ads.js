@@ -1,6 +1,5 @@
-var timerExists = function(env, keyOrId) {
-  var timerId = _.isNumber(keyOrId) ? keyOrId : env.player.ads[String(keyOrId)];
-  return env.clock.timers.hasOwnProperty(String(timerId));
+var timerExists = function(env, id) {
+  return env.clock.timers.hasOwnProperty(id);
 };
 
 QUnit.module('Ad Framework', window.sharedModuleHooks());
@@ -45,22 +44,23 @@ QUnit.test('stops canceling play events when an ad is playing', function(assert)
   // Throughout this test, we check both that the expected timeouts are
   // populated on the `clock` _and_ that `setTimeout` has been called the
   // expected number of times.
-  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` does not exist');
-  assert.notOk(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` does not exist');
+  assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` does not exist');
 
   this.player.trigger('play');
-  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
-  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists after play');
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
+  assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists after play');
 
   this.player.trigger('adsready');
-  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists after adsready');
-
-  this.clock.tick(1);
+  assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists after adsready');
 
   this.player.ads.startLinearAdMode();
-  assert.notOk(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` no longer exists');
-  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` no longer exists');
+  assert.notOk(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout no longer exists');
+
+  // cancelPlayTimeout happens after a tick
+  this.clock.tick(1);
+
+  assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` no longer exists');
 
   window.setTimeout.restore();
 });
@@ -270,24 +270,30 @@ QUnit.test('the `cancelPlayTimeout` timeout is cleared when exiting preroll', fu
   this.player.trigger('adsready');
   this.player.trigger('play');
 
-  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
+  const prerollState = this.player.ads.stateInstance;
+
+  assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, prerollState._timeout), 'preroll timeout exists');
 
   this.player.ads.startLinearAdMode();
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
 
-  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` cleared ' + this.player.ads.stateInstance.name);
-  assert.notOk(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` cleared');
+  this.clock.tick(1);
+
+  assert.notOk(this.player.ads._cancelledPlay, 'cancelContentPlay does nothing in content playback');
+  assert.notOk(timerExists(this, prerollState._timeout), 'preroll timeout cleared');
   
 });
 
-QUnit.test('"adscanceled" cancels play timeout', function(assert) {
+QUnit.test('"cancelContentPlay doesn\'t block play after adscanceled', function(assert) {
 
   this.player.trigger('play');
   this.player.trigger('adscanceled');
 
-  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` was canceled');
+  this.clock.tick(1);
+
+  assert.notOk(this.player.ads._cancelledPlay, 'cancelContentPlay does nothing in content playback');
 
 });
 
@@ -296,13 +302,14 @@ QUnit.test('content is resumed on contentplayback if a user initiated play event
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
 
   this.player.trigger('play');
-  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `adTimeoutTimeout`)');
-  assert.ok(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, 'adTimeoutTimeout'), '`adTimeoutTimeout` exists');
+
+  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
+  assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
+  assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists');
 
   this.clock.tick(1);
   this.player.trigger('adserror');
-  assert.notOk(timerExists(this, 'cancelPlayTimeout'), '`cancelPlayTimeout` was canceled');
+  assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` was canceled');
   assert.strictEqual(playSpy.callCount, 1, 'a play event should be triggered once we enter "content-playback" state if on was canceled.');
 });
 
@@ -430,34 +437,34 @@ QUnit.test('calling endLinearAdMode() outside of linear ad mode does not trigger
   this.player.on('adend', adendSpy);
 
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired');
+  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired right away');
 
   this.player.trigger('adsready');
 
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired');
+  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired after adsready');
 
   this.player.trigger('play');
 
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired');
+  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired after play');
 
   this.player.trigger('adtimeout');
 
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired');
+  assert.strictEqual(adendSpy.callCount, 0, 'adend should not have fired after adtimeout');
 
   this.player.ads.startLinearAdMode();
 
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(adendSpy.callCount, 1, 'adend should have fired');
+  assert.strictEqual(adendSpy.callCount, 1, 'adend should have fired after preroll');
 
   this.player.trigger('playing');
 
   this.player.ads.startLinearAdMode();
 
   this.player.trigger('adserror');
-  assert.strictEqual(adendSpy.callCount, 2, 'adend should have fired');
+  assert.strictEqual(adendSpy.callCount, 2, 'adend should have fired after midroll');
 });
 
 QUnit.test('skipLinearAdMode during ad playback does not trigger adskip', function(assert) {

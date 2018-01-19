@@ -1,4 +1,4 @@
-import {State, Preroll, BeforePreroll, ContentPlayback} from '../RenameMe.js';
+import {State, ContentPlayback} from '../RenameMe.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
@@ -16,30 +16,13 @@ export default class AdState extends State {
     return true;
   }
 
-  onContentUpdate() {
-    // If the source changes while resuming content, go back to initial state
-    // for the new source.
-    if (this.contentResuming) {
-      this.player.ads.stateInstance = new BeforePreroll(this.player);
-    }
-
-    // If the source changes while preparing for a postroll, go to Preroll state.
-    // This matches pre-refactor behavior, but I couldn't find specific justificaiton
-    // in the project history.
-    // TODO I think it's because this time is considered to be "playing" so you
-    // wouldn't want to wait for a play event afterwards.
-    if (this.name === 'Postroll' && !this.player.ads._inLinearAdMode) {
-      this.player.ads.stateInstance = new Preroll(this.player);
-    }
-  }
-
   /*
    * We end the content-resuming process on the playing event because this is the exact
    * moment that ad playback is no longer blocked by ads.
    */
   onPlaying() {
     if (this.contentResuming) {
-      this.player.ads.stateInstance = new ContentPlayback(this.player);
+      this.transitionTo(ContentPlayback);
     }
   }
 
@@ -50,12 +33,16 @@ export default class AdState extends State {
    */
   onContentResumed() {
     if (this.contentResuming) {
-      this.player.ads.stateInstance = new ContentPlayback(this.player);
+      this.transitionTo(ContentPlayback);
     }
   }
 
   isContentResuming() {
     return this.contentResuming;
+  }
+
+  inAdBreak() {
+    return this.player.ads._inLinearAdMode;
   }
 
 }

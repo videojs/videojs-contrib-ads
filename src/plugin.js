@@ -112,12 +112,6 @@ const contribAdsPlugin = function(options) {
     player.ads.nopostroll_ = true;
   });
 
-  // Remove ad-loading class when ad plays or when content plays (in case there was no ad)
-  // If you remove this class too soon you can get a flash of content!
-  player.on(['ads-ad-started', 'playing'], () => {
-    player.removeClass('vjs-ad-loading');
-  });
-
   // Restart the cancelContentPlay process.
   player.on('playing', () => {
     player.ads._cancelledPlay = false;
@@ -276,11 +270,15 @@ const contribAdsPlugin = function(options) {
       return this.stateInstance.isContentResuming();
     },
 
-    // Returns true if a linear ad is playing. This is part of ad mode.
-    // This relies on startLinearAdMode and endLinearAdMode because that is the
-    // most authoritative way of determinining if an ad is playing.
+    // Deprecated because the name was misleading. Use inAdBreak instead.
     isAdPlaying() {
-      return this._inLinearAdMode;
+      return this.stateInstance.inAdBreak();
+    },
+
+    // Returns true if an ad break is ongoing. This is part of ad mode.
+    // An ad break is the time between startLinearAdMode and endLinearAdMode.
+    inAdBreak() {
+      return this.stateInstance.inAdBreak();
     },
 
     /*
@@ -356,11 +354,10 @@ const contribAdsPlugin = function(options) {
   });
 
   // Event handling for the current state.
-  // TODO this can be moved somewhere else after the state machine is removed.
-  // For now it has to be after it.
   player.on([
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
+    'ads-ad-started',
     'contentupdate', 'contentresumed', 'contentended',
     'nopreroll', 'nopostroll'], (e) => {
     player.ads.stateInstance.handleEvent(e.type);
@@ -368,18 +365,6 @@ const contribAdsPlugin = function(options) {
 
   // Clear timeouts and handlers when player is disposed
   player.on('dispose', function() {
-    if (player.ads.adTimeoutTimeout) {
-      player.clearTimeout(player.ads.adTimeoutTimeout);
-    }
-
-    if (player.ads.cancelPlayTimeout) {
-      player.clearTimeout(player.ads.cancelPlayTimeout);
-    }
-
-    if (player.ads.tryToResumeTimeout_) {
-      player.clearTimeout(player.ads.tryToResumeTimeout_);
-    }
-
     player.textTracks().removeEventListener('change', textTrackChangeHandler);
   });
 

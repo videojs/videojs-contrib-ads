@@ -8,6 +8,21 @@ export default class State {
   }
 
   /*
+   * To make sure cleanup handlers get called, this is the only allowed
+   * way to perform state transitions.
+   */
+  transitionTo(NewState, ...args) {
+    this.cleanup();
+    this.player.ads.stateInstance = new NewState(this.player, ...args);
+  }
+
+  /*
+   * Implemented by subclasses to provide cleanup logic when transitioning
+   * to a new state.
+   */
+  cleanup() {}
+
+  /*
    * Default event handlers. Different states can override these to provide behaviors.
    */
   onPlay() {}
@@ -19,6 +34,7 @@ export default class State {
   onAdsError() {}
   onAdsCanceled() {}
   onAdTimeout() {}
+  onAdStarted() {}
   onContentUpdate() {}
   onContentResumed() {}
   onContentEnded() {
@@ -52,6 +68,10 @@ export default class State {
     return false;
   }
 
+  inAdBreak() {
+    return false;
+  }
+
   /*
    * Invoke event handler methods when events come in.
    */
@@ -66,6 +86,8 @@ export default class State {
       this.onAdsCanceled();
     } else if (type === 'adtimeout') {
       this.onAdTimeout();
+    } else if (type === 'ads-ad-started') {
+      this.onAdStarted();
     } else if (type === 'contentupdate') {
       this.onContentUpdate();
     } else if (type === 'contentresumed') {

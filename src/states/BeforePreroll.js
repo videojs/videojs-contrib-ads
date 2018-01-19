@@ -16,7 +16,7 @@ export default class BeforePreroll extends ContentState {
     this.name = 'BeforePreroll';
     this.adsReady = false;
 
-    videojs.log('Now in ' + this.name + ' state');
+    videojs.log('Now in BeforePreroll state');
   }
 
   /*
@@ -24,7 +24,7 @@ export default class BeforePreroll extends ContentState {
    * we record that adsready already happened so the Preroll state will know.
    */
   onAdsReady() {
-    videojs.log('Received adsready event');
+    videojs.log('Received adsready event (BeforePreroll)');
     this.adsReady = true;
   }
 
@@ -35,36 +35,27 @@ export default class BeforePreroll extends ContentState {
   onPlay() {
     const player = this.player;
 
+    // Don't start content playback yet
     cancelContentPlay(player);
 
-    this.player.ads.stateInstance = new Preroll(player, this.adsReady);
-
-    // This removes the poster so it doesn't flash between videos.
-    // TODO This is only invoked if adsReady is false to match the pre-refactor
-    // implementation. We should investigate if that is necessary.
-    if (this.adsReady === false) {
-      player.ads.removeNativePoster();
-    }
+    // Check for prerolls
+    this.transitionTo(Preroll, this.adsReady);
   }
 
   /*
-   * TODO The adscanceled event seems to be redundant. We should consider removing it.
-   * skipLinearAdMode does the same thing, but in a more robust way.
+   * All ads for the entire video are canceled
    */
   onAdsCanceled() {
-    // TODO the check for adsReady is only to match the pre-refactor behavior.
-    // It is probably unnecessary at best, a bug at worst. It should be investigated
-    // and hopefully removed.
-    if (this.adsReady === false) {
-      this.player.ads.stateInstance = new ContentPlayback(this.player);
-    }
+    videojs.log('adscanceled (BeforePreroll)');
+
+    this.transitionTo(ContentPlayback);
   }
 
   /*
    * An ad error occured. Play content instead.
    */
   onAdsError() {
-    this.player.ads.stateInstance = new ContentPlayback(this.player);
+    this.transitionTo(ContentPlayback);
   }
 
   /*
@@ -74,7 +65,11 @@ export default class BeforePreroll extends ContentState {
     const player = this.player;
 
     player.trigger('adskip');
-    player.ads.stateInstance = new ContentPlayback(player);
+    this.transitionTo(ContentPlayback);
+  }
+
+  onContentUpdate() {
+    videojs.log('Ignoring contentupdate before preroll');
   }
 
 }

@@ -9,7 +9,7 @@ export default class Midroll extends AdState {
     super(player);
     this.name = 'Midroll';
 
-    videojs.log('Now in ' + this.name + ' state');
+    videojs.log('Now in Midroll state');
   }
 
   startLinearAdMode() {
@@ -33,8 +33,10 @@ export default class Midroll extends AdState {
   }
 
   onAdsError() {
-    // TODO Why?
-    if (this.player.ads.isAdPlaying()) {
+    // In the future, we may not want to do this automatically.
+    // Integrations should be able to choose to continue the ad break
+    // if there was an error.
+    if (this.inAdBreak()) {
       this.player.ads.endLinearAdMode();
     }
   }

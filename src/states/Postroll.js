@@ -1,7 +1,6 @@
 import videojs from 'video.js';
 
-import * as snapshot from '../snapshot.js';
-import {AdState, AdsDone} from './RenameMe.js';
+import {AdState, BeforePreroll, Preroll, AdsDone} from './RenameMe.js';
 import AdBreak from '../AdBreak.js';
 
 export default class Postroll extends AdState {
@@ -10,20 +9,17 @@ export default class Postroll extends AdState {
     super(player);
     this.name = 'Postroll';
 
-    videojs.log('Now in ' + this.name + ' state');
+    videojs.log('Now in Postroll state');
 
     // From now on, all `playing` events will be redispatched
     player.ads._contentEnding = true;
-
-    // TODO We should not need to take a snapshot here
-    player.ads.snapshot = snapshot.getPlayerSnapshot(player);
 
     // Start postroll process. A postroll will start if the integration calls
     // startLinearAdMode. It's also possible the ad will time out, error, etc.
     if (!player.ads.nopostroll_) {
       player.addClass('vjs-ad-loading');
 
-      player.ads.adTimeoutTimeout = player.setTimeout(function() {
+      this._postrollTimeout = player.setTimeout(function() {
         player.trigger('adtimeout');
       }, player.ads.settings.postrollTimeout);
 
@@ -52,16 +48,24 @@ export default class Postroll extends AdState {
     if (!player.ads.isAdPlaying() && !this.contentResuming) {
       player.ads.adType = 'postroll';
       this.adBreak = new AdBreak(player);
+      player.clearTimeout(this._postrollTimeout);
       this.adBreak.start();
     } else {
       videojs.log('Unexpected startLinearAdMode invocation');
     }
   }
 
+  onAdStarted() {
+    const player = this.player;
+
+    player.removeClass('vjs-ad-loading');
+  }
+
   endLinearAdMode() {
     const player = this.player;
 
     if (this.adBreak) {
+      player.removeClass('vjs-ad-loading');
       this.adBreak.end();
       delete this.adBreak;
 
@@ -96,9 +100,17 @@ export default class Postroll extends AdState {
 
   onEnded() {
     if (this.contentResuming) {
-      this.player.ads.stateInstance = new AdsDone(this.player);
+      this.transitionTo(AdsDone);
     } else {
       videojs.log('Unexpected ended event during postroll');
+    }
+  }
+
+  onContentUpdate() {
+    if (this.contentResuming) {
+      this.transitionTo(BeforePreroll);
+    } else if (!this.player.ads._inLinearAdMode) {
+      this.transitionTo(Preroll);
     }
   }
 
@@ -106,14 +118,16 @@ export default class Postroll extends AdState {
     const player = this.player;
 
     this.contentResuming = true;
-    player.clearTimeout(player.ads.adTimeoutTimeout);
     player.removeClass('vjs-ad-loading');
 
-    // TODO document why this timeout is here
-    player.setTimeout(function() {
-      videojs.log('Triggered ended event (postroll abort)');
-      player.trigger('ended');
-    }, 1);
+    videojs.log('Triggered ended event (postroll abort)');
+    player.trigger('ended');
+  }
+
+  cleanup() {
+    const player = this.player;
+
+    player.clearTimeout(this._postrollTimeout);
   }
 
 }

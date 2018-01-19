@@ -18,8 +18,6 @@ export default class AdBreak {
 
     videojs.log('Starting ad break');
 
-    player.clearTimeout(player.ads.adTimeoutTimeout);
-
     player.ads._inLinearAdMode = true;
 
     // No longer does anything, used to move us to ad-playback
@@ -48,17 +46,6 @@ export default class AdBreak {
 
     // remove the poster so it doesn't flash between ads
     player.ads.removeNativePoster();
-
-    // We no longer need to supress play events once an ad is playing.
-    // Clear it if we were.
-    if (player.ads.cancelPlayTimeout) {
-      // If we don't wait a tick, we could cancel the pause for cancelContentPlay,
-      // resulting in content playback behind the ad
-      player.setTimeout(function() {
-        player.clearTimeout(player.ads.cancelPlayTimeout);
-        player.ads.cancelPlayTimeout = null;
-      }, 1);
-    }
   }
 
   end() {
@@ -73,7 +60,6 @@ export default class AdBreak {
     // Signals the end of the ad break to anyone listening.
     player.trigger('adend');
 
-    player.removeClass('vjs-ad-loading');
     player.removeClass('vjs-ad-playing');
 
     // We should add the vjs-live class back if the video is a LIVE video

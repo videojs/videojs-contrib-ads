@@ -1,3 +1,5 @@
+import videojs from 'video.js';
+
 /*
 This feature makes sure the player is paused during ad loading.
 
@@ -17,6 +19,12 @@ export default function cancelContentPlay(player) {
   player.ads.cancelPlayTimeout = player.setTimeout(function() {
     // deregister the cancel timeout so subsequent cancels are scheduled
     player.ads.cancelPlayTimeout = null;
+
+    videojs.log(player.ads.isInAdMode(), player.ads.stateInstance.name);
+
+    if (!player.ads.isInAdMode()) {
+      return;
+    }
 
     // pause playback so ads can be handled.
     if (!player.paused()) {

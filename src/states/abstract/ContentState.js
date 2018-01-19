@@ -14,9 +14,9 @@ export default class ContentState extends State {
     const player = this.player;
 
     if (player.paused()) {
-      player.ads.stateInstance = new BeforePreroll(player);
+      this.transitionTo(BeforePreroll);
     } else {
-      player.ads.stateInstance = new Preroll(player, false);
+      this.transitionTo(Preroll, false);
     }
   }
 
