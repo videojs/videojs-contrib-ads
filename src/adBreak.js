@@ -38,7 +38,9 @@ function startAdBreak(player) {
     player.removeClass('vjs-live');
   }
 
-  // remove the poster so it doesn't flash between ads
+  // This removes the native poster so the ads don't show the content
+  // poster if content element is reused for ad playback. The snapshot
+  // will restore it afterwards.
   player.ads.removeNativePoster();
 }
 

@@ -1,4 +1,4 @@
-import {State, BeforePreroll, Preroll} from '../States.js';
+import {State, BeforePreroll, Preroll} from '../../states.js';
 
 export default class ContentState extends State {
 
@@ -6,10 +6,16 @@ export default class ContentState extends State {
     super(player);
   }
 
+  /*
+   * Overrides State.isAdState
+   */
   isAdState() {
     return false;
   }
 
+  /*
+   * Source change sends you back to preroll checks.
+   */
   onContentUpdate() {
     const player = this.player;
 

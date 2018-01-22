@@ -1,4 +1,4 @@
-import {State, ContentPlayback} from '../States.js';
+import {State, ContentPlayback} from '../../states.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
@@ -12,6 +12,9 @@ export default class AdState extends State {
     this.contentResuming = false;
   }
 
+  /*
+   * Overrides State.isAdState
+   */
   isAdState() {
     return true;
   }
@@ -37,10 +40,16 @@ export default class AdState extends State {
     }
   }
 
+  /*
+   * Allows you to check if content is currently resuming after an ad break.
+   */
   isContentResuming() {
     return this.contentResuming;
   }
 
+  /*
+   * Allows you to check if an ad break is in progress.
+   */
   inAdBreak() {
     return this.player.ads._inLinearAdMode;
   }

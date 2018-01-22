@@ -1,16 +1,18 @@
 import videojs from 'video.js';
 
-import {ContentState, Midroll, Postroll} from './States.js';
+import {ContentState, Midroll, Postroll} from '../states.js';
 
+/*
+ * This state represents content playback the first time through before
+ * content ends. After content has ended once, we check for postrolls and
+ * move on to the AdsDone state rather than returning here.
+ */
 export default class ContentPlayback extends ContentState {
 
   constructor(player) {
     super(player);
 
-    // The contentplayback event was removed because integrations should use the
-    // "playing" event instead. However, we found out some 3rd party code relied
-    // on this event, so we've temporarily added it back in to give people more
-    // time to update their code.
+    // Deprecated event.
     player.trigger({
       type: 'contentplayback',
       triggerevent: player.ads.triggerevent

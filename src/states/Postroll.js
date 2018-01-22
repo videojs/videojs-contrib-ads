@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {AdState, BeforePreroll, Preroll, AdsDone} from './States.js';
+import {AdState, BeforePreroll, Preroll, AdsDone} from '../states.js';
 import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 export default class Postroll extends AdState {
@@ -8,11 +8,10 @@ export default class Postroll extends AdState {
   constructor(player) {
     super(player);
 
-    // From now on, all `playing` events will be redispatched
+    // Legacy name that now simply means "handling postrolls".
     player.ads._contentEnding = true;
 
-    // Start postroll process. A postroll will start if the integration calls
-    // startLinearAdMode. It's also possible the ad will time out, error, etc.
+    // Start postroll process.
     if (!player.ads.nopostroll_) {
       player.addClass('vjs-ad-loading');
 
@@ -31,14 +30,17 @@ export default class Postroll extends AdState {
   }
 
   onAdsError() {
-    // Ideally, ad integrations would call endLinearAdMode if there is an error.
-    // Historically we have not required this, so for adserror only
-    // we call endLinearAdMode in contrib-ads.
+    // In the future, we may not want to do this automatically.
+    // Integrations should be able to choose to continue the ad break
+    // if there was an error.
     if (this.player.ads.inAdBreak()) {
       this.player.ads.endLinearAdMode();
     }
   }
 
+  /*
+   * Start the postroll if it's not too late.
+   */
   startLinearAdMode() {
     const player = this.player;
 
@@ -51,6 +53,9 @@ export default class Postroll extends AdState {
     }
   }
 
+  /*
+   *
+   */
   onAdStarted() {
     const player = this.player;
 
@@ -104,8 +109,16 @@ export default class Postroll extends AdState {
   onContentUpdate() {
     if (this.contentResuming) {
       this.transitionTo(BeforePreroll);
-    } else if (!this.player.ads._inLinearAdMode) {
+    } else if (!this.player.ads.inAdBreak()) {
       this.transitionTo(Preroll);
+    }
+  }
+
+  onNoPostroll() {
+    if (!this.contentResuming && !this.player.ads.inAdBreak()) {
+      this.transitionTo(AdsDone);
+    } else {
+      videojs.log('Unexpected nopostroll event (Postroll)');
     }
   }
 
@@ -123,6 +136,7 @@ export default class Postroll extends AdState {
     const player = this.player;
 
     player.clearTimeout(this._postrollTimeout);
+    player.ads._contentEnding = false;
   }
 
 }

@@ -1,12 +1,12 @@
 import videojs from 'video.js';
 
-import {ContentState, Preroll, ContentPlayback} from './States.js';
+import {ContentState, Preroll, ContentPlayback} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 
 /*
  * This is the initial state for a player with an ad plugin. Normally, it remains in this
  * state until a "play" event is seen. After that, we enter the Preroll state to check for
- * prerolls. This happens regardless of whether or not any prerolls ultimately play.
+ * prerolls. This happens regardless of whether or not any prerolls ultimately will play.
  * Errors and other conditions may lead us directly from here to ContentPlayback.
  */
 export default class BeforePreroll extends ContentState {
@@ -40,7 +40,7 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
-   * All ads for the entire video are canceled
+   * All ads for the entire video are canceled.
    */
   onAdsCanceled() {
     videojs.log('adscanceled (BeforePreroll)');
@@ -56,7 +56,7 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
-   * Ad mode skipped by integration. Play content instead.
+   * Prerolls skipped by integration. Play content instead.
    */
   skipLinearAdMode() {
     const player = this.player;
@@ -65,7 +65,12 @@ export default class BeforePreroll extends ContentState {
     this.transitionTo(ContentPlayback);
   }
 
+  /*
+   * If the source changes before play, we stay in this state but
+   * `adsready` events from the previous source don't carry forward.
+   */
   onContentUpdate() {
+    this.adsReady = false;
     videojs.log('Ignoring contentupdate before preroll');
   }
 
