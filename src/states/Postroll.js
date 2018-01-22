@@ -7,9 +7,6 @@ export default class Postroll extends AdState {
 
   constructor(player) {
     super(player);
-    this.name = 'Postroll';
-
-    videojs.log('Now in Postroll state');
 
     // From now on, all `playing` events will be redispatched
     player.ads._contentEnding = true;

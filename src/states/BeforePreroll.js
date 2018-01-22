@@ -13,10 +13,7 @@ export default class BeforePreroll extends ContentState {
 
   constructor(player) {
     super(player);
-    this.name = 'BeforePreroll';
     this.adsReady = false;
-
-    videojs.log('Now in BeforePreroll state');
   }
 
   /*

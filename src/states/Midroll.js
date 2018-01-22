@@ -7,9 +7,6 @@ export default class Midroll extends AdState {
 
   constructor(player) {
     super(player);
-    this.name = 'Midroll';
-
-    videojs.log('Now in Midroll state');
   }
 
   startLinearAdMode() {

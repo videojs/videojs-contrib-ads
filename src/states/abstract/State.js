@@ -4,28 +4,56 @@ export default class State {
 
   constructor(player) {
     this.player = player;
-    this.name = 'Unknown';
   }
 
   /*
    * This is the only allowed way to perform state transitions.
+   *
+   * State transitions usually happen in player event handlers.
+   *
+   * State transitions can also be caused by state constructors. As a result, we'll
+   * see a multi-state jump. This is logged out all as one message, in this format:
+   * "StateOne -> StateTwo -> StateThree". In this case the sequence of invocations
+   * will look like this:
+   *
+   * * transitionTo(StateTwo)
+   * * cleanup StateOne
+   * * constructor StateTwo
+   *   * transitionTo(StateThree)
+   *   * cleanup StateTwo
+   *   * constructor StateThree
+   *   * update `player.ads.stateInstance`
+   *   * log message for multi-step transition
    */
   transitionTo(NewState, ...args) {
+    const player = this.player;
+
+    // Save transition steps for logging
+    if (!player.ads._transition) {
+      player.ads._transition = [player.ads.stateInstance.constructor.name, NewState.name];
+    } else {
+      player.ads._transition.push(NewState.name);
+    }
 
     // We guarantee that cleanup is always called when leaving a state.
     this.cleanup();
 
-    const stateBeforeConstructor = this.player.ads.stateInstance;
+    const stateBeforeConstructor = player.ads.stateInstance;
 
-    const newState = new NewState(this.player, ...args);
+    const newState = new NewState(player, ...args);
 
-    if (this.player.ads.stateInstance !== stateBeforeConstructor) {
-      // This means the state was changed again by the constructor. We shouldn't
-      // set the state because we've already moved on.
+    if (player.ads.stateInstance !== stateBeforeConstructor) {
+      // This means that `transitionTo` was invoked by the constructor. We will let
+      // the recursive call do the rest of the work so that `player.ads.stateInstance`
+      // is only updated once, to the correct state.
       return;
     }
 
-    this.player.ads.stateInstance = newState;
+    player.ads.stateInstance = newState;
+
+    // Log out transition. Multi-step jumps are logged out in one line.
+    videojs.log(player.ads._transition.join(' -> '));
+    player.ads._transition = null;
   }
 
   /*

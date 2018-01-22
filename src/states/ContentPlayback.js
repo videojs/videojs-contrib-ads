@@ -6,9 +6,6 @@ export default class ContentPlayback extends ContentState {
 
   constructor(player) {
     super(player);
-    this.name = 'ContentPlayback';
-
-    videojs.log('Now in ContentPlayback state');
 
     // The contentplayback event was removed because integrations should use the
     // "playing" event instead. However, we found out some 3rd party code relied
