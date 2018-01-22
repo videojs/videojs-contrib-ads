@@ -1,3 +1,11 @@
+<a name="5.1.6"></a>
+## [5.1.6](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.6) (2018-01-22)
+
+### Bug Fixes
+
+* Fix caption persistence ([#308](https://github.com/videojs/videojs-contrib-ads/pull/308))
+* Make sure spinner is animated while waiting for ads ([#309](https://github.com/videojs/videojs-contrib-ads/pull/309))
+
 <a name="5.1.5"></a>
 ## [5.1.5](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.5) (2017-11-21)
 
@@ -71,9 +79,9 @@
 * [@incompl](http://github.com/incompl): Emit an error if plugin is initialized too late. [More info](https://github.com/videojs/videojs-contrib-ads#important-note-about-initialization)
 
 ## 5.0.0
-  		  
+
 Please refer to the [Migrating to 5.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migration-guides/migrating-to-5.0.md) guide when updating to this version.
-  		  
+
 * [@incompl](http://github.com/incompl): Added integration tests for Redispatch		
 * [@incompl](http://github.com/incompl): Added documentation for Redispatch		
 * [@incompl](http://github.com/incompl): A more reliable and maintainable Redispatch implementation
@@ -85,7 +93,7 @@ Please refer to the [Migrating to 5.0](https://github.com/videojs/videojs-contri
 ## 4.2.7
 
 * [@nochev](http://github.com/nochev): Remove error throwing for live videos
-* [@alex-barstow](https://github.com/alex-barstow): Placeholder div's CSS position and top values now match the player's 
+* [@alex-barstow](https://github.com/alex-barstow): Placeholder div's CSS position and top values now match the player's
 
 ## 4.2.6
 
