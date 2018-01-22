@@ -3,14 +3,6 @@
 
 ### Bug Fixes
 
-* content restarts from the beginning when snapshot restores source after midroll in iOS ([64f1587](https://github.com/videojs/videojs-contrib-ads/commit/64f1587))
-* snapshot.trackChangeHandler is undefined ([#293](https://github.com/videojs/videojs-contrib-ads/issues/293)) ([8a66140](https://github.com/videojs/videojs-contrib-ads/commit/8a66140))
-
-<a name="5.1.6"></a>
-## [5.1.6](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.6) (2018-01-22)
-
-### Bug Fixes
-
 * Fix caption persistence ([#308](https://github.com/videojs/videojs-contrib-ads/pull/308))
 * Make sure spinner is animated while waiting for ads ([#309](https://github.com/videojs/videojs-contrib-ads/pull/309))
 
