@@ -437,9 +437,9 @@ player.src('movie-high.mp4');
 ### disableNextSnapshotRestore
 Prevents videojs-contrib-ads from restoring the previous video source
 
-If you need to change the video source during ad playback, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads to restore to the previous video source.
+If you need to change the video source during an ad break, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads to restore to the previous video source.
 ```js
-if (player.ads._inLinearAdMode) {
+if (player.ads.inAdBreak()) {
     player.ads.disableNextSnapshotRestore = true;
     player.src('another-video.mp4');
 }

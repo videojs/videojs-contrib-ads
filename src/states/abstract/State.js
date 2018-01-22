@@ -8,12 +8,24 @@ export default class State {
   }
 
   /*
-   * To make sure cleanup handlers get called, this is the only allowed
-   * way to perform state transitions.
+   * This is the only allowed way to perform state transitions.
    */
   transitionTo(NewState, ...args) {
+
+    // We guarantee that cleanup is always called when leaving a state.
     this.cleanup();
-    this.player.ads.stateInstance = new NewState(this.player, ...args);
+
+    const stateBeforeConstructor = this.player.ads.stateInstance;
+
+    const newState = new NewState(this.player, ...args);
+
+    if (this.player.ads.stateInstance !== stateBeforeConstructor) {
+      // This means the state was changed again by the constructor. We shouldn't
+      // set the state because we've already moved on.
+      return;
+    }
+
+    this.player.ads.stateInstance = newState;
   }
 
   /*

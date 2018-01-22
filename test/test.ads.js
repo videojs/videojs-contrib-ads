@@ -725,10 +725,19 @@ QUnit.test('startLinearAdMode should only trigger adstart from correct states', 
 QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert) {
 
   this.player.trigger('nopreroll');
-  // TODO this test doesn't pass if you swap the order of play and adsready, should
-  // fix and add a new test
   this.player.trigger('play');
   this.player.trigger('adsready');
+
+  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+
+});
+
+// Same test as above with different event order because this used to be broken.
+QUnit.test('ad impl can notify contrib-ads there is no preroll (adsready before play)', function(assert) {
+
+  this.player.trigger('nopreroll');
+  this.player.trigger('adsready');
+  this.player.trigger('play');
 
   assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
 
