@@ -59,7 +59,10 @@ const defaults = {
   debug: false,
 
   // set this to true when using ads that are part of the content video
-  stitchedAds: false
+  stitchedAds: false,
+
+  // opt-in to live behavior, even if content duration is not Infinity
+  live: false
 };
 
 const contribAdsPlugin = function(options) {
@@ -157,6 +160,8 @@ const contribAdsPlugin = function(options) {
   player.ads = {
     state: 'content-set',
     disableNextSnapshotRestore: false,
+
+    _settings: settings,
 
     // This is true if we have finished actual content playback but haven't
     // dealt with postrolls and officially ended yet
@@ -277,7 +282,8 @@ const contribAdsPlugin = function(options) {
     shouldPlayContentBehindAd(somePlayer) {
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
-             somePlayer.duration() === Infinity;
+             (somePlayer.duration() === Infinity ||
+              settings.live);
     },
 
     // Returns true if player is in ad mode.

@@ -1053,6 +1053,22 @@ QUnit.test('shouldPlayContentBehindAd', function(assert) {
 
 });
 
+QUnit.test('shouldPlayContentBehindAd with live option', function(assert) {
+  // Make videojs.browser writeable
+  videojs.browser = Object.assign({}, videojs.browser);
+
+  this.player.duration = function() {return 5;};
+
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+
+  this.player.ads._settings.live = true;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), true);
+
+  this.player.ads._settings.live = false;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+});
+
 QUnit.test('Check incorrect addition of vjs-live during ad-playback', function(assert) {
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
