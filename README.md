@@ -402,7 +402,7 @@ The plugin triggers a number of custom events on the player during its operation
 The player has entered linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. This event only indicates that an ad break has begun; the start and end of individual ads must be signalled through some other mechanism.
 
 ### adend
-The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. Note that multiple ads may have played back between `adstart` and `adend`.
+The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `endLinearAdMode()`. Note that multiple ads may have played back between `adstart` and `adend`.
 
 ### adskip
 The player is skipping a linear ad opportunity and content-playback should resume immediately.  This event is fired directly as a consequence of calling `skipLinearAdMode()`. It can indicate that an ad response was made but returned no linear ad content or that no ad call is going to be made at either the preroll or postroll timeout opportunities.

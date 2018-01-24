@@ -5,7 +5,7 @@ import cancelContentPlay from '../cancelContentPlay.js';
 import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 /*
- * This state encapsulates checking for prerolls, preroll playback, and
+ * This state encapsulates waiting for prerolls, preroll playback, and
  * content restoration after a preroll.
  */
 export default class Preroll extends AdState {

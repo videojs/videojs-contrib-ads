@@ -66,12 +66,10 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
-   * If the source changes before play, we stay in this state but
-   * `adsready` events from the previous source don't carry forward.
+   * `contentupdate` happens at this time for the initial source, so we
+   * ignore it. We don't currently handle source changes in this state.
+   * Ideally, we'd reset `this.adsReady` on source changes.
    */
-  onContentUpdate() {
-    this.adsReady = false;
-    videojs.log('Ignoring contentupdate before preroll');
-  }
+  onContentUpdate() {}
 
 }
