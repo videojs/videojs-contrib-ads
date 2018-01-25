@@ -12,7 +12,6 @@ export default class Preroll extends AdState {
 
   constructor(player, adsReady) {
     super(player);
-    this.adsReady = false;
 
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
@@ -26,6 +25,8 @@ export default class Preroll extends AdState {
     // wait until onAdsReady.
     if (adsReady) {
       this.handleAdsReady();
+    } else {
+      this.adsReady = false;
     }
   }
 

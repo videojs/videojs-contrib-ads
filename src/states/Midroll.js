@@ -7,13 +7,14 @@ export default class Midroll extends AdState {
 
   constructor(player) {
     super(player);
+    this.start();
   }
 
   /*
    * Midroll breaks happen when the integration calls startLinearAdMode,
    * which can happen at any time during content playback.
    */
-  startLinearAdMode() {
+  start() {
     const player = this.player;
 
     if (!this.inAdBreak() && !this.isContentResuming()) {

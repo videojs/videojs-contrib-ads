@@ -21,10 +21,8 @@ export default class ContentPlayback extends ContentState {
     // Play the content if cancelContentPlay happened and we haven't played yet.
     // This happens if there was no preroll or if it errored, timed out, etc.
     // Otherwise snapshot restore would play.
-    if (player.ads._cancelledPlay) {
-      if (player.paused()) {
-        player.play();
-      }
+    if (player.paused() && player.ads._cancelledPlay) {
+      player.play();
     }
   }
 
@@ -56,10 +54,7 @@ export default class ContentPlayback extends ContentState {
    * This is how midrolls start.
    */
   startLinearAdMode() {
-    const player = this.player;
-
     this.transitionTo(Midroll);
-    player.ads.stateInstance.startLinearAdMode();
   }
 
 }

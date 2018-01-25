@@ -302,13 +302,15 @@ QUnit.test('content is resumed on contentplayback if a user initiated play event
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
 
   this.player.trigger('play');
+  this.player.trigger('adsready');
 
   assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
   assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
   assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists');
 
   this.clock.tick(1);
-  this.player.trigger('adserror');
+  this.player.ads.startLinearAdMode();
+  this.player.ads.endLinearAdMode();
   assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` was canceled');
   assert.strictEqual(playSpy.callCount, 1, 'a play event should be triggered once we enter "content-playback" state if on was canceled.');
 });
@@ -403,10 +405,6 @@ QUnit.test('adserror during ad playback triggers adend', function(assert) {
   this.player.ads.startLinearAdMode();
 
   assert.strictEqual(adendSpy.callCount, 0, 'no adend yet');
-
-  this.player.trigger('adserror');
-
-  assert.strictEqual(adendSpy.callCount, 1, 'adend should have fired');
 });
 
 QUnit.test('calling startLinearAdMode() when already in ad-playback does not trigger adstart', function(assert) {
@@ -458,13 +456,6 @@ QUnit.test('calling endLinearAdMode() outside of linear ad mode does not trigger
 
   this.player.ads.endLinearAdMode();
   assert.strictEqual(adendSpy.callCount, 1, 'adend should have fired after preroll');
-
-  this.player.trigger('playing');
-
-  this.player.ads.startLinearAdMode();
-
-  this.player.trigger('adserror');
-  assert.strictEqual(adendSpy.callCount, 2, 'adend should have fired after midroll');
 });
 
 QUnit.test('skipLinearAdMode during ad playback does not trigger adskip', function(assert) {
@@ -745,11 +736,17 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll (adsready before 
 
 QUnit.test('ad impl can notify contrib-ads there is no postroll', function(assert) {
 
+  var ended = sinon.spy();
+
+  this.player.on('ended', ended);
+
   this.player.trigger('nopostroll');
-  this.player.ads.state = 'content-playback';
+  this.player.trigger('play');
+  this.player.trigger('adsready');
+  this.player.ads.skipLinearAdMode();
   this.player.trigger('contentended');
-  this.clock.tick(5);
-  assert.strictEqual(this.player.ads.state, 'content-playback', 'no longer in postroll?');
+  this.clock.tick(1);
+  assert.ok(ended.calledOnce, 'Ended triggered');
 
 });
 
@@ -951,16 +948,6 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
   assert.strictEqual(this.player.ads.adType, null);
   this.player.ads.startLinearAdMode();
   assert.strictEqual(this.player.ads.adType, 'preroll');
-});
-
-QUnit.test('adserror ends linear ad mode ', function(assert) {
-  assert.strictEqual(this.player.ads._inLinearAdMode, false, 'before ad');
-  this.player.trigger('play');
-  this.player.trigger('adsready');
-  this.player.ads.startLinearAdMode();
-  assert.strictEqual(this.player.ads._inLinearAdMode, true, 'during ad');
-  this.player.trigger('adserror');
-  assert.strictEqual(this.player.ads._inLinearAdMode, false, 'after adserror');
 });
 
 if (videojs.browser.IS_IOS) {
