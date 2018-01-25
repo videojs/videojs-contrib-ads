@@ -752,7 +752,7 @@ QUnit.test('contentupdate in content-playback transitions to content-set if the 
   assert.strictEqual(this.player.ads.state, 'content-set');
 });
 
-QUnit.test('contentupdate in content-playback pauses player and transitions to ads-ready? if the player is not paused', function(assert) {
+QUnit.test('contentupdate in content-playback transitions to ads-ready? and pauses player if not already paused', function(assert) {
   assert.expect(4);
 
   this.player.trigger('play');
