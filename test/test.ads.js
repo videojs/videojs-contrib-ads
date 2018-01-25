@@ -729,6 +729,16 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
   assert.strictEqual(spy.getCall(0).args[0].type, 'readyforpreroll', 'readyforpreroll should have been triggered.');
 });
 
+QUnit.test('contentupdate in preroll? transitions to content-set', function(assert) {
+  assert.expect(2);
+
+  this.player.trigger('play');
+  this.player.trigger('adsready');
+  assert.strictEqual(this.player.ads.state, 'preroll?');
+  this.player.trigger('contentupdate');
+  assert.strictEqual(this.player.ads.state, 'content-set');
+});
+
 QUnit.test('contentupdate in content-playback transitions to content-set if the player is paused', function(assert) {
   assert.expect(2);
 
@@ -743,7 +753,7 @@ QUnit.test('contentupdate in content-playback transitions to content-set if the 
 });
 
 QUnit.test('contentupdate in content-playback pauses player and transitions to ads-ready? if the player is not paused', function(assert) {
-  assert.expect(3);
+  assert.expect(4);
 
   this.player.trigger('play');
   this.player.trigger('adtimeout');
@@ -755,6 +765,7 @@ QUnit.test('contentupdate in content-playback pauses player and transitions to a
   this.player.trigger('contentupdate');
   assert.strictEqual(this.player.ads.state, 'ads-ready?');
   assert.ok(this.player.pause.calledOnce, 'player was paused');
+  assert.ok(this.player.ads._pausedOnContentupdate, '_pausedOnContentupdate is true');
 });
 
 // ----------------------------------
