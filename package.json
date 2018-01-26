@@ -96,7 +96,8 @@
   "eslintConfig": {
     "extends": "videojs",
     "rules": {
-      "require-jsdoc": "off"
+      "require-jsdoc": "off",
+      "consistent-this": "off"
     }
   },
   "files": [

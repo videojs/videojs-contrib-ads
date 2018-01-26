@@ -4,13 +4,11 @@
  * integration may play 0 or more ads during this time.
  */
 
-import videojs from 'video.js';
-
 import * as snapshot from './snapshot.js';
 
 function startAdBreak(player) {
 
-  videojs.log('Starting ad break');
+  player.ads.debug('Starting ad break');
 
   player.ads._inLinearAdMode = true;
 
@@ -45,7 +43,7 @@ function startAdBreak(player) {
 }
 
 function endAdBreak(player) {
-  videojs.log('Ending ad break');
+  player.ads.debug('Ending ad break');
 
   player.ads.adType = null;
 

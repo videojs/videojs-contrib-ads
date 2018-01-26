@@ -20,7 +20,7 @@ export default class Midroll extends AdState {
       player.ads.adType = 'midroll';
       startAdBreak(player);
     } else {
-      videojs.log('Unexpected startLinearAdMode invocation (Midroll)');
+      videojs.log.warn('Unexpected startLinearAdMode invocation (Midroll)');
     }
   }
 
@@ -39,12 +39,12 @@ export default class Midroll extends AdState {
   /*
    * End midroll break if there is an error.
    */
-  onAdsError() {
+  onAdsError(player) {
     // In the future, we may not want to do this automatically.
     // Integrations should be able to choose to continue the ad break
     // if there was an error.
     if (this.inAdBreak()) {
-      this.player.ads.endLinearAdMode();
+      player.ads.endLinearAdMode();
     }
   }
 

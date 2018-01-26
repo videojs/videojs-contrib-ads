@@ -105,12 +105,12 @@ const contribAdsPlugin = function(options) {
   });
 
   player.on('nopreroll', function() {
-    videojs.log('Received nopreroll event');
+    player.ads.debug('Received nopreroll event');
     player.ads.nopreroll_ = true;
   });
 
   player.on('nopostroll', function() {
-    videojs.log('Received nopostroll event');
+    player.ads.debug('Received nopostroll event');
     player.ads.nopostroll_ = true;
   });
 
@@ -180,12 +180,12 @@ const contribAdsPlugin = function(options) {
     // Call this when an ad response has been received and there are
     // linear ads ready to be played.
     startLinearAdMode() {
-      player.ads.stateInstance.startLinearAdMode();
+      player.ads._state.startLinearAdMode();
     },
 
     // Call this when a linear ad pod has finished playing.
     endLinearAdMode() {
-      player.ads.stateInstance.endLinearAdMode();
+      player.ads._state.endLinearAdMode();
     },
 
     // Call this when an ad response has been received but there are no
@@ -193,7 +193,7 @@ const contribAdsPlugin = function(options) {
     // This has no effect if we are already playing an ad.  Always
     // use endLinearAdMode() to exit from linear ad-playback state.
     skipLinearAdMode() {
-      player.ads.stateInstance.skipLinearAdMode();
+      player.ads._state.skipLinearAdMode();
     },
 
     stitchedAds(arg) {
@@ -264,23 +264,23 @@ const contribAdsPlugin = function(options) {
     // * An asynchronous ad request is ongoing while content is playing
     // * A non-linear ad is active
     isInAdMode() {
-      return this.stateInstance.isAdState();
+      return this._state.isAdState();
     },
 
     // Returns true if content is resuming after an ad. This is part of ad mode.
     isContentResuming() {
-      return this.stateInstance.isContentResuming();
+      return this._state.isContentResuming();
     },
 
     // Deprecated because the name was misleading. Use inAdBreak instead.
     isAdPlaying() {
-      return this.stateInstance.inAdBreak();
+      return this._state.inAdBreak();
     },
 
     // Returns true if an ad break is ongoing. This is part of ad mode.
     // An ad break is the time between startLinearAdMode and endLinearAdMode.
     inAdBreak() {
-      return this.stateInstance.inAdBreak();
+      return this._state.inAdBreak();
     },
 
     /*
@@ -297,11 +297,17 @@ const contribAdsPlugin = function(options) {
       if (tech) {
         tech.removeAttribute('poster');
       }
+    },
+
+    debug(...args) {
+      if (this.settings.debug) {
+        videojs.log('ADS', ...args);
+      }
     }
 
   };
 
-  player.ads.stateInstance = new BeforePreroll(player);
+  player.ads._state = new BeforePreroll(player);
 
   player.ads.stitchedAds(settings.stitchedAds);
 
@@ -362,7 +368,7 @@ const contribAdsPlugin = function(options) {
     'ads-ad-started',
     'contentupdate', 'contentresumed', 'contentended',
     'nopreroll', 'nopostroll'], (e) => {
-    player.ads.stateInstance.handleEvent(e.type);
+    player.ads._state.handleEvent(e.type);
   });
 
   // Clear timeouts and handlers when player is disposed

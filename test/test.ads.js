@@ -49,13 +49,13 @@ QUnit.test('stops canceling play events when an ad is playing', function(assert)
   this.player.trigger('play');
   assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
   assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists after play');
+  assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists after play');
 
   this.player.trigger('adsready');
-  assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists after adsready');
+  assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists after adsready');
 
   this.player.ads.startLinearAdMode();
-  assert.notOk(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout no longer exists');
+  assert.notOk(timerExists(this, this.player.ads._state._timeout), 'preroll timeout no longer exists');
 
   // cancelPlayTimeout happens after a tick
   this.clock.tick(1);
@@ -270,7 +270,7 @@ QUnit.test('the `cancelPlayTimeout` timeout is cleared when exiting preroll', fu
   this.player.trigger('adsready');
   this.player.trigger('play');
 
-  const prerollState = this.player.ads.stateInstance;
+  const prerollState = this.player.ads._state;
 
   assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
   assert.ok(timerExists(this, prerollState._timeout), 'preroll timeout exists');
@@ -306,7 +306,7 @@ QUnit.test('content is resumed on contentplayback if a user initiated play event
 
   assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
   assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, this.player.ads.stateInstance._timeout), 'preroll timeout exists');
+  assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists');
 
   this.clock.tick(1);
   this.player.ads.startLinearAdMode();

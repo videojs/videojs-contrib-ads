@@ -1,5 +1,3 @@
-import videojs from 'video.js';
-
 import {ContentState, Midroll, Postroll} from '../states.js';
 
 /*
@@ -29,13 +27,11 @@ export default class ContentPlayback extends ContentState {
    * that if an ad times out, it could still interrupt the content and start playing.
    * An integration could behave otherwise by ignoring this event.
    */
-  onAdsReady() {
-    const player = this.player;
-
-    videojs.log('Received adsready event during content playback');
+  onAdsReady(player) {
+    player.ads.debug('Received adsready event (ContentPlayback)');
 
     if (!player.ads.nopreroll_) {
-      videojs.log('Triggered readyforpreroll event (ContentPlayback)');
+      player.ads.debug('Triggered readyforpreroll event (ContentPlayback)');
       player.trigger('readyforpreroll');
     }
   }
@@ -43,8 +39,8 @@ export default class ContentPlayback extends ContentState {
   /*
    * Content ended before postroll checks.
    */
-  onContentEnded() {
-    videojs.log('Received contentended event');
+  onContentEnded(player) {
+    player.ads.debug('Received contentended event');
     this.transitionTo(Postroll);
   }
 

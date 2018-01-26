@@ -20,19 +20,19 @@ export default class Postroll extends AdState {
     // No postroll, ads are done
     } else {
       player.setTimeout(() => {
-        videojs.log('Triggered ended event (no postroll)');
+        player.ads.debug('Triggered ended event (no postroll)');
         this.contentResuming = true;
         player.trigger('ended');
       }, 1);
     }
   }
 
-  onAdsError() {
+  onAdsError(player) {
     // In the future, we may not want to do this automatically.
     // Integrations should be able to choose to continue the ad break
     // if there was an error.
-    if (this.player.ads.inAdBreak()) {
-      this.player.ads.endLinearAdMode();
+    if (player.ads.inAdBreak()) {
+      player.ads.endLinearAdMode();
     }
   }
 
@@ -47,16 +47,14 @@ export default class Postroll extends AdState {
       player.clearTimeout(this._postrollTimeout);
       startAdBreak(player);
     } else {
-      videojs.log('Unexpected startLinearAdMode invocation (Postroll)');
+      videojs.log.warn('Unexpected startLinearAdMode invocation (Postroll)');
     }
   }
 
   /*
    *
    */
-  onAdStarted() {
-    const player = this.player;
-
+  onAdStarted(player) {
     player.removeClass('vjs-ad-loading');
   }
 
@@ -69,7 +67,7 @@ export default class Postroll extends AdState {
 
       this.contentResuming = true;
 
-      videojs.log('Triggered ended event (endLinearAdMode)');
+      player.ads.debug('Triggered ended event (endLinearAdMode)');
       player.trigger('ended');
     }
   }
@@ -78,21 +76,21 @@ export default class Postroll extends AdState {
     const player = this.player;
 
     if (player.ads.inAdBreak() || this.isContentResuming()) {
-      videojs.log('Unexpected skipLinearAdMode invocation');
+      videojs.log.warn('Unexpected skipLinearAdMode invocation');
     } else {
-      videojs.log('Postroll abort (skipLinearAdMode)');
+      player.ads.debug('Postroll abort (skipLinearAdMode)');
       player.trigger('adskip');
       this.abort();
     }
   }
 
-  onAdTimeout() {
-    videojs.log('Postroll abort (adtimeout)');
+  onAdTimeout(player) {
+    player.ads.debug('Postroll abort (adtimeout)');
     this.abort();
   }
 
-  onAdsError() {
-    videojs.log('Postroll abort (adserror)');
+  onAdsError(player) {
+    player.ads.debug('Postroll abort (adserror)');
     this.abort();
   }
 
@@ -100,23 +98,23 @@ export default class Postroll extends AdState {
     if (this.contentResuming) {
       this.transitionTo(AdsDone);
     } else {
-      videojs.log('Unexpected ended event during postroll');
+      videojs.log.warn('Unexpected ended event during postroll');
     }
   }
 
-  onContentUpdate() {
+  onContentUpdate(player) {
     if (this.contentResuming) {
       this.transitionTo(BeforePreroll);
-    } else if (!this.player.ads.inAdBreak()) {
+    } else if (!player.ads.inAdBreak()) {
       this.transitionTo(Preroll);
     }
   }
 
-  onNoPostroll() {
-    if (!this.contentResuming && !this.player.ads.inAdBreak()) {
+  onNoPostroll(player) {
+    if (!this.contentResuming && !player.ads.inAdBreak()) {
       this.transitionTo(AdsDone);
     } else {
-      videojs.log('Unexpected nopostroll event (Postroll)');
+      videojs.log.warn('Unexpected nopostroll event (Postroll)');
     }
   }
 
@@ -126,7 +124,7 @@ export default class Postroll extends AdState {
     this.contentResuming = true;
     player.removeClass('vjs-ad-loading');
 
-    videojs.log('Triggered ended event (postroll abort)');
+    player.ads.debug('Triggered ended event (postroll abort)');
     player.trigger('ended');
   }
 

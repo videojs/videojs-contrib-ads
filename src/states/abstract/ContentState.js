@@ -12,9 +12,7 @@ export default class ContentState extends State {
   /*
    * Source change sends you back to preroll checks.
    */
-  onContentUpdate() {
-    const player = this.player;
-
+  onContentUpdate(player) {
     if (player.paused()) {
       this.transitionTo(BeforePreroll);
     } else {

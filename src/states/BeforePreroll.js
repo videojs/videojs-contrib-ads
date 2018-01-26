@@ -1,5 +1,3 @@
-import videojs from 'video.js';
-
 import {ContentState, Preroll, ContentPlayback} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 
@@ -19,8 +17,8 @@ export default class BeforePreroll extends ContentState {
    * The integration may trigger adsready before the play request. If so,
    * we record that adsready already happened so the Preroll state will know.
    */
-  onAdsReady() {
-    videojs.log('Received adsready event (BeforePreroll)');
+  onAdsReady(player) {
+    player.ads.debug('Received adsready event (BeforePreroll)');
     this.adsReady = true;
   }
 
@@ -28,10 +26,8 @@ export default class BeforePreroll extends ContentState {
    * Ad mode officially begins on the play request, because at this point
    * content playback is blocked by the ad plugin.
    */
-  onPlay() {
-    const player = this.player;
-
-    videojs.log('Received play event (BeforePreroll)');
+  onPlay(player) {
+    player.ads.debug('Received play event (BeforePreroll)');
 
     // Don't start content playback yet
     cancelContentPlay(player);
@@ -43,8 +39,8 @@ export default class BeforePreroll extends ContentState {
   /*
    * All ads for the entire video are canceled.
    */
-  onAdsCanceled() {
-    videojs.log('adscanceled (BeforePreroll)');
+  onAdsCanceled(player) {
+    player.ads.debug('adscanceled (BeforePreroll)');
 
     this.transitionTo(ContentPlayback);
   }

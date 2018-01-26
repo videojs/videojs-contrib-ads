@@ -8,17 +8,18 @@ export default class State {
 
   /*
    * This is the only allowed way to perform state transitions. State transitions usually
-   * happen in player event handlers. They can also happen recursively in `init`.
+   * happen in player event handlers. They can also happen recursively in `init`. They
+   * should _not_ happen in `cleanup`.
    */
   transitionTo(NewState, ...args) {
     const player = this.player;
     const previousState = this;
 
     previousState.cleanup();
-    const newState = new NewState(player, ...args);
+    const newState = new NewState(player);
 
-    player.ads.stateInstance = newState;
-    videojs.log(previousState.constructor.name + ' -> ' + newState.constructor.name);
+    player.ads._state = newState;
+    player.ads.debug(previousState.constructor.name + ' -> ' + newState.constructor.name);
     newState.init(player, ...args);
   }
 
@@ -41,7 +42,7 @@ export default class State {
   onPlaying() {}
   onEnded() {}
   onAdsReady() {
-    videojs.log('Unexpected adsready event');
+    videojs.log.warn('Unexpected adsready event');
   }
   onAdsError() {}
   onAdsCanceled() {}
@@ -50,7 +51,7 @@ export default class State {
   onContentUpdate() {}
   onContentResumed() {}
   onContentEnded() {
-    videojs.log('Unexpected contentended event');
+    videojs.log.warn('Unexpected contentended event');
   }
   onNoPreroll() {}
   onNoPostroll() {}
@@ -59,13 +60,16 @@ export default class State {
    * Method handlers. Different states can override these to provide behaviors.
    */
   startLinearAdMode() {
-    videojs.log('Unexpected startLinearAdMode invocation (State)');
+    videojs.log.warn('Unexpected startLinearAdMode invocation ' +
+      '(State via ' + this.constructor.name + ')');
   }
   endLinearAdMode() {
-    videojs.log('Unexpected endLinearAdMode invocation (State)');
+    videojs.log.warn('Unexpected endLinearAdMode invocation ' +
+      '(State via ' + this.constructor.name + ')');
   }
   skipLinearAdMode() {
-    videojs.log('Unexpected skipLinearAdMode invocation (State)');
+    videojs.log.warn('Unexpected skipLinearAdMode invocation ' +
+      '(State via ' + this.constructor.name + ')');
   }
 
   /*
@@ -88,32 +92,34 @@ export default class State {
    * Invoke event handler methods when events come in.
    */
   handleEvent(type) {
+    const player = this.player;
+
     if (type === 'play') {
-      this.onPlay();
+      this.onPlay(player);
     } else if (type === 'adsready') {
-      this.onAdsReady();
+      this.onAdsReady(player);
     } else if (type === 'adserror') {
-      this.onAdsError();
+      this.onAdsError(player);
     } else if (type === 'adscanceled') {
-      this.onAdsCanceled();
+      this.onAdsCanceled(player);
     } else if (type === 'adtimeout') {
-      this.onAdTimeout();
+      this.onAdTimeout(player);
     } else if (type === 'ads-ad-started') {
-      this.onAdStarted();
+      this.onAdStarted(player);
     } else if (type === 'contentupdate') {
-      this.onContentUpdate();
+      this.onContentUpdate(player);
     } else if (type === 'contentresumed') {
-      this.onContentResumed();
+      this.onContentResumed(player);
     } else if (type === 'contentended') {
-      this.onContentEnded();
+      this.onContentEnded(player);
     } else if (type === 'playing') {
-      this.onPlaying();
+      this.onPlaying(player);
     } else if (type === 'ended') {
-      this.onEnded();
+      this.onEnded(player);
     } else if (type === 'nopreroll') {
-      this.onNoPreroll();
+      this.onNoPreroll(player);
     } else if (type === 'nopostroll') {
-      this.onNoPostroll();
+      this.onNoPostroll(player);
     }
   }
 

@@ -13,7 +13,7 @@ export default class AdsDone extends ContentState {
    * Midrolls do not play after ads are done.
    */
   startLinearAdMode() {
-    videojs.log('Unexpected startLinearAdMode invocation (AdsDone)');
+    videojs.log.warn('Unexpected startLinearAdMode invocation (AdsDone)');
   }
 
 }
