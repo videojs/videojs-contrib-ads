@@ -7,49 +7,19 @@ export default class State {
   }
 
   /*
-   * This is the only allowed way to perform state transitions.
-   *
-   * State transitions usually happen in player event handlers.
-   *
-   * State transitions can also be caused by state constructors. As a result, we'll
-   * see a multi-state jump. This is logged out all as one message, in this format:
-   * "StateOne -> StateTwo -> StateThree". In this case the sequence of invocations
-   * will look like this:
-   *
-   * * transitionTo(StateTwo)
-   * * cleanup StateOne
-   * * constructor StateTwo
-   *   * transitionTo(StateThree)
-   *   * cleanup StateTwo
-   *   * constructor StateThree
-   *   * update `player.ads.stateInstance`
-   *   * log message for multi-step transition
+   * This is the only allowed way to perform state transitions. State transitions usually
+   * happen in player event handlers. They can also happen recursively in `init`.
    */
   transitionTo(NewState, ...args) {
     const player = this.player;
+    const previousState = this;
 
-    // Save transition steps for logging
-    if (!player.ads._transition) {
-      player.ads._transition = [player.ads.stateInstance.constructor.name, NewState.name];
-    } else {
-      player.ads._transition.push(NewState.name);
-    }
-
-    // We guarantee that cleanup is always called when leaving a state.
-    this.cleanup();
-
-    player.ads.stateInstance = new NewState(player, ...args);
-
-    const stateBeforeInit = player.ads.stateInstance;
-
-    // Only log the state transition once. Multi-step jumps are logged out in one line.
-    if (player.ads.stateInstance === stateBeforeInit) {
-      videojs.log(player.ads._transition.join(' -> '));
-      player.ads._transition = null;
-    }
-
-    player.ads.stateInstance.init(player, ...args);
-
+    previousState.cleanup();
+    const newState = new NewState(player, ...args);
+    
+    player.ads.stateInstance = newState;
+    videojs.log(previousState.constructor.name + ' -> ' + newState.constructor.name);
+    newState.init(player, ...args);
   }
 
   /*
