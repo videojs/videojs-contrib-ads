@@ -16,7 +16,7 @@ export default class State {
 
     previousState.cleanup();
     const newState = new NewState(player, ...args);
-    
+
     player.ads.stateInstance = newState;
     videojs.log(previousState.constructor.name + ' -> ' + newState.constructor.name);
     newState.init(player, ...args);
