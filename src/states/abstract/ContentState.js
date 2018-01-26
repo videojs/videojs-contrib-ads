@@ -2,10 +2,6 @@ import {State, BeforePreroll, Preroll} from '../../states.js';
 
 export default class ContentState extends State {
 
-  constructor(player) {
-    super(player);
-  }
-
   /*
    * Overrides State.isAdState
    */

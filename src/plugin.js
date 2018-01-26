@@ -105,10 +105,12 @@ const contribAdsPlugin = function(options) {
   });
 
   player.on('nopreroll', function() {
+    videojs.log('Received nopreroll event');
     player.ads.nopreroll_ = true;
   });
 
   player.on('nopostroll', function() {
+    videojs.log('Received nopostroll event');
     player.ads.nopostroll_ = true;
   });
 

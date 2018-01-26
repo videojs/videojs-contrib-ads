@@ -4,9 +4,7 @@ import {ContentState} from '../states.js';
 
 export default class AdsDone extends ContentState {
 
-  constructor(player) {
-    super(player);
-
+  init(player) {
     // From now on, `ended` events won't be redispatched
     player.ads._contentHasEnded = true;
   }

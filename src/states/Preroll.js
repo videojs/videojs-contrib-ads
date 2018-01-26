@@ -10,9 +10,7 @@ import {startAdBreak, endAdBreak} from '../adBreak.js';
  */
 export default class Preroll extends AdState {
 
-  constructor(player, adsReady) {
-    super(player);
-
+  init(player, adsReady) {
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
@@ -64,7 +62,7 @@ export default class Preroll extends AdState {
 
     // Signal to ad plugin that it's their opportunity to play a preroll.
     if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
-      videojs.log('Triggered readyforpreroll event');
+      videojs.log('Triggered readyforpreroll event (Preroll)');
       player.trigger('readyforpreroll');
 
     // Don't play preroll before loadstart, otherwise the content loadstart event
@@ -73,7 +71,7 @@ export default class Preroll extends AdState {
     // loadstart so it has to have happened already.
     } else {
       player.one('loadstart', () => {
-        videojs.log('Triggered readyforpreroll event');
+        videojs.log('Triggered readyforpreroll event (loadstart)');
         player.trigger('readyforpreroll');
       });
     }
@@ -124,7 +122,7 @@ export default class Preroll extends AdState {
       player.ads.adType = 'preroll';
       startAdBreak(player);
     } else {
-      videojs.log('Unexpected startLinearAdMode invocation');
+      videojs.log('Unexpected startLinearAdMode invocation (Preroll)');
     }
   }
 

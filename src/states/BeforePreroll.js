@@ -11,8 +11,7 @@ import cancelContentPlay from '../cancelContentPlay.js';
  */
 export default class BeforePreroll extends ContentState {
 
-  constructor(player) {
-    super(player);
+  init(player) {
     this.adsReady = false;
   }
 
@@ -31,6 +30,8 @@ export default class BeforePreroll extends ContentState {
    */
   onPlay() {
     const player = this.player;
+
+    videojs.log('Received play event (BeforePreroll)');
 
     // Don't start content playback yet
     cancelContentPlay(player);

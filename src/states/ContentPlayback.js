@@ -9,9 +9,7 @@ import {ContentState, Midroll, Postroll} from '../states.js';
  */
 export default class ContentPlayback extends ContentState {
 
-  constructor(player) {
-    super(player);
-
+  init(player) {
     // Deprecated event.
     player.trigger({
       type: 'contentplayback',
@@ -37,7 +35,7 @@ export default class ContentPlayback extends ContentState {
     videojs.log('Received adsready event during content playback');
 
     if (!player.ads.nopreroll_) {
-      videojs.log('Triggered readyforpreroll event');
+      videojs.log('Triggered readyforpreroll event (ContentPlayback)');
       player.trigger('readyforpreroll');
     }
   }

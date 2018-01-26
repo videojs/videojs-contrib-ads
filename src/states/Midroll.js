@@ -5,8 +5,7 @@ import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 export default class Midroll extends AdState {
 
-  constructor(player) {
-    super(player);
+  init(player) {
     this.start();
   }
 

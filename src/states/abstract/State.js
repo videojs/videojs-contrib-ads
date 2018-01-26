@@ -38,23 +38,25 @@ export default class State {
     // We guarantee that cleanup is always called when leaving a state.
     this.cleanup();
 
-    const stateBeforeConstructor = player.ads.stateInstance;
+    player.ads.stateInstance = new NewState(player, ...args);
 
-    const newState = new NewState(player, ...args);
+    const stateBeforeInit = player.ads.stateInstance;
 
-    if (player.ads.stateInstance !== stateBeforeConstructor) {
-      // This means that `transitionTo` was invoked by the constructor. We will let
-      // the recursive call do the rest of the work so that `player.ads.stateInstance`
-      // is only updated once, to the correct state.
-      return;
+    // Only log the state transition once. Multi-step jumps are logged out in one line.
+    if (player.ads.stateInstance === stateBeforeInit) {
+      videojs.log(player.ads._transition.join(' -> '));
+      player.ads._transition = null;
     }
 
-    player.ads.stateInstance = newState;
+    player.ads.stateInstance.init(player, ...args);
 
-    // Log out transition. Multi-step jumps are logged out in one line.
-    videojs.log(player.ads._transition.join(' -> '));
-    player.ads._transition = null;
   }
+
+  /*
+   * Implemented by subclasses to provide initialization logic when transitioning
+   * to a new state.
+   */
+  init() {}
 
   /*
    * Implemented by subclasses to provide cleanup logic when transitioning
@@ -87,13 +89,13 @@ export default class State {
    * Method handlers. Different states can override these to provide behaviors.
    */
   startLinearAdMode() {
-    videojs.log('Unexpected startLinearAdMode invocation');
+    videojs.log('Unexpected startLinearAdMode invocation (State)');
   }
   endLinearAdMode() {
-    videojs.log('Unexpected endLinearAdMode invocation');
+    videojs.log('Unexpected endLinearAdMode invocation (State)');
   }
   skipLinearAdMode() {
-    videojs.log('Unexpected skipLinearAdMode invocation');
+    videojs.log('Unexpected skipLinearAdMode invocation (State)');
   }
 
   /*

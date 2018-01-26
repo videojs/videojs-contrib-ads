@@ -5,9 +5,7 @@ import {startAdBreak, endAdBreak} from '../adBreak.js';
 
 export default class Postroll extends AdState {
 
-  constructor(player) {
-    super(player);
-
+  init(player) {
     // Legacy name that now simply means "handling postrolls".
     player.ads._contentEnding = true;
 
@@ -49,7 +47,7 @@ export default class Postroll extends AdState {
       player.clearTimeout(this._postrollTimeout);
       startAdBreak(player);
     } else {
-      videojs.log('Unexpected startLinearAdMode invocation');
+      videojs.log('Unexpected startLinearAdMode invocation (Postroll)');
     }
   }
 
