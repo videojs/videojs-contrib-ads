@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {AdState, ContentPlayback} from '../states.js';
+import {AdState, ContentPlayback, BeforePreroll} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 import {startAdBreak, endAdBreak} from '../adBreak.js';
 
@@ -29,8 +29,12 @@ export default class Preroll extends AdState {
   }
 
   onAdsReady(player) {
-    player.ads.debug('Received adsready event (Preroll)');
-    this.handleAdsReady();
+    if (!player.ads.inAdBreak() && !player.ads.isContentResuming()) {
+      player.ads.debug('Received adsready event (Preroll)');
+      this.handleAdsReady();
+    } else {
+      videojs.log.warn('Unexpected adsready event (Preroll)');
+    }
   }
 
   /*
@@ -101,6 +105,7 @@ export default class Preroll extends AdState {
    * An ad error occured. Play content instead.
    */
   onAdsError(player) {
+    videojs.log('adserror (Preroll)');
     // In the future, we may not want to do this automatically.
     // Integrations should be able to choose to continue the ad break
     // if there was an error.
@@ -118,6 +123,7 @@ export default class Preroll extends AdState {
     const player = this.player;
 
     if (this.adsReady && !player.ads.inAdBreak() && !this.isContentResuming()) {
+      player.ads.debug('startLinearAdMode (Preroll)');
       player.clearTimeout(this._timeout);
       player.ads.adType = 'preroll';
       startAdBreak(player);
@@ -187,11 +193,18 @@ export default class Preroll extends AdState {
    * Source change before preroll ad break resets the preroll process.
    * Source change while content is resuming resets the preroll process.
    */
-  onContentUpdate() {
+  onContentUpdate(player) {
     if (this.inAdBreak()) {
       videojs.log.warn('Unexpected contentupdate during ad break.');
     } else {
-      this.adsReady = false;
+      this.transitionTo(BeforePreroll);
+
+      // If we're in the Preroll state when the source changed, it means
+      // a play request happened but was cancelled. We'll play the new
+      // source to reflect the fact that a play request happened for the
+      // previous source, since the new source should match the previous
+      // playback state.
+      player.play();
     }
   }
 

@@ -301,7 +301,11 @@ const contribAdsPlugin = function(options) {
 
     debug(...args) {
       if (this.settings.debug) {
-        videojs.log('ADS', ...args);
+        if (args.length === 1 && typeof args[0] === 'string') {
+          videojs.log('ADS: ' + args[0]);
+        } else {
+          videojs.log('ADS:', ...args);
+        }
       }
     }
 

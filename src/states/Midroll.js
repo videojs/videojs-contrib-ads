@@ -17,6 +17,7 @@ export default class Midroll extends AdState {
     const player = this.player;
 
     if (!this.inAdBreak() && !this.isContentResuming()) {
+      player.ads.debug('startLinearAdMode (Midroll)');
       player.ads.adType = 'midroll';
       startAdBreak(player);
     } else {
