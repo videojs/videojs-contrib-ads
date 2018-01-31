@@ -730,8 +730,6 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
 });
 
 QUnit.test('contentupdate in content-playback transitions to ads-ready? and pauses player if not already paused', function(assert) {
-  assert.expect(4);
-
   this.player.trigger('loadstart');
   this.player.ads.skipLinearAdMode();
   this.player.paused = function() {
