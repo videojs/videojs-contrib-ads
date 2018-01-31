@@ -436,9 +436,6 @@ const contribAdsPlugin = function(options) {
         },
         nopreroll() {
           this.state = 'content-playback';
-        },
-        contentupdate() {
-          this.state = 'content-set';
         }
       }
     },
