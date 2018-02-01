@@ -722,6 +722,18 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
   assert.strictEqual(spy.getCall(0).args[0].type, 'readyforpreroll', 'readyforpreroll should have been triggered.');
 });
 
+QUnit.test('contentupdate in content-playback transitions to ads-ready? and pauses player if not already paused', function(assert) {
+  this.player.trigger('loadstart');
+  this.player.ads.skipLinearAdMode();
+  this.player.paused = function() {
+    return false;
+  };
+  sinon.spy(this.player, 'pause');
+  this.player.trigger('contentupdate');
+  assert.ok(this.player.pause.calledOnce, 'player was paused');
+  assert.ok(this.player.ads._pausedOnContentupdate, '_pausedOnContentupdate is true');
+});
+
 // ----------------------------------
 // Event prefixing during ad playback
 // ----------------------------------
