@@ -44,7 +44,7 @@
     "watch:js-umd": "rollup -c scripts/umd.rollup.config.js -w",
     "watch:test": "rollup -c scripts/test.rollup.config.js -w",
     "prepublish": "npm run build",
-    "prepush": "npm run test"
+    "prepush": "npm run lint"
   },
   "devDependencies": {
     "babel-eslint": "^8.0.2",
