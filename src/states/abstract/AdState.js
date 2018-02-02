@@ -21,7 +21,7 @@ export default class AdState extends State {
 
   /*
    * We end the content-resuming process on the playing event because this is the exact
-   * moment that ad playback is no longer blocked by ads.
+   * moment that content playback is no longer blocked by ads.
    */
   onPlaying() {
     if (this.contentResuming) {

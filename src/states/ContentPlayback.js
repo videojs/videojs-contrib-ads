@@ -8,12 +8,6 @@ import {ContentState, Midroll, Postroll} from '../states.js';
 export default class ContentPlayback extends ContentState {
 
   init(player) {
-    // Deprecated event.
-    player.trigger({
-      type: 'contentplayback',
-      triggerevent: player.ads.triggerevent
-    });
-
     // Play the content if cancelContentPlay happened or we paused on 'contentupdate'
     // and we haven't played yet. This happens if there was no preroll or if it
     // errored, timed out, etc. Otherwise snapshot restore would play.

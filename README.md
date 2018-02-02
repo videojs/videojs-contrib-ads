@@ -67,7 +67,7 @@ And here are the interaction points you use to send information to the ads plugi
 * `adplaying` (EVENT) - Trigger this event when an ads starts playing. If your integration triggers `playing` event when an ad begins, it will automatically be redispatched as `adplaying`.
 * `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
 * `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
-* `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ads to skip the preroll process completely. This event is optional, but can improve user experience. It is ignored if it is seen after `readyforpreroll`.
+* `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ads. This event is optional, but can improve user experience. It is ignored if it is seen after `readyforpreroll`.
 * `nopostroll` (EVENT) - Trigger this event to indicate that there will be no postroll ad. Otherwise, contrib-ads will trigger an adtimeout event after content ends if there is no postroll.
 * `ads-ad-started` (EVENT) - Trigger this when each individual ad begins.
 * `contentresumed` (EVENT) - If your integration does not result in a "playing" event when resuming content after an ad, send this event to signal that content can resume. This was added to support stitched ads and is not normally necessary.
@@ -115,9 +115,11 @@ Returns true if content is resuming after an ad. This is part of ad mode.
 
 #### isAdPlaying()
 
-Returns true if a linear ad is playing. This is part of ad mode.
-This relies on `startLinearAdMode` and `endLinearAdMode` because that is the
-most authoritative way of determinining if an ad is playing.
+Deprecated. Does the same thing as `inAdBreak` but has a misleading name. videojs-contrib-ads does not know when an ad is actually playing, that's up to the integration. However, ads can only play during an ad break.
+
+#### inAdBreak()
+
+This method returns true during the time between startLinearAdMode and endLinearAdMode where an integratino may play ads. This is part of ad mode.
 
 ### Additional Events And Properties Your Integration May Want To Include
 
@@ -438,7 +440,7 @@ player.src('movie-high.mp4');
 ### disableNextSnapshotRestore
 Prevents videojs-contrib-ads from restoring the previous video source
 
-If you need to change the video source during an ad break, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads to restore to the previous video source.
+If you need to change the video source during an ad break, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads from restoring the snapshot from the previous video source.
 ```js
 if (player.ads.inAdBreak()) {
     player.ads.disableNextSnapshotRestore = true;

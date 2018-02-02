@@ -42,7 +42,7 @@ export default class Postroll extends AdState {
   startLinearAdMode() {
     const player = this.player;
 
-    if (!player.ads.isAdPlaying() && !this.contentResuming) {
+    if (!player.ads.inAdBreak() && !this.isContentResuming()) {
       player.ads.adType = 'postroll';
       player.clearTimeout(this._postrollTimeout);
       startAdBreak(player);
@@ -52,7 +52,8 @@ export default class Postroll extends AdState {
   }
 
   /*
-   *
+   * An ad has actually started playing.
+   * Remove the loading spinner.
    */
   onAdStarted(player) {
     player.removeClass('vjs-ad-loading');
@@ -95,7 +96,7 @@ export default class Postroll extends AdState {
   }
 
   onEnded() {
-    if (this.contentResuming) {
+    if (this.isContentResuming()) {
       this.transitionTo(AdsDone);
     } else {
       videojs.log.warn('Unexpected ended event during postroll');
@@ -103,7 +104,7 @@ export default class Postroll extends AdState {
   }
 
   onContentChanged(player) {
-    if (this.contentResuming) {
+    if (this.isContentResuming()) {
       this.transitionTo(BeforePreroll);
     } else if (!player.ads.inAdBreak()) {
       this.transitionTo(Preroll);
@@ -111,7 +112,7 @@ export default class Postroll extends AdState {
   }
 
   onNoPostroll(player) {
-    if (!this.contentResuming && !player.ads.inAdBreak()) {
+    if (!this.isContentResuming() && !player.ads.inAdBreak()) {
       this.transitionTo(AdsDone);
     } else {
       videojs.log.warn('Unexpected nopostroll event (Postroll)');

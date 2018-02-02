@@ -17,3 +17,4 @@ by integrations.
 * We no longer trigger a `readyforpreroll` event after receiving a `nopreroll` event.
 * adTimeoutTimeout has been removed. It was not part of the documented interface, but make note if your integration inspected it.
 * There is no longer a snapshot object while checking for postrolls. Now a snapshot is only taken when a postroll ad break actually begins.
+* The `contentplayback` event has been removed. Use the `playing` event instead.

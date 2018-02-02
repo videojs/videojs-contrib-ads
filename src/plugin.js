@@ -193,7 +193,7 @@ const contribAdsPlugin = function(options) {
 
     // Call this when an ad response has been received but there are no
     // linear ads to be played (i.e. no ads available, or overlays).
-    // This has no effect if we are already playing an ad.  Always
+    // This has no effect if we are already in an ad break.  Always
     // use endLinearAdMode() to exit from linear ad-playback state.
     skipLinearAdMode() {
       player.ads._state.skipLinearAdMode();

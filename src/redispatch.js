@@ -127,7 +127,7 @@ const handleLoadEvent = (player, event) => {
 const handlePlay = (player, event) => {
   const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
 
-  if (player.ads.isAdPlaying()) {
+  if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
   } else if (player.ads.isContentResuming() || resumingAfterNoPreroll) {
     prefixEvent(player, 'content', event);
