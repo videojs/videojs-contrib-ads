@@ -161,6 +161,7 @@ QUnit.test('removes the loading class when the preroll begins', function(assert)
 QUnit.test('removes the loading class when the preroll times out', function(assert) {
   var el;
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
@@ -172,6 +173,7 @@ QUnit.test('removes the loading class when the preroll times out', function(asse
 QUnit.test('starts the content video if there is no preroll', function(assert) {
   var spy = sinon.spy(this.player, 'play');
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.clock.tick(1);
@@ -288,6 +290,7 @@ QUnit.test('the `cancelPlayTimeout` timeout is cleared when exiting preroll', fu
 
 QUnit.test('"cancelContentPlay doesn\'t block play after adscanceled', function(assert) {
 
+  this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adscanceled');
 
@@ -320,6 +323,7 @@ QUnit.test('ended event happens after postroll errors out', function(assert) {
 
   this.player.on('ended', endedSpy);
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
@@ -335,6 +339,7 @@ QUnit.test('ended event happens after postroll timed out', function(assert) {
 
   this.player.on('ended', endedSpy);
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
@@ -350,6 +355,7 @@ QUnit.test('ended event happens after postroll skipped', function(assert) {
 
   this.player.on('ended', endedSpy);
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // preroll times out
@@ -365,6 +371,7 @@ QUnit.test('an "ended" event is fired after postroll if not fired naturally', fu
 
   this.player.on('ended', endedSpy);
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // skip preroll
@@ -381,6 +388,7 @@ QUnit.test('ended events', function(assert) {
   var endedSpy = sinon.spy();
   this.player.on('ended', endedSpy);
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // Preroll times out
@@ -478,6 +486,7 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
 
   spy = sinon.spy();
   this.player.on('readyforpreroll', spy);
+  this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
   this.player.trigger('adsready');
@@ -649,6 +658,7 @@ QUnit.test('player events during content playback are not prefixed', function(as
   unprefixed = sinon.spy();
 
   // play content
+  this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
@@ -715,6 +725,7 @@ QUnit.test('startLinearAdMode should only trigger adstart from correct states', 
 
 QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert) {
 
+  this.player.trigger('loadstart');
   this.player.trigger('nopreroll');
   this.player.trigger('play');
   this.player.trigger('adsready');
@@ -726,6 +737,7 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert
 // Same test as above with different event order because this used to be broken.
 QUnit.test('ad impl can notify contrib-ads there is no preroll (adsready before play)', function(assert) {
 
+  this.player.trigger('loadstart');
   this.player.trigger('nopreroll');
   this.player.trigger('adsready');
   this.player.trigger('play');
@@ -740,6 +752,7 @@ QUnit.test('ad impl can notify contrib-ads there is no postroll', function(asser
 
   this.player.on('ended', ended);
 
+  this.player.trigger('loadstart');
   this.player.trigger('nopostroll');
   this.player.trigger('play');
   this.player.trigger('adsready');
@@ -752,6 +765,7 @@ QUnit.test('ad impl can notify contrib-ads there is no postroll', function(asser
 
 QUnit.test('ended event is sent with postroll', function(assert) {
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.skipLinearAdMode();
@@ -769,6 +783,7 @@ QUnit.test('ended event is sent with postroll', function(assert) {
 
 QUnit.test('ended event is sent without postroll', function(assert) {
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.skipLinearAdMode();
@@ -883,21 +898,28 @@ QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
     assert.ok(this.player.hasClass('vjs-live'), 'We should be having vjs-live class here');
 });
 
-QUnit.test('Plugin state resets after contentupdate', function(assert) {
+QUnit.test('Plugin state resets after contentchanged', function(assert) {
 
   assert.equal(this.player.ads.disableNextSnapshotRestore, false);
   assert.equal(this.player.ads._contentHasEnded, false);
   assert.equal(this.player.ads.snapshot, null);
+  assert.equal(this.player.ads.snapshot, null);
+  assert.equal(this.player.ads.nopreroll_, null);
+  assert.equal(this.player.ads.nopostroll_, null);
 
   this.player.ads.disableNextSnapshotRestore = true;
   this.player.ads._contentHasEnded = true;
   this.player.ads.snapshot = {};
+  this.player.ads.nopreroll_ = true;
+  this.player.ads.nopostroll_ = true;
 
-  this.player.trigger('contentupdate');
+  this.player.trigger('contentchanged');
 
   assert.equal(this.player.ads.disableNextSnapshotRestore, false);
   assert.equal(this.player.ads._contentHasEnded, false);
   assert.equal(this.player.ads.snapshot, null);
+  assert.equal(this.player.ads.nopreroll_, false);
+  assert.equal(this.player.ads.nopostroll_, false);
 
 });
 
@@ -907,6 +929,7 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
   assert.strictEqual(this.player.ads.adType, null);
 
   // before preroll
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   assert.strictEqual(this.player.ads.adType, null);
   this.player.trigger('play');
@@ -938,7 +961,7 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
   assert.strictEqual(this.player.ads.adType, null);
 
   // reset values
-  this.player.trigger('contentupdate');
+  this.player.trigger('contentchanged');
   assert.strictEqual(this.player.ads.adType, null);
 
   // check preroll case where play is observed

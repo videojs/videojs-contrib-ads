@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {AdState, ContentPlayback, BeforePreroll} from '../states.js';
+import {AdState, ContentPlayback} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 import {startAdBreak, endAdBreak} from '../adBreak.js';
 
@@ -50,11 +50,32 @@ export default class Preroll extends AdState {
   }
 
   /*
+   * Helper to call a callback only after a loadstart event.
+   * If we start content or ads before loadstart, loadstart
+   * will not be prefixed correctly.
+   */
+  afterLoadStart(callback) {
+    const player = this.player;
+
+    if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
+      callback();
+    } else {
+      player.ads.debug('Waiting for loadstart...');
+      player.one('loadstart', () => {
+        player.ads.debug('Received loadstart event');
+        callback();
+      });
+    }
+  }
+
+  /*
    * If there is no preroll, play content instead.
    */
   noPreroll() {
-    this.player.ads.debug('Skipping prerolls due to nopreroll event');
-    this.transitionTo(ContentPlayback);
+    this.afterLoadStart(() => {
+      this.player.ads.debug('Skipping prerolls due to nopreroll event (Preroll)');
+      this.transitionTo(ContentPlayback);
+    });
   }
 
   /*
@@ -64,21 +85,10 @@ export default class Preroll extends AdState {
   readyForPreroll() {
     const player = this.player;
 
-    // Signal to ad plugin that it's their opportunity to play a preroll.
-    if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
+    this.afterLoadStart(() => {
       player.ads.debug('Triggered readyforpreroll event (Preroll)');
       player.trigger('readyforpreroll');
-
-    // Don't play preroll before loadstart, otherwise the content loadstart event
-    // will get misconstrued as an ad loadstart. This is only a concern for the
-    // initial source; for source changes the whole ad process is kicked off by
-    // loadstart so it has to have happened already.
-    } else {
-      player.one('loadstart', () => {
-        player.ads.debug('Triggered readyforpreroll event (loadstart)');
-        player.trigger('readyforpreroll');
-      });
-    }
+    });
   }
 
   /*
@@ -98,7 +108,9 @@ export default class Preroll extends AdState {
   onAdsCanceled(player) {
     player.ads.debug('adscanceled (Preroll)');
 
-    this.transitionTo(ContentPlayback);
+    this.afterLoadStart(() => {
+      this.transitionTo(ContentPlayback);
+    });
   }
 
   /*
@@ -113,7 +125,9 @@ export default class Preroll extends AdState {
       player.ads.endLinearAdMode();
     }
 
-    this.transitionTo(ContentPlayback);
+    this.afterLoadStart(() => {
+      this.transitionTo(ContentPlayback);
+    });
   }
 
   /*
@@ -123,7 +137,6 @@ export default class Preroll extends AdState {
     const player = this.player;
 
     if (this.adsReady && !player.ads.inAdBreak() && !this.isContentResuming()) {
-      player.ads.debug('startLinearAdMode (Preroll)');
       player.clearTimeout(this._timeout);
       player.ads.adType = 'preroll';
       startAdBreak(player);
@@ -162,10 +175,11 @@ export default class Preroll extends AdState {
     if (player.ads.inAdBreak() || this.isContentResuming()) {
       videojs.log.warn('Unexpected skipLinearAdMode invocation');
     } else {
-      player.trigger('adskip');
-
-      player.ads.debug('skipLinearAdMode (Preroll)');
-      this.transitionTo(ContentPlayback);
+      this.afterLoadStart(() => {
+        player.trigger('adskip');
+        player.ads.debug('skipLinearAdMode (Preroll)');
+        this.transitionTo(ContentPlayback);
+      });
     }
   }
 
@@ -173,38 +187,20 @@ export default class Preroll extends AdState {
    * Prerolls took too long! Play content instead.
    */
   onAdTimeout(player) {
-    player.ads.debug('adtimeout (Preroll)');
-    this.transitionTo(ContentPlayback);
+    this.afterLoadStart(() => {
+      player.ads.debug('adtimeout (Preroll)');
+      this.transitionTo(ContentPlayback);
+    });
   }
 
   /*
    * Check if nopreroll event was too late before handling it.
    */
   onNoPreroll(player) {
-    if (this.adsReady) {
-      videojs.log.warn('Unexpected nopreroll event after both play and adsready');
+    if (player.ads.inAdBreak() || this.isContentResuming()) {
+      videojs.log.warn('Unexpected nopreroll event (Preroll)');
     } else {
       this.noPreroll();
-    }
-  }
-
-  /*
-   * Changing the content source during an ad break is not supported.
-   * Source change before preroll ad break resets the preroll process.
-   * Source change while content is resuming resets the preroll process.
-   */
-  onContentUpdate(player) {
-    if (this.inAdBreak()) {
-      videojs.log.warn('Unexpected contentupdate during ad break.');
-    } else {
-      this.transitionTo(BeforePreroll);
-
-      // If we're in the Preroll state when the source changed, it means
-      // a play request happened but was cancelled. We'll play the new
-      // source to reflect the fact that a play request happened for the
-      // previous source, since the new source should match the previous
-      // playback state.
-      player.play();
     }
   }
 
@@ -213,6 +209,10 @@ export default class Preroll extends AdState {
    */
   cleanup() {
     const player = this.player;
+
+    if (!player.ads._hasThereBeenALoadStartDuringPlayerLife) {
+      videojs.log.warn('Leaving Preroll state before loadstart event can cause issues.');
+    }
 
     player.removeClass('vjs-ad-loading');
     player.clearTimeout(this._timeout);

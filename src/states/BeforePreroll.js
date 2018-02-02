@@ -53,6 +53,14 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
+   * If there is no preroll, don't wait for a play event to move forward.
+   */
+  onNoPreroll() {
+    this.player.ads.debug('Skipping prerolls due to nopreroll event (BeforePreroll)');
+    this.transitionTo(Preroll, this.adsReady);
+  }
+
+  /*
    * Prerolls skipped by integration. Play content instead.
    */
   skipLinearAdMode() {
@@ -63,10 +71,9 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
-   * `contentupdate` happens at this time for the initial source, so we
-   * ignore it. We don't currently handle source changes in this state.
-   * Ideally, we'd reset `this.adsReady` on source changes.
+   * Content source change before preroll is currently not handled. When
+   * developed, this is where to start.
    */
-  onContentUpdate() {}
+  onContentChanged() {}
 
 }

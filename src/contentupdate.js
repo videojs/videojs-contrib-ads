@@ -11,12 +11,23 @@ export default function initializeContentupdate(player) {
   // modifying the player's source
   player.ads.contentSrc = player.currentSrc();
 
+  player.ads._seenInitialLoadstart = false;
+
   // Check if a new src has been set, if so, trigger contentupdate
   const checkSrc = function() {
-    if (!player.ads._inLinearAdMode) {
+    if (!player.ads.inAdBreak()) {
       const src = player.currentSrc();
 
       if (src !== player.ads.contentSrc) {
+
+        if (!player.ads._seenInitialLoadstart) {
+          player.ads._seenInitialLoadstart = true;
+        } else {
+          player.trigger({
+            type: 'contentchanged'
+          });
+        }
+
         player.trigger({
           type: 'contentupdate',
           oldValue: player.ads.contentSrc,
@@ -29,6 +40,4 @@ export default function initializeContentupdate(player) {
 
   // loadstart reliably indicates a new src has been set
   player.on('loadstart', checkSrc);
-  // check immediately in case we missed the loadstart
-  player.setTimeout(checkSrc, 1);
 }

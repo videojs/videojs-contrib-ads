@@ -74,6 +74,9 @@
         str += ' ' + event.oldValue + " -> " + event.newValue;
         li.className = 'content-adplugin-event';
       }
+      if (evt === 'contentchanged') {
+        li.className = 'content-adplugin-event';
+      }
       if (evt === 'contentplayback') {
         li.className = 'content-adplugin-event';
       }

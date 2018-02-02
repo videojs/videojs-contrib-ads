@@ -14,10 +14,11 @@ export default class ContentPlayback extends ContentState {
       triggerevent: player.ads.triggerevent
     });
 
-    // Play the content if cancelContentPlay happened and we haven't played yet.
-    // This happens if there was no preroll or if it errored, timed out, etc.
-    // Otherwise snapshot restore would play.
-    if (player.paused() && player.ads._cancelledPlay) {
+    // Play the content if cancelContentPlay happened or we paused on 'contentupdate'
+    // and we haven't played yet. This happens if there was no preroll or if it
+    // errored, timed out, etc. Otherwise snapshot restore would play.
+    if (player.paused() &&
+        (player.ads._cancelledPlay || player.ads._pausedOnContentupdate)) {
       player.play();
     }
   }

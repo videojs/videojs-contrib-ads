@@ -117,6 +117,7 @@ const contribAdsPlugin = function(options) {
   // Restart the cancelContentPlay process.
   player.on('playing', () => {
     player.ads._cancelledPlay = false;
+    player.ads._pausedOnContentupdate = false;
   });
 
   player.one('loadstart', () => {
@@ -175,6 +176,8 @@ const contribAdsPlugin = function(options) {
       player.ads._hasThereBeenALoadedData = false;
       player.ads._hasThereBeenALoadedMetaData = false;
       player.ads._cancelledPlay = false;
+      player.ads.nopreroll_ = false;
+      player.ads.nopostroll_ = false;
     },
 
     // Call this when an ad response has been received and there are
@@ -318,11 +321,11 @@ const contribAdsPlugin = function(options) {
   player.ads.cueTextTracks = cueTextTracks;
   player.ads.adMacroReplacement = adMacroReplacement.bind(player);
 
-  // Start sending contentupdate events for this player
+  // Start sending contentupdate and contentchanged events for this player
   initializeContentupdate(player);
 
-  // Global contentupdate handler for resetting plugin state
-  player.on('contentupdate', player.ads.reset);
+  // Global contentchanged handler for resetting plugin state
+  player.on('contentchanged', player.ads.reset);
 
   // A utility method for textTrackChangeHandler to define the conditions
   // when text tracks should be disabled.
@@ -370,7 +373,7 @@ const contribAdsPlugin = function(options) {
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
     'ads-ad-started',
-    'contentupdate', 'contentresumed', 'contentended',
+    'contentchanged', 'contentresumed', 'contentended',
     'nopreroll', 'nopostroll'], (e) => {
     player.ads._state.handleEvent(e.type);
   });

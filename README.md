@@ -55,7 +55,8 @@ Once you call `player.ads()` to initialize the plugin, it provides six interacti
 
 Here are the events that communicate information to your integration from the ads plugin:
 
- * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
+ * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. This includes the initial source. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
+ * `contentchanged` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. This _DOES NOT_ include the initial source: it only fires when the source is changed away from the initial source. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
  * `readyforpreroll` (EVENT) — Fires when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
 
 Note: A `contentplayback` event is sent but should not be used as it is being removed. The `playing` event has the same meaning and is far more reliable.

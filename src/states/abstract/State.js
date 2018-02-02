@@ -48,7 +48,7 @@ export default class State {
   onAdsCanceled() {}
   onAdTimeout() {}
   onAdStarted() {}
-  onContentUpdate() {}
+  onContentChanged() {}
   onContentResumed() {}
   onContentEnded() {
     videojs.log.warn('Unexpected contentended event');
@@ -106,8 +106,8 @@ export default class State {
       this.onAdTimeout(player);
     } else if (type === 'ads-ad-started') {
       this.onAdStarted(player);
-    } else if (type === 'contentupdate') {
-      this.onContentUpdate(player);
+    } else if (type === 'contentchanged') {
+      this.onContentChanged(player);
     } else if (type === 'contentresumed') {
       this.onContentResumed(player);
     } else if (type === 'contentended') {

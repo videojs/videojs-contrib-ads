@@ -43,7 +43,6 @@ export default class Postroll extends AdState {
     const player = this.player;
 
     if (!player.ads.isAdPlaying() && !this.contentResuming) {
-      player.ads.debug('startLinearAdMode (Postroll)');
       player.ads.adType = 'postroll';
       player.clearTimeout(this._postrollTimeout);
       startAdBreak(player);
@@ -103,7 +102,7 @@ export default class Postroll extends AdState {
     }
   }
 
-  onContentUpdate(player) {
+  onContentChanged(player) {
     if (this.contentResuming) {
       this.transitionTo(BeforePreroll);
     } else if (!player.ads.inAdBreak()) {

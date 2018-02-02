@@ -92,7 +92,7 @@
     // initialize the ads plugin, passing in any relevant options
     player.ads(options);
 
-    // request ad inventory whenever the player gets new content to play
+    // request ad inventory whenever the player gets content to play
     player.on('contentupdate', requestAds);
     // if there's already content loaded, request an add immediately
     if (player.currentSrc()) {
