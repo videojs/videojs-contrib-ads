@@ -20,9 +20,7 @@ export default function initializeContentupdate(player) {
 
       if (src !== player.ads.contentSrc) {
 
-        if (!player.ads._seenInitialLoadstart) {
-          player.ads._seenInitialLoadstart = true;
-        } else {
+        if (player.ads._seenInitialLoadstart) {
           player.trigger({
             type: 'contentchanged'
           });
@@ -35,6 +33,8 @@ export default function initializeContentupdate(player) {
         });
         player.ads.contentSrc = src;
       }
+
+      player.ads._seenInitialLoadstart = true;
     }
   };
 

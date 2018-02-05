@@ -29,7 +29,8 @@ const cancelEvent = (player, event) => {
 const prefixEvent = (player, prefix, event) => {
   cancelEvent(player, event);
   player.trigger({
-    type: prefix + event.type
+    type: prefix + event.type,
+    originalEvent: event
   });
 };
 

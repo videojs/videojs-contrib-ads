@@ -75,7 +75,9 @@ export default class State {
   /*
    * Overridden by ContentState and AdState. Should not be overriden elsewhere.
    */
-  isAdState() {}
+  isAdState() {
+    throw new Error('isAdState unimplemented for ' + this.constructor.name);
+  }
 
   /*
    * Overridden by PrerollState, MidrollState, and PostrollState.

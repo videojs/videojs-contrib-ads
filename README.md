@@ -119,7 +119,7 @@ Deprecated. Does the same thing as `inAdBreak` but has a misleading name. videoj
 
 #### inAdBreak()
 
-This method returns true during the time between startLinearAdMode and endLinearAdMode where an integratino may play ads. This is part of ad mode.
+This method returns true during the time between startLinearAdMode and endLinearAdMode where an integration may play ads. This is part of ad mode.
 
 ### Additional Events And Properties Your Integration May Want To Include
 

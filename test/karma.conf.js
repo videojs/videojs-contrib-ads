@@ -3,9 +3,9 @@ module.exports = function(config) {
     enabled: false,
     usePhantomJS: false,
     postDetection: function(browsers) {
-      const toRemove = ['Safari', 'SafariTechPreview'];
+      const toKeep = ['Firefox', 'Chrome'];
       return browsers.filter((e) => {
-        return toRemove.indexOf(e) === -1;
+        return toKeep.indexOf(e) !== -1;
       });
     }
   };
@@ -13,8 +13,6 @@ module.exports = function(config) {
   // On Travis CI, we can only run in Firefox and Chrome; so, enforce that.
   if (process.env.TRAVIS) {
     config.browsers = ['Firefox', 'travisChrome'];
-  } else {
-    config.browsers = ['Firefox', 'Chrome'];
   }
 
   // If no browsers are specified, we enable `karma-detect-browsers`
@@ -25,7 +23,7 @@ module.exports = function(config) {
 
   config.set({
     basePath: '..',
-    frameworks: ['qunit'],
+    frameworks: ['qunit', 'detectBrowsers'],
     files: [
       'node_modules/video.js/dist/video-js.css',
       'node_modules/lodash/lodash.js',
@@ -47,6 +45,7 @@ module.exports = function(config) {
         flags: ['--no-sandbox']
       }
     },
+    detectBrowsers: detectBrowsers,
     reporters: ['dots'],
     port: 9876,
     colors: true,
