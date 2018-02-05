@@ -4,6 +4,10 @@ var timerExists = function(env, id) {
 
 QUnit.module('Ad Framework', window.sharedModuleHooks());
 
+QUnit.test('begins in BeforePreroll', function(assert) {
+  assert.equal(this.player.ads._state.constructor.name, 'BeforePreroll');
+});
+
 QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
   var spy = sinon.spy(this.player, 'pause');
 
@@ -330,7 +334,7 @@ QUnit.test('ended event happens after postroll errors out', function(assert) {
   this.player.trigger('ended');
   this.player.trigger('adserror');
 
-  this.clock.tick(1000);
+  this.clock.tick(1);
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
 
@@ -346,7 +350,7 @@ QUnit.test('ended event happens after postroll timed out', function(assert) {
   this.player.trigger('ended');
   this.player.trigger('adtimeout');
 
-  this.clock.tick(1000);
+  this.clock.tick(1);
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
 
@@ -360,9 +364,9 @@ QUnit.test('ended event happens after postroll skipped', function(assert) {
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // preroll times out
   this.player.trigger('ended'); // content ends (contentended)
-  this.player.trigger('adskip'); // postroll skipped
+  this.player.ads.skipLinearAdMode();
   
-  this.clock.tick(1000);
+  this.clock.tick(1);
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
 
@@ -384,7 +388,7 @@ QUnit.test('an "ended" event is fired after postroll if not fired naturally', fu
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
 
-QUnit.test('ended events', function(assert) {
+QUnit.test('ended events when content ends first and second time', function(assert) {
   var endedSpy = sinon.spy();
   this.player.on('ended', endedSpy);
 
@@ -403,16 +407,21 @@ QUnit.test('ended events', function(assert) {
   assert.strictEqual(endedSpy.callCount, 2, 'ended event after ads done');
 });
 
-QUnit.test('adserror during ad playback triggers adend', function(assert) {
+QUnit.test('endLinearAdMode during ad break triggers adend', function(assert) {
   var adendSpy = sinon.spy();
 
   this.player.on('adend', adendSpy);
 
+  this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
 
   assert.strictEqual(adendSpy.callCount, 0, 'no adend yet');
+
+  this.player.ads.endLinearAdMode();
+
+  assert.strictEqual(adendSpy.callCount, 1, 'adend happened');
 });
 
 QUnit.test('calling startLinearAdMode() when already in ad-playback does not trigger adstart', function(assert) {
@@ -724,29 +733,43 @@ QUnit.test('startLinearAdMode should only trigger adstart from correct states', 
 });
 
 QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert) {
-
   this.player.trigger('loadstart');
   this.player.trigger('nopreroll');
   this.player.trigger('play');
   this.player.trigger('adsready');
 
   assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
-
 });
 
 // Same test as above with different event order because this used to be broken.
-QUnit.test('ad impl can notify contrib-ads there is no preroll (adsready before play)', function(assert) {
-
+QUnit.test('ad impl can notify contrib-ads there is no preroll 2', function(assert) {
   this.player.trigger('loadstart');
   this.player.trigger('nopreroll');
   this.player.trigger('adsready');
   this.player.trigger('play');
 
   assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
-
 });
 
-QUnit.test('ad impl can notify contrib-ads there is no postroll', function(assert) {
+QUnit.test('ad impl can notify contrib-ads there is no preroll 3', function(assert) {
+  this.player.trigger('loadstart');
+  this.player.trigger('play');
+  this.player.trigger('nopreroll');
+  this.player.trigger('adsready');
+
+  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+});
+
+QUnit.test('ad impl can notify contrib-ads there is no preroll 4', function(assert) {
+  this.player.trigger('loadstart');
+  this.player.trigger('adsready');
+  this.player.trigger('nopreroll');
+  this.player.trigger('play');
+
+  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+});
+
+QUnit.test('ended event is sent after nopostroll', function(assert) {
 
   var ended = sinon.spy();
 
@@ -774,25 +797,6 @@ QUnit.test('ended event is sent with postroll', function(assert) {
 
   this.player.on('ended', ended);
 
-  this.player.trigger('contentended');
-
-  this.clock.tick(10000);
-  assert.ok(ended.calledOnce, 'Ended triggered');
-
-});
-
-QUnit.test('ended event is sent without postroll', function(assert) {
-
-  this.player.trigger('loadstart');
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-  this.player.ads.skipLinearAdMode();
-
-  var ended = sinon.spy();
-
-  this.player.on('ended', ended);
-
-  this.player.trigger('nopostroll');
   this.player.trigger('contentended');
 
   this.clock.tick(10000);
@@ -887,10 +891,10 @@ QUnit.test('Check incorrect addition of vjs-live during ad-playback', function(a
 
 QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
   function(assert) {
+    this.player.trigger('loadstart');
     this.player.trigger('adsready');
     this.player.trigger('play');
     this.player.ads.startLinearAdMode();
-    this.player.ads.state = 'ad-playback';
     this.player.duration = function() {return Infinity;};
     this.player.ads.endLinearAdMode();
     this.player.trigger('playing');
