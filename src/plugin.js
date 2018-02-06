@@ -29,11 +29,11 @@ const defaults = {
   // maximum amount of time in ms to wait for the ad implementation to start
   // linear ad mode after `readyforpreroll` has fired. This is in addition to
   // the standard timeout.
-  prerollTimeout: 100,
+  prerollTimeout: undefined,
 
   // maximum amount of time in ms to wait for the ad implementation to start
   // linear ad mode after `contentended` has fired.
-  postrollTimeout: 100,
+  postrollTimeout: undefined,
 
   // when truthy, instructs the plugin to output additional information about
   // plugin state to the video.js log. On most devices, the video.js log is

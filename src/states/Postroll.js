@@ -13,9 +13,16 @@ export default class Postroll extends AdState {
     if (!player.ads.nopostroll_) {
       player.addClass('vjs-ad-loading');
 
+      // Determine postroll timeout based on plugin settings
+      let timeout = player.ads.settings.timeout;
+
+      if (typeof player.ads.settings.postrollTimeout === 'number') {
+        timeout = player.ads.settings.postrollTimeout;
+      }
+
       this._postrollTimeout = player.setTimeout(function() {
         player.trigger('adtimeout');
-      }, player.ads.settings.postrollTimeout);
+      }, timeout);
 
     // No postroll, ads are done
     } else {

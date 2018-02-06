@@ -14,10 +14,17 @@ export default class Preroll extends AdState {
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
+    // Determine preroll timeout based on plugin settings
+    let timeout = player.ads.settings.timeout;
+
+    if (typeof player.ads.settings.prerollTimeout === 'number') {
+      timeout = player.ads.settings.prerollTimeout;
+    }
+
     // Start the clock ticking for ad timeout
     this._timeout = player.setTimeout(function() {
       player.trigger('adtimeout');
-    }, player.ads.settings.prerollTimeout);
+    }, timeout);
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
