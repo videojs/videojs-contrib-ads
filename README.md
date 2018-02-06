@@ -1,6 +1,6 @@
 ![Contrib Ads: A Tool for Building Video.js Ad Plugins](logo.png)
 
-# videojs-contrib-ads [![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.svg)](https://travis-ci.org/videojs/videojs-contrib-ads) [![Greenkeeper badge](https://badges.greenkeeper.io/videojs/videojs-contrib-ads.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.svg)](https://travis-ci.org/videojs/videojs-contrib-ads) [![Greenkeeper badge](https://badges.greenkeeper.io/videojs/videojs-contrib-ads.svg)](https://greenkeeper.io/)
 
 `videojs-contrib-ads` provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
 It takes care of a number of concerns for you, reducing the code you have to write for your ad integration.

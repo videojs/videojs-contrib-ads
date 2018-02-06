@@ -36,8 +36,8 @@ Previous Defaults:
 New Behavior:
 
 * The `timeout` setting is now the default setting for all timeouts. It can be overridden by `prerollTimeout` and/or `postrollTimeout`.
-* `prerollTimeout` is the number of milliseconds we wait for `startLinearAdMode after `play`.
-* `postrollTimeout` is the number of milliseconds we wait for `startLinearAdMode` after `contentended`.
+* `prerollTimeout` overrides `timeout` for the number of milliseconds we wait for a preroll ad (the time between `play` and `startLinearAdMode`).
+* `postrollTimeout` overrides `timeout` for the number of milliseconds we wait for a postroll ad (the time between `contentended` and `startLinearAdMode`).
 
 New Defaults:
 
