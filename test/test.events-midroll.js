@@ -127,6 +127,11 @@ QUnit.test('Midrolls', function(assert) {
     }
   });
 
+  // Seek to the midroll right away so we don't time out
+  this.player.one('playing', () => {
+    this.player.currentTime(2);
+  });
+
   this.player.play();
 
 });
