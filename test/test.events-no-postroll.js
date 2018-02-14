@@ -34,6 +34,7 @@ QUnit.test('final ended event with no postroll: just 1', function(assert) {
   var done = assert.async();
   var endedEvents = 0;
 
+  // Prevent the test from timing out by making it run faster
   this.player.ads.settings.postrollTimeout = 1;
 
   this.player.on('ended', () => {

@@ -17,7 +17,7 @@ by integrations.
 * We no longer trigger a `readyforpreroll` event after receiving a `nopreroll` event.
 * adTimeoutTimeout has been removed. It was not part of the documented interface, but make note if your integration inspected it.
 * There is no longer a snapshot object while checking for postrolls. Now a snapshot is only taken when a postroll ad break actually begins.
-* The `contentplayback` event has been removed. Use the `playing` event instead.
+* The `contentplayback` event (removed in [4.0.0](https://github.com/videojs/videojs-contrib-ads/blob/cc664517aa0d07398decc0aa5d41974330efc4e4/CHANGELOG.md#400), re-added as deprecated in [4.1.1](https://github.com/videojs/videojs-contrib-ads/blob/cc664517aa0d07398decc0aa5d41974330efc4e4/CHANGELOG.md#411)), has been removed. Use the `playing` event instead.
 
 ## Timeout behavior changes
 
