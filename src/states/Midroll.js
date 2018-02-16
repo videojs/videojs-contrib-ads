@@ -1,27 +1,15 @@
-import videojs from 'video.js';
-
 import {AdState} from '../states.js';
-import {startAdBreak, endAdBreak} from '../adBreak.js';
+import adBreak from '../adBreak.js';
 
 export default class Midroll extends AdState {
-
-  init(player) {
-    this.start();
-  }
 
   /*
    * Midroll breaks happen when the integration calls startLinearAdMode,
    * which can happen at any time during content playback.
    */
-  start() {
-    const player = this.player;
-
-    if (!this.inAdBreak() && !this.isContentResuming()) {
-      player.ads.adType = 'midroll';
-      startAdBreak(player);
-    } else {
-      videojs.log.warn('Unexpected startLinearAdMode invocation (Midroll)');
-    }
+  init(player) {
+    player.ads.adType = 'midroll';
+    adBreak.start(player);
   }
 
   /*
@@ -31,7 +19,7 @@ export default class Midroll extends AdState {
     const player = this.player;
 
     if (this.inAdBreak()) {
-      endAdBreak(player);
+      adBreak.end(player);
       this.contentResuming = true;
     }
   }

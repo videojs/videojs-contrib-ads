@@ -19,6 +19,13 @@ by integrations.
 * There is no longer a snapshot object while checking for postrolls. Now a snapshot is only taken when a postroll ad break actually begins.
 * The `contentplayback` event (removed in [4.0.0](https://github.com/videojs/videojs-contrib-ads/blob/cc664517aa0d07398decc0aa5d41974330efc4e4/CHANGELOG.md#400), re-added as deprecated in [4.1.1](https://github.com/videojs/videojs-contrib-ads/blob/cc664517aa0d07398decc0aa5d41974330efc4e4/CHANGELOG.md#411)), has been removed. Use the `playing` event instead.
 
+## Deprecation
+
+Deprecated interfaces will be removed in a future major version update.
+
+* `contentupdate` is now deprecated. It has been replaced by `contentchanged`. `contentupdate` was never intended to fire for the initial source, but over time its behavior eroded. To make migration easier for anyone who depends on the current behavior, we're providing a deprecation period and a new event with correct behavior.
+* `adscanceled` is now deprecated. Instead, use `nopreroll` and `nopostroll`. `adscanceled` was initially intended to function similarly to calling both `nopreroll` and `nopostroll` but it was never fully implemented.
+
 ## Timeout behavior changes
 
 Previous behavior:

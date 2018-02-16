@@ -2,7 +2,7 @@ import videojs from 'video.js';
 
 import {AdState, ContentPlayback} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
-import {startAdBreak, endAdBreak} from '../adBreak.js';
+import adBreak from '../adBreak.js';
 
 /*
  * This state encapsulates waiting for prerolls, preroll playback, and
@@ -146,7 +146,7 @@ export default class Preroll extends AdState {
     if (this.adsReady && !player.ads.inAdBreak() && !this.isContentResuming()) {
       player.clearTimeout(this._timeout);
       player.ads.adType = 'preroll';
-      startAdBreak(player);
+      adBreak.start(player);
     } else {
       videojs.log.warn('Unexpected startLinearAdMode invocation (Preroll)');
     }
@@ -168,7 +168,7 @@ export default class Preroll extends AdState {
 
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
-      endAdBreak(player);
+      adBreak.end(player);
       this.contentResuming = true;
     }
   }

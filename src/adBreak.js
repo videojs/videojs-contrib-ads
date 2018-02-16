@@ -6,7 +6,7 @@
 
 import * as snapshot from './snapshot.js';
 
-function startAdBreak(player) {
+function start(player) {
 
   player.ads.debug('Starting ad break');
 
@@ -42,7 +42,7 @@ function startAdBreak(player) {
   player.ads.removeNativePoster();
 }
 
-function endAdBreak(player) {
+function end(player) {
   player.ads.debug('Ending ad break');
 
   player.ads.adType = null;
@@ -71,4 +71,6 @@ function endAdBreak(player) {
 
 }
 
-export {startAdBreak, endAdBreak};
+const obj = {start, end};
+
+export default obj;

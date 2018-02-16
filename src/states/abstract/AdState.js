@@ -51,7 +51,7 @@ export default class AdState extends State {
    * Allows you to check if an ad break is in progress.
    */
   inAdBreak() {
-    return this.player.ads._inLinearAdMode;
+    return this.player.ads._inLinearAdMode === true;
   }
 
 }

@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 
 import {AdState, BeforePreroll, Preroll, AdsDone} from '../states.js';
-import {startAdBreak, endAdBreak} from '../adBreak.js';
+import adBreak from '../adBreak.js';
 
 export default class Postroll extends AdState {
 
@@ -34,15 +34,6 @@ export default class Postroll extends AdState {
     }
   }
 
-  onAdsError(player) {
-    // In the future, we may not want to do this automatically.
-    // Integrations should be able to choose to continue the ad break
-    // if there was an error.
-    if (player.ads.inAdBreak()) {
-      player.ads.endLinearAdMode();
-    }
-  }
-
   /*
    * Start the postroll if it's not too late.
    */
@@ -52,7 +43,7 @@ export default class Postroll extends AdState {
     if (!player.ads.inAdBreak() && !this.isContentResuming()) {
       player.ads.adType = 'postroll';
       player.clearTimeout(this._postrollTimeout);
-      startAdBreak(player);
+      adBreak.start(player);
     } else {
       videojs.log.warn('Unexpected startLinearAdMode invocation (Postroll)');
     }
@@ -71,7 +62,7 @@ export default class Postroll extends AdState {
 
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
-      endAdBreak(player);
+      adBreak.end(player);
 
       this.contentResuming = true;
 
@@ -99,6 +90,14 @@ export default class Postroll extends AdState {
 
   onAdsError(player) {
     player.ads.debug('Postroll abort (adserror)');
+
+    // In the future, we may not want to do this automatically.
+    // Integrations should be able to choose to continue the ad break
+    // if there was an error.
+    if (player.ads.inAdBreak()) {
+      player.ads.endLinearAdMode();
+    }
+
     this.abort();
   }
 
@@ -113,13 +112,13 @@ export default class Postroll extends AdState {
   onContentChanged(player) {
     if (this.isContentResuming()) {
       this.transitionTo(BeforePreroll);
-    } else if (!player.ads.inAdBreak()) {
+    } else if (!this.inAdBreak()) {
       this.transitionTo(Preroll);
     }
   }
 
   onNoPostroll(player) {
-    if (!this.isContentResuming() && !player.ads.inAdBreak()) {
+    if (!this.isContentResuming() && !this.inAdBreak()) {
       this.transitionTo(AdsDone);
     } else {
       videojs.log.warn('Unexpected nopostroll event (Postroll)');
