@@ -103,7 +103,8 @@ QUnit.test('Midrolls', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 2) {
+    videojs.log(this.player.currentTime(), this.player.currentSrc());
+    if (this.player.currentTime() > 1.1) {
 
       seenOutsideAdModeBefore.forEach((event) => {
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix before midroll');
@@ -127,9 +128,9 @@ QUnit.test('Midrolls', function(assert) {
     }
   });
 
-  // Seek to the midroll right away so we don't time out
+  // Seek to right before the midroll
   this.player.one('playing', () => {
-    this.player.currentTime(2);
+    this.player.currentTime(.9);
   });
 
   this.player.play();
