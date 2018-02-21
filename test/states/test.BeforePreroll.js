@@ -64,6 +64,12 @@ QUnit.test('transitions to content playback on error', function(assert) {
   assert.equal(this.newState, 'ContentPlayback');
 });
 
+QUnit.test('has no preroll', function(assert) {
+  this.beforePreroll.init();
+  this.beforePreroll.onNoPreroll(this.player);
+  assert.equal(this.newState, 'ContentPlayback');
+});
+
 QUnit.test('skips the preroll', function(assert) {
   this.beforePreroll.init();
   this.beforePreroll.skipLinearAdMode();

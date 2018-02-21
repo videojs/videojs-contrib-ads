@@ -74,7 +74,7 @@ QUnit.test('adsready triggers readyforpreroll', function(assert) {
   assert.equal(this.events[0], 'readyforpreroll');
 });
 
-QUnit.test('no readyforpreroll if _nopreroll', function(assert) {
+QUnit.test('no readyforpreroll if nopreroll_', function(assert) {
   this.player.ads.nopreroll_ = true;
   this.contentPlayback.init(this.player);
   this.contentPlayback.onAdsReady(this.player);

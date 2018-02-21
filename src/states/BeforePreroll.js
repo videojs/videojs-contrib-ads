@@ -57,7 +57,7 @@ export default class BeforePreroll extends ContentState {
    */
   onNoPreroll() {
     this.player.ads.debug('Skipping prerolls due to nopreroll event (BeforePreroll)');
-    this.transitionTo(Preroll, this.adsReady);
+    this.transitionTo(ContentPlayback);
   }
 
   /*
