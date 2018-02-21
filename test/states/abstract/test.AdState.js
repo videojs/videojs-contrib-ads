@@ -14,7 +14,7 @@ QUnit.module('AdState', {
 
     this.adState = new AdState(this.player);
     this.adState.transitionTo = (newState) => {
-      this.transitionTo = newState.name;
+      this.newState = newState.name;
     };
   }
 });
@@ -30,23 +30,23 @@ QUnit.test('is an ad state', function(assert) {
 QUnit.test('transitions to ContentPlayback on playing if content resuming', function(assert) {
   this.adState.contentResuming = true;
   this.adState.onPlaying();
-  assert.equal(this.transitionTo, 'ContentPlayback');
+  assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('doesn\'t transition on playing if content not resuming', function(assert) {
   this.adState.onPlaying();
-  assert.equal(this.transitionTo, undefined, 'no transition');
+  assert.equal(this.newState, undefined, 'no transition');
 });
 
 QUnit.test('transitions to ContentPlayback on contentresumed if content resuming', function(assert) {
   this.adState.contentResuming = true;
   this.adState.onContentResumed();
-  assert.equal(this.transitionTo, 'ContentPlayback');
+  assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('doesn\'t transition on contentresumed if content not resuming', function(assert) {
   this.adState.onContentResumed();
-  assert.equal(this.transitionTo, undefined, 'no transition');
+  assert.equal(this.newState, undefined, 'no transition');
 });
 
 QUnit.test('can check if content is resuming', function(assert) {

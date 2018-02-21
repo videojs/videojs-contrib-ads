@@ -22,7 +22,7 @@ QUnit.module('BeforePreroll', {
 
     this.beforePreroll = new BeforePreroll(this.player);
     this.beforePreroll.transitionTo = (newState, arg) => {
-      this.transitionTo = newState.name;
+      this.newState = newState.name;
       this.transitionArg = arg;
     };
 
@@ -40,7 +40,7 @@ QUnit.test('transitions to Preroll (adsready first)', function(assert) {
   this.beforePreroll.onAdsReady(this.player);
   assert.equal(this.beforePreroll.adsReady, true);
   this.beforePreroll.onPlay(this.player);
-  assert.equal(this.transitionTo, 'Preroll');
+  assert.equal(this.newState, 'Preroll');
   assert.equal(this.transitionArg, true);
 });
 
@@ -48,31 +48,31 @@ QUnit.test('transitions to Preroll (play first)', function(assert) {
   this.beforePreroll.init();
   assert.equal(this.beforePreroll.adsReady, false);
   this.beforePreroll.onPlay(this.player);
-  assert.equal(this.transitionTo, 'Preroll');
+  assert.equal(this.newState, 'Preroll');
   assert.equal(this.transitionArg, false);
 });
 
 QUnit.test('cancels ads', function(assert) {
   this.beforePreroll.init();
   this.beforePreroll.onAdsCanceled(this.player);
-  assert.equal(this.transitionTo, 'ContentPlayback');
+  assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('transitions to content playback on error', function(assert) {
   this.beforePreroll.init();
   this.beforePreroll.onAdsError(this.player);
-  assert.equal(this.transitionTo, 'ContentPlayback');
+  assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('skips the preroll', function(assert) {
   this.beforePreroll.init();
   this.beforePreroll.skipLinearAdMode();
   assert.equal(this.events[0], 'adskip');
-  assert.equal(this.transitionTo, 'ContentPlayback');
+  assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('does nothing on content change', function(assert) {
   this.beforePreroll.init();
   this.beforePreroll.onContentChanged(this.player);
-  assert.equal(this.transitionTo, undefined);
+  assert.equal(this.newState, undefined);
 });

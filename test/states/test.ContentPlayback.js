@@ -8,12 +8,12 @@ import {ContentPlayback} from '../../src/states.js';
 QUnit.module('ContentPlayback', {
   beforeEach: function() {
     this.events = [];
-    this.played = false;
+    this.playTriggered = false;
 
     this.player = {
       paused: () => false,
       play: () => {
-        this.played = true;
+        this.playTriggered = true;
       },
       trigger: (event) => {
         this.events.push(event);
@@ -25,7 +25,7 @@ QUnit.module('ContentPlayback', {
 
     this.contentPlayback = new ContentPlayback(this.player);
     this.contentPlayback.transitionTo = (newState) => {
-      this.transitionTo = newState.name;
+      this.newState = newState.name;
     };
   }
 });
@@ -35,37 +35,37 @@ QUnit.test('only plays on init on correct conditions', function(assert) {
   this.player.ads._cancelledPlay = false;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
-  assert.equal(this.played, false);
+  assert.equal(this.playTriggered, false);
 
   this.player.paused = () => true;
   this.player.ads._cancelledPlay = false;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
-  assert.equal(this.played, false);
+  assert.equal(this.playTriggered, false);
 
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = true;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
-  assert.equal(this.played, false);
+  assert.equal(this.playTriggered, false);
 
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = false;
   this.player.ads._pausedOnContentupdate = true;
   this.contentPlayback.init(this.player);
-  assert.equal(this.played, false);
+  assert.equal(this.playTriggered, false);
 
   this.player.paused = () => true;
   this.player.ads._cancelledPlay = true;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
-  assert.equal(this.played, true);
+  assert.equal(this.playTriggered, true);
 
   this.player.paused = () => true;
   this.player.ads._cancelledPlay = false;
   this.player.ads._pausedOnContentupdate = true;
   this.contentPlayback.init(this.player);
-  assert.equal(this.played, true);
+  assert.equal(this.playTriggered, true);
 });
 
 QUnit.test('adsready triggers readyforpreroll', function(assert) {
@@ -84,11 +84,11 @@ QUnit.test('no readyforpreroll if _nopreroll', function(assert) {
 QUnit.test('transitions to Postroll on contentended', function(assert) {
   this.contentPlayback.init(this.player, false);
   this.contentPlayback.onContentEnded(this.player);
-  assert.equal(this.transitionTo, 'Postroll', 'transitioned to Postroll');  
+  assert.equal(this.newState, 'Postroll', 'transitioned to Postroll');  
 });
 
 QUnit.test('transitions to Midroll on startlinearadmode', function(assert) {
   this.contentPlayback.init(this.player, false);
   this.contentPlayback.startLinearAdMode();
-  assert.equal(this.transitionTo, 'Midroll', 'transitioned to Midroll');  
+  assert.equal(this.newState, 'Midroll', 'transitioned to Midroll');  
 });

@@ -16,7 +16,7 @@ QUnit.module('ContentState', {
 
     this.contentState = new ContentState(this.player);
     this.contentState.transitionTo = (newState) => {
-      this.transitionTo = newState.name;
+      this.newState = newState.name;
     };
   }
 });
@@ -30,8 +30,9 @@ QUnit.test('handles content changed when not playing', function(assert) {
   this.player.pause = sinon.stub();
 
   this.contentState.onContentChanged(this.player);
-  assert.equal(this.transitionTo, 'BeforePreroll');
+  assert.equal(this.newState, 'BeforePreroll');
   assert.equal(this.player.pause.callCount, 0, 'did not pause player');
+  assert.ok(!this.player.ads._pausedOnContentupdate, 'did not set _pausedOnContentupdate');
 });
 
 QUnit.test('handles content changed when playing', function(assert) {
@@ -39,7 +40,7 @@ QUnit.test('handles content changed when playing', function(assert) {
   this.player.pause = sinon.stub();
 
   this.contentState.onContentChanged(this.player);
-  assert.equal(this.transitionTo, 'Preroll');
+  assert.equal(this.newState, 'Preroll');
   assert.equal(this.player.pause.callCount, 1, 'paused player');
   assert.equal(this.player.ads._pausedOnContentupdate, true, 'set _pausedOnContentupdate');
 });

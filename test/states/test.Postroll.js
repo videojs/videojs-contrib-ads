@@ -29,7 +29,7 @@ QUnit.module('Postroll', {
     this.postroll = new Postroll(this.player);
 
     this.postroll.transitionTo = (newState) => {
-      this.transitionTo = newState.name;
+      this.newState = newState.name;
     };
 
     this.adBreakStartStub = sinon.stub(adBreak, 'start');
@@ -51,6 +51,7 @@ QUnit.test('startLinearAdMode starts ad break', function(assert) {
   this.postroll.init(this.player);
   this.postroll.startLinearAdMode();
   assert.equal(this.adBreakStartStub.callCount, 1, 'ad break started');
+  assert.equal(this.player.ads.adType, 'postroll', 'ad type is postroll');
 });
 
 QUnit.test('removes ad loading class on ad started', function(assert) {
@@ -77,59 +78,60 @@ QUnit.test('no endLinearAdMode on adserror if not in ad break', function(assert)
   this.player.ads.inAdBreak = () => false;
   this.postroll.onAdsError(this.player);
   assert.equal(this.player.ads.endLinearAdMode.callCount, 0, 'linear ad mode ended');
+  assert.equal(this.events[0], 'ended', 'saw ended event');
 });
 
 QUnit.test('does not transition to AdsDone unless content resuming', function(assert) {
   this.postroll.init(this.player);
   this.postroll.onEnded(this.player);
-  assert.equal(this.transitionTo, undefined, 'no transition');
+  assert.equal(this.newState, undefined, 'no transition');
 });
 
 QUnit.test('transitions to AdsDone on ended', function(assert) {
   this.postroll.isContentResuming = () => true;
   this.postroll.init(this.player);
   this.postroll.onEnded(this.player);
-  assert.equal(this.transitionTo, 'AdsDone');
+  assert.equal(this.newState, 'AdsDone');
 });
 
 QUnit.test('transitions to BeforePreroll on content changed after ad break', function(assert) {
   this.postroll.isContentResuming = () => true;
   this.postroll.init(this.player);
   this.postroll.onContentChanged(this.player);
-  assert.equal(this.transitionTo, 'BeforePreroll');
+  assert.equal(this.newState, 'BeforePreroll');
 });
 
 QUnit.test('transitions to Preroll on content changed before ad break', function(assert) {
   this.postroll.init(this.player);
   this.postroll.onContentChanged(this.player);
-  assert.equal(this.transitionTo, 'Preroll');
+  assert.equal(this.newState, 'Preroll');
 });
 
 QUnit.test('doesn\'t transition on content changed during ad break', function(assert) {
   this.postroll.inAdBreak = () => true;
   this.postroll.init(this.player);
   this.postroll.onContentChanged(this.player);
-  assert.equal(this.transitionTo, undefined, 'no transition');
+  assert.equal(this.newState, undefined, 'no transition');
 });
 
 QUnit.test('transitions to AdsDone on nopostroll before ad break', function(assert) {
   this.postroll.init(this.player);
   this.postroll.onNoPostroll(this.player);
-  assert.equal(this.transitionTo, 'AdsDone');
+  assert.equal(this.newState, 'AdsDone');
 });
 
 QUnit.test('no transition on nopostroll during ad break', function(assert) {
   this.postroll.inAdBreak = () => true;
   this.postroll.init(this.player);
   this.postroll.onNoPostroll(this.player);
-  assert.equal(this.transitionTo, undefined, 'no transition');
+  assert.equal(this.newState, undefined, 'no transition');
 });
 
 QUnit.test('no transition on nopostroll after ad break', function(assert) {
   this.postroll.isContentResuming = () => true;
   this.postroll.init(this.player);
   this.postroll.onNoPostroll(this.player);
-  assert.equal(this.transitionTo, undefined, 'no transition');
+  assert.equal(this.newState, undefined, 'no transition');
 });
 
 QUnit.test('can abort', function(assert) {
