@@ -3,8 +3,6 @@ This main plugin file is responsible for integration logic and enabling the feat
 that live in in separate files.
 */
 
-import window from 'global/window';
-
 import videojs from 'video.js';
 
 import redispatch from './redispatch.js';
@@ -84,7 +82,7 @@ const contribAdsPlugin = function(options) {
 
   // If we haven't seen a loadstart after 5 seconds, the plugin was not initialized
   // correctly.
-  window.setTimeout(() => {
+  player.setTimeout(() => {
     if (!player.ads._hasThereBeenALoadStartDuringPlayerLife && player.src() !== '') {
       videojs.log.error('videojs-contrib-ads has not seen a loadstart event 5 seconds ' +
         'after being initialized, but a source is present. This indicates that ' +
@@ -116,6 +114,12 @@ const contribAdsPlugin = function(options) {
     // If an ad isn't playing, don't try to play an ad. This could result from prefixed
     // events when the player is blocked by a preroll check, but there is no preroll.
     if (!player.ads.isAdPlaying()) {
+      return;
+    }
+
+    // With stitched ads, you may see a durationchange at the end of ad playback
+    // when switching back to content mode. We shouldn't need to call play().
+    if (player.ads.stitchedAds()) {
       return;
     }
 
@@ -198,6 +202,7 @@ const contribAdsPlugin = function(options) {
       player.ads._hasThereBeenALoadedData = false;
       player.ads._hasThereBeenALoadedMetaData = false;
       player.ads._cancelledPlay = false;
+      player.ads._stitchedAds = false;
     },
 
     // Call this when an ad response has been received and there are
@@ -233,6 +238,10 @@ const contribAdsPlugin = function(options) {
       }
     },
 
+    // Get/set whether the content source includes stitched ads. This changes
+    // the behavior of contrib-ads to avoid behaviors that are required for
+    // client-side ad integrations (such as loading states, timeout handling,
+    // and player snapshotting).
     stitchedAds(arg) {
       if (arg !== undefined) {
         this._stitchedAds = !!arg;
@@ -262,7 +271,7 @@ const contribAdsPlugin = function(options) {
 
     // Returns a boolean indicating if given player is in live mode.
     // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
-    isLive(somePlayer) {
+    isLive(somePlayer = player) {
       if (somePlayer.duration() === Infinity) {
         return true;
       } else if (videojs.browser.IOS_VERSION === '8' && somePlayer.duration() === 0) {
@@ -274,10 +283,16 @@ const contribAdsPlugin = function(options) {
     // Return true if content playback should mute and continue during ad breaks.
     // This is only done during live streams on platforms where it's supported.
     // This improves speed and accuracy when returning from an ad break.
-    shouldPlayContentBehindAd(somePlayer) {
+    shouldPlayContentBehindAd(somePlayer = player) {
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
              somePlayer.duration() === Infinity;
+    },
+
+    // Return true if the player should take and restore snapshots during ad
+    // playback cycles.
+    shouldUseSnapshots() {
+      return !this.shouldPlayContentBehindAd() && !this.stitchedAds();
     },
 
     // Returns true if player is in ad mode.
@@ -380,13 +395,19 @@ const contribAdsPlugin = function(options) {
     },
     'preroll?': {
       enter() {
-        if (player.ads.nopreroll_) {
+
+        // With stitched ads, we won't need to wait for a preroll and we can
+        // allow the integration to call startLinearAdMode whenever it's ready.
+        if (player.ads.stitchedAds()) {
+          player.trigger('readyforpreroll');
+
+        } else if (player.ads.nopreroll_) {
           // This will start the ads manager in case there are later ads
           player.trigger('readyforpreroll');
 
           // If we don't wait a tick, entering content-playback will cancel
           // cancelPlayTimeout, causing the video to not pause for the ad
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             // Don't wait for a preroll
             player.trigger('nopreroll');
           }, 1);
@@ -394,7 +415,7 @@ const contribAdsPlugin = function(options) {
           // Change class to show that we're waiting on ads
           player.addClass('vjs-ad-loading');
           // Schedule an adtimeout event to fire if we waited too long
-          player.ads.adTimeoutTimeout = window.setTimeout(function() {
+          player.ads.adTimeoutTimeout = player.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.prerollTimeout);
 
@@ -414,7 +435,7 @@ const contribAdsPlugin = function(options) {
         }
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
+        player.clearTimeout(player.ads.adTimeoutTimeout);
       },
       events: {
         play() {
@@ -440,14 +461,24 @@ const contribAdsPlugin = function(options) {
     },
     'ads-ready?': {
       enter() {
-        player.addClass('vjs-ad-loading');
-        player.ads.adTimeoutTimeout = window.setTimeout(function() {
-          player.trigger('adtimeout');
-        }, settings.timeout);
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        if (!player.ads.stitchedAds()) {
+          player.addClass('vjs-ad-loading');
+          player.ads.adTimeoutTimeout = player.setTimeout(function() {
+            player.trigger('adtimeout');
+          }, settings.timeout);
+        }
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
-        player.removeClass('vjs-ad-loading');
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        if (!player.ads.stitchedAds()) {
+          player.clearTimeout(player.ads.adTimeoutTimeout);
+          player.removeClass('vjs-ad-loading');
+        }
       },
       events: {
         play() {
@@ -473,7 +504,7 @@ const contribAdsPlugin = function(options) {
     'ad-playback': {
       enter() {
         // capture current player state snapshot (playing, currentTime, src)
-        if (!player.ads.shouldPlayContentBehindAd(player)) {
+        if (player.ads.shouldUseSnapshots()) {
           this.snapshot = snapshot.getPlayerSnapshot(player);
         }
 
@@ -501,8 +532,8 @@ const contribAdsPlugin = function(options) {
         if (player.ads.cancelPlayTimeout) {
           // If we don't wait a tick, we could cancel the pause for cancelContentPlay,
           // resulting in content playback behind the ad
-          window.setTimeout(function() {
-            window.clearTimeout(player.ads.cancelPlayTimeout);
+          player.setTimeout(function() {
+            player.clearTimeout(player.ads.cancelPlayTimeout);
             player.ads.cancelPlayTimeout = null;
           }, 1);
         }
@@ -516,7 +547,7 @@ const contribAdsPlugin = function(options) {
         if (player.ads.isLive(player)) {
           player.addClass('vjs-live');
         }
-        if (!player.ads.shouldPlayContentBehindAd(player)) {
+        if (player.ads.shouldUseSnapshots()) {
           snapshot.restorePlayerSnapshot(player, this.snapshot);
         }
 
@@ -539,18 +570,18 @@ const contribAdsPlugin = function(options) {
     'content-resuming': {
       enter() {
         if (this._contentHasEnded) {
-          window.clearTimeout(player.ads._fireEndedTimeout);
+          player.clearTimeout(player.ads._fireEndedTimeout);
           // in some cases, ads are played in a swf or another video element
           // so we do not get an ended event in this state automatically.
           // If we don't get an ended event we can use, we need to trigger
           // one ourselves or else we won't actually ever end the current video.
-          player.ads._fireEndedTimeout = window.setTimeout(function() {
+          player.ads._fireEndedTimeout = player.setTimeout(function() {
             player.trigger('ended');
           }, 1000);
         }
       },
       leave() {
-        window.clearTimeout(player.ads._fireEndedTimeout);
+        player.clearTimeout(player.ads._fireEndedTimeout);
       },
       events: {
         contentupdate() {
@@ -574,24 +605,32 @@ const contribAdsPlugin = function(options) {
         player.ads._contentEnding = true;
 
         if (player.ads.nopostroll_) {
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             // content-resuming happens after the timeout for backward-compatibility
             // with plugins that relied on a postrollTimeout before nopostroll was
             // implemented
             player.ads.state = 'content-resuming';
             player.trigger('ended');
           }, 1);
-        } else {
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        } else if (!player.ads.stitchedAds()) {
           player.addClass('vjs-ad-loading');
 
-          player.ads.adTimeoutTimeout = window.setTimeout(function() {
+          player.ads.adTimeoutTimeout = player.setTimeout(function() {
             player.trigger('adtimeout');
           }, settings.postrollTimeout);
         }
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
-        player.removeClass('vjs-ad-loading');
+
+        // Players using stitched ads will never need to "load" ads, nor will
+        // they timeout (in the sense of an ads request timing out).
+        if (!player.ads.stitchedAds()) {
+          player.clearTimeout(player.ads.adTimeoutTimeout);
+          player.removeClass('vjs-ad-loading');
+        }
       },
       events: {
         adstart() {
@@ -600,19 +639,19 @@ const contribAdsPlugin = function(options) {
         },
         adskip() {
           this.state = 'content-resuming';
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             player.trigger('ended');
           }, 1);
         },
         adtimeout() {
           this.state = 'content-resuming';
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             player.trigger('ended');
           }, 1);
         },
         adserror() {
           this.state = 'content-resuming';
-          window.setTimeout(function() {
+          player.setTimeout(function() {
             player.trigger('ended');
           }, 1);
         },
@@ -625,7 +664,7 @@ const contribAdsPlugin = function(options) {
       enter() {
         // make sure that any cancelPlayTimeout is cleared
         if (player.ads.cancelPlayTimeout) {
-          window.clearTimeout(player.ads.cancelPlayTimeout);
+          player.clearTimeout(player.ads.cancelPlayTimeout);
           player.ads.cancelPlayTimeout = null;
         }
 
@@ -795,24 +834,7 @@ const contribAdsPlugin = function(options) {
 
   ]), processEvent);
 
-  // Clear timeouts and handlers when player is disposed
   player.on('dispose', function() {
-    if (player.ads.adTimeoutTimeout) {
-      window.clearTimeout(player.ads.adTimeoutTimeout);
-    }
-
-    if (player.ads._fireEndedTimeout) {
-      window.clearTimeout(player.ads._fireEndedTimeout);
-    }
-
-    if (player.ads.cancelPlayTimeout) {
-      window.clearTimeout(player.ads.cancelPlayTimeout);
-    }
-
-    if (player.ads.tryToResumeTimeout_) {
-      player.clearTimeout(player.ads.tryToResumeTimeout_);
-    }
-
     player.textTracks().removeEventListener('change', textTrackChangeHandler);
   });
 

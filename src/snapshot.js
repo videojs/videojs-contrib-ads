@@ -3,8 +3,6 @@ The snapshot feature is responsible for saving the player state before an ad, th
 restoring the player state after an ad.
 */
 
-import window from 'global/window';
-
 import videojs from 'video.js';
 
 /*
@@ -157,7 +155,7 @@ export function restorePlayerSnapshot(player, snapshotObject) {
 
     // delay a bit and then check again unless we're out of attempts
     if (attempts--) {
-      window.setTimeout(tryToResume, 50);
+      player.setTimeout(tryToResume, 50);
     } else {
       try {
         resume();
