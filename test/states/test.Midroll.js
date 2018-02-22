@@ -10,7 +10,7 @@ QUnit.module('Midroll', {
   beforeEach: function() {
     this.player = {
       ads: {
-        _inLinearAdMode: false,
+        _inLinearAdMode: true,
         endLinearAdMode: () => {
           this.calledEndLinearAdMode = true;
         }
@@ -37,14 +37,12 @@ QUnit.test('starts an ad break on init', function(assert) {
 
 QUnit.test('ends an ad break on endLinearAdMode', function(assert) {
   this.midroll.init(this.player);
-  this.player.ads._inLinearAdMode = true;
   this.midroll.endLinearAdMode();
   assert.equal(this.adBreakEndStub.callCount, 1, 'ad break ended');
 });
 
 QUnit.test('adserror during ad break ends ad break', function(assert) {
   this.midroll.init(this.player);
-  this.player.ads._inLinearAdMode = true;
   this.midroll.onAdsError(this.player);
   assert.equal(this.calledEndLinearAdMode, true, 'linear ad mode ended');
 });
