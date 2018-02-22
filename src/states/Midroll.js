@@ -19,8 +19,8 @@ export default class Midroll extends AdState {
     const player = this.player;
 
     if (this.inAdBreak()) {
-      adBreak.end(player);
       this.contentResuming = true;
+      adBreak.end(player);
     }
   }
 
