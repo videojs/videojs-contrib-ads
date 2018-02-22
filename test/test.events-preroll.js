@@ -31,11 +31,6 @@ QUnit.module('Events and Prerolls', {
       'adServerUrl': '/base/test/inventory.json'
     });
 
-  },
-
-  afterEach: function() {
-    this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 
@@ -63,13 +58,16 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(playingBeforePreroll, 0, 'no playing before preroll');
       assert.ok(playingAfterPreroll > 0, 'playing after preroll');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -89,12 +87,15 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(ended, 0, 'no ended events');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -124,13 +125,16 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     done();
   });
 
-  this.player.on('timeupdate', (e) => {
+  const timeupdateHandler = (e) => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(loadstartBeforePreroll, 1, 'loadstart before preroll');
       assert.equal(loadstartAfterPreroll, 0, 'loadstart after preroll');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -160,13 +164,16 @@ QUnit.test('loadedmetadata event and prerolls: 1 before preroll, 0 after', funct
     done();
   });
 
-  this.player.on('timeupdate', (e) => {
+  const timeupdateHandler = (e) => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(loadedmetadataBeforePreroll, 1, 'loadedmetadata before preroll');
       assert.equal(loadedmetadataAfterPreroll, 0, 'loadedmetadata after preroll');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -196,13 +203,16 @@ QUnit.test('loadeddata event and prerolls: 1 before preroll, 0 after', function(
     done();
   });
 
-  this.player.on('timeupdate', (e) => {
+  const timeupdateHandler = (e) => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(loadeddataBeforePreroll, 1, 'loadeddata before preroll');
       assert.equal(loadeddataAfterPreroll, 0, 'loadeddata after preroll');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -232,13 +242,16 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(playBeforePreroll, 1, 'play before preroll'); // 2
       assert.equal(playAfterPreroll, 0, 'play after preroll');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -307,8 +320,9 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
 
       seenOutsideAdModeBefore.forEach((event) => {
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix before preroll');
@@ -330,7 +344,9 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
 
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 

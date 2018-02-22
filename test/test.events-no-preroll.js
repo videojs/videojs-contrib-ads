@@ -23,11 +23,6 @@ QUnit.module('Initial Events With No Preroll', {
       'playMidroll': false
     });
 
-  },
-
-  afterEach: function() {
-    this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 
@@ -45,12 +40,15 @@ QUnit.test('initial play event with no preroll: one please', function(assert) {
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(playEvents, 1, '1 play event');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -70,12 +68,15 @@ QUnit.test('initial playing event with no preroll: 1+', function(assert) {
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.ok(playingEvents >= 1, '1+ playing events');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -96,12 +97,15 @@ QUnit.test('no ended event at start if video with no preroll', function(assert) 
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(endedEvents, 0, 'no ended events');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 
@@ -121,12 +125,15 @@ QUnit.test('initial loadstart event with no preroll: one please', function(asser
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 1) {
+      this.player.off('timeupdate', timeupdateHandler);
       assert.equal(loadstartEvents, 1, '1 loadstart event');
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 

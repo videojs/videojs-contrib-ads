@@ -31,11 +31,6 @@ QUnit.module('Events and Midrolls', {
       'playPreroll': false,
       'midrollPoint': 1
     });
-  },
-
-  afterEach: function() {
-    this.player.dispose();
-    this.fixture.parentNode.removeChild(this.fixture);
   }
 });
 
@@ -103,8 +98,10 @@ QUnit.test('Midrolls', function(assert) {
     done();
   });
 
-  this.player.on('timeupdate', () => {
+  const timeupdateHandler = () => {
     if (this.player.currentTime() > 2) {
+
+      this.player.off('timeupdate', timeupdateHandler);
 
       seenOutsideAdModeBefore.forEach((event) => {
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix before midroll');
@@ -126,7 +123,9 @@ QUnit.test('Midrolls', function(assert) {
 
       done();
     }
-  });
+  };
+
+  this.player.on('timeupdate', timeupdateHandler);
 
   this.player.play();
 

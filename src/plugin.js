@@ -14,6 +14,8 @@ import cancelContentPlay from './cancelContentPlay.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
 
+import BeforePreroll from './states/BeforePreroll.js';
+
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
 /*
@@ -155,6 +157,7 @@ const contribAdsPlugin = function(options) {
 
   // Replace the plugin constructor with the ad namespace
   player.ads = {
+    settings,
     state: 'content-set',
     disableNextSnapshotRestore: false,
 
@@ -329,6 +332,8 @@ const contribAdsPlugin = function(options) {
 
   };
 
+  player.ads.stateInstance = new BeforePreroll(player);
+
   player.ads.stitchedAds(settings.stitchedAds);
 
   player.ads.cueTextTracks = cueTextTracks;
@@ -380,38 +385,7 @@ const contribAdsPlugin = function(options) {
     },
     'preroll?': {
       enter() {
-        if (player.ads.nopreroll_) {
-          // This will start the ads manager in case there are later ads
-          player.trigger('readyforpreroll');
-
-          // If we don't wait a tick, entering content-playback will cancel
-          // cancelPlayTimeout, causing the video to not pause for the ad
-          window.setTimeout(function() {
-            // Don't wait for a preroll
-            player.trigger('nopreroll');
-          }, 1);
-        } else {
-          // Change class to show that we're waiting on ads
-          player.addClass('vjs-ad-loading');
-          // Schedule an adtimeout event to fire if we waited too long
-          player.ads.adTimeoutTimeout = window.setTimeout(function() {
-            player.trigger('adtimeout');
-          }, settings.prerollTimeout);
-
-          // Signal to ad plugin that it's their opportunity to play a preroll
-          if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
-            player.trigger('readyforpreroll');
-
-          // Don't play preroll before loadstart, otherwise the content loadstart event
-          // will get misconstrued as an ad loadstart. This is only a concern for the
-          // initial source; for source changes the whole ad process is kicked off by
-          // loadstart so it has to have happened already.
-          } else {
-            player.one('loadstart', () => {
-              player.trigger('readyforpreroll');
-            });
-          }
-        }
+        // Preroll.TODO
       },
       leave() {
         window.clearTimeout(player.ads.adTimeoutTimeout);
@@ -446,7 +420,6 @@ const contribAdsPlugin = function(options) {
         }, settings.timeout);
       },
       leave() {
-        window.clearTimeout(player.ads.adTimeoutTimeout);
         player.removeClass('vjs-ad-loading');
       },
       events: {
@@ -794,6 +767,13 @@ const contribAdsPlugin = function(options) {
     'nopreroll'
 
   ]), processEvent);
+
+  // Event handling for the current state.
+  // TODO this can be moved somewhere else after the state machine is removed.
+  // For now it has to be after it.
+  player.on(['play', 'adsready'], (e) => {
+    player.ads.stateInstance.handleEvent(e.type);
+  });
 
   // Clear timeouts and handlers when player is disposed
   player.on('dispose', function() {
