@@ -1,14 +1,9 @@
+# CHANGELOG
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v6.0.0) (2018-02-23)
 
-### Bug Fixes
-
-* content restarts from the beginning when snapshot restores source after midroll in iOS ([64f1587](https://github.com/videojs/videojs-contrib-ads/commit/64f1587))
-* snapshot.trackChangeHandler is undefined ([#293](https://github.com/videojs/videojs-contrib-ads/issues/293)) ([8a66140](https://github.com/videojs/videojs-contrib-ads/commit/8a66140))
-
-### Chores
-
-* **package:** update sinon to version 4.4.0 ([#328](https://github.com/videojs/videojs-contrib-ads/issues/328)) ([df3e8a3](https://github.com/videojs/videojs-contrib-ads/commit/df3e8a3))
+This version features a major refactor for greatly improved stability and maintainability. Please refer to the [Migrating to 6.0](https://github.com/videojs/videojs-contrib-ads/blob/master/migration-guides/migrating-to-6.0.md) guide when updating to this version. The documentation in the [README](https://github.com/videojs/videojs-contrib-ads/blob/master/README.md) has also been revamped and updated.
 
 <a name="5.1.6"></a>
 ## [5.1.6](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.6) (2018-01-22)
@@ -31,6 +26,11 @@
 ### Bug Fixes
 
 * content restarts from the beginning when snapshot restores source after midroll in iOS ([64f1587](https://github.com/videojs/videojs-contrib-ads/commit/64f1587))
+
+### Chores
+
+* Made example init correctly
+* Fixed lint warnings
 
 <a name="5.1.3"></a>
 ## [5.1.3](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.3) (2017-11-13)
@@ -60,6 +60,7 @@
 
 * Fix mis-named dists and potentially breaking change in package.json 'main' field. ([#280](https://github.com/videojs/videojs-contrib-ads/issues/280)) ([7633161](https://github.com/videojs/videojs-contrib-ads/commit/7633161))
 * Remove old call to player.load() during snapshot restoration for players which share the video element with the ad integration. This is causing problems in Chrome/Edge with Video.js 6 due to the asynchronous nature of calling player.src(). ([#257](https://github.com/videojs/videojs-contrib-ads/issues/257)) ([afb3ccf](https://github.com/videojs/videojs-contrib-ads/commit/afb3ccf))
+* Fix issue where captions were showing during ads on iOS
 
 ### Chores
 
@@ -68,13 +69,6 @@
 ### Code Refactoring
 
 * Better support for multiple module systems. ([#272](https://github.com/videojs/videojs-contrib-ads/issues/272)) ([0da0c1c](https://github.com/videojs/videojs-contrib-ads/commit/0da0c1c))
-
-# CHANGELOG
-
-## 5.1.0
-
-* [@misteroneill](http://github.com/misteroneill): Better support for multiple module systems
-* [@alex-barstow](http://github.com/alex-barstow): Fix issue where captions were showing during ads on iOS
 
 ## 5.0.3
 
