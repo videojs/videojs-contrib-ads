@@ -40,7 +40,7 @@ export default {
         }]
       ],
       plugins: [
-        // 'external-helpers',
+        'external-helpers',
         'transform-object-assign'
       ]
     })

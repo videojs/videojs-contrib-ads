@@ -30,7 +30,6 @@ const prefixEvent = (player, prefix, event) => {
   cancelEvent(player, event);
   player.trigger({
     type: prefix + event.type,
-    state: player.ads.state,
     originalEvent: event
   });
 };
@@ -70,7 +69,7 @@ const handlePlaying = (player, event) => {
 const handleEnded = (player, event) => {
   if (player.ads.isInAdMode()) {
 
-    // The true ended event fired by plugin.js either after the postroll
+    // The true ended event fired either after the postroll
     // or because there was no postroll.
     if (player.ads.isContentResuming()) {
       return;
@@ -79,9 +78,8 @@ const handleEnded = (player, event) => {
     // Prefix ended due to ad ending.
     prefixEvent(player, 'ad', event);
 
-  } else {
-
-    // Prefix ended due to content ending.
+  // Prefix ended due to content ending before preroll check
+  } else if (!player.ads._contentHasEnded) {
     prefixEvent(player, 'content', event);
   }
 };
@@ -101,7 +99,7 @@ const handleLoadEvent = (player, event) => {
     return;
 
   // Ad playing
-  } else if (player.ads.isAdPlaying()) {
+  } else if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
 
   // Source change
@@ -130,7 +128,7 @@ const handleLoadEvent = (player, event) => {
 const handlePlay = (player, event) => {
   const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
 
-  if (player.ads.isAdPlaying()) {
+  if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
   } else if (player.ads.isContentResuming() || resumingAfterNoPreroll) {
     prefixEvent(player, 'content', event);

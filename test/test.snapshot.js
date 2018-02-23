@@ -150,7 +150,6 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
   this.player.trigger('ended');
-  assert.strictEqual(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   assert.strictEqual(playSpy.callCount, 0, 'content playback should not have been resumed');
 });
 
@@ -182,7 +181,6 @@ QUnit.test('snapshot does not resume playback after a burned-in post-roll', func
   this.player.currentTime(50);
   this.player.ads.endLinearAdMode();
   this.player.trigger('ended');
-  assert.strictEqual(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   assert.strictEqual(this.player.currentTime(), 50, 'currentTime should not be reset using burned in ads');
   assert.notOk(loadSpy.called, 'player.load() should not be called if the player is ended.');
   assert.notOk(playSpy.called, 'content playback should not have been resumed');
@@ -224,7 +222,6 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
   this.player.trigger('ended');
-  assert.strictEqual(this.player.ads.state, 'content-playback', 'Player should be in content-playback state after a post-roll');
   assert.notOk(playSpy.called, 'content playback should not resume');
 });
 
@@ -249,7 +246,6 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   this.player.src('http://example.com/movie2.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('adtimeout');
-  assert.strictEqual(this.player.ads.state, 'content-playback', 'playing the new content video after the ad timeout');
   assert.strictEqual('http://example.com/movie2.mp4', this.player.currentSrc(), 'playing the second video');
 });
 

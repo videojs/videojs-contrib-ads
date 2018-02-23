@@ -2,8 +2,6 @@
 This feature sends a `contentupdate` event when the player source changes.
 */
 
-import window from 'global/window';
-
 // Start sending contentupdate events
 export default function initializeContentupdate(player) {
 
@@ -13,12 +11,21 @@ export default function initializeContentupdate(player) {
   // modifying the player's source
   player.ads.contentSrc = player.currentSrc();
 
+  player.ads._seenInitialLoadstart = false;
+
   // Check if a new src has been set, if so, trigger contentupdate
   const checkSrc = function() {
-    if (player.ads.state !== 'ad-playback') {
+    if (!player.ads.inAdBreak()) {
       const src = player.currentSrc();
 
       if (src !== player.ads.contentSrc) {
+
+        if (player.ads._seenInitialLoadstart) {
+          player.trigger({
+            type: 'contentchanged'
+          });
+        }
+
         player.trigger({
           type: 'contentupdate',
           oldValue: player.ads.contentSrc,
@@ -26,11 +33,11 @@ export default function initializeContentupdate(player) {
         });
         player.ads.contentSrc = src;
       }
+
+      player.ads._seenInitialLoadstart = true;
     }
   };
 
   // loadstart reliably indicates a new src has been set
   player.on('loadstart', checkSrc);
-  // check immediately in case we missed the loadstart
-  window.setTimeout(checkSrc, 1);
 }

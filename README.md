@@ -1,11 +1,27 @@
-# videojs-contrib-ads [![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.svg)](https://travis-ci.org/videojs/videojs-contrib-ads) [![Greenkeeper badge](https://badges.greenkeeper.io/videojs/videojs-contrib-ads.svg)](https://greenkeeper.io/)
+![Contrib Ads: A Tool for Building Video.js Ad Plugins](logo.png)
 
-The `videojs-contrib-ads` plugin provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
+[![Build Status](https://travis-ci.org/videojs/videojs-contrib-ads.svg)](https://travis-ci.org/videojs/videojs-contrib-ads) [![Greenkeeper badge](https://badges.greenkeeper.io/videojs/videojs-contrib-ads.svg)](https://greenkeeper.io/)
+
+`videojs-contrib-ads` provides common functionality needed by video advertisement libraries working with [video.js.](http://www.videojs.com/)
 It takes care of a number of concerns for you, reducing the code you have to write for your ad integration.
+
+`videojs-contrib-ads` is not a stand-alone ad plugin. It is a library that is used by
+other ad plugins (called "integrations") in order to fully support video.js. If you want
+to build an ad plugin, you've come to the right place. If you want to play ads in video.js
+without writing code, this is not the right project for you.
 
 Lead Maintainer: Greg Smith [https://github.com/incompl](https://github.com/incompl)
 
-Maintenance Status: Stabler Than Ever
+Maintenance Status: Stable
+
+## Benefits
+
+* Ad timeouts are implemented by default. If ads take too long to load, content automatically plays.
+* Player state is automatically restored after ad playback, even if the ad played back in the content's video element.
+* Content is automatically paused and a loading spinner is shown while preroll ads load.
+* [Media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) will fire as though ads don't exist. For more information, read the section on [Redispatch](https://github.com/videojs/videojs-contrib-ads#redispatch).
+* Useful macros in ad server URLs are provided.
+* Preroll checks automatically happen again when the video source changes.
 
 ## Getting Started
 
@@ -38,6 +54,14 @@ videojs('video', {}, function() {
 You may also use the Javascript and CSS links from the following to get started:
 [https://cdnjs.com/libraries/videojs-contrib-ads](https://cdnjs.com/libraries/videojs-contrib-ads)
 
+### Using a module system
+
+If you are loading `videojs-contrib-ads` using modules, do this:
+
+https://github.com/videojs/videojs-contrib-ads/pull/312
+
+TODO: Update that link once that PR is merged.
+
 With this basic structure in place, you're ready to develop an ad integration.
 
 ## Important Note About Initialization
@@ -51,42 +75,50 @@ The plugin will emit an error if it detects that it it missed a `loadstart` even
 
 ## Developing an Integration
 
-Once you call `player.ads()` to initialize the plugin, it provides six interaction points (four events and two methods) which you can use in your integration.
+First you call `player.ads()` to initialize the plugin. Afterwards, the flow of interaction
+between your ad integration and contrib-ads looks like this:
 
-Here are the events that communicate information to your integration from the ads plugin:
+* Player triggers `play` (EVENT) -- This media event is triggered when there is a request to play your player.
+videojs-contrib-ads responds by preventing content playback and showing a loading spinner.
+* Integration triggers `adsready` (EVENT) -- Your integration should trigger this event on the player to indicate that
+it is initialized. This can happen before or after the `play` event.
+* Contrib Ads triggers `readyforpreroll` (EVENT) -- This event is fired after both `play` and `adsready` have ocurred.
+This signals that the integration may begin an ad break by calling `startLinearAdMode`.
+* Integration calls `player.ads.startLinearAdMode()` (METHOD) -- This begins an ad break. During this time, your integration
+plays ads. videojs-contrib-ads does not handle actual ad playback.
+* Integration triggers `ads-ad-started` (EVENT) - Trigger this when each individual ad begins. This removes the loading spinner, which otherwise stays up during the ad break. It's possible for an ad break
+to end without an ad starting, in which case the spinner stays up the whole time.
+* Integration calls `player.ads.endLinearAdMode()` (METHOD) -- This ends an ad break. As a result, content will play.
+* Content plays.
+* To play a Midroll ad, start and end an ad break with `player.ads.startLinearAdMode()` and `player.ads.endLinearAdMode()` at any time during content playback.
+* Contrib Ads triggers `contentended` (EVENT) -- This event means that it's time to play a postroll ad.
+* To play a Postroll ad, start and end an ad break with `player.ads.startLinearAdMode()` and `player.ads.endLinearAdMode()`.
+* Contrib Ads triggers `ended` (EVENT) -- This standard media event happens when all ads and content have completed. After this, no additional ads are expected, even if the user seeks backwards.
 
- * `contentupdate` (EVENT) — Fires when a new content video has been assigned to the player, so your integration can update its ad inventory. _NOTE: This will NOT fire while your ad integration is playing a linear Ad._
- * `readyforpreroll` (EVENT) — Fires when a content video is about to play for the first time, so your integration can indicate that it wants to play a preroll.
+This is the basic flow for a simple use case, but there are other things the integration can do:
 
-Note: A `contentplayback` event is sent but should not be used as it is being removed. The `playing` event has the same meaning and is far more reliable.
- 
-And here are the interaction points you use to send information to the ads plugin:
-
-* `adsready` (EVENT) — Trigger this event after to signal that your integration is ready to play ads.
-* `adplaying` (EVENT) - Trigger this event when an ads starts playing. If your integration triggers `playing` event when an ad begins, it will automatically be redispatched as `adplaying`.
-* `adscanceled` (EVENT) — Trigger this event after starting up the player or setting a new video to skip ads entirely. This event is optional; if you always plan on displaying ads, you don't need to worry about triggering it.
-* `adserror` (EVENT) - Trigger this event to indicate that an error in the ad integration has ocurred and any ad states should abort so that content can resume.
-* `nopreroll` (EVENT) - Trigger this event to indicate that there will be no preroll ad. Otherwise, the player will wait until a timeout occurs before playing content. This event is optional, but can improve user experience.
-* `nopostroll` (EVENT) - Trigger this event to indicate that there will be no postroll ad. Otherwise, contrib-ads will trigger an adtimeout event after content ends if there is no postroll.
-* `ads-ad-started` (EVENT) - Trigger this when each individual ad begins.
+* `skipLinearAdMode` (METHOD) -- At a time when `startLinearAdMode` is expected, calling `skipLinearAdMode` will immediately resume content playback instead.
+* `nopreroll` (EVENT) -- You can trigger this event even before `readyforpreroll` to indicate that no preroll will play. The ad plugin will not check for prerolls and will instead begin content playback after the `play` event (or immediately, if playback was already requested).
+* `nopostroll` (EVENT) -- Similar to `nopreroll`, you can trigger this event even before `contentended` to indicate that no postroll will play.  The ad plugin will not wait for a postroll to play and will instead immediately trigger the `ended` event.
+* `adserror` (EVENT) -- This event skips prerolls when seen before a preroll ad break. It skips postrolls if called after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break.
 * `contentresumed` (EVENT) - If your integration does not result in a "playing" event when resuming content after an ad, send this event to signal that content can resume. This was added to support stitched ads and is not normally necessary.
-* `ads.startLinearAdMode()` (METHOD) — Call this method to signal that your integration is about to play a linear ad. This method triggers `adstart` to be emitted by the player.
-* `ads.endLinearAdMode()` (METHOD) — Call this method to signal that your integration is finished playing linear ads, ready for content video to resume. This method triggers `adend` to be emitted by the player.
-* `ads.skipLinearAdMode()` (METHOD) — Call this method to signal that your integration has received an ad response but is not going to play a linear ad.  This method triggers `adskip` to be emitted by the player.
-* `ads.stitchedAds()` (METHOD) — Get or set the `stitchedAds` setting.
-* `ads.videoElementRecycled()` (METHOD) - Returns true if ad playback is taking place in the content element.
 
-In addition, video.js provides a number of events and APIs that might be useful to you.
-For example, the `ended` event signals that the content video has played to completion.
+There are some other useful events that videojs-contrib-ads may trigger:
+
+ * `contentchanged` (EVENT) -- Fires when a new content video has been loaded in the player (specifically, at the same time as the `loadstart` media event for the new source). This means the ad workflow has restarted from the beginning. Your integration will need to trigger `adsready` again, for example. Note that when changing sources, the playback state of the player is retained: if the previous source was playing, the new source will also be playing and the ad workflow will not wait for a new `play` event.
+
+Deprecated events:
+
+* `contentupdate` (EVENT) -- Replaced by `contentchanged`, which is more reliable.
+* `adscanceled` (EVENT) -- Intended to cancel all ads, it was never fully implemented. Instead, use `nopreroll` and `nopostroll`.
 
 ### Public Methods
 
-These are methods that can be called at runtime to inspect the ad plugin's state. You do
-not need to implement them yourself.
+These are methods on `player.ads` that can be called at runtime to inspect the ad plugin's state. You do not need to implement them yourself.
 
 #### isInAdMode()
 
-Returns true if player is in ad mode.
+Returns true if the player is in ad mode.
 
 ##### Ad mode definition:
 
@@ -106,17 +138,19 @@ Returns true if player is in ad mode.
 * Content playback has not been requested
 * Content playback is paused
 * An asynchronous ad request is ongoing while content is playing
-* A non-linear ad is active
+* A non-linear ad (such as an overlay) is active
 
 #### isContentResuming()
 
 Returns true if content is resuming after an ad. This is part of ad mode.
 
+#### inAdBreak()
+
+This method returns true during the time between startLinearAdMode and endLinearAdMode where an integration may play ads. This is part of ad mode.
+
 #### isAdPlaying()
 
-Returns true if a linear ad is playing. This is part of ad mode.
-This relies on `startLinearAdMode` and `endLinearAdMode` because that is the
-most authoritative way of determinining if an ad is playing.
+Deprecated. Does the same thing as `inAdBreak` but has a misleading name.
 
 ### Additional Events And Properties Your Integration May Want To Include
 
@@ -301,7 +335,8 @@ For a more involved example that plays both prerolls and midrolls, see the [exam
 
 ## State Diagram
 
-To manage communication between your ad integration and the video.js player, the ads plugin goes through a number of states.
+To manage communication between your ad integration and the video.js player, the ads plugin goes through a number of states. You don't need to be aware of this to build an integration, but it may be useful for videojs-contrib-ads developers or for debugging.
+
 Here's a state diagram which shows the states of the ads plugin and how it transitions between them:
 
 ![](ad-states.png)
@@ -323,62 +358,23 @@ The current set of options are described in detail below.
 Type: `number`
 Default Value: 5000
 
-The maximum amount of time to wait for an ad implementation to initialize before playback, in milliseconds.
-If the viewer has requested playback and the ad implementation does not fire `adsready` before this timeout expires, the content video will begin playback.
-It's still possible for an ad implementation to play ads after this waiting period has finished but video playback will already be in progress.
+The maximum amount of time to wait in ad mode before an ad begins. If this time elapses, ad mode ends and content resumes.
 
-Once the ad plugin starts waiting for the `adsready` event, one of these things will happen:
-
- * integration ready within the timeout — this is the best case, preroll(s) will play without the user seeing any content video first.
- * integration ready, but after timeout has expired — preroll(s) still play, but the user will see a bit of content video.
- * integration never becomes ready — content video starts playing after timeout.
-
-This timeout is necessary to ensure a good viewer experience in cases where the ad implementation suffers an unexpected or irreparable error and never fires an `adsready` event.
-Without this timeout, the ads plugin would wait forever, and neither the content video nor ads would ever play.
-
-If the ad implementation takes a long time to initialize and this timeout is too short, then the content video will beging playing before the first preroll opportunity.
-This has the jarring effect that the viewer would see a little content before the preroll cuts in.
-
-During development, we found that five seconds seemed to be long enough to accommodate slow initialization in most cases, but still short enough that failures to initialize didn't look like failures of the player or content video.
+Some ad plugins may want to play a preroll ad even after the timeout has expired and content has begun playing. To facilitate this, videojs-contrib-ads will respond to an `adsready` event during content playback with a `readyforpreroll` event. If you want to avoid this behavior, make sure your plugin does not send `adsready` if `player.ads.isInAdMode()` is `false`.
 
 ### prerollTimeout
 
 Type: `number`
-Default Value: 100
+No Default Value
 
-The maximum amount of time to wait for an ad implementation to initiate a preroll, in milliseconds.
-If `readyforpreroll` has been fired and the ad implementation does not call `startLinearAdMode()` before `prerollTimeout` expires, the content video will begin playback.
-`prerollTimeout` is cumulative with the standard timeout parameter.
-
-Once the ad plugin fires `readyforpreroll`, one of these things will happen:
-
- * `startLinearAdMode()` called within the timeout — preroll(s) will play without the user seeing any content video first.
- * `skipLinearAdMode()` is called within the timeout because there are no linear ads in the response or you already know you won't be making a preroll request - content video plays without preroll(s).
- * `startLinearAdMode()` is never called — content video plays without preroll(s).
- * `startLinearAdMode()` is called, but after the prerollTimeout expired — bad user experience; content video plays a bit, then preroll(s) cut in.
-
-The prerollTimeout should be as short as possible so that the viewer does not have to wait unnecessarily if no preroll is scheduled for a video.
-Make this longer if your ad integration needs a long time to decide whether it has preroll inventory to play or not.
-Ideally, your ad integration should already know if it wants to play a preroll before the `readyforpreroll` event.  In this case, skipLinearAdMode() should be called to resume content quickly.
+Override the `timeout` setting just for preroll ads (the time between `play` and `startLinearAdMode`)
 
 ### postrollTimeout
 
 Type: `number`
-Default Value: 100
+No Default Value
 
-The maximum amount of time to wait for an ad implementation to initiate a postroll, in milliseconds.
-If `contentended` has been fired and the ad implementation does not call `startLinearAdMode()` before `postrollTimeout` expires, the content video will end playback.
-
-Once the ad plugin fires `contentended`, one of these things will happen:
-
- * `startLinearAdMode()` called within the timeout — postroll(s) will play without the user seeing any content video first.
- * `skipLinearAdMode()` is called within the timeout - content video stops.
- * `startLinearAdMode()` is never called — content video stops.
- * `startLinearAdMode()` is called, but after the postrollTimeout expired — content video stops
-
-The postrollTimeout should be as short as possible so that the viewer does not have to wait unnecessarily if no postroll is scheduled for a video.
-Make this longer if your ad integration needs a long time to decide whether it has postroll inventory to play or not.
-Ideally, your ad integration should already know if it wants to play a postroll before the `contentended` event.
+Override the `timeout` setting just for preroll ads (the time between `contentended` and `startLinearAdMode`)
 
 ### stitchedAds
 
@@ -392,7 +388,7 @@ Set this to true if you are using ads stitched into the content video. This is n
 Type: `boolean`
 Default Value: false
 
-If debug is set to true, the ads plugin will output additional information about its current state during playback.
+If debug is set to true, the ads plugin will output additional debugging information.
 This can be handy for diagnosing issues or unexpected behavior in an ad integration.
 
 ## Plugin Events
@@ -402,13 +398,13 @@ The plugin triggers a number of custom events on the player during its operation
 The player has entered linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. This event only indicates that an ad break has begun; the start and end of individual ads must be signalled through some other mechanism.
 
 ### adend
-The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. Note that multiple ads may have played back between `adstart` and `adend`.
+The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `endLinearAdMode()`. Note that multiple ads may have played back in the ad break between `adstart` and `adend`.
 
 ### adskip
-The player is skipping a linear ad opportunity and content-playback should resume immediately.  This event is fired directly as a consequence of calling `skipLinearAdMode()`. It can indicate that an ad response was made but returned no linear ad content or that no ad call is going to be made at either the preroll or postroll timeout opportunities.
+The player is skipping a linear ad opportunity and content-playback should resume immediately.  This event is fired directly as a consequence of calling `skipLinearAdMode()`. For example, it can indicate that an ad response was received but it included no linear ad content or that no ad call is going to be made due to an error.
 
 ### adtimeout
-A timeout managed by the plugin has expired and regular video content has begun to play. Ad integrations have a fixed amount of time to inform the plugin of their intent during playback. If the ad integration is blocked by network conditions or an error, this event will fire and regular playback resumes rather than stalling the player indefinitely.
+A timeout managed by videojs-contrib-ads has expired and regular video content has begun to play. Ad integrations have a fixed amount of time to start an ad break when an opportunity arises. For example, if the ad integration is blocked by network conditions or an error, this event will fire and regular playback will resume rather than the player stalling indefinitely.
 
 ## Runtime Settings
 Once the plugin is initialized, there are a couple properties you can
@@ -435,15 +431,17 @@ player.src('movie-high.mp4');
 ```
 
 ### disableNextSnapshotRestore
-Prevents videojs-contrib-ads from restoring the previous video source
+Advanced option. Prevents videojs-contrib-ads from restoring the previous video source.
 
-If you need to change the video source during ad playback, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads to restore to the previous video source.
+If you need to change the video source during an ad break, you can use _disableNextSnapshotRestore_ to prevent videojs-contrib-ads from restoring the snapshot from the previous video source.
 ```js
-if (player.ads.state  === 'ad-playback') {
+if (player.ads.inAdBreak()) {
     player.ads.disableNextSnapshotRestore = true;
     player.src('another-video.mp4');
 }
 ```
+
+Keep in mind that you still need to end linear ad mode.
 
 ### Redispatch
 
@@ -499,6 +497,7 @@ that certain expectations are met. The next section describes those expectations
 * [Migrating to 3.0](migration-guides/migrating-to-3.0.md)
 * [Migrating to 4.0](migration-guides/migrating-to-4.0.md)
 * [Migrating to 5.0](migration-guides/migrating-to-5.0.md)
+* [Migrating to 6.0](migration-guides/migrating-to-6.0.md)
 
 ## Testing
 

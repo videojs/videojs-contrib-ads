@@ -3,9 +3,9 @@ module.exports = function(config) {
     enabled: false,
     usePhantomJS: false,
     postDetection: function(browsers) {
-      const toRemove = ['Safari', 'SafariTechPreview'];
+      const toKeep = ['Firefox', 'Chrome'];
       return browsers.filter((e) => {
-        return toRemove.indexOf(e) === -1;
+        return toKeep.indexOf(e) !== -1;
       });
     }
   };
