@@ -1,3 +1,15 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v6.0.0) (2018-02-23)
+
+### Bug Fixes
+
+* content restarts from the beginning when snapshot restores source after midroll in iOS ([64f1587](https://github.com/videojs/videojs-contrib-ads/commit/64f1587))
+* snapshot.trackChangeHandler is undefined ([#293](https://github.com/videojs/videojs-contrib-ads/issues/293)) ([8a66140](https://github.com/videojs/videojs-contrib-ads/commit/8a66140))
+
+### Chores
+
+* **package:** update sinon to version 4.4.0 ([#328](https://github.com/videojs/videojs-contrib-ads/issues/328)) ([df3e8a3](https://github.com/videojs/videojs-contrib-ads/commit/df3e8a3))
+
 <a name="5.1.6"></a>
 ## [5.1.6](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v5.1.6) (2018-01-22)
 
