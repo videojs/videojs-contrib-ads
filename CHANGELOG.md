@@ -1,5 +1,3 @@
-# CHANGELOG
-
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v6.0.0) (2018-02-23)
 
