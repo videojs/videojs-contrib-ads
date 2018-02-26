@@ -100,7 +100,6 @@ export function restorePlayerSnapshot(player, snapshotObject) {
           currentTime = player.currentTime();
         }
         player.currentTime(currentTime);
-        player.play();
       }
 
     // Restore the video position after an ad.
