@@ -18,9 +18,25 @@ Describe the behavior you expected here.
 
 Describe the behavior you observed here.
 
-### Reduced Example
+### Reproducing Unit Test
 
-Please include a reduced test case as this will help us separate integration bugs from issues with this project. We have a template on []() that you can expand.
+Please include a unit test that fails in the most recent version of videojs-contrib-ads but should pass according to your expected results. This will help us understand what the root cause is and separate integration bugs from issues with this project. A unit test can be provided like below:
+
+```js
+import QUnit from 'qunit';
+import {Midroll} from '../../src/states.js';
+import adBreak from '../../src/adBreak.js';
+
+QUnit.test('starts an ad break on init', function(assert) {
+  this.midroll = new Midroll(this.player);
+    
+  this.midroll.init(this.player);
+  assert.equal(this.player.ads.adType, 'midroll', 'ad type is midroll');
+  assert.equal(this.adBreakStartStub.callCount, 1, 'ad break started');
+});
+```
+
+This example was pulled from [test/states/test.Midroll.js](../test/states/test.Midroll.js).
 
 ### Versions
 
