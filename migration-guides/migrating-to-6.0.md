@@ -4,7 +4,7 @@ Version 6 of videojs-contrib-ads includes a major refactor and cleanup of the st
 
 ## Migration
 
-* Timeouts have a more intuitive behavior. See the next section for more information.
+* Timeouts have a more intuitive behavior. See the "Timeout behavior changes" section below for more information.
 * Ended events are no longer delayed by 1 second.
 * Ended events due to an ad ending will no longer be allowed to replace the ended event
 that is triggered by linear ad mode ending. Integrations must not emit ended events
