@@ -1,3 +1,4 @@
+import { setTerminate } from './playMiddleware.js';
 /*
 This feature makes sure the player is paused during ad loading.
 
@@ -6,6 +7,9 @@ then signalling that we should play after the ad is done.
 */
 
 export default function cancelContentPlay(player) {
+  // If cancelContentPlay is active, don't use play middleware
+  setTerminate(player, false);
+
   if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing
     return;

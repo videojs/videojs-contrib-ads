@@ -12,7 +12,10 @@ QUnit.module('BeforePreroll', {
 
     this.player = {
       ads: {
-        debug: () => {}
+        debug: () => {},
+        _playMiddleware: {
+          shouldTerminate: false
+        }
       },
       setTimeout: () => {},
       trigger: (event) => {

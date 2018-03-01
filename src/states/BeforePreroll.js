@@ -1,5 +1,6 @@
 import {ContentState, Preroll, ContentPlayback} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
+import { isMiddlewareMediatorSupported, setTerminate } from '../playMiddleware.js';
 
 /*
  * This is the initial state for a player with an ad plugin. Normally, it remains in this
@@ -41,7 +42,12 @@ export default class BeforePreroll extends ContentState {
     player.ads.debug('Received play event (BeforePreroll)');
 
     // Don't start content playback yet
-    cancelContentPlay(player);
+    if (isMiddlewareMediatorSupported()) {
+      setTerminate(player, true);
+    } else {
+      setTerminate(player, false);
+      cancelContentPlay(player);
+    }
 
     // Check for prerolls
     this.transitionTo(Preroll, this.adsReady);

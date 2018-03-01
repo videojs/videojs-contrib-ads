@@ -1,13 +1,35 @@
 import videojs from 'video.js';
 
 const playMiddleware = function(player) {
-  videojs.log('The play middleware is registered');
+  player.ads._playMiddleware = {
+    shouldTerminate: false
+  };
+  videojs.log('The play middleware is registered. Default terminate value',
+    player.ads._playMiddleware.shouldTerminate);
 
   return {
     setSource(srcObj, next) {
       next(null, srcObj);
+    },
+    callPlay() {
+      // Block play calls during ad mode
+      if (player.ads._playMiddleware.shouldTerminate === true) {
+        return videojs.middleware.TERMINATOR;
+      }
+    },
+    play(terminated, value) {
+      if (terminated) {
+        player.ads.debug('Play event was terminated.');
+      }
+
+      // TODO: should we handle the play promise here?
     }
   };
+};
+
+const setTerminate = function(player, value) {
+  videojs.log('TERMINATE', 'set to', value);
+  player.ads._playMiddleware.shouldTerminate = value;
 };
 
 /**
@@ -33,4 +55,4 @@ const isMiddlewareMediatorSupported = function() {
   return false;
 };
 
-export { playMiddleware, isMiddlewareMediatorSupported };
+export { playMiddleware, isMiddlewareMediatorSupported, setTerminate };

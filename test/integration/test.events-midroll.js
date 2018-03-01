@@ -47,6 +47,10 @@ QUnit.test('Midrolls', function(assert) {
   var seenOutsideAdModeBefore = [];
   var seenOutsideAdModeAfter = [];
 
+  this.player.ads._playMiddleware = {
+    shouldTerminate: false
+  };
+
   this.player.on('adend', () => {
     beforeMidroll = false;
   });
