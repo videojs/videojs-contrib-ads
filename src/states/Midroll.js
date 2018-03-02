@@ -4,6 +4,13 @@ import adBreak from '../adBreak.js';
 export default class Midroll extends AdState {
 
   /*
+   * Allows state name to be logged even after minification.
+   */
+  static _getName() {
+    return 'Midroll';
+  }
+
+  /*
    * Midroll breaks happen when the integration calls startLinearAdMode,
    * which can happen at any time during content playback.
    */

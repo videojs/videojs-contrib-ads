@@ -7,6 +7,17 @@ import {ContentState, Midroll, Postroll} from '../states.js';
  */
 export default class ContentPlayback extends ContentState {
 
+  /*
+   * Allows state name to be logged even after minification.
+   */
+  static _getName() {
+    return 'AdsDone';
+  }
+
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player) {
     // Play the content if cancelContentPlay happened or we paused on 'contentupdate'
     // and we haven't played yet. This happens if there was no preroll or if it
