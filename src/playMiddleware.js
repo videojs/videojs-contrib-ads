@@ -1,9 +1,6 @@
 import videojs from 'video.js';
 
 const playMiddleware = function(player) {
-  player.ads._playMiddleware = {
-    shouldTerminate: false
-  };
   videojs.log('The play middleware is registered. Default terminate value',
     player.ads._playMiddleware.shouldTerminate);
 
@@ -20,6 +17,7 @@ const playMiddleware = function(player) {
     play(terminated, value) {
       if (terminated) {
         player.ads.debug('Play event was terminated.');
+        player.trigger('play');
       }
 
       // TODO: should we handle the play promise here?

@@ -45,6 +45,10 @@ export default class Preroll extends AdState {
     } else {
       this.adsReady = false;
     }
+
+    if (!this.inAdBreak() && !this.isContentResuming() && isMiddlewareMediatorSupported()) {
+      setTerminate(player, true);
+    }
   }
 
   /*
@@ -119,13 +123,9 @@ export default class Preroll extends AdState {
   onPlay(player) {
     player.ads.debug('Received play event (Preroll)');
 
-    if (!this.inAdBreak() && !this.isContentResuming()) {
-      if (isMiddlewareMediatorSupported()) {
-        setTerminate(player, true);
-      } else {
-        setTerminate(player, false);
-        cancelContentPlay(this.player);
-      }
+    if (!this.inAdBreak() && !this.isContentResuming() && !isMiddlewareMediatorSupported()) {
+      setTerminate(player, false);
+      cancelContentPlay(this.player);
     }
   }
 
@@ -169,9 +169,7 @@ export default class Preroll extends AdState {
       adBreak.start(player);
 
       // We don't need to block play calls anymore
-      if (isMiddlewareMediatorSupported()) {
-        setTerminate(player, false);
-      }
+      setTerminate(player, false);
     } else {
       videojs.log.warn('Unexpected startLinearAdMode invocation (Preroll)');
     }

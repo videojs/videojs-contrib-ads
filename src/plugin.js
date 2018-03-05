@@ -169,6 +169,10 @@ const contribAdsPlugin = function(options) {
     // Are we after startLinearAdMode and before endLinearAdMode?
     _inLinearAdMode: false,
 
+    _playMiddleware: {
+      shouldTerminate: false
+    },
+
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
     adType: null,
@@ -323,6 +327,7 @@ const contribAdsPlugin = function(options) {
   };
 
   player.ads._state = new BeforePreroll(player);
+  player.ads._state.init(player);
 
   player.ads.stitchedAds(settings.stitchedAds);
 
