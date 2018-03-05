@@ -56,10 +56,6 @@ window.sharedModuleHooks = (function(){
       };
 
       this.player.ads();
-
-      this.player.ads._playMiddleware = {
-        shouldTerminate: false
-      };
     },
 
     afterEach: function() {

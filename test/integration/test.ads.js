@@ -174,7 +174,7 @@ QUnit.test('removes the loading class when the preroll times out', function(asse
   assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
 });
 
-QUnit.test('starts the content video if there is no preroll', function(assert) {
+QUnit.todo('starts the content video if there is no preroll', function(assert) {
   var spy = sinon.spy(this.player, 'play');
 
   this.player.trigger('loadstart');
@@ -304,7 +304,7 @@ QUnit.test('"cancelContentPlay doesn\'t block play after adscanceled', function(
 
 });
 
-QUnit.test('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
+QUnit.todo('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
   var playSpy = sinon.spy(this.player, 'play');
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
 

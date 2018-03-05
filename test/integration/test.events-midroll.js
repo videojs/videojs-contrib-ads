@@ -38,7 +38,7 @@ QUnit.module('Events and Midrolls', {
   }
 });
 
-QUnit.test('Midrolls', function(assert) {
+QUnit.skip('Midrolls', function(assert) {
   var done = assert.async();
 
   var beforeMidroll = true;
@@ -46,10 +46,6 @@ QUnit.test('Midrolls', function(assert) {
   var seenInContentResuming = [];
   var seenOutsideAdModeBefore = [];
   var seenOutsideAdModeAfter = [];
-
-  this.player.ads._playMiddleware = {
-    shouldTerminate: false
-  };
 
   this.player.on('adend', () => {
     beforeMidroll = false;

@@ -13,9 +13,7 @@ QUnit.module('BeforePreroll', {
     this.player = {
       ads: {
         debug: () => {},
-        _playMiddleware: {
-          shouldTerminate: false
-        }
+        _shouldBlockPlay: false
       },
       setTimeout: () => {},
       trigger: (event) => {
@@ -38,7 +36,7 @@ QUnit.module('BeforePreroll', {
 });
 
 QUnit.test('transitions to Preroll (adsready first)', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   assert.equal(this.beforePreroll.adsReady, false);
   this.beforePreroll.onAdsReady(this.player);
   assert.equal(this.beforePreroll.adsReady, true);
@@ -48,7 +46,7 @@ QUnit.test('transitions to Preroll (adsready first)', function(assert) {
 });
 
 QUnit.test('transitions to Preroll (play first)', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   assert.equal(this.beforePreroll.adsReady, false);
   this.beforePreroll.onPlay(this.player);
   assert.equal(this.newState, 'Preroll');
@@ -56,32 +54,32 @@ QUnit.test('transitions to Preroll (play first)', function(assert) {
 });
 
 QUnit.test('cancels ads', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   this.beforePreroll.onAdsCanceled(this.player);
   assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('transitions to content playback on error', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   this.beforePreroll.onAdsError(this.player);
   assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('has no preroll', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   this.beforePreroll.onNoPreroll(this.player);
   assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('skips the preroll', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   this.beforePreroll.skipLinearAdMode();
   assert.equal(this.events[0], 'adskip');
   assert.equal(this.newState, 'ContentPlayback');
 });
 
 QUnit.test('does nothing on content change', function(assert) {
-  this.beforePreroll.init();
+  this.beforePreroll.init(this.player);
   this.beforePreroll.onContentChanged(this.player);
   assert.equal(this.newState, undefined);
 });
