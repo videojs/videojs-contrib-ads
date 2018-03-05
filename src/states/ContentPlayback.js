@@ -26,6 +26,9 @@ export default class ContentPlayback extends ContentState {
         (player.ads._cancelledPlay || player.ads._pausedOnContentupdate)) {
       player.play();
     }
+
+    // Don't block calls to play in content playback
+    player.ads._shouldBlockPlay = false;
   }
 
   /*
