@@ -2,7 +2,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
-QUnit.module('Final Events With No Postroll', {
+QUnit.skip('Final Events With No Postroll', {
   beforeEach: function() {
     this.video = document.createElement('video');
 

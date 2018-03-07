@@ -28,6 +28,8 @@ window.sharedModuleHooks = (function(){
 
       delete Html5.setSource;
 
+      this.sandbox = sinon.sandbox.create();
+
       // Use fake timers to replace setTimeout and so forth.
       this.clock = sinon.useFakeTimers();
 
@@ -72,6 +74,8 @@ window.sharedModuleHooks = (function(){
 
       // Kill the "contentplayback" spy.
       this.contentPlaybackSpy = this.contentPlaybackReason = null;
+
+      this.sandbox.restore();
     }
   };
 
