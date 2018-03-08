@@ -30,7 +30,7 @@ QUnit.skip('Final Events With No Postroll', {
   }
 });
 
-QUnit.test('final ended event with no postroll: just 1', function(assert) {
+QUnit.skip('final ended event with no postroll: just 1', function(assert) {
   var done = assert.async();
   var endedEvents = 0;
 
