@@ -14,7 +14,10 @@ To build this example:
 */
 
 import videojs from 'video.js';
-import ads from '../../dist/videojs.ads.min.js';
+
+// This import works because we're inside the contrib-ads project.
+// You will want to import 'videojs-contrib-ads' in your code.
+import '../..';
 
 videojs.plugin('examplePlugin', function() {
   this.ads();
