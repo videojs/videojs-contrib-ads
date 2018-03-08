@@ -1,4 +1,4 @@
-import '../example/app.js';
+import '../examples/basic-ad-plugin/app.js';
 
 // Old integration tests that were disabled years ago and are out of date.
 // To try to fix them, start by renaming to videojs.ads.events.test.js so they run again.
@@ -169,7 +169,7 @@ QUnit.module('Ad Events Tranformation', {
       // seen as content updates
       src: (function() {
         var a = document.createElement('a');
-        a.href = '../example/sintel-low.mp4';
+        a.href = '../examples/basic-ad-plugin/sintel-low.mp4';
         return a.href;
       })(),
       type: 'video/mp4'
