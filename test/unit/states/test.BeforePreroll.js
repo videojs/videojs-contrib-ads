@@ -83,3 +83,8 @@ QUnit.test('does nothing on content change', function(assert) {
   this.beforePreroll.onContentChanged(this.player);
   assert.equal(this.newState, undefined);
 });
+
+QUnit.test('sets _shouldBlockPlay to true', function(assert) {
+  this.beforePreroll.init(this.player);
+  assert.equal(this.player.ads._shouldBlockPlay, true);
+});

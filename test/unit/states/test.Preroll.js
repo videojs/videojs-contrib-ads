@@ -99,31 +99,31 @@ QUnit.test('plays a preroll (adsready false)', function(assert) {
 QUnit.test('can handle nopreroll event', function(assert) {
   this.preroll.init(this.player, false);
   this.preroll.onNoPreroll(this.player);
-  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');  
+  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
 
 QUnit.test('can handle adscanceled', function(assert) {
   this.preroll.init(this.player, false);
   this.preroll.onAdsCanceled(this.player);
-  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');  
+  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
 
 QUnit.test('can handle adserror', function(assert) {
   this.preroll.init(this.player, false);
   this.preroll.onAdsError(this.player);
-  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');  
+  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
 
 QUnit.test('can skip linear ad mode', function(assert) {
   this.preroll.init(this.player, false);
   this.preroll.skipLinearAdMode();
-  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');  
+  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
 
 QUnit.test('plays content after ad timeout', function(assert) {
   this.preroll.init(this.player, false);
   this.preroll.onAdTimeout(this.player);
-  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');  
+  assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
 
 QUnit.test('removes ad loading class on ads started', function(assert) {
@@ -142,4 +142,25 @@ QUnit.test('remove ad loading class on cleanup', function(assert) {
 
   this.preroll.cleanup();
   assert.ok(removeClassSpy.calledWith('vjs-ad-loading'), 'loading class removed');
+});
+
+QUnit.test('sets _shouldBlockPlay to true before ad break starts', function(assert) {
+  this.preroll.init(this.player, true);
+  this.player.ads._inLinearAdMode = false;
+
+  assert.equal(this.player.ads.inAdBreak(), false);
+  assert.equal(this.player.ads.isContentResuming(), false);
+  assert.equal(this.player.ads._shouldBlockPlay, true);
+});
+
+QUnit.test('resets _shouldBlockPlay to false when ad break starts', function(assert) {
+  this.preroll.init(this.player, true);
+  this.player.ads._inLinearAdMode = false;
+
+  assert.equal(this.player.ads.inAdBreak(), false);
+  assert.equal(this.player.ads.isContentResuming(), false);
+  assert.equal(this.player.ads._shouldBlockPlay, true);
+
+  this.preroll.startLinearAdMode();
+  assert.equal(this.player.ads._shouldBlockPlay, false);
 });
