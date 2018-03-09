@@ -359,7 +359,7 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 
   this.player.src(originalSrc);
   this.player.trigger('adsready');
-  this.player.trigger('play');
+  this.player.play();
   this.player.ads.startLinearAdMode();
   this.player.src(newSrc);
   this.player.ads.endLinearAdMode();
@@ -437,7 +437,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks()[0].kind, 'captions');
   assert.equal(this.player.textTracks()[0].language, 'es');
   assert.equal(this.player.textTracks()[0].mode, 'showing');
-  
+
   assert.equal(this.player.remoteTextTrackEls().trackElements_[0].src, trackSrc);
   assert.equal(this.player.textTracks()[1].kind, 'captions');
   assert.equal(this.player.textTracks()[1].language, 'fr');
