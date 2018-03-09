@@ -1,3 +1,5 @@
+import pm from './playMiddleware.js';
+
 /*
 This feature makes sure the player is paused during ad loading.
 
@@ -6,7 +8,10 @@ then signalling that we should play after the ad is done.
 */
 
 export default function cancelContentPlay(player) {
-  if (player.ads.cancelPlayTimeout) {
+  if (pm.isMiddlewareMediatorSupported()) {
+    // Don't use cancelContentPlay while playMiddleware is in use
+    return;
+  } else if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing
     return;
   }
