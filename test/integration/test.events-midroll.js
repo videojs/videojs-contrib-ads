@@ -11,7 +11,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
-QUnit.skip('Events and Midrolls', {
+QUnit.module('Events and Midrolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
@@ -38,7 +38,7 @@ QUnit.skip('Events and Midrolls', {
   }
 });
 
-QUnit.skip('Midrolls', function(assert) {
+QUnit.test('Midrolls', function(assert) {
   var done = assert.async();
 
   var beforeMidroll = true;

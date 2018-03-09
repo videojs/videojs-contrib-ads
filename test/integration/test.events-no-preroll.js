@@ -2,7 +2,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
-QUnit.skip('Initial Events With No Preroll', {
+QUnit.module('Initial Events With No Preroll', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
@@ -35,7 +35,7 @@ QUnit.test('initial play event with no preroll: one please', function(assert) {
 
   var playEvents = 0;
 
-  this.player.on('play', () => {
+  this.player.tech_.on('play', () => {
     playEvents++;
   });
 

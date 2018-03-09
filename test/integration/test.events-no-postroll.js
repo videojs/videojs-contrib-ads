@@ -2,7 +2,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
-QUnit.skip('Final Events With No Postroll', {
+QUnit.module('Final Events With No Postroll', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
@@ -30,7 +30,7 @@ QUnit.skip('Final Events With No Postroll', {
   }
 });
 
-QUnit.skip('final ended event with no postroll: just 1', function(assert) {
+QUnit.test('final ended event with no postroll: just 1', function(assert) {
   var done = assert.async();
   var endedEvents = 0;
 
