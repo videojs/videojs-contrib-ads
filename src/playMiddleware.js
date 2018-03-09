@@ -1,11 +1,13 @@
 import videojs from 'video.js';
 
+const obj = {};
+
 /**
  * Checks if middleware mediators are available and
  * can be used on this platform.
  * Currently we can only use mediators on desktop platforms.
  */
-const isMiddlewareMediatorSupported = function() {
+obj.isMiddlewareMediatorSupported = function() {
 
   if (videojs.browser.IS_IOS || videojs.browser.IS_ANDROID) {
     return false;
@@ -23,7 +25,7 @@ const isMiddlewareMediatorSupported = function() {
   return false;
 };
 
-const playMiddleware = function(player) {
+obj.playMiddleware = function(player) {
   videojs.log('The play middleware is registered. Default terminate value',
     player.ads._shouldBlockPlay);
 
@@ -34,7 +36,7 @@ const playMiddleware = function(player) {
     callPlay() {
       videojs.log('TERMINATE', 'currently set to', player.ads._shouldBlockPlay);
       // Block play calls during ad mode
-      if (isMiddlewareMediatorSupported() &&
+      if (obj.isMiddlewareMediatorSupported() &&
           player.ads._shouldBlockPlay === true) {
         return videojs.middleware.TERMINATOR;
       }
@@ -50,4 +52,4 @@ const playMiddleware = function(player) {
   };
 };
 
-export { playMiddleware, isMiddlewareMediatorSupported };
+export default obj;

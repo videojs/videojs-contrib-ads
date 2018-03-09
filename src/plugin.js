@@ -11,7 +11,7 @@ import redispatch from './redispatch.js';
 import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
-import * as pm from './playMiddleware.js';
+import pm from './playMiddleware.js';
 
 import {BeforePreroll} from './states.js';
 
@@ -171,10 +171,6 @@ const contribAdsPlugin = function(options) {
 
     //
     _shouldBlockPlay: false,
-
-    isMiddlewareMediatorSupported() {
-      return pm.isMiddlewareMediatorSupported(player);
-    },
 
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!

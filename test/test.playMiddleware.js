@@ -1,4 +1,4 @@
-import { playMiddleware, isMiddlewareMediatorSupported } from '../src/playMiddleware.js';
+import pm from '../src/playMiddleware.js';
 
 QUnit.module('Play middleware: not supported unit tests', window.sharedModuleHooks({
   // let oldVersion;
@@ -44,7 +44,7 @@ QUnit.test('isMiddlewareMediatorSupported is false if old video.js version', fun
   });
   // TODO stub out middleware somehow
   sinon.stub(videojs.middleware, undefined);
-  assert.equal(isMiddlewareMediatorSupported(), false,
+  assert.equal(pm.isMiddlewareMediatorSupported(), false,
     'old video.js does not support middleware mediators');
 });
 
@@ -55,7 +55,7 @@ QUnit.test('isMiddlewareMediatorSupported is false if on mobile', function(asser
       IS_IOS: false
     };
   });
-  assert.equal(isMiddlewareMediatorSupported(), false,
+  assert.equal(pm.isMiddlewareMediatorSupported(), false,
     'is not supported on Android');
 
   assert.test.testEnvironment.sandbox.stub(videojs, 'browser').get(() => {
@@ -64,17 +64,17 @@ QUnit.test('isMiddlewareMediatorSupported is false if on mobile', function(asser
       IS_IOS: true
     };
   });
-  assert.equal(isMiddlewareMediatorSupported(), false,
+  assert.equal(pm.isMiddlewareMediatorSupported(), false,
     'is not supported on iOS');
 });
 
 QUnit.test('playMiddleware callPlay will not terminate if not supported', function(assert) {
-  const pm = playMiddleware(this.player);
-  this.sandbox.stub(this.player.ads, 'isMiddlewareMediatorSupported').returns(false);
+  const m = pm.playMiddleware(this.player);
+  this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(false);
   this.player.ads._shouldBlockPlay = true;
-  assert.equal(pm.callPlay(), undefined,
+  assert.equal(m.callPlay(), undefined,
     'callPlay should not return an object');
-  assert.notEqual(pm.callPlay(), videojs.middleware.TERMINATOR,
+  assert.notEqual(m.callPlay(), videojs.middleware.TERMINATOR,
     'callPlay should not return the terminator');
 });
 
@@ -90,61 +90,61 @@ QUnit.module('Play middleware: supported unit tests', window.sharedModuleHooks({
 }));
 
 QUnit.test('isMiddlewareMediatorSupported is true if middleware mediators exist on desktop', function(assert) {
-  assert.equal(isMiddlewareMediatorSupported(), true,
+  assert.equal(pm.isMiddlewareMediatorSupported(), true,
     'is supported if middleware mediators exist and not mobile');
 });
 
 QUnit.test('playMiddleware returns with a setSource, callPlay and play method', function(assert) {
-  const pm = playMiddleware(this.player);
-  this.sandbox.stub(this.player.ads, 'isMiddlewareMediatorSupported').returns(true);
+  const m = pm.playMiddleware(this.player);
+  this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
 
-  assert.equal(typeof pm, 'object', 'returns an object');
-  assert.equal(typeof pm.setSource, 'function', 'has setSource');
-  assert.equal(typeof pm.callPlay, 'function', 'has callPlay');
-  assert.equal(typeof pm.play, 'function', 'has play');
+  assert.equal(typeof m, 'object', 'returns an object');
+  assert.equal(typeof m.setSource, 'function', 'has setSource');
+  assert.equal(typeof m.callPlay, 'function', 'has callPlay');
+  assert.equal(typeof m.play, 'function', 'has play');
 });
 
 QUnit.test('playMiddleware callPlay will terminate if _shouldBlockPlay is true', function(assert) {
-  const pm = playMiddleware(this.player);
-  this.sandbox.stub(this.player.ads, 'isMiddlewareMediatorSupported').returns(true);
+  const m = pm.playMiddleware(this.player);
+  this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
 
   this.player.ads._shouldBlockPlay = true
-  assert.equal(pm.callPlay(), videojs.middleware.TERMINATOR,
+  assert.equal(m.callPlay(), videojs.middleware.TERMINATOR,
     'callPlay returns terminator');
 });
 
 QUnit.test('playMiddleware callPlay will not terminate if _shouldBlockPlay is false', function(assert) {
-  const pm = playMiddleware(this.player);
-  this.sandbox.stub(this.player.ads, 'isMiddlewareMediatorSupported').returns(true);
+  const m = pm.playMiddleware(this.player);
+  this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
 
   this.player.ads._shouldBlockPlay = false;
 
-  assert.equal(pm.callPlay(), undefined,
+  assert.equal(m.callPlay(), undefined,
     'callPlay should not return an object');
-  assert.notEqual(pm.callPlay(), videojs.middleware.TERMINATOR,
+  assert.notEqual(m.callPlay(), videojs.middleware.TERMINATOR,
     'callPlay should not return the terminator');
 });
 
 QUnit.test('playMiddleware play will trigger play event if callPlay terminates', function(assert) {
-  const pm = playMiddleware(this.player);
+  const m = pm.playMiddleware(this.player);
   const playSpy = this.sandbox.spy();
-  this.sandbox.stub(this.player.ads, 'isMiddlewareMediatorSupported').returns(true);
+  this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
 
 
   this.player.ads._shouldBlockPlay = true;
   this.player.one('play', playSpy);
 
-  pm.play(true, null);
+  m.play(true, null);
   assert.equal(playSpy.callCount, 1);
 });
 
 QUnit.test("playMiddleware won't trigger play event if callPlay doesn't terminate", function(assert) {
-  const pm = playMiddleware(this.player);
+  const m = pm.playMiddleware(this.player);
   const playSpy = this.sandbox.spy();
-  this.sandbox.stub(this.player.ads, 'isMiddlewareMediatorSupported').returns(true);
+  this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
 
   this.player.one('play', playSpy);
 
-  pm.play(false, {});
+  m.play(false, {});
   assert.equal(playSpy.callCount, 0);
 });

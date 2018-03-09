@@ -43,10 +43,8 @@ export default class BeforePreroll extends ContentState {
     player.ads.debug('Received play event (BeforePreroll)');
 
     // Don't start content playback yet
-    if (!player.ads.isMiddlewareMediatorSupported()) {
-      // player.ads._shouldBlockPlay = false;
-      cancelContentPlay(player);
-    }
+    // player.ads._shouldBlockPlay = false;
+    cancelContentPlay(player);
 
     // Check for prerolls
     this.transitionTo(Preroll, this.adsReady);

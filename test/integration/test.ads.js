@@ -8,33 +8,45 @@ QUnit.test('begins in BeforePreroll', function(assert) {
   assert.equal(this.player.ads._state.constructor.name, 'BeforePreroll');
 });
 
-QUnit.todo('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
+QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
   var spy = sinon.spy(this.player, 'pause');
-
-  assert.expect(1);
 
   this.player.paused = function() {
     return false;
   };
+
+  // Stub mobile browsers to force cancelContentPlay to be used
+  this.sandbox.stub(videojs, 'browser').get(() => {
+    return {
+      IS_ANDROID: true,
+      IS_IOS: true
+    };
+  });
 
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.clock.tick(1);
   this.player.trigger('play');
   this.clock.tick(1);
+
   assert.strictEqual(spy.callCount, 2, 'play attempts are paused');
 });
 
-QUnit.todo('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
-  var pauseSpy;
-
-  assert.expect(1);
+QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
+  var pauseSpy = sinon.spy(this.player, 'pause');
 
   this.player.paused = function() {
     return false;
   };
 
-  pauseSpy = sinon.spy(this.player, 'pause');
+  // Stub mobile browsers to force cancelContentPlay to be used
+  this.sandbox.stub(videojs, 'browser').get(() => {
+    return {
+      IS_ANDROID: true,
+      IS_IOS: true
+    };
+  });
+
   this.player.trigger('play');
   this.clock.tick(1);
   this.player.trigger('play');
@@ -42,8 +54,16 @@ QUnit.todo('pauses to wait for prerolls when the plugin loads AFTER play', funct
   assert.equal(pauseSpy.callCount, 2, 'play attempts are paused');
 });
 
-QUnit.todo('stops canceling play events when an ad is playing', function(assert) {
+QUnit.test('stops canceling play events when an ad is playing', function(assert) {
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
+
+  // Stub mobile browsers to force cancelContentPlay to be used
+  this.sandbox.stub(videojs, 'browser').get(() => {
+    return {
+      IS_ANDROID: true,
+      IS_IOS: true
+    };
+  });
 
   // Throughout this test, we check both that the expected timeouts are
   // populated on the `clock` _and_ that `setTimeout` has been called the
@@ -174,15 +194,16 @@ QUnit.test('removes the loading class when the preroll times out', function(asse
   assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
 });
 
-QUnit.todo('starts the content video if there is no preroll', function(assert) {
-  var spy = sinon.spy(this.player, 'play');
-
+QUnit.test('starts the content video if there is no preroll', function(assert) {
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.clock.tick(1);
   this.player.trigger('adtimeout');
-  assert.strictEqual(spy.callCount, 1, 'play is called once');
+
+  assert.strictEqual(this.player.ads.inAdBreak(), false, 'should not be in an ad break');
+  assert.strictEqual(this.player.ads.isContentResuming(), false, 'should not be resuming content');
+  assert.strictEqual(this.player.ads.isInAdMode(), false, 'should not be in ad mode');
 });
 
 QUnit.test('removes the poster attribute so it does not flash between videos', function(assert) {
@@ -272,7 +293,15 @@ QUnit.test('changing src does not trigger "contentupdate" during ad playback', f
   assert.strictEqual(spy.callCount, 0, 'no contentupdate events fired');
 });
 
-QUnit.todo('the `cancelPlayTimeout` timeout is cleared when exiting preroll', function(assert) {
+QUnit.test('the `cancelPlayTimeout` timeout is cleared when exiting preroll', function(assert) {
+  // Stub mobile browsers to force cancelContentPlay to be used
+  this.sandbox.stub(videojs, 'browser').get(() => {
+    return {
+      IS_ANDROID: true,
+      IS_IOS: true
+    };
+  });
+
   this.player.trigger('adsready');
   this.player.trigger('play');
 
@@ -304,7 +333,15 @@ QUnit.test('"cancelContentPlay doesn\'t block play after adscanceled', function(
 
 });
 
-QUnit.todo('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
+QUnit.test('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
+  // Stub mobile browsers to force cancelContentPlay to be used
+  this.sandbox.stub(videojs, 'browser').get(() => {
+    return {
+      IS_ANDROID: true,
+      IS_IOS: true
+    };
+  });
+
   var playSpy = sinon.spy(this.player, 'play');
   var setTimeoutSpy = sinon.spy(window, 'setTimeout');
 
