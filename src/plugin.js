@@ -128,6 +128,13 @@ const contribAdsPlugin = function(options) {
     player.ads._pausedOnContentupdate = false;
   });
 
+  // Keep track of whether a play event has happened
+  player.on('play', () => {
+    player.ads._playRequested = true;
+    // eslint-disable-next-line no-console
+    console.log('*$*', '_playRequested set');
+  });
+
   player.one('loadstart', () => {
     player.ads._hasThereBeenALoadStartDuringPlayerLife = true;
   });
@@ -171,6 +178,7 @@ const contribAdsPlugin = function(options) {
 
     //
     _shouldBlockPlay: false,
+    _playRequested: false,
 
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
@@ -190,6 +198,7 @@ const contribAdsPlugin = function(options) {
       player.ads._shouldBlockPlay = false;
       player.ads.nopreroll_ = false;
       player.ads.nopostroll_ = false;
+      player.ads._playRequested = false;
     },
 
     // Call this when an ad response has been received and there are

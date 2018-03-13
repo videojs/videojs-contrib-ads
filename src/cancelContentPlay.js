@@ -16,6 +16,8 @@ export default function cancelContentPlay(player) {
     return;
   }
 
+  player.ads.debug('Using cancelContentPlay to block content playback');
+
   // The timeout is necessary because pausing a video element while processing a `play`
   // event on iOS can cause the video element to continuously toggle between playing and
   // paused states.
