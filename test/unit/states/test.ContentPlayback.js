@@ -34,36 +34,42 @@ QUnit.module('ContentPlayback', {
 QUnit.test('only plays on init on correct conditions', function(assert) {
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = false;
+  this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
   assert.equal(this.playTriggered, false);
 
   this.player.paused = () => true;
   this.player.ads._cancelledPlay = false;
+  this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
   assert.equal(this.playTriggered, false);
 
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = true;
+  this.player.ads._playRequested = true;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
   assert.equal(this.playTriggered, false);
 
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = false;
+  this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = true;
   this.contentPlayback.init(this.player);
   assert.equal(this.playTriggered, false);
 
   this.player.paused = () => true;
   this.player.ads._cancelledPlay = true;
+  this.player.ads._playRequested = true;
   this.player.ads._pausedOnContentupdate = false;
   this.contentPlayback.init(this.player);
   assert.equal(this.playTriggered, true);
 
   this.player.paused = () => true;
   this.player.ads._cancelledPlay = false;
+  this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = true;
   this.contentPlayback.init(this.player);
   assert.equal(this.playTriggered, true);
@@ -99,4 +105,15 @@ QUnit.test('sets _shouldBlockPlay to false on init', function(assert) {
 
   this.contentPlayback.init(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, false);
+});
+
+QUnit.test('isResumingAfterNoAd returns value passed to init', function(assert) {
+  this.contentPlayback.init(this.player);
+  assert.strictEqual(this.contentPlayback.isResumingAfterNoAd(), undefined);
+
+  this.contentPlayback.init(this.player, true);
+  assert.strictEqual(this.contentPlayback.isResumingAfterNoAd(), true);
+
+  this.contentPlayback.init(this.player, false);
+  assert.strictEqual(this.contentPlayback.isResumingAfterNoAd(), false);
 });

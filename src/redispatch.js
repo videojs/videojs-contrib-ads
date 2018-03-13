@@ -1,3 +1,5 @@
+// import pm from './playMiddleware.js';
+
 /*
 The goal of this feature is to make player events work as an integrator would
 expect despite the presense of ads. For example, an integrator would expect
@@ -32,6 +34,8 @@ const prefixEvent = (player, prefix, event) => {
     type: prefix + event.type,
     originalEvent: event
   });
+  // eslint-disable-next-line no-console
+  console.log('****', event.type, 'prefixed as', prefix + event.type);
 };
 
 // Playing event
@@ -48,16 +52,25 @@ const handlePlaying = (player, event) => {
       // Prefix playing event when switching back to content after postroll.
       if (player.ads._contentEnding) {
         prefixEvent(player, 'content', event);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('***** ', event.type, 'seen');
       }
 
     // adplaying was already sent due to cancelContentPlay. Avoid sending another.
     } else if (player.ads._cancelledPlay) {
+      // eslint-disable-next-line no-console
+      console.log('**** cancelling repeat adplaying');
       cancelEvent(player, event);
 
     // Prefix all other playing events during ads.
     } else {
       prefixEvent(player, 'ad', event);
     }
+
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('***** ', event.type, 'seen');
   }
 };
 
@@ -136,10 +149,19 @@ const handleLoadEvent = (player, event) => {
 const handlePlay = (player, event) => {
   const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
 
+  // eslint-disable-next-line no-console
+  console.log('**** resumingAfterNoPreroll?', resumingAfterNoPreroll,
+    'resumingAfterNoAd', player.ads._state.isResumingAfterNoAd());
+
   if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
-  } else if (player.ads.isContentResuming() || resumingAfterNoPreroll) {
+  } else if (player.ads.isContentResuming() ||
+      (player.ads._state.isResumingAfterNoAd() && player.ads._playRequested)) {
     prefixEvent(player, 'content', event);
+
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('****', event.type, 'seen');
   }
 };
 

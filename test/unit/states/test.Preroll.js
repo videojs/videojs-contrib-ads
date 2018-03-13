@@ -164,3 +164,48 @@ QUnit.test('resets _shouldBlockPlay to false when ad break starts', function(ass
   this.preroll.startLinearAdMode();
   assert.equal(this.player.ads._shouldBlockPlay, false);
 });
+
+QUnit.test('updates `isResumingAfterNoAd` on `skipLinearAdMode`', function(assert) {
+  this.preroll.init(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, false);
+
+  this.preroll.skipLinearAdMode();
+  assert.strictEqual(this.preroll.resumingAfterNoAd, true);
+  assert.strictEqual(this.transitionArg, true);
+});
+
+QUnit.test('updates `isResumingAfterNoAd` on `adtimeout`', function(assert) {
+  this.preroll.init(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, false);
+
+  this.preroll.onAdTimeout(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, true);
+  assert.strictEqual(this.transitionArg, true);
+});
+
+QUnit.test('updates `isResumingAfterNoAd` on `nopreroll`', function(assert) {
+  this.preroll.init(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, false);
+
+  this.preroll.onNoPreroll(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, true);
+  assert.strictEqual(this.transitionArg, true);
+});
+
+QUnit.test('updates `isResumingAfterNoAd` on `adscanceled`', function(assert) {
+  this.preroll.init(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, false);
+
+  this.preroll.onAdsCanceled(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, true);
+  assert.strictEqual(this.transitionArg, true);
+});
+
+QUnit.test('updates `isResumingAfterNoAd` on `adserror`', function(assert) {
+  this.preroll.init(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, false);
+
+  this.preroll.onAdsError(this.player);
+  assert.strictEqual(this.preroll.resumingAfterNoAd, true);
+  assert.strictEqual(this.transitionArg, true);
+});
