@@ -2,6 +2,10 @@ import videojs from 'video.js';
 
 export default class State {
 
+  static _getName() {
+    return 'Anonymous State';
+  }
+
   constructor(player) {
     this.player = player;
   }
@@ -19,7 +23,8 @@ export default class State {
     const newState = new NewState(player);
 
     player.ads._state = newState;
-    player.ads.debug(previousState.constructor.name + ' -> ' + newState.constructor.name);
+    player.ads.debug(previousState.constructor._getName() + ' -> ' +
+      newState.constructor._getName());
     newState.init(player, ...args);
   }
 
@@ -61,22 +66,22 @@ export default class State {
    */
   startLinearAdMode() {
     videojs.log.warn('Unexpected startLinearAdMode invocation ' +
-      '(State via ' + this.constructor.name + ')');
+      '(State via ' + this.constructor._getName() + ')');
   }
   endLinearAdMode() {
     videojs.log.warn('Unexpected endLinearAdMode invocation ' +
-      '(State via ' + this.constructor.name + ')');
+      '(State via ' + this.constructor._getName() + ')');
   }
   skipLinearAdMode() {
     videojs.log.warn('Unexpected skipLinearAdMode invocation ' +
-      '(State via ' + this.constructor.name + ')');
+      '(State via ' + this.constructor._getName() + ')');
   }
 
   /*
    * Overridden by ContentState and AdState. Should not be overriden elsewhere.
    */
   isAdState() {
-    throw new Error('isAdState unimplemented for ' + this.constructor.name);
+    throw new Error('isAdState unimplemented for ' + this.constructor._getName());
   }
 
   /*

@@ -9,6 +9,17 @@ import cancelContentPlay from '../cancelContentPlay.js';
  */
 export default class BeforePreroll extends ContentState {
 
+  /*
+   * Allows state name to be logged even after minification.
+   */
+  static _getName() {
+    return 'BeforePreroll';
+  }
+
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player) {
     this.adsReady = false;
   }

@@ -10,6 +10,17 @@ import adBreak from '../adBreak.js';
  */
 export default class Preroll extends AdState {
 
+  /*
+   * Allows state name to be logged even after minification.
+   */
+  static _getName() {
+    return 'Preroll';
+  }
+
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player, adsReady) {
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
@@ -35,6 +46,9 @@ export default class Preroll extends AdState {
     }
   }
 
+  /*
+   * Adsready event after play event.
+   */
   onAdsReady(player) {
     if (!player.ads.inAdBreak() && !player.ads.isContentResuming()) {
       player.ads.debug('Received adsready event (Preroll)');

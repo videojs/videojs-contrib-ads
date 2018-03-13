@@ -5,6 +5,17 @@ import adBreak from '../adBreak.js';
 
 export default class Postroll extends AdState {
 
+  /*
+   * Allows state name to be logged even after minification.
+   */
+  static _getName() {
+    return 'Postroll';
+  }
+
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player) {
     // Legacy name that now simply means "handling postrolls".
     player.ads._contentEnding = true;
@@ -57,6 +68,9 @@ export default class Postroll extends AdState {
     player.removeClass('vjs-ad-loading');
   }
 
+  /*
+   * Ending a postroll triggers the ended event.
+   */
   endLinearAdMode() {
     const player = this.player;
 
@@ -71,6 +85,9 @@ export default class Postroll extends AdState {
     }
   }
 
+  /*
+   * Postroll skipped, time to clean up.
+   */
   skipLinearAdMode() {
     const player = this.player;
 
@@ -83,11 +100,17 @@ export default class Postroll extends AdState {
     }
   }
 
+  /*
+   * Postroll timed out, time to clean up.
+   */
   onAdTimeout(player) {
     player.ads.debug('Postroll abort (adtimeout)');
     this.abort();
   }
 
+  /*
+   * Postroll errored out, time to clean up.
+   */
   onAdsError(player) {
     player.ads.debug('Postroll abort (adserror)');
 
@@ -101,6 +124,9 @@ export default class Postroll extends AdState {
     this.abort();
   }
 
+  /*
+   * On ended, transition to AdsDone state.
+   */
   onEnded() {
     if (this.isContentResuming()) {
       this.transitionTo(AdsDone);
@@ -109,14 +135,25 @@ export default class Postroll extends AdState {
     }
   }
 
+  /*
+   * Handle content change if we're not in an ad break.
+   */
   onContentChanged(player) {
+    // Content resuming after Postroll. Content is paused
+    // at this point, since it is done playing.
     if (this.isContentResuming()) {
       this.transitionTo(BeforePreroll);
+
+    // Waiting for postroll to start. Content is considered playing
+    // at this point, since it had to be playing to start the postroll.
     } else if (!this.inAdBreak()) {
       this.transitionTo(Preroll);
     }
   }
 
+  /*
+   * Wrap up if there is no postroll.
+   */
   onNoPostroll(player) {
     if (!this.isContentResuming() && !this.inAdBreak()) {
       this.transitionTo(AdsDone);
@@ -125,6 +162,10 @@ export default class Postroll extends AdState {
     }
   }
 
+  /*
+   * Helper for ending Postrolls. In the future we may want to
+   * refactor this class so that `cleanup` handles all of this.
+   */
   abort() {
     const player = this.player;
 
@@ -135,6 +176,9 @@ export default class Postroll extends AdState {
     player.trigger('ended');
   }
 
+  /*
+   * Cleanup timeouts and state.
+   */
   cleanup() {
     const player = this.player;
 
