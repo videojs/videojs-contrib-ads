@@ -47,6 +47,9 @@ const prefixEvent = (player, prefix, event) => {
 const handlePlaying = (player, event) => {
   if (player.ads.isInAdMode()) {
 
+    // eslint-disable-next-line no-console
+    console.log('*$* has adplaying happened already?', player.ads._state._hasThereBeenAdPlaying);
+
     if (player.ads.isContentResuming()) {
 
       // Prefix playing event when switching back to content after postroll.
@@ -58,7 +61,7 @@ const handlePlaying = (player, event) => {
       }
 
     // adplaying was already sent due to cancelContentPlay. Avoid sending another.
-    } else if (player.ads._cancelledPlay) {
+    } else if (player.ads._state._hasThereBeenAdPlaying) {
       // eslint-disable-next-line no-console
       console.log('**** cancelling repeat adplaying');
       cancelEvent(player, event);
@@ -66,6 +69,7 @@ const handlePlaying = (player, event) => {
     // Prefix all other playing events during ads.
     } else {
       prefixEvent(player, 'ad', event);
+      player.ads._state._hasThereBeenAdPlaying = true;
     }
 
   } else {
