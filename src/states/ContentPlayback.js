@@ -11,7 +11,7 @@ export default class ContentPlayback extends ContentState {
    * Allows state name to be logged even after minification.
    */
   static _getName() {
-    return 'AdsDone';
+    return 'ContentPlayback';
   }
 
   /*
