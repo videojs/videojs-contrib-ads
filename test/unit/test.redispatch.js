@@ -43,7 +43,8 @@ QUnit.module('Redispatch', {
           cleanup: function() {},
           isAdState: function() {},
           isContentResuming: function() {},
-          inAdBreak: function() {}
+          inAdBreak: function() {},
+          isResumingAfterNoAd: function() {}
         }
       }
     };
@@ -93,11 +94,52 @@ QUnit.test('no repeated adplaying event in a single ad break', function(assert) 
   assert.equal(this.redispatch('playing'), 'cancelled');
 });
 
-QUnit.test('no repeated play events due to resuming after nopreroll', function(assert) {
+QUnit.test('play events in different states', function(assert) {
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => false;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._state.isResumingAfterNoAd = () => true;
   this.player.ads._playRequested = true;
-  assert.equal(this.redispatch('play'), 'contentplay');
+  assert.equal(this.redispatch('play'), 'contentplay',
+    'should be contentplay when resuming after nopreroll');
+
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => true;
+  this.player.ads._state.isResumingAfterNoAd = () => false;
+  this.player.ads._playRequested = true;
+  assert.equal(this.redispatch('play'), 'contentplay',
+    'should be contentplay when content is resuming');
+
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._playRequested = false;
+  this.player.ads._state.isResumingAfterNoAd = () => true;
+  assert.strictEqual(this.redispatch('play'), 'ignored',
+    "should not be redispatched if play hasn't been requested yet");
+
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._state.isResumingAfterNoAd = () => false;
+  this.player.ads._playRequested = true;
+  assert.strictEqual(this.redispatch('play'), 'ignored',
+    'should not be redispatched if in content state');
+
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._playRequested = true;
+  this.player.ads._state.isResumingAfterNoAd = () => false;
+  assert.strictEqual(this.redispatch('play'), 'ignored',
+    'should not prefix when not in an ad break');
+
+  this.player.ads.inAdBreak = () => true;
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._playRequested = true;
+  this.player.ads._state.isResumingAfterNoAd = () => false;
+  assert.strictEqual(this.redispatch('play'), 'adplay',
+    'should be adplay when in an ad break');
 });
