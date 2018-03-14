@@ -60,3 +60,7 @@ QUnit.test('can check if in ad break', function(assert) {
   this.player.ads._inLinearAdMode = true;
   assert.equal(this.adState.inAdBreak(), true, 'in ad break');
 });
+
+QUnit.test('initializes _hasThereBeenAdPlaying correctly', function(assert) {
+  assert.strictEqual(this.adState._hasThereBeenAdPlaying, false);
+});

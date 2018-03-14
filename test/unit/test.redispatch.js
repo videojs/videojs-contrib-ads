@@ -33,6 +33,17 @@ QUnit.module('Redispatch', {
 
         stitchedAds() {
           return false;
+        },
+
+        _state: {
+          _hasThereBeenAdPlaying: false,
+          constructor: function(player) {},
+          transitionTo: function(NewState, ...args) {},
+          init: function() {},
+          cleanup: function() {},
+          isAdState: function() {},
+          isContentResuming: function() {},
+          inAdBreak: function() {}
         }
       }
     };
@@ -75,9 +86,18 @@ QUnit.test('playing event in different ad states', function(assert) {
 
 });
 
-QUnit.test('no adplaying event during ad playback if content play was cancelled', function(assert) {
+QUnit.test('no repeated adplaying event in a single ad break', function(assert) {
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
-  this.player.ads._cancelledPlay = true;
+  this.player.ads._state._hasThereBeenAdPlaying = true;
   assert.equal(this.redispatch('playing'), 'cancelled');
+});
+
+QUnit.test('no repeated play events due to resuming after nopreroll', function(assert) {
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._state.isResumingAfterNoAd = () => true;
+  this.player.ads._playRequested = true;
+  assert.equal(this.redispatch('play'), 'contentplay');
 });
