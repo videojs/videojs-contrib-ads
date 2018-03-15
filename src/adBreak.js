@@ -7,7 +7,6 @@
 import * as snapshot from './snapshot.js';
 
 function start(player) {
-
   player.ads.debug('Starting ad break');
 
   player.ads._inLinearAdMode = true;
@@ -43,6 +42,7 @@ function start(player) {
 }
 
 function end(player, callback) {
+  player.ads.debug('Ending ad break');
 
   if (callback === undefined) {
     callback = () => {};
