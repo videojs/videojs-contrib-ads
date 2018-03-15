@@ -8,7 +8,11 @@ import {AdsDone} from '../../src/states.js';
  */
 QUnit.module('AdsDone', {
   beforeEach: function() {
+    this.events = [];
     this.player = {
+      trigger: (event) => {
+        this.events.push(event);
+      },
       ads: {}
     };
 
@@ -19,6 +23,11 @@ QUnit.module('AdsDone', {
 QUnit.test('sets _contentHasEnded on init', function(assert) {
   this.adsDone.init(this.player);
   assert.equal(this.player.ads._contentHasEnded, true, 'content has ended');
+});
+
+QUnit.test('ended event on init', function(assert) {
+  this.adsDone.init(this.player);
+  assert.equal(this.events[0], 'ended', 'content has ended');
 });
 
 QUnit.test('does not play midrolls', function(assert) {

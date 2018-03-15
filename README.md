@@ -100,7 +100,6 @@ This is the basic flow for a simple use case, but there are other things the int
 * `skipLinearAdMode` (METHOD) -- At a time when `startLinearAdMode` is expected, calling `skipLinearAdMode` will immediately resume content playback instead.
 * `nopreroll` (EVENT) -- You can trigger this event even before `readyforpreroll` to indicate that no preroll will play. The ad plugin will not check for prerolls and will instead begin content playback after the `play` event (or immediately, if playback was already requested).
 * `nopostroll` (EVENT) -- Similar to `nopreroll`, you can trigger this event even before `contentended` to indicate that no postroll will play.  The ad plugin will not wait for a postroll to play and will instead immediately trigger the `ended` event.
-* `adserror` (EVENT) -- This event skips prerolls when seen before a preroll ad break. It skips postrolls if called after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break.
 * `contentresumed` (EVENT) - If your integration does not result in a "playing" event when resuming content after an ad, send this event to signal that content can resume. This was added to support stitched ads and is not normally necessary.
 
 There are some other useful events that videojs-contrib-ads may trigger:
@@ -111,6 +110,7 @@ Deprecated events:
 
 * `contentupdate` (EVENT) -- Replaced by `contentchanged`, which is more reliable.
 * `adscanceled` (EVENT) -- Intended to cancel all ads, it was never fully implemented. Instead, use `nopreroll` and `nopostroll`.
+* `adserror` (EVENT) -- This event skips prerolls when seen before a preroll ad break. It skips postrolls if called after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break. It can be replaced using `skipLinearAdMode` and `endLinearAdMode`.
 
 ### Public Methods
 

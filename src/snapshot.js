@@ -62,9 +62,14 @@ export function getPlayerSnapshot(player) {
  * @param {Object} player - the videojs player object
  * @param {Object} snapshotObject - the player state to apply
  */
-export function restorePlayerSnapshot(player, snapshotObject) {
+export function restorePlayerSnapshot(player, snapshotObject, callback) {
+  if (callback === undefined) {
+    callback = () => {};
+  }
+
   if (player.ads.disableNextSnapshotRestore === true) {
     player.ads.disableNextSnapshotRestore = false;
+    callback();
     return;
   }
 
@@ -188,6 +193,10 @@ export function restorePlayerSnapshot(player, snapshotObject) {
   // restoration is required
 
   if (player.ads.videoElementRecycled()) {
+    // Snapshot restore will result in an adended event. That's when
+    // we're really done.
+    player.one('adended', callback);
+
     // on ios7, fiddling with textTracks too early will cause safari to crash
     player.one('contentloadedmetadata', restoreTracks);
 
@@ -220,5 +229,8 @@ export function restorePlayerSnapshot(player, snapshotObject) {
       // just resume playback at the current time.
       player.play();
     }
+
+    // snapshot restore is complete
+    callback();
   }
 }

@@ -42,8 +42,11 @@ function start(player) {
   player.ads.removeNativePoster();
 }
 
-function end(player) {
-  player.ads.debug('Ending ad break');
+function end(player, callback) {
+
+  if (callback === undefined) {
+    callback = () => {};
+  }
 
   player.ads.adType = null;
 
@@ -61,12 +64,17 @@ function end(player) {
     player.addClass('vjs-live');
   }
   if (!player.ads.shouldPlayContentBehindAd(player)) {
-    snapshot.restorePlayerSnapshot(player, player.ads.snapshot);
+    snapshot.restorePlayerSnapshot(player, player.ads.snapshot, callback);
   }
 
   // Reset the volume to pre-ad levels
   if (player.ads.shouldPlayContentBehindAd(player)) {
     player.volume(player.ads.preAdVolume_);
+  }
+
+  // We're done because we're not restoring a snapshot
+  if (player.ads.shouldPlayContentBehindAd(player)) {
+    callback();
   }
 
 }

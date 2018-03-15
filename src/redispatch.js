@@ -67,15 +67,9 @@ const handlePlaying = (player, event) => {
 // * No ended event before postroll
 // * A single ended event after postroll
 const handleEnded = (player, event) => {
+
+  // Prefix ended events in ad mode
   if (player.ads.isInAdMode()) {
-
-    // The true ended event fired either after the postroll
-    // or because there was no postroll.
-    if (player.ads.isContentResuming()) {
-      return;
-    }
-
-    // Prefix ended due to ad ending.
     prefixEvent(player, 'ad', event);
 
   // Prefix ended due to content ending before preroll check

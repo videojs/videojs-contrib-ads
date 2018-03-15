@@ -55,7 +55,7 @@ module.exports = function(config) {
     browserNoActivityTimeout: 300000,
     client: {
       qunit: {
-        testTimeout: 10000
+        testTimeout: 15000
       }
     }
   });

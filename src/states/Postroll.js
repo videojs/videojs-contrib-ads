@@ -37,11 +37,9 @@ export default class Postroll extends AdState {
 
     // No postroll, ads are done
     } else {
-      player.setTimeout(() => {
-        player.ads.debug('Triggered ended event (no postroll)');
-        this.contentResuming = true;
-        player.trigger('ended');
-      }, 1);
+      player.ads.debug('Triggered ended event (no postroll)');
+      this.contentResuming = true;
+      this.transitionTo(AdsDone);
     }
   }
 
@@ -76,12 +74,10 @@ export default class Postroll extends AdState {
 
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
-      adBreak.end(player);
-
       this.contentResuming = true;
-
-      player.ads.debug('Triggered ended event (endLinearAdMode)');
-      player.trigger('ended');
+      adBreak.end(player, () => {
+        this.transitionTo(AdsDone);
+      });
     }
   }
 
@@ -119,19 +115,6 @@ export default class Postroll extends AdState {
     // if there was an error.
     if (player.ads.inAdBreak()) {
       player.ads.endLinearAdMode();
-    }
-
-    this.abort();
-  }
-
-  /*
-   * On ended, transition to AdsDone state.
-   */
-  onEnded() {
-    if (this.isContentResuming()) {
-      this.transitionTo(AdsDone);
-    } else {
-      videojs.log.warn('Unexpected ended event during postroll');
     }
   }
 
@@ -171,9 +154,7 @@ export default class Postroll extends AdState {
 
     this.contentResuming = true;
     player.removeClass('vjs-ad-loading');
-
-    player.ads.debug('Triggered ended event (postroll abort)');
-    player.trigger('ended');
+    this.transitionTo(AdsDone);
   }
 
   /*

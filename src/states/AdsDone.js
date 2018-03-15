@@ -18,6 +18,7 @@ export default class AdsDone extends ContentState {
   init(player) {
     // From now on, `ended` events won't be redispatched
     player.ads._contentHasEnded = true;
+    player.trigger('ended');
   }
 
   /*
