@@ -144,17 +144,6 @@ QUnit.test('remove ad loading class on cleanup', function(assert) {
   assert.ok(removeClassSpy.calledWith('vjs-ad-loading'), 'loading class removed');
 });
 
-QUnit.test('cleans up _hasThereBeenAdPlaying correctly', function(assert) {
-  this.preroll.init(this.player, false);
-  assert.strictEqual(this.preroll._hasThereBeenAdPlaying, false);
-
-  // Change the value
-  this.preroll._hasThereBeenAdPlaying = true;
-
-  this.preroll.cleanup();
-  assert.strictEqual(this.preroll._hasThereBeenAdPlaying, false);
-});
-
 QUnit.test('sets _shouldBlockPlay to true before ad break starts', function(assert) {
   this.preroll.init(this.player, true);
   this.player.ads._inLinearAdMode = false;

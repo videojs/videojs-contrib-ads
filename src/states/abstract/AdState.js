@@ -10,7 +10,6 @@ export default class AdState extends State {
   constructor(player) {
     super(player);
     this.contentResuming = false;
-    this._hasThereBeenAdPlaying = false;
   }
 
   /*

@@ -142,14 +142,3 @@ QUnit.test('can clean up', function(assert) {
   assert.equal(this.player.ads._contentEnding, false, '_contentEnding');
   assert.ok(clearSpy.calledWith(this.postroll._postrollTimeout), 'cleared timeout');
 });
-
-QUnit.test('cleans up _hasThereBeenAdPlaying correctly', function(assert) {
-  this.postroll.init(this.player, false);
-  assert.strictEqual(this.postroll._hasThereBeenAdPlaying, false);
-
-  // Change the value
-  this.postroll._hasThereBeenAdPlaying = true;
-
-  this.postroll.cleanup();
-  assert.strictEqual(this.postroll._hasThereBeenAdPlaying, false);
-});

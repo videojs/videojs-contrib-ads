@@ -43,12 +43,8 @@ const prefixEvent = (player, prefix, event) => {
 // * Normal playing event when there is no preroll
 // * No playing event before preroll
 // * At least one playing event after preroll
-// * A single adplaying event when an ad begins
 const handlePlaying = (player, event) => {
   if (player.ads.isInAdMode()) {
-
-    // eslint-disable-next-line no-console
-    console.log('*$* has adplaying happened already?', player.ads._state._hasThereBeenAdPlaying);
 
     if (player.ads.isContentResuming()) {
 
@@ -60,16 +56,9 @@ const handlePlaying = (player, event) => {
         console.log('***** ', event.type, 'seen');
       }
 
-    // adplaying was already sent due to cancelContentPlay. Avoid sending another.
-    } else if (player.ads._state._hasThereBeenAdPlaying) {
-      // eslint-disable-next-line no-console
-      console.log('**** cancelling repeat adplaying');
-      cancelEvent(player, event);
-
     // Prefix all other playing events during ads.
     } else {
       prefixEvent(player, 'ad', event);
-      player.ads._state._hasThereBeenAdPlaying = true;
     }
 
   } else {

@@ -43,11 +43,4 @@ export default class Midroll extends AdState {
     }
   }
 
-  /*
-   *
-   */
-  cleanup() {
-    this._hasThereBeenAdPlaying = false;
-  }
-
 }

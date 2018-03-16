@@ -36,7 +36,6 @@ QUnit.module('Redispatch', {
         },
 
         _state: {
-          _hasThereBeenAdPlaying: false,
           constructor: function(player) {},
           transitionTo: function(NewState, ...args) {},
           init: function() {},
@@ -85,13 +84,6 @@ QUnit.test('playing event in different ad states', function(assert) {
   this.player.ads.isContentResuming = () => true;
   assert.equal(this.redispatch('playing'), 'ignored');
 
-});
-
-QUnit.test('no repeated adplaying event in a single ad break', function(assert) {
-  this.player.ads.isInAdMode = () => true;
-  this.player.ads.isContentResuming = () => false;
-  this.player.ads._state._hasThereBeenAdPlaying = true;
-  assert.equal(this.redispatch('playing'), 'cancelled');
 });
 
 QUnit.test('play events in different states', function(assert) {

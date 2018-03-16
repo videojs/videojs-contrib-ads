@@ -166,7 +166,6 @@ export default class Postroll extends AdState {
 
     player.clearTimeout(this._postrollTimeout);
     player.ads._contentEnding = false;
-    this._hasThereBeenAdPlaying = false;
   }
 
 }

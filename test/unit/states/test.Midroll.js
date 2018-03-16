@@ -46,14 +46,3 @@ QUnit.test('adserror during ad break ends ad break', function(assert) {
   this.midroll.onAdsError(this.player);
   assert.equal(this.calledEndLinearAdMode, true, 'linear ad mode ended');
 });
-
-QUnit.test('cleans up _hasThereBeenAdPlaying correctly', function(assert) {
-  this.midroll.init(this.player);
-  assert.strictEqual(this.midroll._hasThereBeenAdPlaying, false);
-
-  // Change the value
-  this.midroll._hasThereBeenAdPlaying = true;
-
-  this.midroll.cleanup();
-  assert.strictEqual(this.midroll._hasThereBeenAdPlaying, false);
-});
