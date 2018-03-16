@@ -24,8 +24,8 @@ Please include a unit test that fails in the most recent version of videojs-cont
 
 ```js
 import QUnit from 'qunit';
-import {Midroll} from '../../src/states.js';
-import adBreak from '../../src/adBreak.js';
+import {Midroll} from '../../../src/states.js';
+import adBreak from '../../../src/adBreak.js';
 
 QUnit.test('starts an ad break on init', function(assert) {
   this.midroll = new Midroll(this.player);

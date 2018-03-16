@@ -9,7 +9,7 @@ TODO:
 
 import QUnit from 'qunit';
 import videojs from 'video.js';
-import '../examples/basic-ad-plugin/example-integration.js';
+import '../../examples/basic-ad-plugin/example-integration.js';
 
 QUnit.module('Events and Midrolls', {
   beforeEach: function() {
@@ -27,7 +27,7 @@ QUnit.module('Events and Midrolls', {
     });
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/inventory.json',
+      'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'midrollPoint': 1
     });
