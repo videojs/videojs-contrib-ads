@@ -31,3 +31,4 @@ node_modules/
 dist/
 docs/api/
 test/dist/
+examples/module-import/bundle.js

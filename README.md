@@ -64,11 +64,9 @@ You may also use the Javascript and CSS links from the following to get started:
 
 ### Using a module system
 
-If you are loading `videojs-contrib-ads` using modules, do this:
+If you are loading `videojs-contrib-ads` using modules, this example is a useful starting point:
 
-https://github.com/videojs/videojs-contrib-ads/pull/312
-
-TODO: Update that link once that PR is merged.
+https://github.com/videojs/videojs-contrib-ads/blob/master/examples/module-import/entry.js
 
 With this basic structure in place, you're ready to develop an ad integration.
 
