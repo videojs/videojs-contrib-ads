@@ -23,7 +23,13 @@ Maintenance Status: Stable
 * Useful macros in ad server URLs are provided.
 * Preroll checks automatically happen again when the video source changes.
 
-## Getting Started
+## Available on NPM
+
+```sh
+npm install videojs-contrib-ads
+```
+
+## Building It Yourself
 
 In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`.
 After you build the project they are both in the `dist` directory.
