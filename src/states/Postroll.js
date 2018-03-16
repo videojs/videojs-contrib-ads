@@ -115,6 +115,8 @@ export default class Postroll extends AdState {
     // if there was an error.
     if (player.ads.inAdBreak()) {
       player.ads.endLinearAdMode();
+    } else {
+      this.abort();
     }
   }
 
