@@ -110,7 +110,8 @@ QUnit.test('Event prefixing and postrolls', function(assert) {
     'volumechange',
     'firstplay',
     'suspend',
-    'playing'
+    'playing',
+    'ended'
   ];
 
   events = events.concat(events.map(function(e) {

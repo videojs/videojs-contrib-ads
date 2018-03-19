@@ -193,9 +193,8 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
   // restoration is required
 
   if (player.ads.videoElementRecycled()) {
-    // Snapshot restore will result in an adended event. That's when
-    // we're really done.
-    player.one('adended', callback);
+    // Snapshot restore is done, so now we're really finished.
+    player.one('resumeended', callback);
 
     // on ios7, fiddling with textTracks too early will cause safari to crash
     player.one('contentloadedmetadata', restoreTracks);

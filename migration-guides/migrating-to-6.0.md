@@ -25,7 +25,7 @@ Deprecated interfaces will be removed in a future major version update.
 
 * `contentupdate` is now deprecated. It has been replaced by `contentchanged`. `contentupdate` was never intended to fire for the initial source, but over time its behavior eroded. To make migration easier for anyone who depends on the current behavior, we're providing a deprecation period and a new event with correct behavior.
 * `adscanceled` is now deprecated. Instead, use `nopreroll` and `nopostroll`. `adscanceled` was initially intended to function similarly to calling both `nopreroll` and `nopostroll` but it was never fully implemented.
-* `adserror` is now deprecated. Currently this event will skip prerolls when seen before a preroll ad break, skip postrolls if called after contentended and before a postroll ad break, and end linear ad mode if seen during an ad break. It is better for the ad integration to do these things explicitely with `skipLinearAdMode` and `endLinearAdMode`. In the future, this event will not have any special behavior.
+* `adserror` is now deprecated. Currently this event will skip prerolls when seen before a preroll ad break, skip postrolls if called after contentended and before a postroll ad break, and end linear ad mode if seen during an ad break. It is better for the ad integration to do these things explicitely with `skipLinearAdMode` and `endLinearAdMode`. In the future, this event will not have any special behavior. The event isn't being "removed" in any sense because contrib-ads does not trigger this event, so integrations may continue to use it for other purposes.
 
 ## Timeout behavior changes
 

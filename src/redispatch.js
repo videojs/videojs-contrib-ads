@@ -67,12 +67,26 @@ const handlePlaying = (player, event) => {
 // * No ended event before postroll
 // * A single ended event after postroll
 const handleEnded = (player, event) => {
-
-  // Prefix ended events in ad mode
   if (player.ads.isInAdMode()) {
-    prefixEvent(player, 'ad', event);
 
-  // Prefix ended due to content ending before preroll check
+    // Cancel ended events during content resuming. Normally we would
+    // prefix them, but `contentended` has a special meaning. In the
+    // future we'd like to rename the existing `contentended` to
+    // `readyforpostroll`, then we could remove the special `resumeended`
+    // and do a conventional content prefix here.
+    if (player.ads.isContentResuming()) {
+      cancelEvent(player, event);
+
+      // Important: do not use this event outside of videojs-contrib-ads.
+      // It will be removed and your code will break.
+      player.trigger('resumeended');
+
+    // Ad prefix in ad mode
+    } else {
+      prefixEvent(player, 'ad', event);
+    }
+
+  // Prefix ended due to content ending before postroll check
   } else if (!player.ads._contentHasEnded) {
     prefixEvent(player, 'content', event);
   }

@@ -63,12 +63,13 @@ function end(player, callback) {
   if (player.ads.isLive(player)) {
     player.addClass('vjs-live');
   }
+
+  // Restore snapshot
   if (!player.ads.shouldPlayContentBehindAd(player)) {
     snapshot.restorePlayerSnapshot(player, player.ads.snapshot, callback);
-  }
 
   // Reset the volume to pre-ad levels
-  if (player.ads.shouldPlayContentBehindAd(player)) {
+  } else {
     player.volume(player.ads.preAdVolume_);
     callback();
   }
