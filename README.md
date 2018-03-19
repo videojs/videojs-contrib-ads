@@ -106,7 +106,7 @@ There are some other useful events that videojs-contrib-ads may trigger:
 
  * `contentchanged` (EVENT) -- Fires when a new content video has been loaded in the player (specifically, at the same time as the `loadstart` media event for the new source). This means the ad workflow has restarted from the beginning. Your integration will need to trigger `adsready` again, for example. Note that when changing sources, the playback state of the player is retained: if the previous source was playing, the new source will also be playing and the ad workflow will not wait for a new `play` event.
 
-Deprecated events:
+### Deprecated events
 
 * `contentupdate` (EVENT) -- Replaced by `contentchanged`, which is more reliable.
 * `adscanceled` (EVENT) -- Intended to cancel all ads, it was never fully implemented. Instead, use `nopreroll` and `nopostroll`.
