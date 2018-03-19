@@ -45,8 +45,8 @@ export default class ContentPlayback extends ContentState {
   /*
    * Content ended before postroll checks.
    */
-  onContentEnded(player) {
-    player.ads.debug('Received contentended event');
+  onReadyForPostroll(player) {
+    player.ads.debug('Received readyforpostroll event');
     this.transitionTo(Postroll);
   }
 

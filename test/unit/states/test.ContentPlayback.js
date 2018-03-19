@@ -81,9 +81,9 @@ QUnit.test('no readyforpreroll if nopreroll_', function(assert) {
   assert.equal(this.events.length, 0, 'no events triggered');
 });
 
-QUnit.test('transitions to Postroll on contentended', function(assert) {
+QUnit.test('transitions to Postroll on readyforpostroll', function(assert) {
   this.contentPlayback.init(this.player, false);
-  this.contentPlayback.onContentEnded(this.player);
+  this.contentPlayback.onReadyForPostroll(this.player);
   assert.equal(this.newState, 'Postroll', 'transitioned to Postroll');  
 });
 

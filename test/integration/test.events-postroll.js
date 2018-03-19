@@ -3,7 +3,6 @@ TODO:
 * timeupdate, adtimeupdate, contenttimeupdate
 * loadstart, adloadstart, contentloadstart
 * play, adplay, contentplay
-* contentended
 * loadeddata, adloadeddata, contentloadeddata
 * loadedmetadata, adloadedmetadata, contentloadedmetadata
 */

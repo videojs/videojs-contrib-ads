@@ -34,7 +34,7 @@ const defaults = {
   prerollTimeout: undefined,
 
   // maximum amount of time in ms to wait for the ad implementation to start
-  // linear ad mode after `contentended` has fired.
+  // linear ad mode after `readyforpostroll` has fired.
   postrollTimeout: undefined,
 
   // when truthy, instructs the plugin to output additional information about
@@ -375,7 +375,8 @@ const contribAdsPlugin = function(options) {
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
     'ads-ad-started',
-    'contentchanged', 'contentresumed', 'contentended',
+    'contentchanged', 'contentresumed',
+    'readyforpostroll',
     'nopreroll', 'nopostroll'], (e) => {
     player.ads._state.handleEvent(e.type);
   });
