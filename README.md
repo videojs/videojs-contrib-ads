@@ -108,9 +108,11 @@ There are some other useful events that videojs-contrib-ads may trigger:
 
 ### Deprecated events
 
-* `contentupdate` (EVENT) -- Replaced by `contentchanged`, which is more reliable.
-* `adscanceled` (EVENT) -- Intended to cancel all ads, it was never fully implemented. Instead, use `nopreroll` and `nopostroll`.
-* `adserror` (EVENT) -- This event skips prerolls when seen before a preroll ad break. It skips postrolls if called after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break. These behaviors should be replaced using `skipLinearAdMode` and `endLinearAdMode` in the ad integration. The event isn't being "removed" in any sense because contrib-ads does not trigger this event, so integrations may continue to use it for other purposes.
+The following events are slated for removal from contrib-ads and will have no special behavior once removed. These events should no longer be used in integrating ad plugins. Replacements are provided for matching functionality that will continue to be supported.
+
+* `contentupdate` (EVENT) -- In the future, contrib-ads will no longer trigger this event. Listen to the new `contentchanged` event instead; it is is more reliable.
+* `adscanceled` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. It was intended to cancel all ads, but it was never fully implemented. Instead, trigger `nopreroll` and `nopostroll`.
+* `adserror` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. Today, this event skips prerolls when seen before a preroll ad break. It skips postrolls if seen after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break. These behaviors should be replaced using `skipLinearAdMode` and `endLinearAdMode` in the ad integration.
 
 ### Public Methods
 
