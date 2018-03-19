@@ -37,7 +37,6 @@ export default class Postroll extends AdState {
 
     // No postroll, ads are done
     } else {
-      player.ads.debug('Triggered ended event (no postroll)');
       this.contentResuming = true;
       this.transitionTo(AdsDone);
     }

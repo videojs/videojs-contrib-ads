@@ -70,10 +70,6 @@ function end(player, callback) {
   // Reset the volume to pre-ad levels
   if (player.ads.shouldPlayContentBehindAd(player)) {
     player.volume(player.ads.preAdVolume_);
-  }
-
-  // We're done because we're not restoring a snapshot
-  if (player.ads.shouldPlayContentBehindAd(player)) {
     callback();
   }
 
