@@ -19,8 +19,8 @@ export default class ContentPlayback extends ContentState {
    * For state transitions to work correctly, initialization should
    * happen here, not in a constructor.
    */
-  init(player, resumingAfterNoAd) {
-    this.resumingAfterNoAd = resumingAfterNoAd;
+  init(player, resumingAfterNoPreroll) {
+    this.resumingAfterNoPreroll = resumingAfterNoPreroll;
 
     // eslint-disable-next-line no-console
     console.log('*$*', '_playRequested', player.ads._playRequested,
@@ -42,8 +42,8 @@ export default class ContentPlayback extends ContentState {
     }
   }
 
-  isResumingAfterNoAd() {
-    return this.resumingAfterNoAd;
+  isResumingAfterNoPreroll() {
+    return this.resumingAfterNoPreroll;
   }
 
   /*

@@ -22,7 +22,7 @@ export default class Preroll extends AdState {
    * happen here, not in a constructor.
    */
   init(player, adsReady) {
-    this.resumingAfterNoAd = false;
+    this.resumingAfterNoPreroll = false;
 
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
@@ -102,8 +102,8 @@ export default class Preroll extends AdState {
     this.afterLoadStart(() => {
       this.player.ads.debug('Skipping prerolls due to nopreroll event (Preroll)');
 
-      this.resumingAfterNoAd = true;
-      this.transitionTo(ContentPlayback, this.resumingAfterNoAd);
+      this.resumingAfterNoPreroll = true;
+      this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
     });
   }
 
@@ -127,7 +127,6 @@ export default class Preroll extends AdState {
     player.ads.debug('Received play event (Preroll)');
 
     if (!this.inAdBreak() && !this.isContentResuming()) {
-      // player.ads._shouldBlockPlay = false;
       cancelContentPlay(this.player);
     }
   }
@@ -139,8 +138,8 @@ export default class Preroll extends AdState {
     player.ads.debug('adscanceled (Preroll)');
 
     this.afterLoadStart(() => {
-      this.resumingAfterNoAd = true;
-      this.transitionTo(ContentPlayback, this.resumingAfterNoAd);
+      this.resumingAfterNoPreroll = true;
+      this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
     });
   }
 
@@ -157,8 +156,8 @@ export default class Preroll extends AdState {
     }
 
     this.afterLoadStart(() => {
-      this.resumingAfterNoAd = true;
-      this.transitionTo(ContentPlayback, this.resumingAfterNoAd);
+      this.resumingAfterNoPreroll = true;
+      this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
     });
   }
 
@@ -214,8 +213,8 @@ export default class Preroll extends AdState {
         player.trigger('adskip');
         player.ads.debug('skipLinearAdMode (Preroll)');
 
-        this.resumingAfterNoAd = true;
-        this.transitionTo(ContentPlayback, this.resumingAfterNoAd);
+        this.resumingAfterNoPreroll = true;
+        this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
       });
     }
   }
@@ -227,8 +226,8 @@ export default class Preroll extends AdState {
     this.afterLoadStart(() => {
       player.ads.debug('adtimeout (Preroll)');
 
-      this.resumingAfterNoAd = true;
-      this.transitionTo(ContentPlayback, this.resumingAfterNoAd);
+      this.resumingAfterNoPreroll = true;
+      this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
     });
   }
 
@@ -243,8 +242,8 @@ export default class Preroll extends AdState {
     }
   }
 
-  isResumingAfterNoAd() {
-    return this.resumingAfterNoAd;
+  isResumingAfterNoPreroll() {
+    return this.resumingAfterNoPreroll;
   }
 
   /*

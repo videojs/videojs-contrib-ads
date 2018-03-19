@@ -296,6 +296,10 @@ const contribAdsPlugin = function(options) {
       return this._state.isContentResuming();
     },
 
+    isResumingAfterNoPreroll() {
+      return this._state.isResumingAfterNoPreroll();
+    },
+
     // Deprecated because the name was misleading. Use inAdBreak instead.
     isAdPlaying() {
       return this._state.inAdBreak();

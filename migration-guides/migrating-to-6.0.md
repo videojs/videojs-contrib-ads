@@ -18,7 +18,7 @@ by integrations.
 * adTimeoutTimeout has been removed. It was not part of the documented interface, but make note if your integration inspected it.
 * There is no longer a snapshot object while checking for postrolls. Now a snapshot is only taken when a postroll ad break actually begins.
 * The `contentplayback` event (removed in [4.0.0](https://github.com/videojs/videojs-contrib-ads/blob/cc664517aa0d07398decc0aa5d41974330efc4e4/CHANGELOG.md#400), re-added as deprecated in [4.1.1](https://github.com/videojs/videojs-contrib-ads/blob/cc664517aa0d07398decc0aa5d41974330efc4e4/CHANGELOG.md#411)), has been removed. Use the `playing` event instead.
-* The `adplaying` event is no longer gauranteed to happen once per ad break. It is not intended to be used to detect the beginning of an ad break. The `ads-pod-started` event should be used instead. The `ads-ad-started` event can be used to detect the start of an individual ad in an ad break. There will be multiple `ads-ad-started` events corresponding to each ad in the ad break.
+* The `adplaying` behavior is an implementation detail and has changed in this update. The `adplaying` event is no longer guaranteed to happen once per ad break. It is not intended to be used to detect the beginning of an ad break. The `ads-pod-started` event should be used instead. The `ads-ad-started` event can be used to detect the start of an individual ad in an ad break. There will be multiple `ads-ad-started` events corresponding to each ad in the ad break.
 
 ## Deprecation
 

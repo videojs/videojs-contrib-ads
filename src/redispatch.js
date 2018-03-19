@@ -1,5 +1,3 @@
-// import pm from './playMiddleware.js';
-
 /*
 The goal of this feature is to make player events work as an integrator would
 expect despite the presense of ads. For example, an integrator would expect
@@ -140,16 +138,13 @@ const handleLoadEvent = (player, event) => {
 // would be to have a way to intercept play events rather than "cancel" them by pausing
 // after each one. To be continued...
 const handlePlay = (player, event) => {
-  const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
-
   // eslint-disable-next-line no-console
-  console.log('**** resumingAfterNoPreroll?', resumingAfterNoPreroll,
-    'resumingAfterNoAd', player.ads._state.isResumingAfterNoAd());
+  console.log('**** resumingAfterNoAd', player.ads.isResumingAfterNoPreroll());
 
   if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
   } else if (player.ads.isContentResuming() ||
-      (player.ads._state.isResumingAfterNoAd() && player.ads._playRequested)) {
+      (player.ads.isResumingAfterNoPreroll() && player.ads._playRequested)) {
     prefixEvent(player, 'content', event);
 
   } else {

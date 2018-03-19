@@ -26,18 +26,15 @@ obj.isMiddlewareMediatorSupported = function() {
 };
 
 obj.playMiddleware = function(player) {
-  videojs.log('The play middleware is registered. Default terminate value',
-    player.ads._shouldBlockPlay);
-
   return {
     setSource(srcObj, next) {
       next(null, srcObj);
     },
     callPlay() {
-      videojs.log('TERMINATE', 'currently set to', player.ads._shouldBlockPlay);
-      // Block play calls during ad mode
+      // Block play calls while waiting for an ad
       if (obj.isMiddlewareMediatorSupported() &&
           player.ads._shouldBlockPlay === true) {
+        player.ads.debug('Using playMiddleware to block content playback');
         return videojs.middleware.TERMINATOR;
       }
     },
@@ -46,8 +43,6 @@ obj.playMiddleware = function(player) {
         player.ads.debug('Play event was terminated.');
         player.trigger('play');
       }
-
-      // TODO: should we handle the play promise here?
     }
   };
 };
