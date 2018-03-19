@@ -107,13 +107,16 @@ QUnit.test('sets _shouldBlockPlay to false on init', function(assert) {
   assert.equal(this.player.ads._shouldBlockPlay, false);
 });
 
-QUnit.test('isResumingAfterNoAd returns value passed to init', function(assert) {
+QUnit.test('isResumingAfterNoPreroll returns value passed to init or false', function(assert) {
   this.contentPlayback.init(this.player);
-  assert.strictEqual(this.contentPlayback.isResumingAfterNoAd(), undefined);
+  assert.strictEqual(this.contentPlayback.isResumingAfterNoPreroll(), false);
+  this.contentPlayback.cleanup();
 
   this.contentPlayback.init(this.player, true);
-  assert.strictEqual(this.contentPlayback.isResumingAfterNoAd(), true);
+  assert.strictEqual(this.contentPlayback.isResumingAfterNoPreroll(), true);
+  this.contentPlayback.cleanup();
 
   this.contentPlayback.init(this.player, false);
-  assert.strictEqual(this.contentPlayback.isResumingAfterNoAd(), false);
+  assert.strictEqual(this.contentPlayback.isResumingAfterNoPreroll(), false);
+  this.contentPlayback.cleanup();
 });

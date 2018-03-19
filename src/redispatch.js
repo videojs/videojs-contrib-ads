@@ -93,6 +93,9 @@ const handleEnded = (player, event) => {
   // Prefix ended due to content ending before postroll check
   } else if (!player.ads._contentHasEnded) {
     prefixEvent(player, 'content', event);
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('***** ', event.type, 'seen');
   }
 };
 

@@ -22,7 +22,6 @@ export default class BeforePreroll extends ContentState {
    */
   init(player) {
     this.adsReady = false;
-    this.resumingAfterNoPreroll = false;
 
     player.ads._shouldBlockPlay = true;
   }
@@ -56,16 +55,14 @@ export default class BeforePreroll extends ContentState {
   onAdsCanceled(player) {
     player.ads.debug('adscanceled (BeforePreroll)');
 
-    this.resumingAfterNoPreroll = true;
-    this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
+    this.transitionTo(ContentPlayback, true);
   }
 
   /*
    * An ad error occured. Play content instead.
    */
   onAdsError() {
-    this.resumingAfterNoPreroll = true;
-    this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
+    this.transitionTo(ContentPlayback, true);
   }
 
   /*
@@ -74,12 +71,7 @@ export default class BeforePreroll extends ContentState {
   onNoPreroll() {
     this.player.ads.debug('Skipping prerolls due to nopreroll event (BeforePreroll)');
 
-    this.resumingAfterNoPreroll = true;
-    this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
-  }
-
-  isResumingAfterNoPreroll() {
-    return this.resumingAfterNoPreroll;
+    this.transitionTo(ContentPlayback, true);
   }
 
   /*
@@ -89,8 +81,7 @@ export default class BeforePreroll extends ContentState {
     const player = this.player;
 
     player.trigger('adskip');
-    this.resumingAfterNoPreroll = true;
-    this.transitionTo(ContentPlayback, this.resumingAfterNoPreroll);
+    this.transitionTo(ContentPlayback, true);
   }
 
   /*

@@ -20,7 +20,7 @@ export default class ContentPlayback extends ContentState {
    * happen here, not in a constructor.
    */
   init(player, resumingAfterNoPreroll) {
-    this.resumingAfterNoPreroll = resumingAfterNoPreroll;
+    this.resumingAfterNoPreroll = resumingAfterNoPreroll || false;
 
     // eslint-disable-next-line no-console
     console.log('*$*', '_playRequested', player.ads._playRequested,
