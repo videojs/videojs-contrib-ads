@@ -114,6 +114,8 @@
       if (!state.prerollPlayed && playPreroll) {
         state.prerollPlayed = true;
         playAd();
+      } else if (!playPreroll) {
+        player.trigger('nopreroll');
       }
     });
 

@@ -11,6 +11,9 @@ export default function cancelContentPlay(player) {
   if (pm.isMiddlewareMediatorSupported()) {
     // Don't use cancelContentPlay while playMiddleware is in use
     return;
+  } else if (player.ads._shouldBlockPlay === false) {
+    // Don't block play if explictly set to not block
+    return;
   } else if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing
     return;
