@@ -96,7 +96,7 @@
     requestAds();
 
     // request ad inventory whenever the player gets content to play
-    player.on('contentchanged', () => {
+    player.on('contentchanged', function() {
       requestAds();
     });
 
