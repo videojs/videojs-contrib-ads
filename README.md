@@ -119,6 +119,7 @@ The following events are slated for removal from contrib-ads and will have no sp
 * `contentupdate` (EVENT) -- In the future, contrib-ads will no longer trigger this event. Listen to the new `contentchanged` event instead; it is is more reliable.
 * `adscanceled` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. It was intended to cancel all ads, but it was never fully implemented. Instead, trigger `nopreroll` and `nopostroll`.
 * `adserror` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. Today, this event skips prerolls when seen before a preroll ad break. It skips postrolls if seen after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break. These behaviors should be replaced using `skipLinearAdMode` and `endLinearAdMode` in the ad integration.
+* `contentended` (EVENT) -- This used to be the event that was used to indicate that content had ended and that it was time to play postrolls. The name was confusing because the content prefix is usually used during content restoration after an ad. Integrations should use `readyforpostroll` instead. In the future, the meaning of contentended will be updated to match what is expected by the prefix.
 
 ## Autoplay
 
@@ -549,6 +550,7 @@ A short list of features, fixes and changes for each release is available in [CH
 ### Version 7
 
 * Pause content video if there is a programmatic call to play (prefixed as adplay) while an ad is playing in an ad container (rather than content video element). Prefixing doesn't prevent the videojs behavior, so this would prevent the content from playing behind the ad. Right now, ad integrations I am aware of are doing this on their own, so this would require a migration to move the behavior into this project.
+* `contentended` will change from its current deprecated purpose to being a normal prefixed event during content restoration.
 
 ## License
 
