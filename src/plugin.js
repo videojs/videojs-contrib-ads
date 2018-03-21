@@ -198,6 +198,8 @@ const contribAdsPlugin = function(options) {
       player.ads._shouldBlockPlay = false;
       player.ads.nopreroll_ = false;
       player.ads.nopostroll_ = false;
+
+      // TODO remove this debug message
       videojs.log('reset _playRequested');
       player.ads._playRequested = false;
     },

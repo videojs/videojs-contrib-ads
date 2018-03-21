@@ -313,14 +313,14 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
     'now in ad state');
 
   // Reset temporarily
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src('http://media.w3.org/2010/05/sintel/trailer.ogv');
   this.player.trigger('loadstart');
   assert.strictEqual(this.player.ads._playRequested, false,
     '_playRequested reset');
   assert.strictEqual(spy.callCount, 1,
     'contentchanged once');
 
-  this.clock.tick(1000);
+  this.clock.tick(1);
 
   const testAssert = function(player, clock) {
     assert.strictEqual(player.ads._playRequested, true,
