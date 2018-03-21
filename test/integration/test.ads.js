@@ -299,6 +299,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
 
   this.player.on('contentchanged', spy);
 
+  videojs.log('first loadstart');
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   assert.strictEqual(this.player.ads._playRequested, false,
@@ -306,6 +307,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   assert.strictEqual(this.player.ads.isInAdMode(), false,
     'starts in a content state');
 
+  videojs.log('first play');
   this.player.trigger('play');
   assert.strictEqual(this.player.ads._playRequested, true,
     '_playRequested is now true');
@@ -313,7 +315,9 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
     'now in ad state');
 
   // Reset temporarily
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.ogv');
+  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+
+  videojs.log('second loadstart');
   this.player.trigger('loadstart');
   assert.strictEqual(this.player.ads._playRequested, false,
     '_playRequested reset');
@@ -329,6 +333,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   };
 
   // could be a play promise
+  videojs.log('second play');
   const playResult = this.player.play();
 
   if (playResult && typeof playResult.then === 'function') {
