@@ -320,7 +320,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   assert.strictEqual(spy.callCount, 1,
     'contentchanged once');
 
-  this.clock.tick(1);
+  this.clock.tick(1000);
 
   const testAssert = function(player, clock) {
     assert.strictEqual(player.ads._playRequested, true,
