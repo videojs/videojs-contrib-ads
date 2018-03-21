@@ -42,8 +42,19 @@ export default class ContentPlayback extends ContentState {
     }
   }
 
+  /*
+   * When there is no preroll, we immediately enter ContentPlayback
+   * State, but we are still resuming to content.
+   */
   isResumingAfterNoPreroll() {
     return this.resumingAfterNoPreroll;
+  }
+
+  /*
+   * Reset resumingAfterNoPreroll once the content actually starts playing
+   */
+  onPlaying(player) {
+    this.resumingAfterNoPreroll = false;
   }
 
   /*

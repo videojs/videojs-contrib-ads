@@ -32,8 +32,10 @@ const prefixEvent = (player, prefix, event) => {
     type: prefix + event.type,
     originalEvent: event
   });
-  // eslint-disable-next-line no-console
-  console.log('****', event.type, 'prefixed as', prefix + event.type);
+  if (['play', 'playing', 'loadstart', 'ended'].indexOf(event.type) !== -1) {
+    // eslint-disable-next-line no-console
+    console.log('****', event.type, 'prefixed as', prefix + event.type);
+  }
 };
 
 // Playing event
