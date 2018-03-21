@@ -331,7 +331,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   // could be a play promise
   const playResult = this.player.play();
 
-  if (typeof playResult.then === 'function') {
+  if (playResult && typeof playResult.then === 'function') {
     playResult.then(() => {
       this.clock.tick(1);
       testAssert(this.player, this.clock);
