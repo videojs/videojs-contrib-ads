@@ -336,6 +336,8 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   videojs.log('second play');
   const playResult = this.player.play();
 
+  this.clock.tick(1);
+
   if (playResult && typeof playResult.then === 'function') {
     playResult.then(() => {
       this.clock.tick(1);
