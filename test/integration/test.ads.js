@@ -235,7 +235,7 @@ QUnit.test('changing the src triggers "contentupdate"', function(assert) {
   this.player.on('contentupdate', spy);
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sound/sound_90.oga');
+  this.player.currentSrc = () => 'AH HA!!! I AM NOT A REAL SOURCE';
   this.player.trigger('loadstart');
   assert.strictEqual(spy.callCount, 1, 'one contentupdate event fired');
 });
