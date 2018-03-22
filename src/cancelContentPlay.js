@@ -12,7 +12,9 @@ export default function cancelContentPlay(player) {
     // Don't use cancelContentPlay while playMiddleware is in use
     return;
   } else if (player.ads._shouldBlockPlay === false) {
-    // Don't block play if explictly set to not block
+    // Only block play if the ad plugin is in a state when content
+    // playback should be blocked. This currently means during
+    // BeforePrerollState and PrerollState.
     return;
   } else if (player.ads.cancelPlayTimeout) {
     // another cancellation is already in flight, so do nothing

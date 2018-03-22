@@ -41,6 +41,10 @@ obj.playMiddleware = function(player) {
     play(terminated, value) {
       if (terminated) {
         player.ads.debug('Play event was terminated.');
+        // Trigger play event to ensure that event order remains the same
+        // as with cancelContentPlay.
+        // The call to play on the Tech has been blocked, so triggering
+        // the event on the Player will not affect the Tech's playback state.
         player.trigger('play');
       }
     }
