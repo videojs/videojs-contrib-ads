@@ -1,5 +1,4 @@
 import {ContentState, Midroll, Postroll} from '../states.js';
-// import pm from '../playMiddleware.js';
 
 /*
  * This state represents content playback the first time through before
