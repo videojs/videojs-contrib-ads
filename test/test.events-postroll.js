@@ -75,12 +75,8 @@ QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(ass
     }, 1000);
   });
 
-  // Seek to end once we're ready so postroll can play quickly
-  this.player.one('playing', () => {
-    this.player.currentTime(46);
-  });
-
   this.player.play();
+  this.player.currentTime(46);
 
 });
 

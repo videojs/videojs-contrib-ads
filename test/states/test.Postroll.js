@@ -68,7 +68,6 @@ QUnit.test('ends linear ad mode & ended event on ads error', function(assert) {
   this.player.ads.inAdBreak = () => true;
   this.postroll.onAdsError(this.player);
   assert.equal(this.player.ads.endLinearAdMode.callCount, 1, 'linear ad mode ended');
-  assert.equal(this.events[0], 'ended', 'saw ended event');
 });
 
 QUnit.test('no endLinearAdMode on adserror if not in ad break', function(assert) {
@@ -78,20 +77,12 @@ QUnit.test('no endLinearAdMode on adserror if not in ad break', function(assert)
   this.player.ads.inAdBreak = () => false;
   this.postroll.onAdsError(this.player);
   assert.equal(this.player.ads.endLinearAdMode.callCount, 0, 'linear ad mode ended');
-  assert.equal(this.events[0], 'ended', 'saw ended event');
 });
 
 QUnit.test('does not transition to AdsDone unless content resuming', function(assert) {
   this.postroll.init(this.player);
   this.postroll.onEnded(this.player);
   assert.equal(this.newState, undefined, 'no transition');
-});
-
-QUnit.test('transitions to AdsDone on ended', function(assert) {
-  this.postroll.isContentResuming = () => true;
-  this.postroll.init(this.player);
-  this.postroll.onEnded(this.player);
-  assert.equal(this.newState, 'AdsDone');
 });
 
 QUnit.test('transitions to BeforePreroll on content changed after ad break', function(assert) {
@@ -141,7 +132,6 @@ QUnit.test('can abort', function(assert) {
   this.postroll.abort();
   assert.equal(this.postroll.contentResuming, true, 'contentResuming');
   assert.ok(removeClassSpy.calledWith('vjs-ad-loading'), 'loading class removed');
-  assert.equal(this.events[0], 'ended', 'saw ended event');
 });
 
 QUnit.test('can clean up', function(assert) {

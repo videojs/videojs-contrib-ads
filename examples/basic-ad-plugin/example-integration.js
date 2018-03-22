@@ -104,6 +104,8 @@
       if (!state.postrollPlayed && playPostroll) {
         state.postrollPlayed = true;
         playAd();
+      } else {
+        player.trigger('nopostroll');
       }
     });
 

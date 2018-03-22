@@ -385,6 +385,7 @@ QUnit.test('an "ended" event is fired after postroll if not fired naturally', fu
 
   this.player.ads.startLinearAdMode(); // start postroll
   this.player.ads.endLinearAdMode();
+  this.player.trigger('resumeended');
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
 
@@ -400,6 +401,7 @@ QUnit.test('ended events when content ends first and second time', function(asse
 
   this.player.ads.startLinearAdMode(); // Postroll starts
   this.player.ads.endLinearAdMode();
+  this.player.trigger('resumeended');
 
   assert.strictEqual(endedSpy.callCount, 1, 'ended event after postroll');
 
