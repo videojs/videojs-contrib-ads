@@ -85,14 +85,14 @@ export default class State {
   }
 
   /*
-   * Overridden by PrerollState, MidrollState, and PostrollState.
+   * Overridden by Preroll, Midroll, and Postroll.
    */
   isContentResuming() {
     return false;
   }
 
   /*
-   * Overriden by BeforePrerollState, PrerollState and ContentPlaybackState.
+   * Overriden by BeforePreroll, Preroll and ContentPlayback.
    */
   isResumingAfterNoPreroll() {
     return false;
