@@ -32,10 +32,6 @@ const prefixEvent = (player, prefix, event) => {
     type: prefix + event.type,
     originalEvent: event
   });
-  if (['play', 'playing', 'loadstart', 'ended'].indexOf(event.type) !== -1) {
-    // eslint-disable-next-line no-console
-    console.log('****', event.type, 'prefixed as', prefix + event.type);
-  }
 };
 
 // Playing event
@@ -51,9 +47,6 @@ const handlePlaying = (player, event) => {
       // Prefix playing event when switching back to content after postroll.
       if (player.ads._contentEnding) {
         prefixEvent(player, 'content', event);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log('***** ', event.type, 'seen');
       }
 
     // Prefix all other playing events during ads.
@@ -61,9 +54,6 @@ const handlePlaying = (player, event) => {
       prefixEvent(player, 'ad', event);
     }
 
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('***** ', event.type, 'seen');
   }
 };
 
@@ -95,9 +85,6 @@ const handleEnded = (player, event) => {
   // Prefix ended due to content ending before postroll check
   } else if (!player.ads._contentHasEnded) {
     prefixEvent(player, 'content', event);
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('***** ', event.type, 'seen');
   }
 };
 
@@ -143,18 +130,11 @@ const handleLoadEvent = (player, event) => {
 // would be to have a way to intercept play events rather than "cancel" them by pausing
 // after each one. To be continued...
 const handlePlay = (player, event) => {
-  // eslint-disable-next-line no-console
-  console.log('**** resumingAfterNoAd', player.ads.isResumingAfterNoPreroll());
-
   if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
   } else if (player.ads.isContentResuming() ||
       (player.ads.isResumingAfterNoPreroll() && player.ads._playRequested)) {
     prefixEvent(player, 'content', event);
-
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('****', event.type, 'seen');
   }
 };
 
