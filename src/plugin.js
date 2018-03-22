@@ -12,10 +12,10 @@ import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
 import playMiddlewareFeature from './playMiddleware.js';
-const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 
 import {BeforePreroll} from './states.js';
 
+const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
 // ---------------------------------------------------------------------------
