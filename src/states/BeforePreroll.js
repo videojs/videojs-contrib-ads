@@ -24,6 +24,7 @@ export default class BeforePreroll extends ContentState {
     this.adsReady = false;
     this.adscanceled = false;
     this.adskip = false;
+    this.adserror = false;
 
     player.ads._shouldBlockPlay = true;
   }
@@ -48,7 +49,7 @@ export default class BeforePreroll extends ContentState {
     cancelContentPlay(player);
 
     // Check for prerolls
-    this.transitionTo(Preroll, this.adsReady, this.adscanceled, this.adskip);
+    this.transitionTo(Preroll, this.adsReady, this.adscanceled, this.adskip, this.adserror);
   }
 
   /*
@@ -68,7 +69,9 @@ export default class BeforePreroll extends ContentState {
    * An ad error occured. Play content instead.
    */
   onAdsError() {
-    this.transitionTo(ContentPlayback, true);
+    // this.transitionTo(ContentPlayback, true);
+    videojs.log('adserror (BeforePreroll)');
+    this.adserror = true;
   }
 
   /*
