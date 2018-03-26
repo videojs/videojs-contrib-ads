@@ -122,7 +122,7 @@ The following events are slated for removal from contrib-ads and will have no sp
 
 ## Autoplay
 
-Using the `autoplay` attribute on the video element is not supported. Due to Autoplay Restrictions imposed by browsers, using the `autoplay` attribute on the player will often not behave as expected. The current recommendation of browsers is to use the `player.play()` method to autoplay when autoplay is not restricted and have access to the play promise if it is available on that browser.
+Using the `autoplay` attribute on the video element is not supported. Due to Autoplay Restrictions [introduced](https://developers.google.com/web/updates/2017/09/autoplay-policy-changes) by [browsers](https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/), using the `autoplay` attribute on the player will often not behave as expected. The recommended [best practice](https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#best-practices) is to use the `player.play()` method to autoplay when autoplay without user interaction is not restricted and have access to the [play promise](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play) if it is available on that browser.
 
 ### Public Methods
 
