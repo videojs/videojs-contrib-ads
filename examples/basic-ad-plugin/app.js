@@ -50,42 +50,44 @@
     return !(evt in events);
 
   }).map(function(evt) {
-    player.on(evt, function(event) {
-      var d , str, li;
+    player.ready(function() {
+      player.on(evt, function(event) {
+        var d , str, li;
 
-      li = document.createElement('li');
+        li = document.createElement('li');
 
-      d = new Date();
-      d = '' +
-        pad(2, d.getHours()) + ':' +
-        pad(2, d.getMinutes()) + ':' +
-        pad(2, d.getSeconds()) + '.' +
-        pad(3, d.getMilliseconds());
+        d = new Date();
+        d = '' +
+          pad(2, d.getHours()) + ':' +
+          pad(2, d.getMinutes()) + ':' +
+          pad(2, d.getSeconds()) + '.' +
+          pad(3, d.getMilliseconds());
 
-      if (event.type.indexOf('ad') === 0) {
-        li.className = 'ad-event';
-      } else if (event.type.indexOf('content') === 0) {
-        li.className = 'content-event';
-      }
+        if (event.type.indexOf('ad') === 0) {
+          li.className = 'ad-event';
+        } else if (event.type.indexOf('content') === 0) {
+          li.className = 'content-event';
+        }
 
-      str = evt;
+        str = evt;
 
-      if (evt === 'contentupdate') {
-        str += ' ' + event.oldValue + " -> " + event.newValue;
-        li.className = 'content-adplugin-event';
-      }
-      if (evt === 'contentchanged') {
-        li.className = 'content-adplugin-event';
-      }
-      if (evt === 'contentplayback') {
-        li.className = 'content-adplugin-event';
-      }
-      if (evt === 'adplay') {
-        player.trigger('ads-ad-started');
-      }
+        if (evt === 'contentupdate') {
+          str += ' ' + event.oldValue + " -> " + event.newValue;
+          li.className = 'content-adplugin-event';
+        }
+        if (evt === 'contentchanged') {
+          li.className = 'content-adplugin-event';
+        }
+        if (evt === 'contentplayback') {
+          li.className = 'content-adplugin-event';
+        }
+        if (evt === 'adplay') {
+          player.trigger('ads-ad-started');
+        }
 
-      li.innerHTML = str;
-      log.insertBefore(li, log.firstChild);
+        li.innerHTML = str;
+        log.insertBefore(li, log.firstChild);
+      });
     });
   });
 
