@@ -120,6 +120,10 @@ The following events are slated for removal from contrib-ads and will have no sp
 * `adscanceled` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. It was intended to cancel all ads, but it was never fully implemented. Instead, trigger `nopreroll` and `nopostroll`.
 * `adserror` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. Today, this event skips prerolls when seen before a preroll ad break. It skips postrolls if seen after contentended and before a postroll ad break. It ends linear ad mode if seen during an ad break. These behaviors should be replaced using `skipLinearAdMode` and `endLinearAdMode` in the ad integration.
 
+## Autoplay
+
+Using the `autoplay` attribute on the video element is not supported. Due to Autoplay Restrictions imposed by browsers, using the `autoplay` attribute on the player will often not behave as expected. The current recommendation of browsers is to use the `player.play()` method to autoplay when autoplay is not restricted and have access to the play promise if it is available on that browser.
+
 ### Public Methods
 
 These are methods on `player.ads` that can be called at runtime to inspect the ad plugin's state. You do not need to implement them yourself.
