@@ -150,11 +150,13 @@ export default class Preroll extends AdState {
     // if there was an error.
     if (this.inAdBreak()) {
       player.ads.endLinearAdMode();
-    }
 
-    this.afterLoadStart(() => {
-      this.transitionTo(ContentPlayback, true);
-    });
+    } else {
+      this.afterLoadStart(() => {
+        // this.transitionTo(ContentPlayback, true);
+        this.resumeAfterNoPreroll(player);
+      });
+    }
   }
 
   /*
@@ -188,6 +190,9 @@ export default class Preroll extends AdState {
    */
   endLinearAdMode() {
     const player = this.player;
+
+    // eslint-disable-next-line: no-console
+    console.log('*** in Preroll endLinearAdMode');
 
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
