@@ -100,11 +100,7 @@ export default class Preroll extends AdState {
       this.player.ads.debug('Skipping prerolls due to nopreroll event (Preroll)');
 
       // this.transitionTo(ContentPlayback, true);
-      this.player.ads.debug('**** content resuming instead of immediate transition');
-      // Resume to content and unblock play as there is no preroll ad
-      this.contentResuming = true;
-      this.player.ads._shouldBlockPlay = false;
-      this.player.play();
+      this.resumeAfterNoPreroll(this.player);
     });
   }
 
@@ -224,7 +220,8 @@ export default class Preroll extends AdState {
     this.afterLoadStart(() => {
       player.ads.debug('adtimeout (Preroll)');
 
-      this.transitionTo(ContentPlayback, true);
+      // this.transitionTo(ContentPlayback, true);
+      this.resumeAfterNoPreroll(player);
     });
   }
 
@@ -237,6 +234,15 @@ export default class Preroll extends AdState {
     } else {
       this.noPreroll();
     }
+  }
+
+  resumeAfterNoPreroll(player) {
+    // eslint-disable-next-line: no-console
+    console.log('**** contentResuming instead of direct transition');
+    // Resume to content and unblock play as there is no preroll ad
+    this.contentResuming = true;
+    player.ads._shouldBlockPlay = false;
+    player.play();
   }
 
   /*
