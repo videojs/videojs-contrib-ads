@@ -71,7 +71,11 @@ export default class BeforePreroll extends ContentState {
   onNoPreroll() {
     this.player.ads.debug('Skipping prerolls due to nopreroll event (BeforePreroll)');
 
-    this.transitionTo(ContentPlayback, true);
+    // this.transitionTo(ContentPlayback, true);
+    // eslint-disable-next-line no-console
+    console.log('**** transition to preroll instead of ContentPlayback',
+      this.contentResuming, this.player.ads.nopreroll_);
+    this.player.ads.nopreroll_ = true;
   }
 
   /*

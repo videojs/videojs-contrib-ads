@@ -249,7 +249,10 @@ export default class Preroll extends AdState {
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;
     player.ads._shouldBlockPlay = false;
-    player.play();
+    if (player.paused() &&
+        (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
+      player.play();
+    }
   }
 
   /*
