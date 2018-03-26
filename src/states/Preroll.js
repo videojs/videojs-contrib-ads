@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {AdState, ContentPlayback} from '../states.js';
+import {AdState} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 import adBreak from '../adBreak.js';
 
@@ -191,7 +191,7 @@ export default class Preroll extends AdState {
   endLinearAdMode() {
     const player = this.player;
 
-    // eslint-disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.log('*** in Preroll endLinearAdMode');
 
     if (this.inAdBreak()) {
@@ -244,7 +244,7 @@ export default class Preroll extends AdState {
   }
 
   resumeAfterNoPreroll(player) {
-    // eslint-disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.log('**** contentResuming instead of direct transition');
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;

@@ -29,7 +29,7 @@ export default class ContentPlayback extends ContentState {
     // errored, timed out, etc. Otherwise snapshot restore would play.
     if (player.paused() &&
         (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
-      // eslint-disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.log('**** replaying the player');
       player.play();
     }
