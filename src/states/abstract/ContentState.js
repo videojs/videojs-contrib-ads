@@ -24,4 +24,8 @@ export default class ContentState extends State {
     }
   }
 
+  onPlaying(player) {
+    player.ads.debug('**** playing seen in ContentState');
+  }
+
 }

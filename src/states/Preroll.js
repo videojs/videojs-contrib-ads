@@ -37,9 +37,7 @@ export default class Preroll extends AdState {
       player.trigger('adtimeout');
     }, timeout);
 
-    if (!this.inAdBreak() && !this.isContentResuming()) {
-      player.ads._shouldBlockPlay = true;
-    }
+    player.ads._shouldBlockPlay = true;
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
@@ -101,7 +99,12 @@ export default class Preroll extends AdState {
     this.afterLoadStart(() => {
       this.player.ads.debug('Skipping prerolls due to nopreroll event (Preroll)');
 
-      this.transitionTo(ContentPlayback, true);
+      // this.transitionTo(ContentPlayback, true);
+      this.player.ads.debug('**** content resuming instead of immediate transition');
+      // Resume to content and unblock play as there is no preroll ad
+      this.contentResuming = true;
+      this.player.ads._shouldBlockPlay = false;
+      this.player.play();
     });
   }
 
