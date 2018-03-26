@@ -21,7 +21,7 @@ export default class Preroll extends AdState {
    * For state transitions to work correctly, initialization should
    * happen here, not in a constructor.
    */
-  init(player, adsReady) {
+  init(player, adsReady, adscanceled) {
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
@@ -38,6 +38,10 @@ export default class Preroll extends AdState {
     }, timeout);
 
     player.ads._shouldBlockPlay = true;
+
+    if (adscanceled) {
+      this.onAdsCanceled(player);
+    }
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
