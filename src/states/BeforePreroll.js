@@ -1,4 +1,4 @@
-import {ContentState, Preroll, ContentPlayback} from '../states.js';
+import {ContentState, Preroll} from '../states.js';
 import cancelContentPlay from '../cancelContentPlay.js';
 
 /*
@@ -70,7 +70,7 @@ export default class BeforePreroll extends ContentState {
    */
   onAdsError() {
     // this.transitionTo(ContentPlayback, true);
-    videojs.log('adserror (BeforePreroll)');
+    this.player.ads.debug('adserror (BeforePreroll)');
     this.adserror = true;
   }
 
