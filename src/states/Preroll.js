@@ -209,7 +209,8 @@ export default class Preroll extends AdState {
         player.trigger('adskip');
         player.ads.debug('skipLinearAdMode (Preroll)');
 
-        this.transitionTo(ContentPlayback, true);
+        // this.transitionTo(ContentPlayback, true);
+        this.resumeAfterNoPreroll(player);
       });
     }
   }
