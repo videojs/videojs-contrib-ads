@@ -1,3 +1,22 @@
+<a name="6.0.1"></a>
+## [6.0.1](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v6.0.1) (2018-03-27)
+
+### Bug Fixes
+
+* content restarts from the beginning when snapshot restores source after midroll in iOS ([64f1587](https://github.com/videojs/videojs-contrib-ads/commit/64f1587))
+* Fix bug that could cause double ended events ([81699b4](https://github.com/videojs/videojs-contrib-ads/commit/81699b4))
+* fix state logging when minified ([#339](https://github.com/videojs/videojs-contrib-ads/issues/339)) ([ae38894](https://github.com/videojs/videojs-contrib-ads/commit/ae38894))
+* snapshot.trackChangeHandler is undefined ([#293](https://github.com/videojs/videojs-contrib-ads/issues/293)) ([8a66140](https://github.com/videojs/videojs-contrib-ads/commit/8a66140))
+
+### Chores
+
+* **package:** update sinon to version 4.4.0 ([#328](https://github.com/videojs/videojs-contrib-ads/issues/328)) ([df3e8a3](https://github.com/videojs/videojs-contrib-ads/commit/df3e8a3))
+* fix changelog ([#329](https://github.com/videojs/videojs-contrib-ads/issues/329)) ([27f886c](https://github.com/videojs/videojs-contrib-ads/commit/27f886c))
+
+### Documentation
+
+* add autoplay attribute deprecation note to README ([#356](https://github.com/videojs/videojs-contrib-ads/issues/356)) ([bf82f40](https://github.com/videojs/videojs-contrib-ads/commit/bf82f40))
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v6.0.0) (2018-02-23)
 
