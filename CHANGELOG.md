@@ -3,15 +3,8 @@
 
 ### Bug Fixes
 
-* content restarts from the beginning when snapshot restores source after midroll in iOS ([64f1587](https://github.com/videojs/videojs-contrib-ads/commit/64f1587))
 * Fix bug that could cause double ended events ([81699b4](https://github.com/videojs/videojs-contrib-ads/commit/81699b4))
-* fix state logging when minified ([#339](https://github.com/videojs/videojs-contrib-ads/issues/339)) ([ae38894](https://github.com/videojs/videojs-contrib-ads/commit/ae38894))
-* snapshot.trackChangeHandler is undefined ([#293](https://github.com/videojs/videojs-contrib-ads/issues/293)) ([8a66140](https://github.com/videojs/videojs-contrib-ads/commit/8a66140))
-
-### Chores
-
-* **package:** update sinon to version 4.4.0 ([#328](https://github.com/videojs/videojs-contrib-ads/issues/328)) ([df3e8a3](https://github.com/videojs/videojs-contrib-ads/commit/df3e8a3))
-* fix changelog ([#329](https://github.com/videojs/videojs-contrib-ads/issues/329)) ([27f886c](https://github.com/videojs/videojs-contrib-ads/commit/27f886c))
+* Fix state logging when minified ([#339](https://github.com/videojs/videojs-contrib-ads/issues/339)) ([ae38894](https://github.com/videojs/videojs-contrib-ads/commit/ae38894))
 
 ### Documentation
 
