@@ -37,7 +37,6 @@
     "test": "karma start test/karma.conf.js",
     "preversion": "npm test",
     "version": "node scripts/version.js",
-    "postversion": "node scripts/postversion.js",
     "watch": "npm-run-all -p watch:*",
     "watch:css": "node-sass src/plugin.scss dist/videojs-contrib-ads.css --output-style=compressed --linefeed=lf --watch src/**/*.scss",
     "watch:js-modules": "rollup -c scripts/modules.rollup.config.js -w",
