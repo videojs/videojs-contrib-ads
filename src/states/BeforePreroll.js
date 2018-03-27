@@ -91,7 +91,7 @@ export default class BeforePreroll extends ContentState {
   skipLinearAdMode() {
     const player = this.player;
 
-    // player.trigger('adskip');
+    player.trigger('adskip');
     // this.transitionTo(ContentPlayback, true);
     player.ads.debug('skipLinearAdMode (BeforePreroll)');
     this.shouldResumeToContent = true;
