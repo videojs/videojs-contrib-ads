@@ -21,7 +21,7 @@ export default class Preroll extends AdState {
    * For state transitions to work correctly, initialization should
    * happen here, not in a constructor.
    */
-  init(player, adsReady, adscanceled, adskip, adserror) {
+  init(player, adsReady, shouldResumeToContent) {
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
@@ -39,17 +39,17 @@ export default class Preroll extends AdState {
 
     player.ads._shouldBlockPlay = true;
 
-    this.adscanceled = adscanceled;
-    this.adskip = adskip;
-    if (adserror) {
-      this.onAdsError(player);
-    }
+    // If adserror, adscanceled, nopreroll or adtimeout already
+    // ocurred, resume to content immediately
+    if (shouldResumeToContent || player.ads.nopreroll_) {
+      this.resumeAfterNoPreroll(player);
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
     // Note: if nopreroll is seen, this causes a state transition
-    if (adsReady) {
+    } else if (adsReady) {
       this.handleAdsReady();
+
     } else {
       this.adsReady = false;
     }
@@ -71,18 +71,8 @@ export default class Preroll extends AdState {
    * Ad integration is ready. Let's get started on this preroll.
    */
   handleAdsReady() {
-    const player = this.player;
-
     this.adsReady = true;
-    if (player.ads.nopreroll_) {
-      this.noPreroll();
-    } else if (this.adscanceled) {
-      this.onAdsCanceled(player);
-    } else if (this.adskip) {
-      this.skipLinearAdMode();
-    } else {
-      this.readyForPreroll();
-    }
+    this.readyForPreroll();
   }
 
   /*

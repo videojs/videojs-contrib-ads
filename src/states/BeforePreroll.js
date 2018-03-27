@@ -22,9 +22,7 @@ export default class BeforePreroll extends ContentState {
    */
   init(player) {
     this.adsReady = false;
-    this.adscanceled = false;
-    this.adskip = false;
-    this.adserror = false;
+    this.shouldResumeToContent = false;
 
     player.ads._shouldBlockPlay = true;
   }
@@ -49,7 +47,7 @@ export default class BeforePreroll extends ContentState {
     cancelContentPlay(player);
 
     // Check for prerolls
-    this.transitionTo(Preroll, this.adsReady, this.adscanceled, this.adskip, this.adserror);
+    this.transitionTo(Preroll, this.adsReady, this.shouldResumeToContent);
   }
 
   /*
@@ -61,8 +59,8 @@ export default class BeforePreroll extends ContentState {
     // this.transitionTo(ContentPlayback, true);
     // eslint-disable-next-line no-console
     console.log('**** transition to preroll instead of ContentPlayback',
-      this.contentResuming, this.player.ads.nopreroll_);
-    this.adscanceled = true;
+      this.contentResuming);
+    this.shouldResumeToContent = true;
   }
 
   /*
@@ -71,7 +69,7 @@ export default class BeforePreroll extends ContentState {
   onAdsError() {
     // this.transitionTo(ContentPlayback, true);
     this.player.ads.debug('adserror (BeforePreroll)');
-    this.adserror = true;
+    this.shouldResumeToContent = true;
   }
 
   /*
@@ -84,7 +82,7 @@ export default class BeforePreroll extends ContentState {
     // eslint-disable-next-line no-console
     console.log('**** transition to preroll instead of ContentPlayback',
       this.contentResuming, this.player.ads.nopreroll_);
-    this.player.ads.nopreroll_ = true;
+    this.shouldResumeToContent = true;
   }
 
   /*
@@ -96,7 +94,7 @@ export default class BeforePreroll extends ContentState {
     // player.trigger('adskip');
     // this.transitionTo(ContentPlayback, true);
     player.ads.debug('skipLinearAdMode (BeforePreroll)');
-    this.adskip = true;
+    this.shouldResumeToContent = true;
   }
 
   /*
