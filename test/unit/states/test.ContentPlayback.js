@@ -31,7 +31,8 @@ QUnit.module('ContentPlayback', {
   }
 });
 
-QUnit.test('only plays on init on correct conditions', function(assert) {
+// TODO: We can probably rewrite this test in Preroll
+QUnit.todo('only plays on init on correct conditions', function(assert) {
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = false;
   this.player.ads._playRequested = false;
@@ -105,18 +106,4 @@ QUnit.test('sets _shouldBlockPlay to false on init', function(assert) {
 
   this.contentPlayback.init(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, false);
-});
-
-QUnit.test('isResumingAfterNoPreroll returns value passed to init or false', function(assert) {
-  this.contentPlayback.init(this.player);
-  assert.strictEqual(this.contentPlayback.isResumingAfterNoPreroll(), false);
-  this.contentPlayback.cleanup();
-
-  this.contentPlayback.init(this.player, true);
-  assert.strictEqual(this.contentPlayback.isResumingAfterNoPreroll(), true);
-  this.contentPlayback.cleanup();
-
-  this.contentPlayback.init(this.player, false);
-  assert.strictEqual(this.contentPlayback.isResumingAfterNoPreroll(), false);
-  this.contentPlayback.cleanup();
 });

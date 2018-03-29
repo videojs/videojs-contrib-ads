@@ -18,7 +18,7 @@ export default class ContentPlayback extends ContentState {
    * For state transitions to work correctly, initialization should
    * happen here, not in a constructor.
    */
-  init(player, resumingAfterNoPreroll) {
+  init(player) {
     // Don't block calls to play in content playback
     player.ads._shouldBlockPlay = false;
 

@@ -22,9 +22,10 @@ QUnit.module('BeforePreroll', {
     };
 
     this.beforePreroll = new BeforePreroll(this.player);
-    this.beforePreroll.transitionTo = (newState, arg) => {
+    this.beforePreroll.transitionTo = (newState, arg, arg2) => {
       this.newState = newState.name;
       this.transitionArg = arg;
+      this.transitionArg2 = arg2;
     };
 
     this.cancelContentPlayStub = sinon.stub(CancelContentPlay, 'cancelContentPlay');
@@ -56,26 +57,42 @@ QUnit.test('transitions to Preroll (play first)', function(assert) {
 QUnit.test('cancels ads', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onAdsCanceled(this.player);
-  assert.equal(this.newState, 'ContentPlayback');
+  assert.equal(this.beforePreroll.shouldResumeToContent, true);
+  this.beforePreroll.onPlay(this.player);
+  assert.equal(this.newState, 'Preroll');
+  assert.equal(this.transitionArg, false);
+  assert.equal(this.transitionArg2, true);
 });
 
-QUnit.test('transitions to content playback on error', function(assert) {
+QUnit.test('transitions to content resuming in preroll on error', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onAdsError(this.player);
-  assert.equal(this.newState, 'ContentPlayback');
+  assert.equal(this.beforePreroll.shouldResumeToContent, true);
+  this.beforePreroll.onPlay(this.player);
+  assert.equal(this.newState, 'Preroll');
+  assert.equal(this.transitionArg, false);
+  assert.equal(this.transitionArg2, true);
 });
 
 QUnit.test('has no preroll', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onNoPreroll(this.player);
-  assert.equal(this.newState, 'ContentPlayback');
+  assert.equal(this.beforePreroll.shouldResumeToContent, true);
+  this.beforePreroll.onPlay(this.player);
+  assert.equal(this.newState, 'Preroll');
+  assert.equal(this.transitionArg, false);
+  assert.equal(this.transitionArg2, true);
 });
 
 QUnit.test('skips the preroll', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.skipLinearAdMode();
   assert.equal(this.events[0], 'adskip');
-  assert.equal(this.newState, 'ContentPlayback');
+  assert.equal(this.beforePreroll.shouldResumeToContent, true);
+  this.beforePreroll.onPlay(this.player);
+  assert.equal(this.newState, 'Preroll');
+  assert.equal(this.transitionArg, false);
+  assert.equal(this.transitionArg2, true);
 });
 
 QUnit.test('does nothing on content change', function(assert) {
@@ -89,26 +106,26 @@ QUnit.test('sets _shouldBlockPlay to true', function(assert) {
   assert.equal(this.player.ads._shouldBlockPlay, true);
 });
 
-QUnit.test('updates `isResumingAfterNoPreroll` on `nopreroll`', function(assert) {
+QUnit.test('updates `shouldResumeToContent` on `nopreroll`', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onNoPreroll();
-  assert.strictEqual(this.transitionArg, true);
+  assert.strictEqual(this.beforePreroll.shouldResumeToContent, true);
 });
 
-QUnit.test('updates `isResumingAfterNoPreroll` on `adserror`', function(assert) {
+QUnit.test('updates `shouldResumeToContent` on `adserror`', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onAdsError();
-  assert.strictEqual(this.transitionArg, true);
+  assert.strictEqual(this.beforePreroll.shouldResumeToContent, true);
 });
 
-QUnit.test('updates `isResumingAfterNoPreroll` on `adscanceled`', function(assert) {
+QUnit.test('updates `shouldResumeToContent` on `adscanceled`', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onAdsCanceled(this.player);
-  assert.strictEqual(this.transitionArg, true);
+  assert.strictEqual(this.beforePreroll.shouldResumeToContent, true);
 });
 
-QUnit.test('updates `isResumingAfterNoPreroll` on `skipLinearAdMode`', function(assert) {
+QUnit.test('updates `shouldResumeToContent` on `skipLinearAdMode`', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.skipLinearAdMode();
-  assert.strictEqual(this.transitionArg, true);
+  assert.strictEqual(this.beforePreroll.shouldResumeToContent, true);
 });
