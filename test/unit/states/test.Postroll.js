@@ -129,7 +129,7 @@ QUnit.test('can abort', function(assert) {
   const removeClassSpy = sinon.spy(this.player, 'removeClass');
 
   this.postroll.init(this.player);
-  this.postroll.abort();
+  this.postroll.abort(this.player);
   assert.equal(this.postroll.contentResuming, true, 'contentResuming');
   assert.ok(removeClassSpy.calledWith('vjs-ad-loading'), 'loading class removed');
 });
