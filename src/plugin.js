@@ -5,6 +5,8 @@ that live in in separate files.
 
 import videojs from 'video.js';
 
+import {version as adsVersion} from '../package.json';
+
 import redispatch from './redispatch.js';
 import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
@@ -165,7 +167,7 @@ const contribAdsPlugin = function(options) {
     // This is experimental currently. Do not rely on its presence or behavior!
     adType: null,
 
-    VERSION: '__VERSION__',
+    VERSION: adsVersion,
 
     reset() {
       player.ads.disableNextSnapshotRestore = false;
