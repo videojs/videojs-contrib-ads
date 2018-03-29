@@ -25,6 +25,14 @@ export default class Preroll extends AdState {
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
+    // If adserror, adscanceled, nopreroll or skipLinearAdMode already
+    // ocurred, resume to content immediately
+    if (shouldResumeToContent || player.ads.nopreroll_) {
+      return this.resumeAfterNoPreroll(player);
+    }
+
+    player.ads._shouldBlockPlay = true;
+
     // Determine preroll timeout based on plugin settings
     let timeout = player.ads.settings.timeout;
 
@@ -37,17 +45,12 @@ export default class Preroll extends AdState {
       player.trigger('adtimeout');
     }, timeout);
 
-    player.ads._shouldBlockPlay = true;
-
-    // If adserror, adscanceled, nopreroll or adtimeout already
-    // ocurred, resume to content immediately
-    if (shouldResumeToContent || player.ads.nopreroll_) {
-      this.resumeAfterNoPreroll(player);
+    player.ads.debug('****** timeout exists now')
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
     // Note: if nopreroll is seen, this causes a state transition
-    } else if (adsReady) {
+    if (adsReady) {
       this.handleAdsReady();
 
     } else {
@@ -251,8 +254,11 @@ export default class Preroll extends AdState {
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;
     player.ads._shouldBlockPlay = false;
+    player.ads.debug('paused?', player.paused(), player.ads._playRequested || player.ads._pausedOnContentupdate);
+
     if (player.paused() &&
         (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
+      player.ads.debug('Playing again since the player is paused');
       player.play();
     }
   }

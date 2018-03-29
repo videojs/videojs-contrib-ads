@@ -26,13 +26,13 @@ export default function cancelContentPlay(player) {
   // The timeout is necessary because pausing a video element while processing a `play`
   // event on iOS can cause the video element to continuously toggle between playing and
   // paused states.
-  player.ads.cancelPlayTimeout = player.setTimeout(function() {
+  // player.ads.cancelPlayTimeout = player.setTimeout(function() {
     // deregister the cancel timeout so subsequent cancels are scheduled
     player.ads.cancelPlayTimeout = null;
 
-    if (!player.ads.isInAdMode()) {
-      return;
-    }
+    // if (!player.ads.isInAdMode()) {
+    //   return;
+    // }
 
     // pause playback so ads can be handled.
     if (!player.paused()) {
@@ -42,5 +42,5 @@ export default function cancelContentPlay(player) {
     // When the 'content-playback' state is entered, this will let us know to play.
     // This is needed if there is no preroll or if it errors, times out, etc.
     player.ads._cancelledPlay = true;
-  }, 1);
+  // }, 1);
 }
