@@ -16,31 +16,16 @@ export default function cancelContentPlay(player) {
     // playback should be blocked. This currently means during
     // BeforePrerollState and PrerollState.
     return;
-  } else if (player.ads.cancelPlayTimeout) {
-    // another cancellation is already in flight, so do nothing
-    return;
   }
 
   player.ads.debug('Using cancelContentPlay to block content playback');
 
-  // The timeout is necessary because pausing a video element while processing a `play`
-  // event on iOS can cause the video element to continuously toggle between playing and
-  // paused states.
-  // player.ads.cancelPlayTimeout = player.setTimeout(function() {
-    // deregister the cancel timeout so subsequent cancels are scheduled
-    player.ads.cancelPlayTimeout = null;
+  // pause playback so ads can be handled.
+  if (!player.paused()) {
+    player.pause();
+  }
 
-    // if (!player.ads.isInAdMode()) {
-    //   return;
-    // }
-
-    // pause playback so ads can be handled.
-    if (!player.paused()) {
-      player.pause();
-    }
-
-    // When the 'content-playback' state is entered, this will let us know to play.
-    // This is needed if there is no preroll or if it errors, times out, etc.
-    player.ads._cancelledPlay = true;
-  // }, 1);
+  // When the 'content-playback' state is entered, this will let us know to play.
+  // This is needed if there is no preroll or if it errors, times out, etc.
+  player.ads._cancelledPlay = true;
 }

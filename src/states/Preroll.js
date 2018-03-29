@@ -45,7 +45,7 @@ export default class Preroll extends AdState {
       player.trigger('adtimeout');
     }, timeout);
 
-    player.ads.debug('****** timeout exists now')
+    player.ads.debug('****** timeout exists now');
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
@@ -103,8 +103,6 @@ export default class Preroll extends AdState {
   noPreroll() {
     this.afterLoadStart(() => {
       this.player.ads.debug('Skipping prerolls due to nopreroll event (Preroll)');
-
-      // this.transitionTo(ContentPlayback, true);
       this.resumeAfterNoPreroll(this.player);
     });
   }
@@ -140,7 +138,6 @@ export default class Preroll extends AdState {
     player.ads.debug('adscanceled (Preroll)');
 
     this.afterLoadStart(() => {
-      // this.transitionTo(ContentPlayback, true);
       this.resumeAfterNoPreroll(player);
     });
   }
@@ -158,7 +155,6 @@ export default class Preroll extends AdState {
 
     } else {
       this.afterLoadStart(() => {
-        // this.transitionTo(ContentPlayback, true);
         this.resumeAfterNoPreroll(player);
       });
     }
@@ -196,9 +192,6 @@ export default class Preroll extends AdState {
   endLinearAdMode() {
     const player = this.player;
 
-    // eslint-disable-next-line no-console
-    console.log('*** in Preroll endLinearAdMode');
-
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
       adBreak.end(player);
@@ -218,8 +211,6 @@ export default class Preroll extends AdState {
       this.afterLoadStart(() => {
         player.trigger('adskip');
         player.ads.debug('skipLinearAdMode (Preroll)');
-
-        // this.transitionTo(ContentPlayback, true);
         this.resumeAfterNoPreroll(player);
       });
     }
@@ -231,8 +222,6 @@ export default class Preroll extends AdState {
   onAdTimeout(player) {
     this.afterLoadStart(() => {
       player.ads.debug('adtimeout (Preroll)');
-
-      // this.transitionTo(ContentPlayback, true);
       this.resumeAfterNoPreroll(player);
     });
   }
@@ -249,13 +238,16 @@ export default class Preroll extends AdState {
   }
 
   resumeAfterNoPreroll(player) {
-    // eslint-disable-next-line no-console
-    console.log('**** contentResuming instead of direct transition');
+    player.ads.debug('**** contentResuming instead of direct transition');
+
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;
     player.ads._shouldBlockPlay = false;
-    player.ads.debug('paused?', player.paused(), player.ads._playRequested || player.ads._pausedOnContentupdate);
 
+    player.ads.debug('paused?', player.paused(), player.ads._playRequested || player.ads._pausedOnContentupdate);
+    // Play the content if we had requested play or we paused on 'contentupdate'
+    // and we haven't played yet. This happens if there was no preroll or if it
+    // errored, timed out, etc. Otherwise snapshot restore would play.
     if (player.paused() &&
         (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
       player.ads.debug('Playing again since the player is paused');

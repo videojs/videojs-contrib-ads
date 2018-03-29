@@ -91,13 +91,6 @@ export default class State {
     return false;
   }
 
-  /*
-   * Overriden by BeforePreroll, Preroll and ContentPlayback.
-   */
-  isResumingAfterNoPreroll() {
-    return false;
-  }
-
   inAdBreak() {
     return false;
   }

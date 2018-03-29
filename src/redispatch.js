@@ -142,7 +142,6 @@ const handlePlay = (player, event) => {
   // the next play event that is not user-initiated should be
   // prefixed as though we are resuming to content.
   } else if (player.ads.isContentResuming()) {
-    // || (player.ads.isResumingAfterNoPreroll() && player.ads._playRequested)) {
     prefixEvent(player, 'content', event);
   }
 };
