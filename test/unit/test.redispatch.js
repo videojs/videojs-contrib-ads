@@ -91,18 +91,14 @@ QUnit.test('playing event in different ad states', function(assert) {
 
 QUnit.test('play events in different states', function(assert) {
   this.player.ads.inAdBreak = () => false;
-  this.player.ads.isInAdMode = () => false;
-  this.player.ads.isContentResuming = () => false;
-  this.player.ads.isResumingAfterNoPreroll = () => true;
-  this.player.ads._playRequested = true;
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => true;
   assert.equal(this.redispatch('play'), 'contentplay',
     'should be contentplay when resuming after nopreroll');
 
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => false;
   this.player.ads.isContentResuming = () => true;
-  this.player.ads.isResumingAfterNoPreroll = () => false;
-  this.player.ads._playRequested = true;
   assert.equal(this.redispatch('play'), 'contentplay',
     'should be contentplay when content is resuming');
 
@@ -110,14 +106,12 @@ QUnit.test('play events in different states', function(assert) {
   this.player.ads.isInAdMode = () => false;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = false;
-  this.player.ads.isResumingAfterNoPreroll = () => true;
   assert.strictEqual(this.redispatch('play'), 'ignored',
     "should not be redispatched if play hasn't been requested yet");
 
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => false;
   this.player.ads.isContentResuming = () => false;
-  this.player.ads.isResumingAfterNoPreroll = () => false;
   this.player.ads._playRequested = true;
   assert.strictEqual(this.redispatch('play'), 'ignored',
     'should not be redispatched if in content state');
@@ -126,7 +120,6 @@ QUnit.test('play events in different states', function(assert) {
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = true;
-  this.player.ads.isResumingAfterNoPreroll = () => false;
   assert.strictEqual(this.redispatch('play'), 'ignored',
     'should not prefix when not in an ad break');
 
@@ -134,7 +127,6 @@ QUnit.test('play events in different states', function(assert) {
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = true;
-  this.player.ads.isResumingAfterNoPreroll = () => false;
   assert.strictEqual(this.redispatch('play'), 'adplay',
     'should be adplay when in an ad break');
 });
