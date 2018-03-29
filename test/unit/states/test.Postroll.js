@@ -138,7 +138,7 @@ QUnit.test('can clean up', function(assert) {
   const clearSpy = sinon.spy(this.player, 'clearTimeout');
 
   this.postroll.init(this.player);
-  this.postroll.cleanup();
+  this.postroll.cleanup(this.player);
   assert.equal(this.player.ads._contentEnding, false, '_contentEnding');
   assert.ok(clearSpy.calledWith(this.postroll._postrollTimeout), 'cleared timeout');
 });

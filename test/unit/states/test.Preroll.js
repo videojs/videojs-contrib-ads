@@ -140,6 +140,6 @@ QUnit.test('remove ad loading class on cleanup', function(assert) {
 
   const removeClassSpy = sinon.spy(this.player, 'removeClass');
 
-  this.preroll.cleanup();
+  this.preroll.cleanup(this.player);
   assert.ok(removeClassSpy.calledWith('vjs-ad-loading'), 'loading class removed');
 });

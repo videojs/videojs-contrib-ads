@@ -37,7 +37,7 @@ export default class Postroll extends AdState {
 
     // No postroll, ads are done
     } else {
-      this.contentResuming = true;
+      this.resumeContent(player);
       this.transitionTo(AdsDone);
     }
   }
@@ -73,7 +73,7 @@ export default class Postroll extends AdState {
 
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
-      this.contentResuming = true;
+      this.resumeContent(player);
       adBreak.end(player, () => {
         this.transitionTo(AdsDone);
       });
@@ -91,7 +91,7 @@ export default class Postroll extends AdState {
     } else {
       player.ads.debug('Postroll abort (skipLinearAdMode)');
       player.trigger('adskip');
-      this.abort();
+      this.abort(player);
     }
   }
 
@@ -100,7 +100,7 @@ export default class Postroll extends AdState {
    */
   onAdTimeout(player) {
     player.ads.debug('Postroll abort (adtimeout)');
-    this.abort();
+    this.abort(player);
   }
 
   /*
@@ -115,7 +115,7 @@ export default class Postroll extends AdState {
     if (player.ads.inAdBreak()) {
       player.ads.endLinearAdMode();
     } else {
-      this.abort();
+      this.abort(player);
     }
   }
 
@@ -146,14 +146,17 @@ export default class Postroll extends AdState {
     }
   }
 
+  resumeContent(player) {
+    this.contentResuming = true;
+    player.addClass('vjs-ad-content-resuming');
+  }
+
   /*
    * Helper for ending Postrolls. In the future we may want to
    * refactor this class so that `cleanup` handles all of this.
    */
-  abort() {
-    const player = this.player;
-
-    this.contentResuming = true;
+  abort(player) {
+    this.resumeContent(player);
     player.removeClass('vjs-ad-loading');
     this.transitionTo(AdsDone);
   }
@@ -161,9 +164,8 @@ export default class Postroll extends AdState {
   /*
    * Cleanup timeouts and state.
    */
-  cleanup() {
-    const player = this.player;
-
+  cleanup(player) {
+    player.removeClass('vjs-ad-content-resuming');
     player.clearTimeout(this._postrollTimeout);
     player.ads._contentEnding = false;
   }

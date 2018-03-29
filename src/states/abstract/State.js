@@ -19,7 +19,7 @@ export default class State {
     const player = this.player;
     const previousState = this;
 
-    previousState.cleanup();
+    previousState.cleanup(player);
     const newState = new NewState(player);
 
     player.ads._state = newState;
