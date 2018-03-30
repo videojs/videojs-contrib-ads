@@ -1,5 +1,4 @@
 import {ContentState, Preroll} from '../states.js';
-import cancelContentPlay from '../cancelContentPlay.js';
 
 /*
  * This is the initial state for a player with an ad plugin. Normally, it remains in this
@@ -24,6 +23,8 @@ export default class BeforePreroll extends ContentState {
     this.adsReady = false;
     this.shouldResumeToContent = false;
 
+    // Content playback should be blocked until we are done
+    // playing ads or we know there are no ads to play
     player.ads._shouldBlockPlay = true;
   }
 
@@ -42,9 +43,6 @@ export default class BeforePreroll extends ContentState {
    */
   onPlay(player) {
     player.ads.debug('Received play event (BeforePreroll)');
-
-    // Don't start content playback yet
-    cancelContentPlay(player);
 
     // Check for prerolls
     this.transitionTo(Preroll, this.adsReady, this.shouldResumeToContent);

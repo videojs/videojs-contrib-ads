@@ -11,6 +11,7 @@ import redispatch from './redispatch.js';
 import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
+import initCancelContentPlay from './cancelContentPlay.js';
 import playMiddlewareFeature from './playMiddleware.js';
 
 import {BeforePreroll} from './states.js';
@@ -68,9 +69,13 @@ const contribAdsPlugin = function(options) {
   // Set up redispatching of player events
   player.on(videoEvents, redispatch);
 
-  // Register the play middleware with video.js
+  // Set up features to block content playback while waiting for ads
   if (isMiddlewareMediatorSupported()) {
+    // Register the play middleware with video.js
     videojs.use('*', playMiddleware);
+  } else {
+    // Register the cancelContentPlay feature on the player
+    initCancelContentPlay(player, settings.debug);
   }
 
   // If we haven't seen a loadstart after 5 seconds, the plugin was not initialized

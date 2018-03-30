@@ -1,7 +1,6 @@
 import videojs from 'video.js';
 
 import {AdState} from '../states.js';
-import cancelContentPlay from '../cancelContentPlay.js';
 import adBreak from '../adBreak.js';
 
 /*
@@ -31,6 +30,7 @@ export default class Preroll extends AdState {
       return this.resumeAfterNoPreroll(player);
     }
 
+    // Continue to block content playback until an ad break starts
     player.ads._shouldBlockPlay = true;
 
     // Determine preroll timeout based on plugin settings
@@ -125,10 +125,6 @@ export default class Preroll extends AdState {
    */
   onPlay(player) {
     player.ads.debug('Received play event (Preroll)');
-
-    if (!this.inAdBreak() && !this.isContentResuming()) {
-      cancelContentPlay(this.player);
-    }
   }
 
   /*
