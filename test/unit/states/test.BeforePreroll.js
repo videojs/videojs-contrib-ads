@@ -18,6 +18,9 @@ QUnit.module('BeforePreroll', {
       setTimeout: () => {},
       trigger: (event) => {
         this.events.push(event);
+      },
+      paused: () => {
+        return true;
       }
     };
 

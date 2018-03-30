@@ -342,16 +342,25 @@ QUnit.skip('the `cancelPlayTimeout` timeout is cleared when exiting preroll', fu
 
 });
 
-QUnit.test('"cancelContentPlay doesn\'t block play after adscanceled', function(assert) {
+QUnit.test('"cancelContentPlay doesn\'t block play in content playback', function(assert) {
+  const pauseSpy = sinon.spy(this.player, 'pause');
 
   this.player.trigger('loadstart');
-  this.player.trigger('play');
   this.player.trigger('adscanceled');
+  this.player.paused = () => {
+    return false;
+  }
+  this.player.trigger('play');
+  assert.strictEqual(pauseSpy.callCount, 1, 'pause should have been called');
+  assert.strictEqual(this.player.ads._cancelledPlay, true,
+    'cancelContentPlay is called while resuming');
 
-  this.clock.tick(1);
+  // enters ContentPlayback
+  this.player.trigger('playing');
+  this.player.trigger('play');
 
+  assert.strictEqual(pauseSpy.callCount, 1, 'pause should not have been called again');
   assert.notOk(this.player.ads._cancelledPlay, 'cancelContentPlay does nothing in content playback');
-
 });
 
 QUnit.test('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
