@@ -95,6 +95,12 @@
     // request ads right away
     requestAds();
 
+    player.on('adsready', function() {
+      if (!playPreroll) {
+        player.trigger('nopreroll');
+      }
+    });
+
     // request ad inventory whenever the player gets content to play
     player.on('contentchanged', function() {
       requestAds();
@@ -114,8 +120,6 @@
       if (!state.prerollPlayed && playPreroll) {
         state.prerollPlayed = true;
         playAd();
-      } else if (!playPreroll) {
-        player.trigger('nopreroll');
       }
     });
 

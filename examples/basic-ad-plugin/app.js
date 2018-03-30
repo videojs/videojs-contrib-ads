@@ -16,7 +16,8 @@
 
   var log = document.querySelector('.log');
   var Html5 = videojs.getTech('Html5');
-  Html5.Events.concat(Html5.Events.map(function(evt) {
+
+  var eventList = Html5.Events.concat(Html5.Events.map(function(evt) {
     return 'ad' + evt;
   })).concat(Html5.Events.map(function(evt) {
     return 'content' + evt;
@@ -25,12 +26,15 @@
     'adtimeout',
     'contentupdate',
     'contentplayback',
+    'readyforpreroll',
     // events emitted by third party ad implementors
     'adsready',
     'adscanceled',
     'adplaying',
     'adstart',  // startLinearAdMode()
-    'adend'     // endLinearAdMode()
+    'adend',     // endLinearAdMode()
+    'nopreroll',
+    'nopostroll'
 
   ]).filter(function(evt) {
     var events = {
@@ -38,6 +42,7 @@
       timeupdate: 1,
       suspend: 1,
       emptied: 1,
+      durationchange: 1,
       contentprogress: 1,
       contenttimeupdate: 1,
       contentsuspend: 1,
@@ -45,50 +50,50 @@
       adprogress: 1,
       adtimeupdate: 1,
       adsuspend: 1,
-      ademptied: 1
+      ademptied: 1,
+      adabort: 1
     }
+
     return !(evt in events);
+  });
 
-  }).map(function(evt) {
-    player.ready(function() {
-      player.on(evt, function(event) {
-        var d , str, li;
+  player.on(eventList, function(event) {
+    var d , str, li, evt;
 
-        li = document.createElement('li');
+    evt = event.type;
+    li = document.createElement('li');
 
-        d = new Date();
-        d = '' +
-          pad(2, d.getHours()) + ':' +
-          pad(2, d.getMinutes()) + ':' +
-          pad(2, d.getSeconds()) + '.' +
-          pad(3, d.getMilliseconds());
+    d = new Date();
+    d = '' +
+      pad(2, d.getHours()) + ':' +
+      pad(2, d.getMinutes()) + ':' +
+      pad(2, d.getSeconds()) + '.' +
+      pad(3, d.getMilliseconds());
 
-        if (event.type.indexOf('ad') === 0) {
-          li.className = 'ad-event';
-        } else if (event.type.indexOf('content') === 0) {
-          li.className = 'content-event';
-        }
+    if (event.type.indexOf('ad') === 0) {
+      li.className = 'ad-event';
+    } else if (event.type.indexOf('content') === 0) {
+      li.className = 'content-event';
+    }
 
-        str = evt;
+    str = evt;
 
-        if (evt === 'contentupdate') {
-          str += ' ' + event.oldValue + " -> " + event.newValue;
-          li.className = 'content-adplugin-event';
-        }
-        if (evt === 'contentchanged') {
-          li.className = 'content-adplugin-event';
-        }
-        if (evt === 'contentplayback') {
-          li.className = 'content-adplugin-event';
-        }
-        if (evt === 'adplay') {
-          player.trigger('ads-ad-started');
-        }
+    if (evt === 'contentupdate') {
+      str += ' ' + event.oldValue + " -> " + event.newValue;
+      li.className = 'content-adplugin-event';
+    }
+    if (evt === 'contentchanged') {
+      li.className = 'content-adplugin-event';
+    }
+    if (evt === 'contentplayback') {
+      li.className = 'content-adplugin-event';
+    }
+    if (evt === 'adplay') {
+      player.trigger('ads-ad-started');
+    }
 
-        li.innerHTML = str;
-        log.insertBefore(li, log.firstChild);
-      });
-    });
+    li.innerHTML = str;
+    log.insertBefore(li, log.firstChild);
   });
 
   document.querySelector('form').addEventListener('submit', function(event) {
