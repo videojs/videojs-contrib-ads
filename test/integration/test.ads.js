@@ -314,7 +314,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
 });
 
 // TODO: remove?
-QUnit.todo('the `cancelPlayTimeout` timeout is cleared when exiting preroll', function(assert) {
+QUnit.skip('the `cancelPlayTimeout` timeout is cleared when exiting preroll', function(assert) {
   // Stub mobile browsers to force cancelContentPlay to be used
   this.sandbox.stub(videojs, 'browser').get(() => {
     return {
@@ -559,17 +559,29 @@ QUnit.test('skipLinearAdMode during ad playback does not trigger adskip', functi
     'adskip event should not trigger when skipLinearAdMode is called during an ad');
 });
 
-// Why is this supposed to happen?
-QUnit.todo('adsready in content-playback triggers readyforpreroll', function(assert) {
-  var spy;
+QUnit.test('adsready in content-playback triggers readyforpreroll', function(assert) {
+  var spy = sinon.spy();
 
-  spy = sinon.spy();
   this.player.on('readyforpreroll', spy);
   this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // entered ContentPlayback
   this.player.trigger('adsready');
-  assert.strictEqual(spy.getCall(0).args[0].type, 'readyforpreroll', 'readyforpreroll should have been triggered.');
+  assert.strictEqual(spy.callCount, 1, 'readyforpreroll should have been triggered.');
+});
+
+// TODO: Maybe make this pass?
+QUnit.skip('adsready while preroll content resuming triggers readyforpreroll', function(assert) {
+  var spy = sinon.spy();
+
+  this.player.on('readyforpreroll', spy);
+  this.player.trigger('loadstart');
+  this.player.trigger('play');
+  this.player.trigger('adtimeout');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'should be resuming to content');
+  this.player.trigger('adsready');
+  assert.strictEqual(spy.callCount, 1, 'readyforpreroll should have been triggered.');
 });
 
 // ----------------------------------

@@ -32,7 +32,7 @@ QUnit.module('ContentPlayback', {
 });
 
 // TODO: We can probably rewrite this test in Preroll
-QUnit.todo('only plays on init on correct conditions', function(assert) {
+QUnit.skip('only plays on init on correct conditions', function(assert) {
   this.player.paused = () => false;
   this.player.ads._cancelledPlay = false;
   this.player.ads._playRequested = false;
