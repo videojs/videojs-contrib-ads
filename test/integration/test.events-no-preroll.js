@@ -35,7 +35,7 @@ QUnit.test('initial play event with no preroll: one please', function(assert) {
 
   var playEvents = 0;
 
-  this.player.tech_.on('play', () => {
+  this.player.on('play', () => {
     playEvents++;
   });
 
