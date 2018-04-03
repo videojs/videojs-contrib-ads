@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
 
-import {AdState} from '../../../src/states.js';
+import {AdState} from '../../../../src/states.js';
 
 /*
  * These tests are intended to be isolated unit tests for one state with all

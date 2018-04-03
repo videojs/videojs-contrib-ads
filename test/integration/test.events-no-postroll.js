@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
 import videojs from 'video.js';
-import '../examples/basic-ad-plugin/example-integration.js';
+import '../../examples/basic-ad-plugin/example-integration.js';
 
 QUnit.module('Final Events With No Postroll', {
   beforeEach: function() {
@@ -18,7 +18,7 @@ QUnit.module('Final Events With No Postroll', {
     });
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/inventory.json',
+      'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'playMidroll': false,
       'playPostroll': false

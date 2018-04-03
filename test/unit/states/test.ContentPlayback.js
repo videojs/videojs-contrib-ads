@@ -1,5 +1,5 @@
 import QUnit from 'qunit';
-import {ContentPlayback} from '../../src/states.js';
+import {ContentPlayback} from '../../../src/states.js';
 
 /*
  * These tests are intended to be isolated unit tests for one state with all

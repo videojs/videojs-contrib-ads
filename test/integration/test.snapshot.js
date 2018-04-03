@@ -1,5 +1,5 @@
 import videojs from 'video.js';
-import * as snapshot from '../src/snapshot.js';
+import * as snapshot from '../../src/snapshot.js';
 
 QUnit.module('Video Snapshot', window.sharedModuleHooks({
 
@@ -8,8 +8,8 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
     var otherTrack = document.createElement('track');
 
     captionTrack.setAttribute('kind', 'captions');
-    captionTrack.setAttribute('src', 'testcaption.vtt');
-    otherTrack.setAttribute('src', 'testcaption.vtt');
+    captionTrack.setAttribute('src', 'lib/testcaption.vtt');
+    otherTrack.setAttribute('src', 'lib/testcaption.vtt');
     this.video.appendChild(captionTrack);
     this.video.appendChild(otherTrack);
 

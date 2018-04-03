@@ -1,7 +1,7 @@
 import QUnit from 'qunit';
-import {Preroll} from '../../src/states.js';
-import * as CancelContentPlay from '../../src/cancelContentPlay.js';
-import adBreak from '../../src/adBreak.js';
+import {Preroll} from '../../../src/states.js';
+import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
+import adBreak from '../../../src/adBreak.js';
 
 /*
  * These tests are intended to be isolated unit tests for one state with all
