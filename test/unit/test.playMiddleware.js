@@ -1,4 +1,4 @@
-import pm from '../src/playMiddleware.js';
+import pm from '../../src/playMiddleware.js';
 
 QUnit.module('Play middleware: not supported unit tests', window.sharedModuleHooks({
   // let oldVersion;
