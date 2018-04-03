@@ -1,7 +1,9 @@
 QUnit.module('Integration: play middleware', window.sharedModuleHooks({
   beforeEach: function() {
+    const player = this.player;
+
     this.video.play = function() {
-      this.player.trigger('play');
+      player.trigger('play');
     };
   }
 }));
