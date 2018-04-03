@@ -406,6 +406,7 @@ QUnit.test('ended event happens after postroll errors out', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended');
   this.player.trigger('adserror');
 
@@ -422,6 +423,7 @@ QUnit.test('ended event happens after postroll timed out', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended');
   this.player.trigger('adtimeout');
 
@@ -438,6 +440,7 @@ QUnit.test('ended event happens after postroll skipped', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // preroll times out
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended'); // content ends (contentended)
   this.player.ads.skipLinearAdMode();
 
@@ -473,6 +476,7 @@ QUnit.test('ended events when content ends first and second time', function(asse
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // Preroll times out
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended'); // Content ends (contentended)
 
   this.player.ads.startLinearAdMode(); // Postroll starts
