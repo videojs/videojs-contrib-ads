@@ -1,49 +1,62 @@
 import pm from '../../src/playMiddleware.js';
 
-QUnit.module('Play middleware: not supported unit tests', window.sharedModuleHooks({
-  // let oldVersion;
-  // let oldUse;
-  // let oldMiddleware;
-  // let oldIOS;
-  // let oldAndroid;
+const sharedHooks = window.sharedModuleHooks();
 
-  beforeEach: function() {
-    this.sandbox.oldMiddleware = videojs.middleware ? videojs.mergeOptions({}, videojs.middleware) : undefined;
-
-    this.sandbox.stub(videojs, 'VERSION').get(() => {
-      return '6.0.0';
-    });
-    this.sandbox.stub(videojs, 'use').get(() => {
-      return undefined;
-    });
-    // this.sandbox.stub(videojs, 'middleware').get(() => {
-    //   return { TERMINATOR: 'fake terminator' };
-    // });
-    this.sandbox.stub(videojs, 'browser').get(() => {
-      return {
+// Stub mobile browsers to force cancelContentPlay to be used
+const fakeVideojs = function() {
+  this.videojs = sinon.stub(window, 'videojs');
+  console.log('videojs is stubbed?', this.videojs, videojs);
+  this.videojs.get(() => {
+    return {
+      use: () => {},
+      middleware: {
+        TERMINATOR: 'fake terminator'
+      },
+      browser: {
         IS_ANDROID: false,
         IS_IOS: false
-      };
-    });
-
-    // const mockVideojs = {
-    //   VERSION: '6.0.0',
-    //   browser: {
-    //     IS_ANDROID: false,
-    //     IS_IOS: false
-    //   }
-    // };
-    // this.oldVjs = window.videojs;
-    // window.videojs = mockVideojs;
-  }
-}));
-
-QUnit.test('isMiddlewareMediatorSupported is false if old video.js version', function(assert) {
-  this.sandbox.stub(videojs, 'VERSION').get(() => {
-    return '5.0.0';
+      },
+      VERSION: '5.0.0'
+    };
   });
-  // TODO stub out middleware somehow
-  sinon.stub(videojs.middleware, undefined);
+
+  this.player = {
+    ads: {
+      _shouldBlockPlay: false
+    }
+  }
+};
+
+// Restore original videojs behavior
+const restoreVideojs = function() {
+  this.videojs.restore();
+  window.videojs.restore();
+};
+
+
+// Run custom hooks before sharedModuleHooks, as videojs must be
+// modified before seting up the player and videojs-contrib-ads
+QUnit.module.skip('Play middleware: not supported unit tests', {
+  beforeEach: fakeVideojs,
+  afterEach: restoreVideojs
+});
+
+// TODO stub out middleware somehow
+QUnit.test('isMiddlewareMediatorSupported is false if old video.js version', function(assert) {
+  // this.sandbox.stub(videojs, 'VERSION').get(() => {
+  //   return '5.0.0';
+  // });
+  // sinon.stub(videojs.middleware, undefined);
+  this.videojs.get(() => {
+    return {
+      use: () => {},
+      VERSION: '5.0.0',
+      browser: {
+        IS_ANDROID: false,
+        IS_IOS: false
+      }
+    };
+  });
   assert.equal(pm.isMiddlewareMediatorSupported(), false,
     'old video.js does not support middleware mediators');
 });
