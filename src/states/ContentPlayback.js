@@ -21,16 +21,6 @@ export default class ContentPlayback extends ContentState {
   init(player) {
     // Don't block calls to play in content playback
     player.ads._shouldBlockPlay = false;
-
-    // Play the content if we had requested play or we paused on 'contentupdate'
-    // and we haven't played yet. This happens if there was no preroll or if it
-    // errored, timed out, etc. Otherwise snapshot restore would play.
-    // if (player.paused() &&
-    //     (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
-    //   // eslint-disable-next-line no-console
-    //   console.log('**** replaying the player');
-    //   player.play();
-    // }
   }
 
   /*

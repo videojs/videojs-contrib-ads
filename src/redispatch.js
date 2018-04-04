@@ -44,9 +44,6 @@ const handlePlaying = (player, event) => {
 
     if (player.ads.isContentResuming()) {
 
-      // eslint-disable-next-line: no-console
-      // console.log('***** playing is seen during content resuming');
-
       // Prefix playing event when switching back to content after postroll.
       if (player.ads._contentEnding) {
         prefixEvent(player, 'content', event);
@@ -152,8 +149,6 @@ export default function redispatch(event) {
 
   // Events with special treatment
   if (event.type === 'playing') {
-    // eslint-disable-next-line: no-console
-    // console.log('*** redispatch sees playing', this.ads.isInAdMode(), this.ads.isContentResuming());
     handlePlaying(this, event);
   } else if (event.type === 'ended') {
     handleEnded(this, event);

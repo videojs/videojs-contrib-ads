@@ -45,8 +45,6 @@ export default class Preroll extends AdState {
       player.trigger('adtimeout');
     }, timeout);
 
-    player.ads.debug('****** timeout exists now');
-
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
     // Note: if nopreroll is seen, this causes a state transition
@@ -234,13 +232,10 @@ export default class Preroll extends AdState {
   }
 
   resumeAfterNoPreroll(player) {
-    player.ads.debug('**** contentResuming instead of direct transition');
-
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;
     player.ads._shouldBlockPlay = false;
 
-    player.ads.debug('paused?', player.paused(), player.ads._playRequested || player.ads._pausedOnContentupdate);
     // Play the content if we had requested play or we paused on 'contentupdate'
     // and we haven't played yet. This happens if there was no preroll or if it
     // errored, timed out, etc. Otherwise snapshot restore would play.

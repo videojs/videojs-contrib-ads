@@ -24,7 +24,6 @@ export default class AdState extends State {
    * moment that content playback is no longer blocked by ads.
    */
   onPlaying() {
-    this.player.ads.debug('**** playing happened in adstate. Content resuming?', this.contentResuming);
     if (this.contentResuming) {
       this.transitionTo(ContentPlayback);
     }

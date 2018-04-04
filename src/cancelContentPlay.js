@@ -42,14 +42,3 @@ function cancelContentPlay() {
   // This is needed if there is no preroll or if it errors, times out, etc.
   player.ads._cancelledPlay = true;
 }
-
-/**
- * TODO:
- *
- * [x] Make cancelContentPlay self-sufficient.
- * [x] Handle play events in this file.
- * Alternatives:
- * - add another flag for "between init and starting preroll ad break"
- * - have a 3 value flag "cancelContentPlay" "middleware" "don't block"
- *
- */
