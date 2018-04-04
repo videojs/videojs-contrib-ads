@@ -414,8 +414,7 @@ QUnit.test('adsready in content-playback triggers readyforpreroll', function(ass
   assert.strictEqual(spy.callCount, 1, 'readyforpreroll should have been triggered.');
 });
 
-// TODO: Maybe make this pass?
-QUnit.skip('adsready while preroll content resuming triggers readyforpreroll', function(assert) {
+QUnit.test('adsready while preroll content resuming triggers readyforpreroll', function(assert) {
   var spy = sinon.spy();
 
   this.player.on('readyforpreroll', spy);

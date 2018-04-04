@@ -59,7 +59,7 @@ export default class Preroll extends AdState {
    * Adsready event after play event.
    */
   onAdsReady(player) {
-    if (!player.ads.inAdBreak() && !player.ads.isContentResuming()) {
+    if (!player.ads.inAdBreak()) {
       player.ads.debug('Received adsready event (Preroll)');
       this.handleAdsReady();
     } else {
