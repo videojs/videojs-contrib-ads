@@ -47,7 +47,6 @@ export default class Preroll extends AdState {
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.
-    // Note: if nopreroll is seen, this causes a state transition
     if (adsReady) {
       this.handleAdsReady();
 
@@ -116,13 +115,6 @@ export default class Preroll extends AdState {
       player.ads.debug('Triggered readyforpreroll event (Preroll)');
       player.trigger('readyforpreroll');
     });
-  }
-
-  /*
-   * Don't allow the content to start playing while we're dealing with ads.
-   */
-  onPlay(player) {
-    player.ads.debug('Received play event (Preroll)');
   }
 
   /*

@@ -180,8 +180,10 @@ const contribAdsPlugin = function(options) {
     // Are we after startLinearAdMode and before endLinearAdMode?
     _inLinearAdMode: false,
 
-    //
+    // Should we block calls to play on the content player?
     _shouldBlockPlay: false,
+    // Tracks whether play has been requested for this source,
+    // either by the play method or user interaction
     _playRequested: false,
 
     // This is an estimation of the current ad type being played

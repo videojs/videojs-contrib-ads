@@ -135,9 +135,8 @@ const handleLoadEvent = (player, event) => {
 const handlePlay = (player, event) => {
   if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
-  // If a play event has already happened and a preroll did not play,
-  // the next play event that is not user-initiated should be
-  // prefixed as though we are resuming to content.
+
+  // Content resuming
   } else if (player.ads.isContentResuming()) {
     prefixEvent(player, 'content', event);
   }
