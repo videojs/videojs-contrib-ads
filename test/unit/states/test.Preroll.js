@@ -17,7 +17,8 @@ QUnit.module('Preroll', {
         debug: () => {},
         settings: {},
         inAdBreak: () => false,
-        isContentResuming: () => false
+        isContentResuming: () => false,
+        _shouldBlockPlay: true
       },
       setTimeout: () => {},
       clearTimeout: () => {},
@@ -205,23 +206,14 @@ QUnit.test('remove ad loading class on cleanup', function(assert) {
   assert.ok(removeClassSpy.calledWith('vjs-ad-loading'), 'loading class removed');
 });
 
-QUnit.test('sets _shouldBlockPlay to true before ad break starts', function(assert) {
-  this.preroll.init(this.player, true);
-  this.player.ads._inLinearAdMode = false;
-
-  assert.equal(this.player.ads.inAdBreak(), false);
-  assert.equal(this.player.ads.isContentResuming(), false);
-  assert.equal(this.player.ads._shouldBlockPlay, true);
-});
-
 QUnit.test('resets _shouldBlockPlay to false when ad break starts', function(assert) {
   this.preroll.init(this.player, true);
-  this.player.ads._inLinearAdMode = false;
-
-  assert.equal(this.player.ads.inAdBreak(), false);
-  assert.equal(this.player.ads.isContentResuming(), false);
-  assert.equal(this.player.ads._shouldBlockPlay, true);
-
   this.preroll.startLinearAdMode();
+  assert.equal(this.player.ads._shouldBlockPlay, false);
+});
+
+QUnit.test('resets _shouldBlockPlay to false when no preroll', function(assert) {
+  this.preroll.init(this.player, true, false);
+  this.preroll.resumeAfterNoPreroll(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, false);
 });

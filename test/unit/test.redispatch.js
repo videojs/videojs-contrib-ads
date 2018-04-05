@@ -37,16 +37,6 @@ QUnit.module('Redispatch', {
 
         isResumingAfterNoPreroll() {
           return false;
-        },
-
-        _state: {
-          constructor: function(player) {},
-          transitionTo: function(NewState, ...args) {},
-          init: function() {},
-          cleanup: function() {},
-          isAdState: function() {},
-          isContentResuming: function() {},
-          inAdBreak: function() {}
         }
       }
     };
