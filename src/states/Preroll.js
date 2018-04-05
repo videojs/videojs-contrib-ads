@@ -30,9 +30,6 @@ export default class Preroll extends AdState {
       return this.resumeAfterNoPreroll(player);
     }
 
-    // Continue to block content playback until an ad break starts
-    player.ads._shouldBlockPlay = true;
-
     // Determine preroll timeout based on plugin settings
     let timeout = player.ads.settings.timeout;
 
@@ -233,7 +230,6 @@ export default class Preroll extends AdState {
     // errored, timed out, etc. Otherwise snapshot restore would play.
     if (player.paused() &&
         (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
-      player.ads.debug('Playing again since the player is paused');
       player.play();
     }
   }
