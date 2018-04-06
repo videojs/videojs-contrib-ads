@@ -6,9 +6,7 @@ QUnit.module('Integration: play middleware', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    // this.fixture = document.createElement('div');
     this.fixture = document.querySelector('#qunit-fixture');
-    // document.querySelector('body').appendChild(this.fixture);
     this.fixture.appendChild(this.video);
 
     this.sandbox = sinon.sandbox.create();

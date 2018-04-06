@@ -6,8 +6,7 @@ QUnit.module('Initial Events With No Preroll', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);

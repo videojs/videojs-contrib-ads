@@ -4,7 +4,6 @@ const timerExists = function(env, id) {
   return env.clock.timers.hasOwnProperty(id);
 };
 
-
 // Stub mobile browsers to force cancelContentPlay to be used
 const fakeVideojs = function() {
   this.videojs = sinon.stub(videojs, 'browser').get(() => {

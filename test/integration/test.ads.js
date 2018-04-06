@@ -171,7 +171,10 @@ QUnit.test('"contentupdate" should fire when src is changed after postroll', fun
   this.player.trigger('adtimeout');
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   assert.strictEqual(contentupdateSpy.callCount, 1, 'one contentupdate event fired');
 });
@@ -188,7 +191,10 @@ QUnit.test('"contentupdate" should fire when src is changed after postroll', fun
   this.player.trigger('ended');
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   assert.strictEqual(contentupdateSpy.callCount, 1, 'one contentupdate event fired');
 });
@@ -204,7 +210,10 @@ QUnit.test('changing src does not trigger "contentupdate" during ad playback', f
   this.player.ads.startLinearAdMode();
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
 
   // finish playing ad

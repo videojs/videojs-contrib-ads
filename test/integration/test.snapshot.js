@@ -20,7 +20,10 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
 }));
 
 QUnit.test('restores the original video src after ads', function(assert) {
-  var originalSrc = 'http://example.com/original.mp4';
+  var originalSrc = {
+    src: 'http://example.com/original.mp4',
+    type: 'video/mp4'
+  };
 
   assert.expect(1);
 
@@ -29,9 +32,12 @@ QUnit.test('restores the original video src after ads', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.mp4',
+    type: 'video/mp4'
+  });
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
+  assert.strictEqual(this.player.currentSrc(), originalSrc.src, 'the original src is restored');
 });
 
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
@@ -46,7 +52,10 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   setTimeoutSpy = sinon.spy(window, 'setTimeout');
   this.video.currentTime = 100;
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.mp4',
+    type: 'video/mp4'
+  });
 
   // the ad resets the current time
   this.video.currentTime = 0;
@@ -67,7 +76,10 @@ QUnit.test('the current time is restored at the end of an ad', function(assert) 
 
   // the video plays to time 100
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.mp4',
+    type: 'video/mp4'
+  });
 
   // the ad resets the current time
   this.video.currentTime = 0;
@@ -106,7 +118,10 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   var playSpy = sinon.spy(this.player, 'play');
 
   // start playback
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.trigger('adsready');
@@ -114,13 +129,19 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
 
   // trigger an ad
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.ads.endLinearAdMode();
 
   // resume playback
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('canplay');
 
@@ -144,7 +165,10 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
 
   // trigger a post-roll
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.ads.endLinearAdMode();
@@ -189,7 +213,10 @@ QUnit.test('snapshot does not resume playback after a burned-in post-roll', func
 QUnit.test('snapshot does not resume playback after multiple post-rolls', function(assert) {
   var playSpy;
 
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://media.w3.org/2010/05/sintel/trailer.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
@@ -215,9 +242,15 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
 
   // trigger a lot of post-rolls
   this.player.ads.startLinearAdMode();
-  this.player.src('http://example.com/ad1.mp4');
+  this.player.src({
+    src: 'http://example.com/ad1.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
-  this.player.src('http://example.com/ad2.mp4');
+  this.player.src({
+    src: 'http://example.com/ad2.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
@@ -232,7 +265,10 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   };
 
   // load and play the initial video
-  this.player.src('http://example.com/movie.mp4');
+  this.player.src({
+    src:'http://example.com/movie.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adsready');
@@ -243,7 +279,10 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   this.player.trigger('playing');
 
   // change the content and timeout the new ad response
-  this.player.src('http://example.com/movie2.mp4');
+  this.player.src({
+    src: 'http://example.com/movie2.mp4',
+    type: 'video/mp4'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('adtimeout');
   assert.strictEqual('http://example.com/movie2.mp4', this.player.currentSrc(), 'playing the second video');
@@ -357,11 +396,17 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 
   this.player.duration(Infinity);
 
-  this.player.src(originalSrc);
+  this.player.src({
+    src: originalSrc,
+    type: 'video/mp4'
+  });
   this.player.trigger('adsready');
   this.player.play();
   this.player.ads.startLinearAdMode();
-  this.player.src(newSrc);
+  this.player.src({
+    src: newSrc,
+    type: 'video/mp4'
+  });
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.currentSrc(), newSrc, 'source is not reset');
 });

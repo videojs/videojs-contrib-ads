@@ -16,8 +16,7 @@ QUnit.module('Events and Prerolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
@@ -307,7 +306,7 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 1) {
+    if (this.player.currentTime() > 0) {
 
       seenOutsideAdModeBefore.forEach((event) => {
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix before preroll');
