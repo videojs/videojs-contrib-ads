@@ -1,6 +1,7 @@
 import videojs from 'video.js';
 
 const obj = {};
+let videojsReference = videojs;
 
 /**
  * Checks if middleware mediators are available and
@@ -9,15 +10,15 @@ const obj = {};
  */
 obj.isMiddlewareMediatorSupported = function() {
 
-  if (videojs.browser.IS_IOS || videojs.browser.IS_ANDROID) {
+  if (videojsReference.browser.IS_IOS || videojsReference.browser.IS_ANDROID) {
     return false;
 
   } else if (
     // added when middleware was introduced in video.js
-    videojs.use &&
+    videojsReference.use &&
     // added when mediators were introduced in video.js
-    videojs.middleware &&
-    videojs.middleware.TERMINATOR) {
+    videojsReference.middleware &&
+    videojsReference.middleware.TERMINATOR) {
     return true;
 
   }
@@ -32,10 +33,9 @@ obj.playMiddleware = function(player) {
     },
     callPlay() {
       // Block play calls while waiting for an ad
-      if (obj.isMiddlewareMediatorSupported() &&
-          player.ads._shouldBlockPlay === true) {
+      if (player.ads._shouldBlockPlay === true) {
         player.ads.debug('Using playMiddleware to block content playback');
-        return videojs.middleware.TERMINATOR;
+        return videojsReference.middleware.TERMINATOR;
       }
     },
     play(terminated, value) {
@@ -50,6 +50,10 @@ obj.playMiddleware = function(player) {
       }
     }
   };
+};
+
+obj.testHook = function(testVjs) {
+  videojsReference = testVjs;
 };
 
 export default obj;

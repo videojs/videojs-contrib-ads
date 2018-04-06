@@ -4,33 +4,12 @@ const sharedHooks = window.sharedModuleHooks();
 
 // Stub mobile browsers to force cancelContentPlay to be used
 const fakeVideojs = function() {
-  this.videojs = sinon.stub(window, 'videojs');
-  console.log('videojs is stubbed?', this.videojs, videojs);
-  this.videojs.get(() => {
-    return {
-      use: () => {},
-      middleware: {
-        TERMINATOR: 'fake terminator'
-      },
-      browser: {
-        IS_ANDROID: false,
-        IS_IOS: false
-      },
-      VERSION: '5.0.0'
-    };
-  });
 
-  this.player = {
-    ads: {
-      _shouldBlockPlay: false
-    }
-  }
 };
 
 // Restore original videojs behavior
 const restoreVideojs = function() {
-  this.videojs.restore();
-  window.videojs.restore();
+
 };
 
 
@@ -43,20 +22,15 @@ QUnit.module.skip('Play middleware: not supported unit tests', {
 
 // TODO stub out middleware somehow
 QUnit.test('isMiddlewareMediatorSupported is false if old video.js version', function(assert) {
-  // this.sandbox.stub(videojs, 'VERSION').get(() => {
-  //   return '5.0.0';
-  // });
-  // sinon.stub(videojs.middleware, undefined);
-  this.videojs.get(() => {
-    return {
+  this.videojs = {
       use: () => {},
       VERSION: '5.0.0',
       browser: {
         IS_ANDROID: false,
         IS_IOS: false
       }
-    };
-  });
+  };
+  pm.testHook(this.videojs);
   assert.equal(pm.isMiddlewareMediatorSupported(), false,
     'old video.js does not support middleware mediators');
 });
