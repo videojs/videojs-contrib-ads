@@ -1,64 +1,70 @@
-QUnit.module('Integration: play middleware', window.sharedModuleHooks({
+import QUnit from 'qunit';
+import videojs from 'video.js';
+import '../../examples/basic-ad-plugin/example-integration.js';
+
+QUnit.module('Integration: play middleware', {
   beforeEach: function() {
-    const player = this.player;
+    this.video = document.createElement('video');
 
-    this.video.play = function() {
-      player.trigger('play');
-    };
-  }
-}));
+    // this.fixture = document.createElement('div');
+    this.fixture = document.querySelector('#qunit-fixture');
+    // document.querySelector('body').appendChild(this.fixture);
+    this.fixture.appendChild(this.video);
 
-QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
-  const spy = sinon.spy();
-  const done = assert.async();
+    this.sandbox = sinon.sandbox.create();
+    this.clock = sinon.useFakeTimers();
 
-  this.player.on('contentchanged', spy);
+    this.player = videojs(this.video);
 
-  videojs.log('first loadstart');
-  this.player.trigger('loadstart');
-  this.player.trigger('adsready');
-  assert.strictEqual(this.player.ads._playRequested, false,
-    'initially set to false');
-  assert.strictEqual(this.player.ads.isInAdMode(), false,
-    'starts in a content state');
-
-  videojs.log('first play');
-  this.player.trigger('play');
-  assert.strictEqual(this.player.ads._playRequested, true,
-    '_playRequested is now true');
-  assert.strictEqual(this.player.ads.isInAdMode(), true,
-    'now in ad state');
-
-  // Reset temporarily
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
-
-  videojs.log('second loadstart');
-  this.player.trigger('loadstart');
-  assert.strictEqual(this.player.ads._playRequested, false,
-    '_playRequested reset');
-  assert.strictEqual(spy.callCount, 1,
-    'contentchanged once');
-
-  this.clock.tick(1);
-
-  const testAssert = function(player, clock) {
-    assert.strictEqual(player.ads._playRequested, true,
-      '_playRequested is true when the play method is used too');
-    done();
-  };
-
-  // could be a play promise
-  videojs.log('second play');
-  const playResult = this.player.play();
-
-  this.clock.tick(1);
-
-  if (playResult && typeof playResult.then === 'function') {
-    playResult.then(() => {
-      this.clock.tick(1);
-      testAssert(this.player, this.clock);
+    this.player.exampleAds({
+      'adServerUrl': '/base/test/integration/lib/inventory.json'
     });
-  } else {
-    testAssert(this.player, this.clock);
+  },
+
+  afterEach: function() {
+    this.clock.restore();
+    this.sandbox.restore();
+    this.player.dispose();
   }
 });
+
+QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
+
+  this.player.ready(this.player.play);
+
+  this.clock.tick(1); // Allow play handlers to run
+  assert.strictEqual(this.player.ads._playRequested, true,
+  '_playRequested is true when the play method is used too');
+});
+
+QUnit.test('blocks calls to play to wait for prerolls when the plugin loads BEFORE play', function(assert) {
+  const techPlaySpy = this.sandbox.spy(this.video, 'play');
+  const playEventSpy = this.sandbox.spy();
+
+  this.player.on('play', playEventSpy);
+
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
+
+
+  this.player.ready(() => {
+    this.player.play();
+  });
+
+  this.clock.tick(1); // Allow play handlers to run
+
+  assert.strictEqual(techPlaySpy.callCount, 0,
+    "tech play shouldn't be called while waiting for prerolls");
+  assert.strictEqual(playEventSpy.callCount, 1,
+    'play event should be triggered');
+});
+
+// QUnit.test('blocks calls to play to wait for prerolls when the plugin loads AFTER play', function(assert) {
+
+// });
