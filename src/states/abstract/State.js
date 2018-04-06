@@ -55,8 +55,8 @@ export default class State {
   onAdStarted() {}
   onContentChanged() {}
   onContentResumed() {}
-  onContentEnded() {
-    videojs.log.warn('Unexpected contentended event');
+  onReadyForPostroll() {
+    videojs.log.warn('Unexpected readyforpostroll event');
   }
   onNoPreroll() {}
   onNoPostroll() {}
@@ -117,8 +117,8 @@ export default class State {
       this.onContentChanged(player);
     } else if (type === 'contentresumed') {
       this.onContentResumed(player);
-    } else if (type === 'contentended') {
-      this.onContentEnded(player);
+    } else if (type === 'readyforpostroll') {
+      this.onReadyForPostroll(player);
     } else if (type === 'playing') {
       this.onPlaying(player);
     } else if (type === 'ended') {
