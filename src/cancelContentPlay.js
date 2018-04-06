@@ -1,12 +1,6 @@
 import videojs from 'video.js';
-import pm from './playMiddleware.js';
 
 export default function initCancelContentPlay(player, debug) {
-  if (pm.isMiddlewareMediatorSupported()) {
-    // Don't use cancelContentPlay while playMiddleware is in use
-    return;
-  }
-
   if (debug) {
     videojs.log('ADS:', 'Using cancelContentPlay to block content playback');
   }

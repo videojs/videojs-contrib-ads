@@ -70,6 +70,9 @@ const contribAdsPlugin = function(options) {
   player.on(videoEvents, redispatch);
 
   // Set up features to block content playback while waiting for ads
+  // Play middleware is only supported on later versions of video.js
+  // and on desktop currently(as the user-gesture requirement on mobile
+  // will disallow calling play once play blocking is lifted)
   if (isMiddlewareMediatorSupported()) {
     // Register the play middleware with video.js
     videojs.use('*', playMiddleware);
