@@ -69,13 +69,14 @@ const contribAdsPlugin = function(options) {
   // Set up redispatching of player events
   player.on(videoEvents, redispatch);
 
-  // Set up features to block content playback while waiting for ads
+  // Set up features to block content playback while waiting for ads.
   // Play middleware is only supported on later versions of video.js
   // and on desktop currently(as the user-gesture requirement on mobile
   // will disallow calling play once play blocking is lifted)
-  if (isMiddlewareMediatorSupported()) {
-    // Register the play middleware with video.js
-    videojs.use('*', playMiddleware);
+  // The middleware must also be registered outside of the plugin,
+  // to avoid a middleware factory being created for each player
+  if (isMiddlewareMediatorSupported() && settings.debug) {
+    videojs.log('ADS:', 'Play middleware has been registered with videojs');
   } else {
     // Register the cancelContentPlay feature on the player
     initCancelContentPlay(player, settings.debug);
@@ -420,5 +421,13 @@ const registerPlugin = videojs.registerPlugin || videojs.plugin;
 
 // Register this plugin with videojs
 registerPlugin('ads', contribAdsPlugin);
+
+// Register the Play Middleware with video.js on script execution,
+// to avoid a new playMiddleware factory being created on
+// videojs for each player created.
+if (isMiddlewareMediatorSupported()) {
+  // Register the play middleware
+  videojs.use('*', playMiddleware);
+}
 
 export default contribAdsPlugin;

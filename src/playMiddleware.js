@@ -32,14 +32,15 @@ obj.playMiddleware = function(player) {
       next(null, srcObj);
     },
     callPlay() {
-      // Block play calls while waiting for an ad
-      if (player.ads._shouldBlockPlay === true) {
+      // Block play calls while waiting for an ad, only if this is an
+      // ad supported player
+      if (player.ads && player.ads._shouldBlockPlay === true) {
         player.ads.debug('Using playMiddleware to block content playback');
         return videojsReference.middleware.TERMINATOR;
       }
     },
     play(terminated, value) {
-      if (terminated) {
+      if (player.ads && terminated) {
         player.ads.debug('Play call to Tech was terminated.');
         // Trigger play event to match the user's intent to play.
         // The call to play on the Tech has been blocked, so triggering
