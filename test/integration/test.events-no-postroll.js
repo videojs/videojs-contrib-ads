@@ -11,16 +11,18 @@ QUnit.module('Final Events With No Postroll', {
 
     this.player = videojs(this.video);
 
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
+    console.log('Final Events With No Postroll. el is null?', this.player.el_);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'playMidroll': false,
       'playPostroll': false
+    });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
     });
   },
 

@@ -21,13 +21,15 @@ QUnit.module('Events and Prerolls', {
 
     this.player = videojs(this.video);
 
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
+    console.log('Events and Prerolls. el is null?', this.player.el_);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json'
+    });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
     });
 
   },

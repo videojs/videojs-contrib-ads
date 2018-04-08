@@ -21,16 +21,19 @@ QUnit.module('Events and Postrolls', {
 
     this.player = videojs(this.video);
 
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
+    console.log('Events and Postrolls. el is null?', this.player.el_);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'playMidroll': false
     });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
+    });
+
   },
 
   afterEach: function() {

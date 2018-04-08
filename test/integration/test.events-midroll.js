@@ -20,15 +20,17 @@ QUnit.module('Events and Midrolls', {
 
     this.player = videojs(this.video);
 
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
+    console.log('Events and Midrolls. el is null?', this.player.el_);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'midrollPoint': 1
+    });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
     });
   },
 
