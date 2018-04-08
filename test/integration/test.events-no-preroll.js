@@ -11,7 +11,7 @@ QUnit.module('Initial Events With No Preroll', {
 
     this.player = videojs(this.video);
 
-    console.log('Initial Events With No Preroll. el is null?', this.player.el_);
+    console.log('Initial Events With No Preroll. el is null?', this.player.el_ === null);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',

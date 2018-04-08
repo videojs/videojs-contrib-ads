@@ -20,7 +20,7 @@ QUnit.module('Events and Midrolls', {
 
     this.player = videojs(this.video);
 
-    console.log('Events and Midrolls. el is null?', this.player.el_);
+    console.log('Events and Midrolls. el is null?', this.player.el_ === null);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',

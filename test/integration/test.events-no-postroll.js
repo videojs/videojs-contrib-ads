@@ -11,7 +11,7 @@ QUnit.module('Final Events With No Postroll', {
 
     this.player = videojs(this.video);
 
-    console.log('Final Events With No Postroll. el is null?', this.player.el_);
+    console.log('Final Events With No Postroll. el is null?', this.player.el_ === null);
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
