@@ -95,6 +95,7 @@ QUnit.test('getSupportedAdCue should work when overriden', function(assert) {
 });
 
 QUnit.test('getCueId should work when overriden', function(assert) {
+  var originalTextTracks = this.player.textTracks;
   var cue = {
     startTime: 0,
     endTime: 1,
@@ -122,6 +123,9 @@ QUnit.test('getCueId should work when overriden', function(assert) {
   };
   cueId = cueTextTracks.getCueId(cue);
   assert.strictEqual(cueId, 2);
+
+  // Clean Up
+  this.player.textTracks = originalTextTracks;
 });
 
 QUnit.test('processAdTrack runs processCue callback', function(assert) {

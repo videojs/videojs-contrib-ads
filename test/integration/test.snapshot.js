@@ -68,6 +68,7 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
 });
 
 QUnit.test('the current time is restored at the end of an ad', function(assert) {
+  console.log('***** TEST1');
   assert.expect(1);
 
   this.player.trigger('adsready');
@@ -330,11 +331,11 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 });
 
 QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
-  console.log('******** TEST 1');
   const trackSrc = '/base/test/integration/lib/testcaption.vtt';
+  let remoteTrack;
 
   // Add a text track
-  this.player.addRemoteTextTrack({
+  remoteTrack = this.player.addRemoteTextTrack({
     kind: 'captions',
     language: 'fr',
     label: 'French',
@@ -388,6 +389,9 @@ QUnit.test('When captions are enabled, the content\'s tracks will be disabled du
   }
 
   assert.strictEqual(showing, tracks.length, 'all tracks should be showing');
+
+  // Cleanup
+  this.player.textTracks().removeTrack(remoteTrack);
 });
 
 QUnit.test('No snapshot if duration is Infinity', function(assert) {
@@ -412,10 +416,10 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 });
 
 QUnit.test('Snapshot and text tracks', function(assert) {
-  console.log('***** TEST 2');
   const trackSrc = '/base/test/integration/lib/testcaption.vtt';
   const originalAddTrack = this.player.addTextTrack;
   const originalTextTracks = this.player.textTracks;
+  let remoteTrack;
 
   // No text tracks at start
   assert.equal(this.player.textTracks().length, 0);
@@ -423,7 +427,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   this.player.addTextTrack('captions', 'Spanish', 'es');
 
   // Add a text track
-  this.player.addRemoteTextTrack({
+  remoteTrack = this.player.addRemoteTextTrack({
     kind: 'captions',
     language: 'fr',
     label: 'French',
@@ -489,6 +493,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks()[1].mode, 'showing');
 
   // Resetting mocked methods
+  this.player.textTracks().removeTrack(remoteTrack);
   this.player.addTextTrack = originalAddTrack;
   this.player.textTracks = originalTextTracks;
 });
