@@ -55,7 +55,7 @@
               state.inventory = JSON.parse(xhr.responseText);
               player.trigger('adsready');
             } catch (err) {
-              console.log('ERROR log', err);
+              console.log('ERROR log', err, xhr.responseText);
               throw new Error('Couldn\'t parse inventory response as JSON');
             }
           }
