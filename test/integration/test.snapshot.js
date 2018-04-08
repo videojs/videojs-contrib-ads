@@ -330,6 +330,7 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 });
 
 QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
+  console.log('******** TEST 1');
   const trackSrc = '/base/test/integration/lib/testcaption.vtt';
 
   // Add a text track
@@ -411,6 +412,7 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 });
 
 QUnit.test('Snapshot and text tracks', function(assert) {
+  console.log('***** TEST 2');
   const trackSrc = '/base/test/integration/lib/testcaption.vtt';
   const originalAddTrack = this.player.addTextTrack;
   const originalTextTracks = this.player.textTracks;
