@@ -8,8 +8,8 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
     var otherTrack = document.createElement('track');
 
     captionTrack.setAttribute('kind', 'captions');
-    captionTrack.setAttribute('src', 'lib/testcaption.vtt');
-    otherTrack.setAttribute('src', 'lib/testcaption.vtt');
+    captionTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
+    otherTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
     this.video.appendChild(captionTrack);
     this.video.appendChild(otherTrack);
 
@@ -329,9 +329,8 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   assert.deepEqual(updatedSrc, {src: 'content.mp4', type: 'video/mp4'}, 'restored src attribute');
 });
 
-QUnit.test('When captions are enabled, the video\'s tracks will be disabled during the ad', function(assert) {
-  const trackSrc = 'http://solutions.brightcove.com/' +
-      'bcls/captions/adding_captions_to_videos_french.vtt';
+QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
+  const trackSrc = '/base/test/integration/lib/testcaption.vtt';
 
   // Add a text track
   this.player.addRemoteTextTrack({
@@ -412,8 +411,7 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 });
 
 QUnit.test('Snapshot and text tracks', function(assert) {
-  const trackSrc = 'http://solutions.brightcove.com/' +
-    'bcls/captions/adding_captions_to_videos_french.vtt';
+  const trackSrc = '/base/test/integration/lib/testcaption.vtt';
   const originalAddTrack = this.player.addTextTrack;
   const originalTextTracks = this.player.textTracks;
 

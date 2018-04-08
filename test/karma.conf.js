@@ -37,7 +37,8 @@ module.exports = function(config) {
 
       // Test Data
       {pattern: 'test/integration/lib/inventory.json', included: false, served: true},
-      {pattern: 'examples/basic-ad-plugin/superclip-low.webm', included: false, served: true}
+      {pattern: 'examples/basic-ad-plugin/superclip-low.webm', included: false, served: true},
+      {pattern: 'test/integration/lib/testcaption.vtt', included:false, served:true}
     ],
     customLaunchers: {
       travisChrome: {
