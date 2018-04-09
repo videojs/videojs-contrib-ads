@@ -77,8 +77,10 @@ QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(ass
     }, 1000);
   });
 
-  this.player.play();
-  this.player.currentTime(46);
+  this.player.ready(() => {
+    this.player.play();
+    this.player.currentTime(46);
+  });
 
 });
 
@@ -177,6 +179,6 @@ QUnit.test('Event prefixing and postrolls', function(assert) {
     this.player.currentTime(46);
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

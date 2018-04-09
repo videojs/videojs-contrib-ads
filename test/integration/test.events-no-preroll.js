@@ -51,7 +51,7 @@ QUnit.test('initial play event with no preroll: one please', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -76,7 +76,7 @@ QUnit.test('initial playing event with no preroll: 1+', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -102,7 +102,7 @@ QUnit.test('no ended event at start if video with no preroll', function(assert) 
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -127,6 +127,6 @@ QUnit.test('initial loadstart event with no preroll: one please', function(asser
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

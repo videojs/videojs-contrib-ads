@@ -71,7 +71,7 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -96,7 +96,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -132,7 +132,7 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -168,7 +168,7 @@ QUnit.test('loadedmetadata event and prerolls: 1 before preroll, 0 after', funct
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -204,7 +204,7 @@ QUnit.test('loadeddata event and prerolls: 1 before preroll, 0 after', function(
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -240,7 +240,7 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -332,6 +332,6 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

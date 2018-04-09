@@ -134,6 +134,6 @@ QUnit.test('Midrolls', function(assert) {
     this.player.currentTime(.9);
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

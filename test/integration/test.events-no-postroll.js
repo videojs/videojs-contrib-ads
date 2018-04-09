@@ -60,6 +60,6 @@ QUnit.test('final ended event with no postroll: just 1', function(assert) {
     this.player.currentTime(46);
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
