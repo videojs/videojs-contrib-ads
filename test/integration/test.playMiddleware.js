@@ -2,7 +2,7 @@ import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
-QUnit.module('Integration: play middleware', {
+QUnit.module.skip('Integration: play middleware', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
