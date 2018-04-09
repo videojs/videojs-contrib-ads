@@ -59,6 +59,12 @@ QUnit.module('Redispatch', {
       }
 
     }
+  },
+
+  afterEach(assert) {
+    // Cleanup
+    this.player = null;
+    this.redispatch = null;
   }
 
 });
