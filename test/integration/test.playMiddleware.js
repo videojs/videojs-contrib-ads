@@ -1,8 +1,7 @@
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
-QUnit.module.skip('Integration: play middleware', {
+QUnit.module('Integration: play middleware', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
@@ -50,7 +49,6 @@ QUnit.test('blocks calls to play to wait for prerolls when the plugin loads BEFO
     type: 'video/webm'
   });
 
-
   this.player.ready(() => {
     this.player.play();
   });
@@ -66,3 +64,7 @@ QUnit.test('blocks calls to play to wait for prerolls when the plugin loads BEFO
 // QUnit.test('blocks calls to play to wait for prerolls when the plugin loads AFTER play', function(assert) {
 
 // });
+
+QUnit.moduleDone(function( details ) {
+  console.log( "Finished running: ", details.name, "Failed/total: ", details.failed, details.total );
+});
