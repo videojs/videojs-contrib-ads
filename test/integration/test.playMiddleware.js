@@ -1,42 +1,56 @@
-// import videojs from 'video.js';
-// import '../../examples/basic-ad-plugin/example-integration.js';
+import videojs from 'video.js';
+import '../../examples/basic-ad-plugin/example-integration.js';
 
-// QUnit.module('Integration: play middleware', {
-//   beforeEach: function() {
-//     this.video = document.createElement('video');
+QUnit.module('Integration: play middleware', {
+  beforeEach: function() {
+    this.video = document.createElement('video');
 
-//     this.fixture = document.querySelector('#qunit-fixture');
-//     this.fixture.appendChild(this.video);
+    this.fixture = document.querySelector('#qunit-fixture');
+    this.fixture.appendChild(this.video);
 
-//     this.sandbox = sinon.sandbox.create();
-//     this.clock = sinon.useFakeTimers();
+    // this.sandbox = sinon.sandbox.create();
+    // this.clock = sinon.useFakeTimers();
 
-//     this.player = videojs(this.video);
+    this.player = videojs(this.video);
 
-//     this.player.exampleAds({
-//       'adServerUrl': '/base/test/integration/lib/inventory.json'
-//     });
-//   },
+    this.player.exampleAds({
+      'adServerUrl': '/base/test/integration/lib/inventory.json'
+    });
+  },
 
-//   afterEach: function() {
-//     this.clock.restore();
-//     this.sandbox.restore();
-//     this.player.dispose();
-//   }
-// });
+  afterEach: function() {
+    // this.clock.restore();
+    // this.sandbox.restore();
+    this.player.dispose();
+  }
+});
 
-// QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
-//   this.player.src({
-//     src: 'http://vjs.zencdn.net/v/oceans.webm',
-//     type: 'video/webm'
-//   });
+QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
+  const done = assert.async();
 
-//   this.player.ready(this.player.play);
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
 
-//   this.clock.tick(1); // Allow play handlers to run
-//   assert.strictEqual(this.player.ads._playRequested, true,
-//   '_playRequested is true when the play method is used too');
-// });
+  // When the preroll starts
+  this.player.on('adstart', () => {
+    assert.strictEqual(this.player.ads._playRequested, true,
+    '_playRequested is true when the play method is used');
+    done();
+  });
+
+  // If there wasn't an ad
+  this.player.on('timeupdate', () => {
+    if (this.player.currentTime() > 0) {
+      assert.strictEqual(this.player.ads._playRequested, true,
+      '_playRequested is true when the play method is used');
+      done();
+    }
+  });
+
+  this.player.ready(this.player.play);
+});
 
 // QUnit.test('blocks calls to play to wait for prerolls when the plugin loads BEFORE play', function(assert) {
 //   const techPlaySpy = this.sandbox.spy(this.video, 'play');
@@ -61,10 +75,6 @@
 //     'play event should be triggered');
 // });
 
-// // QUnit.test('blocks calls to play to wait for prerolls when the plugin loads AFTER play', function(assert) {
+// QUnit.test('blocks calls to play to wait for prerolls when the plugin loads AFTER play', function(assert) {
 
-// // });
-
-// QUnit.moduleDone(function( details ) {
-//   console.log( "Finished running: ", details.name, "Failed/total: ", details.failed, details.total );
 // });

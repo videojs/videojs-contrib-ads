@@ -152,4 +152,13 @@ QUnit.testDone( function( details ) {
   };
 
   console.log( JSON.stringify( result, null, 2 ) );
+
+  if (details.failed > 0) {
+    console.log('**** stack', QUnit.stack(5));
+    console.log('***** QUnit state', QUnit.config.current);
+  }
 } );
+
+QUnit.moduleDone(function( details ) {
+  console.log( "Finished running: ", details.name, "Failed/total: ", details.failed, details.total );
+});
