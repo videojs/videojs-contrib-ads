@@ -52,28 +52,51 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   this.player.ready(this.player.play);
 });
 
-// QUnit.test('blocks calls to play to wait for prerolls when the plugin loads BEFORE play', function(assert) {
-//   const techPlaySpy = this.sandbox.spy(this.video, 'play');
-//   const playEventSpy = this.sandbox.spy();
+QUnit.test('blocks calls to play to wait for prerolls when the plugin loads BEFORE play', function(assert) {
+  const done = assert.async();
+  const techPlaySpy = sinon.spy(this.video, 'play');
+  const playEventSpy = sinon.spy();
+  let seenAdsReady = false;
 
-//   this.player.on('play', playEventSpy);
+  this.player.on('play', playEventSpy);
+  this.player.on('adsready', () => {
+    seenAdsReady = true;
+  });
 
-//   this.player.src({
-//     src: 'http://vjs.zencdn.net/v/oceans.webm',
-//     type: 'video/webm'
-//   });
+  // When the preroll starts
+  this.player.on('adstart', () => {
+    assert.strictEqual(techPlaySpy.callCount, 0,
+      "tech play shouldn't be called while waiting for prerolls");
+    assert.strictEqual(playEventSpy.callCount, 1,
+      'play event should be triggered');
+    done();
+  });
 
-//   this.player.ready(() => {
-//     this.player.play();
-//   });
+  // If there wasn't an ad
+  this.player.on('timeupdate', () => {
+    if (this.player.currentTime() > 0) {
+      assert.strictEqual(techPlaySpy.callCount, 0,
+        "tech play shouldn't be called while waiting for prerolls");
+      assert.strictEqual(playEventSpy.callCount, 1,
+        'play event should be triggered');
+      done();
+    }
+  });
 
-//   this.clock.tick(1); // Allow play handlers to run
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
 
-//   assert.strictEqual(techPlaySpy.callCount, 0,
-//     "tech play shouldn't be called while waiting for prerolls");
-//   assert.strictEqual(playEventSpy.callCount, 1,
-//     'play event should be triggered');
-// });
+  this.player.ready(() => {
+    if (seenAdsReady) {
+      this.player.play();
+
+    } else {
+      this.player.on('adsready', this.player.play);
+    }
+  });
+});
 
 // QUnit.test('blocks calls to play to wait for prerolls when the plugin loads AFTER play', function(assert) {
 
