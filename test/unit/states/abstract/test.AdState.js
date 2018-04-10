@@ -1,5 +1,3 @@
-import QUnit from 'qunit';
-
 import {AdState} from '../../../../src/states.js';
 
 /*

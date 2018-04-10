@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import redispatch from '../../src/redispatch.js';
 

@@ -1,5 +1,3 @@
-import QUnit from 'qunit';
-
 import {Postroll} from '../../../src/states.js';
 import adBreak from '../../../src/adBreak.js';
 

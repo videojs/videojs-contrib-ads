@@ -8,7 +8,6 @@ TODO:
 * adloadedmetadata, contentloadedmetadata
 */
 
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 

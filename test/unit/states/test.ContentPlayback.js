@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import {ContentPlayback} from '../../../src/states.js';
 
 /*

@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import {Midroll} from '../../../src/states.js';
 import adBreak from '../../../src/adBreak.js';
 

@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import {BeforePreroll} from '../../../src/states.js';
 import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 

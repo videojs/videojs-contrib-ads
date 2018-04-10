@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 
 import {AdsDone} from '../../../src/states.js';
 

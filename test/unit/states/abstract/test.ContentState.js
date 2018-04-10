@@ -1,5 +1,3 @@
-import QUnit from 'qunit';
-
 import {ContentState} from '../../../../src/states.js';
 
 /*

@@ -1,5 +1,3 @@
-import QUnit from 'qunit';
-
 import {State} from '../../../../src/states.js';
 
 /*
