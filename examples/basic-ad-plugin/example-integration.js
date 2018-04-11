@@ -80,9 +80,11 @@
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
         player.src(media);
+        player.trigger('ads-ad-started');
 
         // when it's finished
         player.one('adended', function() {
+          player.trigger('ads-ad-ended');
           // play your linear ad content, then when it's finished ...
           player.ads.endLinearAdMode();
           state.adPlaying = false;
