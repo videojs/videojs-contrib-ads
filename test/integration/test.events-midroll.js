@@ -19,8 +19,6 @@ QUnit.module('Events and Midrolls', {
 
     this.player = videojs(this.video);
 
-    console.log('Events and Midrolls. el is null?', this.player.el_ === null);
-
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
@@ -137,28 +135,7 @@ QUnit.test('Midrolls', function(assert) {
 
 });
 
-QUnit.testDone( function( details ) {
-  var result = {
-    "Module name": details.module,
-    "Test name": details.name,
-    "Assertions": {
-      "Total": details.total,
-      "Passed": details.passed,
-      "Failed": details.failed
-    },
-    "Skipped": details.skipped,
-    "Todo": details.todo,
-    "Runtime": details.runtime
-  };
-
-  console.log( JSON.stringify( result, null, 2 ) );
-
-  if (details.failed > 0) {
-    console.log('**** stack', QUnit.stack(5));
-    console.log('***** QUnit state', QUnit.config.current);
-  }
-} );
-
 QUnit.moduleDone(function( details ) {
-  console.log( "Finished running: ", details.name, "Failed/total: ", details.failed, details.total );
+  console.log( "Finished running: ", details.name,
+    "Failed/total: ", details.failed, details.total );
 });

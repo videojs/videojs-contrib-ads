@@ -89,7 +89,7 @@ QUnit.test('stops canceling play events when an ad is playing', function(assert)
   window.setTimeout.restore();
 });
 
-QUnit.test('"cancelContentPlay doesn\'t block play in content playback', function(assert) {
+QUnit.test("cancelContentPlay doesn\'t block play in content playback", function(assert) {
   const pauseSpy = sinon.spy(this.player, 'pause');
 
   this.player.trigger('loadstart');

@@ -20,8 +20,6 @@ QUnit.module('Events and Prerolls', {
 
     this.player = videojs(this.video);
 
-    console.log('Events and Prerolls. el is null?', this.player.el_ === null);
-
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json'
     });

@@ -20,8 +20,6 @@ QUnit.module('Events and Postrolls', {
 
     this.player = videojs(this.video);
 
-    console.log('Events and Postrolls. el is null?', this.player.el_ === null);
-
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,

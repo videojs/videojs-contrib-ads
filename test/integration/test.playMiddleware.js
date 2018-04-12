@@ -72,7 +72,7 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
     done();
   });
 
-  // If there wasn't an ad
+  // Once we are in content
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 0) {
       assert.strictEqual(techPlaySpy.callCount, 0,
@@ -81,6 +81,11 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
         'play event should be triggered');
       done();
     }
+  });
+
+  this.player.on(['error', 'aderror', 'adtimeout'], () => {
+    assert.ok(false, 'no errors, or adtimeout');
+    done();
   });
 
   this.player.src({
@@ -145,6 +150,30 @@ QUnit.test('stops blocking play when an ad is playing', function(assert) {
     assert.strictEqual(this.player.ads._shouldBlockPlay, false,
       'should stop blocking once in an adbreak');
     done();
+  });
+
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
+
+  this.player.ready(this.player.play);
+});
+
+QUnit.test("playMiddleware doesn\'t block play in content playback", function(assert) {
+  const done = assert.async();
+
+  this.player.on('adstart', () => {
+    assert.strictEqual(this.player.ads._shouldBlockPlay, true);
+  });
+
+  // Wait for the ad to start playing
+  this.player.on('timeupdate', () => {
+    if (this.player.currentTime() > 0) {
+      assert.strictEqual(this.player.ads._shouldBlockPlay, false,
+        'should stop blocking in content');
+      done();
+    }
   });
 
   this.player.src({
