@@ -68,7 +68,6 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
 });
 
 QUnit.test('the current time is restored at the end of an ad', function(assert) {
-  console.log('***** TEST1');
   assert.expect(1);
 
   this.player.trigger('adsready');

@@ -8,9 +8,6 @@ QUnit.module('Integration: play middleware', {
     this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
-    // this.sandbox = sinon.sandbox.create();
-    // this.clock = sinon.useFakeTimers();
-
     this.player = videojs(this.video);
 
     this.player.exampleAds({
@@ -19,8 +16,6 @@ QUnit.module('Integration: play middleware', {
   },
 
   afterEach: function() {
-    // this.clock.restore();
-    // this.sandbox.restore();
     this.player.dispose();
   }
 });

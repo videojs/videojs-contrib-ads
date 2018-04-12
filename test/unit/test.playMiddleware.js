@@ -20,22 +20,16 @@ QUnit.module('Play Middleware', {}, function() {
     }
   };
 
-  // Run custom hooks before sharedModuleHooks, as videojs must be
-  // modified before seting up the player and videojs-contrib-ads
   QUnit.module('Not supported unit tests', {
     beforeEach: function() {
-      // Stub mobile browsers to force cancelContentPlay to be used
       this.videojs = videojs.mergeOptions({}, baseMockedVjsNotSupported);
     },
     afterEach: function() {
-      // Reset variable
       this.videojs = null;
     }
   }, function() {
     QUnit.test('isMiddlewareMediatorSupported is false if old video.js version', function(assert) {
-      // Setup mocked videojs features
-      this.videojs.browser.IS_ANDROID = false;
-      this.videojs.browser.IS_IOS = false;
+      // Mock videojs.browser to mock an older videojs version
       pm.testHook(this.videojs);
 
       assert.equal(pm.isMiddlewareMediatorSupported(), false,
@@ -43,7 +37,7 @@ QUnit.module('Play Middleware', {}, function() {
     });
 
     QUnit.test('isMiddlewareMediatorSupported is false if on mobile', function(assert) {
-      // Setup mocked videojs features
+      // Mock videojs.browser to fake being on Android
       this.videojs.browser.IS_ANDROID = true;
       this.videojs.browser.IS_IOS = false;
       pm.testHook(this.videojs);
@@ -51,7 +45,7 @@ QUnit.module('Play Middleware', {}, function() {
       assert.equal(pm.isMiddlewareMediatorSupported(), false,
         'is not supported on Android');
 
-      // Setup mocked videojs features
+      // Mock videojs.browser to fake being on iOS
       this.videojs.browser.IS_ANDROID = false;
       this.videojs.browser.IS_IOS = true;
       pm.testHook(this.videojs);
@@ -63,9 +57,8 @@ QUnit.module('Play Middleware', {}, function() {
 
   QUnit.module('Supported unit tests', {
     beforeEach: function() {
-      // Stub mobile browsers to force playMiddleware to be used
+      // Stub videojs to force playMiddleware to be used
       this.videojs = videojs.mergeOptions({}, baseMockedVjsIsSupported);
-      // Setup mocked videojs features
       pm.testHook(this.videojs);
 
       this.triggeredEvent = null;
@@ -130,6 +123,24 @@ QUnit.module('Play Middleware', {}, function() {
       'callPlay should not return the terminator');
   });
 
+  QUnit.test("playMiddleware callPlay will not terminate if the player doesn't have this plugin", function(assert) {
+    const nonAdsPlayer = {
+      trigger: (event) => {
+        this.triggeredEvent = event;
+      },
+      addClass: (className) => {
+        this.addedClass = className;
+      }
+    };
+    const m = pm.playMiddleware(nonAdsPlayer);
+
+    this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
+    this.player.ads._shouldBlockPlay = true;
+
+    assert.equal(m.callPlay(), undefined,
+      'callPlay should not return an object');
+  });
+
   QUnit.test('playMiddleware play will trigger play event if callPlay terminates', function(assert) {
     const m = pm.playMiddleware(this.player);
 
@@ -142,6 +153,27 @@ QUnit.module('Play Middleware', {}, function() {
     assert.equal(this.addedClass, 'vjs-has-started');
   });
 
+  QUnit.test("playMiddleware play will not trigger play event if the player doesn't have this plugin", function(assert) {
+    let evt = null;
+    let cnm = null;
+    const nonAdsPlayer = {
+      trigger: (event) => {
+        evt = event;
+      },
+      addClass: (className) => {
+        cnm = className;
+      }
+    };
+    const m = pm.playMiddleware(nonAdsPlayer);
+
+    this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
+    this.player.ads._shouldBlockPlay = true;
+
+    m.play(true, null);
+    assert.equal(evt, null, 'the play event should not have been triggered');
+    assert.equal(cnm, null, 'the class should not have been added');
+  });
+
   QUnit.test("playMiddleware won't trigger play event if callPlay doesn't terminate", function(assert) {
     const m = pm.playMiddleware(this.player);
 
@@ -152,11 +184,6 @@ QUnit.module('Play Middleware', {}, function() {
   });
 
 });
-
-
-
-
-
 
 
 
