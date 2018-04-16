@@ -52,7 +52,7 @@ export default class AdState extends State {
    * Allows you to check or set if ad is currently loading.
    */
   isAdLoading(isLoading) {
-    if (typeof(isLoading) == typeof(true)) {
+    if (typeof isLoading == typeof true) {
       this.adLoading = isLoading;
       if (isLoading) {
         this.player.addClass('vjs-ad-loading');
