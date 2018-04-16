@@ -85,9 +85,16 @@ export default class State {
   }
 
   /*
-   * Overridden by PrerollState, MidrollState, and PostrollState.
+   * Overridden by AdState.
    */
   isContentResuming() {
+    return false;
+  }
+
+  /*
+   * Overridden by AdState.
+   */
+  isAdLoading() {
     return false;
   }
 

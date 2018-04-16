@@ -277,6 +277,11 @@ const contribAdsPlugin = function(options) {
       return this._state.isContentResuming();
     },
 
+    // Returns true if preroll/postroll ad is loading. This is part of ad mode.
+    isAdLoading() {
+      return this._state.isAdLoading();
+    },
+
     // Deprecated because the name was misleading. Use inAdBreak instead.
     isAdPlaying() {
       return this._state.inAdBreak();
