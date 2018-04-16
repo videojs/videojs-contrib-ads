@@ -151,8 +151,6 @@ export default class Postroll extends AdState {
    * refactor this class so that `cleanup` handles all of this.
    */
   abort() {
-    const player = this.player;
-
     this.contentResuming = true;
     this.isAdLoading(false);
     this.transitionTo(AdsDone);
