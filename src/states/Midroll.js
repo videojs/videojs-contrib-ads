@@ -17,6 +17,15 @@ export default class Midroll extends AdState {
   init(player) {
     player.ads.adType = 'midroll';
     adBreak.start(player);
+    player.addClass('vjs-ad-loading');
+  }
+
+  /*
+   * An ad has actually started playing.
+   * Remove the loading spinner.
+   */
+  onAdStarted(player) {
+    player.removeClass('vjs-ad-loading');
   }
 
   /*
@@ -27,6 +36,8 @@ export default class Midroll extends AdState {
 
     if (this.inAdBreak()) {
       this.contentResuming = true;
+      player.addClass('vjs-ad-content-resuming');
+      player.removeClass('vjs-ad-loading');
       adBreak.end(player);
     }
   }
@@ -41,6 +52,14 @@ export default class Midroll extends AdState {
     if (this.inAdBreak()) {
       player.ads.endLinearAdMode();
     }
+  }
+
+  /*
+   * Cleanup CSS classes.
+   */
+  cleanup(player) {
+    player.removeClass('vjs-ad-loading');
+    player.removeClass('vjs-ad-content-resuming');
   }
 
 }

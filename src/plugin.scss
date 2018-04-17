@@ -46,3 +46,13 @@ Styles for ad integrations.
   -webkit-animation-delay: 0.44s;
   animation-delay: 0.44s;
 }
+
+/*
+Hide BPB and poster while ad loading and resuming after an ad.
+*/
+.vjs-ad-loading .vjs-big-play-button,
+.vjs-ad-loading .vjs-poster,
+.vjs-ad-content-resuming .vjs-big-play-button,
+.vjs-ad-content-resuming .vjs-poster {
+  display: none;
+}

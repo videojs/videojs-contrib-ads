@@ -182,6 +182,7 @@ export default class Preroll extends AdState {
 
     if (this.inAdBreak()) {
       this.isAdLoading(false);
+      player.addClass('vjs-ad-content-resuming');
       adBreak.end(player);
       this.contentResuming = true;
     }
@@ -228,14 +229,13 @@ export default class Preroll extends AdState {
   /*
    * Cleanup timeouts and spinner.
    */
-  cleanup() {
-    const player = this.player;
-
+  cleanup(player) {
     if (!player.ads._hasThereBeenALoadStartDuringPlayerLife) {
       videojs.log.warn('Leaving Preroll state before loadstart event can cause issues.');
     }
 
     this.isAdLoading(false);
+    player.removeClass('vjs-ad-content-resuming');
     player.clearTimeout(this._timeout);
   }
 
