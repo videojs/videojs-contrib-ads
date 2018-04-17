@@ -152,6 +152,10 @@ Returns true if the player is in ad mode.
 * An asynchronous ad request is ongoing while content is playing
 * A non-linear ad (such as an overlay) is active
 
+#### isAdLoading()
+
+Returns true if preroll/postroll ad is loading. This is part of ad mode.
+
 #### isContentResuming()
 
 Returns true if content is resuming after an ad. This is part of ad mode.

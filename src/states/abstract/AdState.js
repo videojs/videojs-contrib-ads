@@ -10,6 +10,7 @@ export default class AdState extends State {
   constructor(player) {
     super(player);
     this.contentResuming = false;
+    this.adLoading = false;
   }
 
   /*
@@ -45,6 +46,21 @@ export default class AdState extends State {
    */
   isContentResuming() {
     return this.contentResuming;
+  }
+
+  /*
+   * Allows you to check or set if ad is currently loading.
+   */
+  isAdLoading(isLoading) {
+    if (typeof isLoading === 'boolean') {
+      this.adLoading = isLoading;
+      if (isLoading) {
+        this.player.addClass('vjs-ad-loading');
+      } else {
+        this.player.removeClass('vjs-ad-loading');
+      }
+    }
+    return this.adLoading;
   }
 
   /*

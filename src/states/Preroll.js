@@ -23,7 +23,7 @@ export default class Preroll extends AdState {
    */
   init(player, adsReady) {
     // Loading spinner from now until ad start or end of ad break.
-    player.addClass('vjs-ad-loading');
+    this.isAdLoading(true);
 
     // Determine preroll timeout based on plugin settings
     let timeout = player.ads.settings.timeout;
@@ -171,7 +171,7 @@ export default class Preroll extends AdState {
    * Remove the loading spinner.
    */
   onAdStarted(player) {
-    player.removeClass('vjs-ad-loading');
+    this.isAdLoading(false);
   }
 
   /*
@@ -181,7 +181,7 @@ export default class Preroll extends AdState {
     const player = this.player;
 
     if (this.inAdBreak()) {
-      player.removeClass('vjs-ad-loading');
+      this.isAdLoading(false);
       player.addClass('vjs-ad-content-resuming');
       adBreak.end(player);
       this.contentResuming = true;
@@ -234,7 +234,7 @@ export default class Preroll extends AdState {
       videojs.log.warn('Leaving Preroll state before loadstart event can cause issues.');
     }
 
-    player.removeClass('vjs-ad-loading');
+    this.isAdLoading(false);
     player.removeClass('vjs-ad-content-resuming');
     player.clearTimeout(this._timeout);
   }

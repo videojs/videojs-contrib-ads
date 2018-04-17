@@ -22,7 +22,7 @@ export default class Postroll extends AdState {
 
     // Start postroll process.
     if (!player.ads.nopostroll_) {
-      player.addClass('vjs-ad-loading');
+      this.isAdLoading(true);
 
       // Determine postroll timeout based on plugin settings
       let timeout = player.ads.settings.timeout;
@@ -62,7 +62,7 @@ export default class Postroll extends AdState {
    * Remove the loading spinner.
    */
   onAdStarted(player) {
-    player.removeClass('vjs-ad-loading');
+    this.isAdLoading(false);
   }
 
   /*
@@ -72,7 +72,7 @@ export default class Postroll extends AdState {
     const player = this.player;
 
     if (this.inAdBreak()) {
-      player.removeClass('vjs-ad-loading');
+      this.isAdLoading(false);
       this.resumeContent(player);
       adBreak.end(player, () => {
         this.transitionTo(AdsDone);
@@ -157,7 +157,7 @@ export default class Postroll extends AdState {
    */
   abort(player) {
     this.resumeContent(player);
-    player.removeClass('vjs-ad-loading');
+    this.isAdLoading(false);
     this.transitionTo(AdsDone);
   }
 
