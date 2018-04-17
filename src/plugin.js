@@ -87,6 +87,12 @@ const contribAdsPlugin = function(options) {
     }
   });
 
+  // video.js removes the vjs-waiting class on timeupdate. We want
+  // to make sure this still happens during content restoration.
+  player.on('contenttimeupdate', function() {
+    player.removeClass('vjs-waiting');
+  });
+
   // We now auto-play when an ad gets loaded if we're playing ads in the same video
   // element as the content.
   // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we
