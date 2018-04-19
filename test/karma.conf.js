@@ -51,7 +51,7 @@ module.exports = function(config) {
     customLaunchers: {
       travisChrome: {
         base: 'Chrome',
-        flags: ['--no-sandbox, --autoplay-policy=no-user-gesture-required']
+        flags: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required']
       },
       autoplayDisabledChrome: {
         base: 'Chrome',
