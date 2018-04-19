@@ -143,3 +143,62 @@ QUnit.test("playMiddleware doesn\'t block play in content playback", function(as
 
   this.player.ready(this.player.play);
 });
+
+QUnit.test("don't trigger play event if another middleware terminates", function(assert) {
+  const done = assert.async();
+  const fixture = document.querySelector('#qunit-fixture');
+  const vid = document.createElement('video');
+  const playSpy = sinon.spy();
+
+  let shouldTerminate = true;
+  let anotherMiddleware = function(player) {
+    return {
+      setSource(srcObj, next) {
+        next(null, srcObj);
+      },
+      callPlay() {
+        if (shouldTerminate === true) {
+          shouldTerminate = false;
+          return videojs.middleware.TERMINATOR;
+        }
+      },
+      play(terminated, value) {
+      }
+    };
+  };
+  let localPlayer;
+
+  // Register the other middleware
+  videojs.use('video/webm', anotherMiddleware);
+
+  // Don't use the shared player, setup new localPlayer
+  fixture.appendChild(vid);
+  localPlayer = videojs(vid);
+
+  // Setup before example integration
+  localPlayer.on('nopreroll', () => {
+    localPlayer.ready(localPlayer.play);
+  });
+
+  // Don't play preroll ads
+  localPlayer.exampleAds({
+    'adServerUrl': '/base/test/integration/lib/inventory.json',
+    playPreroll: false
+  });
+
+  localPlayer.on('play', playSpy);
+
+  // Wait for the middleware to run
+  localPlayer.setTimeout(() => {
+    assert.strictEqual(localPlayer.ads._playBlocked, false,
+      'play should not have been blocked');
+    assert.strictEqual(playSpy.callCount, 0,
+      'play event should not be triggered');
+    done();
+  }, 200);
+
+  localPlayer.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
+});

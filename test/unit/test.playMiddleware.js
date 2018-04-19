@@ -68,6 +68,7 @@ QUnit.module('Play Middleware', {}, function() {
       this.player = {
         ads: {
           _shouldBlockPlay: false,
+          _playBlocked: false,
           debug: () => {}
         },
         trigger: (event) => {
@@ -109,6 +110,8 @@ QUnit.module('Play Middleware', {}, function() {
     this.player.ads._shouldBlockPlay = true
     assert.equal(m.callPlay(), this.videojs.middleware.TERMINATOR,
       'callPlay returns terminator');
+    assert.strictEqual(this.player.ads._playBlocked, true,
+      '_playBlocked is set');
   });
 
   QUnit.test('playMiddleware callPlay will not terminate if _shouldBlockPlay is false', function(assert) {
@@ -121,6 +124,8 @@ QUnit.module('Play Middleware', {}, function() {
       'callPlay should not return an object');
     assert.notEqual(m.callPlay(), this.videojs.middleware.TERMINATOR,
       'callPlay should not return the terminator');
+    assert.strictEqual(this.player.ads._playBlocked, false,
+      '_playBlocked should not be set');
   });
 
   QUnit.test("playMiddleware callPlay will not terminate if the player doesn't have this plugin", function(assert) {
@@ -139,6 +144,8 @@ QUnit.module('Play Middleware', {}, function() {
 
     assert.equal(m.callPlay(), undefined,
       'callPlay should not return an object');
+    assert.strictEqual(this.player.ads._playBlocked, false,
+      '_playBlocked should not be set');
   });
 
   QUnit.test('playMiddleware play will trigger play event if callPlay terminates', function(assert) {
@@ -146,11 +153,31 @@ QUnit.module('Play Middleware', {}, function() {
 
     this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
     this.player.ads._shouldBlockPlay = true;
+    // Mock that the callPlay method terminated
+    this.player.ads._playBlocked = true;
 
     // Play terminates, there's no value returned
     m.play(true, null);
     assert.equal(this.triggeredEvent, 'play');
     assert.equal(this.addedClass, 'vjs-has-started');
+    assert.equal(this.player.ads._playBlocked, false,
+      '_playBlocked is reset');
+  });
+
+  QUnit.test("playMiddleware play will not trigger play event if another middleware terminated", function(assert) {
+    const m = pm.playMiddleware(this.player);
+
+    this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
+    // Mock that another middleware terminated but the playMiddleware did not
+    this.player.ads._shouldBlockPlay = true;
+    this.player.ads._playBlocked = false;
+    this.sandbox.stub(m, 'callPlay').returns(undefined);
+
+    // Another middleware terminated so the first argument is true
+    m.play(true, null);
+    assert.equal(this.triggeredEvent, null, 'no events should be triggered');
+    assert.equal(this.addedClass, null, 'no classes should be added');
+    assert.equal(this.player.ads._playBlocked, false, '_playBlocked has not changed');
   });
 
   QUnit.test("playMiddleware play will not trigger play event if the player doesn't have this plugin", function(assert) {
@@ -167,7 +194,6 @@ QUnit.module('Play Middleware', {}, function() {
     const m = pm.playMiddleware(nonAdsPlayer);
 
     this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
-    this.player.ads._shouldBlockPlay = true;
 
     m.play(true, null);
     assert.equal(evt, null, 'the play event should not have been triggered');
@@ -176,11 +202,14 @@ QUnit.module('Play Middleware', {}, function() {
 
   QUnit.test("playMiddleware won't trigger play event if callPlay doesn't terminate", function(assert) {
     const m = pm.playMiddleware(this.player);
+    const originalPlayBlocked = this.player.ads._playBlocked;
 
     this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
     m.play(false, {});
     assert.equal(this.triggeredEvent, null, 'no events should be triggered');
     assert.equal(this.addedClass, null, 'no classes should be added');
+    assert.strictEqual(this.player.ads._playBlocked, originalPlayBlocked,
+      '_playBlocked remains unchanged');
   });
 
 });
