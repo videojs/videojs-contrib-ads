@@ -1,3 +1,15 @@
+<a name="6.1.0"></a>
+# [6.1.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.0.1...v6.1.0) (2018-04-19)
+
+### Features
+
+* add playMiddleware to avoid calling play on tech when possible ([#337](https://github.com/videojs/videojs-contrib-ads/issues/337)) ([1482511](https://github.com/videojs/videojs-contrib-ads/commit/1482511))
+
+### Bug Fixes
+
+* Address iOS playsinline flash of BPB + poster ([#360](https://github.com/videojs/videojs-contrib-ads/issues/360)) ([33de864](https://github.com/videojs/videojs-contrib-ads/commit/33de864))
+* make the ads VERSION inline properly ([#332](https://github.com/videojs/videojs-contrib-ads/issues/332)) ([0b67022](https://github.com/videojs/videojs-contrib-ads/commit/0b67022))
+
 <a name="6.0.1"></a>
 ## [6.0.1](https://github.com/videojs/videojs-contrib-ads/compare/v5.0.4-0...v6.0.1) (2018-03-27)
 
