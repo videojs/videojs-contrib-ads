@@ -134,8 +134,3 @@ QUnit.test('Midrolls', function(assert) {
   this.player.ready(this.player.play);
 
 });
-
-QUnit.moduleDone(function( details ) {
-  console.log( "Finished running: ", details.name,
-    "Failed/total: ", details.failed, details.total );
-});

@@ -59,7 +59,7 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
   });
 
   // When the preroll starts
-  this.player.on('adstart', () => {
+  this.player.on('adtimeupdate', () => {
     assert.strictEqual(techPlaySpy.callCount, 0,
       "tech play shouldn't be called while waiting for prerolls");
     assert.strictEqual(playEventSpy.callCount, 1,
@@ -96,41 +96,6 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
       this.player.on('adsready', this.player.play);
     }
   });
-});
-
-QUnit.test('blocks calls to play to wait for prerolls if adsready AFTER play', function(assert) {
-  const done = assert.async();
-  const techPlaySpy = sinon.spy(this.video, 'play');
-  const playEventSpy = sinon.spy();
-
-  this.player.on('play', playEventSpy);
-
-  // When the preroll starts
-  this.player.on('adstart', () => {
-    assert.strictEqual(techPlaySpy.callCount, 0,
-      "tech play shouldn't be called while waiting for prerolls");
-    assert.strictEqual(playEventSpy.callCount, 1,
-      'play event should be triggered');
-    done();
-  });
-
-  // If there wasn't an ad
-  this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 0) {
-      assert.strictEqual(techPlaySpy.callCount, 0,
-        "tech play shouldn't be called while waiting for prerolls");
-      assert.strictEqual(playEventSpy.callCount, 1,
-        'play event should be triggered');
-      done();
-    }
-  });
-
-  this.player.src({
-    src: 'http://vjs.zencdn.net/v/oceans.webm',
-    type: 'video/webm'
-  });
-
-  this.player.ready(this.player.play);
 });
 
 QUnit.test('stops blocking play when an ad is playing', function(assert) {
