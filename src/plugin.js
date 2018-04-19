@@ -193,7 +193,7 @@ const contribAdsPlugin = function(options) {
 
     // Should we block calls to play on the content player?
     _shouldBlockPlay: false,
-    // Was play blocked by the plugin?
+    // Was play blocked by the plugin's playMiddleware feature?
     _playBlocked: false,
     // Tracks whether play has been requested for this source,
     // either by the play method or user interaction
