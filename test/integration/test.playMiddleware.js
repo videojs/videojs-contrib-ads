@@ -195,7 +195,7 @@ QUnit.test("don't trigger play event if another middleware terminates", function
     assert.strictEqual(playSpy.callCount, 0,
       'play event should not be triggered');
     done();
-  }, 200);
+  }, 1);
 
   localPlayer.src({
     src: 'http://vjs.zencdn.net/v/oceans.webm',
