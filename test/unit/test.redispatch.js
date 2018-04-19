@@ -89,12 +89,6 @@ QUnit.test('play events in different states', function(assert) {
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => true;
   assert.equal(this.redispatch('play'), 'contentplay',
-    'should be contentplay when resuming after nopreroll');
-
-  this.player.ads.inAdBreak = () => false;
-  this.player.ads.isInAdMode = () => false;
-  this.player.ads.isContentResuming = () => true;
-  assert.equal(this.redispatch('play'), 'contentplay',
     'should be contentplay when content is resuming');
 
   this.player.ads.inAdBreak = () => false;

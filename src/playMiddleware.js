@@ -1,6 +1,9 @@
 import videojs from 'video.js';
 
 const obj = {};
+// This reference allows videojs to be mocked in unit tests
+// while still using the available videojs import in the source code
+// @see obj.testHook
 let videojsReference = videojs;
 
 /**
