@@ -11,9 +11,12 @@ import redispatch from './redispatch.js';
 import initializeContentupdate from './contentupdate.js';
 import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
+import initCancelContentPlay from './cancelContentPlay.js';
+import playMiddlewareFeature from './playMiddleware.js';
 
 import {BeforePreroll} from './states.js';
 
+const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
 // ---------------------------------------------------------------------------
@@ -65,6 +68,20 @@ const contribAdsPlugin = function(options) {
 
   // Set up redispatching of player events
   player.on(videoEvents, redispatch);
+
+  // Set up features to block content playback while waiting for ads.
+  // Play middleware is only supported on later versions of video.js
+  // and on desktop currently(as the user-gesture requirement on mobile
+  // will disallow calling play once play blocking is lifted)
+  // The middleware must also be registered outside of the plugin,
+  // to avoid a middleware factory being created for each player
+  if (isMiddlewareMediatorSupported() && settings.debug) {
+    // We log the debug message here as the plugin settings are available here
+    videojs.log('ADS:', 'Play middleware has been registered with videojs');
+  } else {
+    // Register the cancelContentPlay feature on the player
+    initCancelContentPlay(player, settings.debug);
+  }
 
   // If we haven't seen a loadstart after 5 seconds, the plugin was not initialized
   // correctly.
@@ -128,6 +145,11 @@ const contribAdsPlugin = function(options) {
     player.ads._pausedOnContentupdate = false;
   });
 
+  // Keep track of whether a play event has happened
+  player.on('play', () => {
+    player.ads._playRequested = true;
+  });
+
   player.one('loadstart', () => {
     player.ads._hasThereBeenALoadStartDuringPlayerLife = true;
   });
@@ -169,6 +191,12 @@ const contribAdsPlugin = function(options) {
     // Are we after startLinearAdMode and before endLinearAdMode?
     _inLinearAdMode: false,
 
+    // Should we block calls to play on the content player?
+    _shouldBlockPlay: false,
+    // Tracks whether play has been requested for this source,
+    // either by the play method or user interaction
+    _playRequested: false,
+
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
     adType: null,
@@ -184,8 +212,10 @@ const contribAdsPlugin = function(options) {
       player.ads._hasThereBeenALoadedData = false;
       player.ads._hasThereBeenALoadedMetaData = false;
       player.ads._cancelledPlay = false;
+      player.ads._shouldBlockPlay = false;
       player.ads.nopreroll_ = false;
       player.ads.nopostroll_ = false;
+      player.ads._playRequested = false;
     },
 
     // Call this when an ad response has been received and there are
@@ -323,6 +353,7 @@ const contribAdsPlugin = function(options) {
   };
 
   player.ads._state = new BeforePreroll(player);
+  player.ads._state.init(player);
 
   player.ads.stitchedAds(settings.stitchedAds);
 
@@ -397,5 +428,13 @@ const registerPlugin = videojs.registerPlugin || videojs.plugin;
 
 // Register this plugin with videojs
 registerPlugin('ads', contribAdsPlugin);
+
+// Register the Play Middleware with video.js on script execution,
+// to avoid a new playMiddleware factory being created on
+// videojs for each player created.
+if (isMiddlewareMediatorSupported()) {
+  // Register the play middleware
+  videojs.use('*', playMiddleware);
+}
 
 export default contribAdsPlugin;

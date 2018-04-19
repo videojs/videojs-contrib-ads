@@ -8,7 +8,6 @@ TODO:
 * adloadedmetadata, contentloadedmetadata
 */
 
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
@@ -16,19 +15,18 @@ QUnit.module('Events and Prerolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
 
+    this.player.exampleAds({
+      'adServerUrl': '/base/test/integration/lib/inventory.json'
+    });
+
     this.player.src({
       src: 'http://vjs.zencdn.net/v/oceans.webm',
       type: 'video/webm'
-    });
-
-    this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json'
     });
 
   },
@@ -70,7 +68,7 @@ QUnit.test('playing event and prerolls: 0 before preroll, 1+ after', function(as
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -95,7 +93,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -131,7 +129,7 @@ QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(a
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -167,7 +165,7 @@ QUnit.test('loadedmetadata event and prerolls: 1 before preroll, 0 after', funct
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -203,7 +201,7 @@ QUnit.test('loadeddata event and prerolls: 1 before preroll, 0 after', function(
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -239,7 +237,7 @@ QUnit.test('play event and prerolls: 1 before preroll, 0 after', function(assert
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -307,7 +305,7 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
   });
 
   this.player.on('timeupdate', () => {
-    if (this.player.currentTime() > 1) {
+    if (this.player.currentTime() > 0) {
 
       seenOutsideAdModeBefore.forEach((event) => {
         assert.ok(!/^ad/.test(event), event + ' has no ad prefix before preroll');
@@ -331,6 +329,6 @@ QUnit.test('Event prefixing and prerolls', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
@@ -6,22 +5,21 @@ QUnit.module('Final Events With No Postroll', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
-
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'playMidroll': false,
       'playPostroll': false
+    });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
     });
   },
 
@@ -59,6 +57,6 @@ QUnit.test('final ended event with no postroll: just 1', function(assert) {
     this.player.currentTime(46);
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

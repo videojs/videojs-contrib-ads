@@ -4,9 +4,17 @@ module.exports = function(config) {
     usePhantomJS: false,
     postDetection: function(browsers) {
       const toKeep = ['Firefox', 'Chrome'];
-      return browsers.filter((e) => {
-        return toKeep.indexOf(e) !== -1;
+      const filteredBrowsers = [];
+
+      browsers.forEach((e) => {
+        if (e === 'Chrome') {
+          filteredBrowsers.push('autoplayDisabledChrome');
+        } else if (toKeep.indexOf(e) !== -1) {
+          filteredBrowsers.push(e);
+        }
       });
+
+      return filteredBrowsers;
     }
   };
 
@@ -37,12 +45,17 @@ module.exports = function(config) {
 
       // Test Data
       {pattern: 'test/integration/lib/inventory.json', included: false, served: true},
-      {pattern: 'examples/basic-ad-plugin/superclip-low.webm', included: false, served: true}
+      {pattern: 'examples/basic-ad-plugin/superclip-low.webm', included: false, served: true},
+      {pattern: 'test/integration/lib/testcaption.vtt', included:false, served:true}
     ],
     customLaunchers: {
       travisChrome: {
         base: 'Chrome',
-        flags: ['--no-sandbox']
+        flags: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required']
+      },
+      autoplayDisabledChrome: {
+        base: 'Chrome',
+        flags: ['--autoplay-policy=no-user-gesture-required']
       }
     },
     detectBrowsers: detectBrowsers,

@@ -8,67 +8,6 @@ QUnit.test('begins in BeforePreroll', function(assert) {
   assert.equal(this.player.ads._state.constructor.name, 'BeforePreroll');
 });
 
-QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
-  var spy = sinon.spy(this.player, 'pause');
-
-  assert.expect(1);
-
-  this.player.paused = function() {
-    return false;
-  };
-
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-  this.clock.tick(1);
-  this.player.trigger('play');
-  this.clock.tick(1);
-  assert.strictEqual(spy.callCount, 2, 'play attempts are paused');
-});
-
-QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
-  var pauseSpy;
-
-  assert.expect(1);
-
-  this.player.paused = function() {
-    return false;
-  };
-
-  pauseSpy = sinon.spy(this.player, 'pause');
-  this.player.trigger('play');
-  this.clock.tick(1);
-  this.player.trigger('play');
-  this.clock.tick(1);
-  assert.equal(pauseSpy.callCount, 2, 'play attempts are paused');
-});
-
-QUnit.test('stops canceling play events when an ad is playing', function(assert) {
-  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
-
-  // Throughout this test, we check both that the expected timeouts are
-  // populated on the `clock` _and_ that `setTimeout` has been called the
-  // expected number of times.
-  assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` does not exist');
-
-  this.player.trigger('play');
-  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
-  assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists after play');
-
-  this.player.trigger('adsready');
-  assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists after adsready');
-
-  this.player.ads.startLinearAdMode();
-  assert.notOk(timerExists(this, this.player.ads._state._timeout), 'preroll timeout no longer exists');
-
-  // cancelPlayTimeout happens after a tick
-  this.clock.tick(1);
-
-  assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` no longer exists');
-
-  window.setTimeout.restore();
-});
-
 QUnit.test('adstart is fired before a preroll', function(assert) {
   var spy = sinon.spy();
 
@@ -174,15 +113,16 @@ QUnit.test('removes the loading class when the preroll times out', function(asse
   assert.notOk(this.player.hasClass('vjs-ad-loading'), 'there should be no ad loading class present in "' + el.className + '"');
 });
 
-QUnit.test('starts the content video if there is no preroll', function(assert) {
-  var spy = sinon.spy(this.player, 'play');
-
+QUnit.test('begins resuming to content if there is no preroll', function(assert) {
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.clock.tick(1);
   this.player.trigger('adtimeout');
-  assert.strictEqual(spy.callCount, 1, 'play is called once');
+
+  assert.strictEqual(this.player.ads.inAdBreak(), false, 'should not be in an ad break');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'should be resuming content');
+  assert.strictEqual(this.player.ads.isInAdMode(), true, 'should be in ad mode');
 });
 
 QUnit.test('removes the poster attribute so it does not flash between videos', function(assert) {
@@ -214,7 +154,7 @@ QUnit.test('changing the src triggers "contentupdate"', function(assert) {
   this.player.on('contentupdate', spy);
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.currentSrc = () => 'AH HA!!! I AM NOT A REAL SOURCE';
   this.player.trigger('loadstart');
   assert.strictEqual(spy.callCount, 1, 'one contentupdate event fired');
 });
@@ -231,7 +171,10 @@ QUnit.test('"contentupdate" should fire when src is changed after postroll', fun
   this.player.trigger('adtimeout');
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   assert.strictEqual(contentupdateSpy.callCount, 1, 'one contentupdate event fired');
 });
@@ -248,7 +191,10 @@ QUnit.test('"contentupdate" should fire when src is changed after postroll', fun
   this.player.trigger('ended');
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   assert.strictEqual(contentupdateSpy.callCount, 1, 'one contentupdate event fired');
 });
@@ -264,7 +210,10 @@ QUnit.test('changing src does not trigger "contentupdate" during ad playback', f
   this.player.ads.startLinearAdMode();
 
   // set src and trigger synthetic 'loadstart'
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
 
   // finish playing ad
@@ -272,54 +221,19 @@ QUnit.test('changing src does not trigger "contentupdate" during ad playback', f
   assert.strictEqual(spy.callCount, 0, 'no contentupdate events fired');
 });
 
-QUnit.test('the `cancelPlayTimeout` timeout is cleared when exiting preroll', function(assert) {
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-
-  const prerollState = this.player.ads._state;
-
-  assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, prerollState._timeout), 'preroll timeout exists');
-
-  this.player.ads.startLinearAdMode();
-  this.player.ads.endLinearAdMode();
-  this.player.trigger('playing');
-
-  this.clock.tick(1);
-
-  assert.notOk(this.player.ads._cancelledPlay, 'cancelContentPlay does nothing in content playback');
-  assert.notOk(timerExists(this, prerollState._timeout), 'preroll timeout cleared');
-  
-});
-
-QUnit.test('"cancelContentPlay doesn\'t block play after adscanceled', function(assert) {
-
+QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
   this.player.trigger('loadstart');
-  this.player.trigger('play');
-  this.player.trigger('adscanceled');
-
-  this.clock.tick(1);
-
-  assert.notOk(this.player.ads._cancelledPlay, 'cancelContentPlay does nothing in content playback');
-
-});
-
-QUnit.test('content is resumed on contentplayback if a user initiated play event is canceled', function(assert) {
-  var playSpy = sinon.spy(this.player, 'play');
-  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
-
-  this.player.trigger('play');
   this.player.trigger('adsready');
+  assert.strictEqual(this.player.ads._playRequested, false,
+    'initially set to false');
+  assert.strictEqual(this.player.ads.isInAdMode(), false,
+    'starts in a content state');
 
-  assert.strictEqual(setTimeoutSpy.callCount, 2, 'two timers were created (`cancelPlayTimeout` and `_prerollTimeout`)');
-  assert.ok(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` exists');
-  assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists');
-
-  this.clock.tick(1);
-  this.player.ads.startLinearAdMode();
-  this.player.ads.endLinearAdMode();
-  assert.notOk(timerExists(this, this.player.ads.cancelPlayTimeout), '`cancelPlayTimeout` was canceled');
-  assert.strictEqual(playSpy.callCount, 1, 'a play event should be triggered once we enter "content-playback" state if on was canceled.');
+  this.player.trigger('play');
+  assert.strictEqual(this.player.ads._playRequested, true,
+    '_playRequested is now true');
+  assert.strictEqual(this.player.ads.isInAdMode(), true,
+    'now in ad state');
 });
 
 QUnit.test('ended event happens after postroll errors out', function(assert) {
@@ -331,6 +245,7 @@ QUnit.test('ended event happens after postroll errors out', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended');
   this.player.trigger('adserror');
 
@@ -347,6 +262,7 @@ QUnit.test('ended event happens after postroll timed out', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended');
   this.player.trigger('adtimeout');
 
@@ -363,9 +279,10 @@ QUnit.test('ended event happens after postroll skipped', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // preroll times out
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended'); // content ends (contentended)
   this.player.ads.skipLinearAdMode();
-  
+
   this.clock.tick(1);
   assert.strictEqual(endedSpy.callCount, 1, 'ended event happened');
 });
@@ -379,6 +296,7 @@ QUnit.test('an "ended" event is fired after postroll if not fired naturally', fu
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // skip preroll
+  this.player.trigger('playing'); // return to content
   this.player.trigger('ended'); // will be redispatched as contentended
 
   assert.strictEqual(endedSpy.callCount, 0, 'ended was redispatched as contentended');
@@ -397,6 +315,7 @@ QUnit.test('ended events when content ends first and second time', function(asse
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // Preroll times out
+  this.player.trigger('playing'); // Entered content
   this.player.trigger('ended'); // Content ends (contentended)
 
   this.player.ads.startLinearAdMode(); // Postroll starts
@@ -493,15 +412,27 @@ QUnit.test('skipLinearAdMode during ad playback does not trigger adskip', functi
 });
 
 QUnit.test('adsready in content-playback triggers readyforpreroll', function(assert) {
-  var spy;
+  var spy = sinon.spy();
 
-  spy = sinon.spy();
   this.player.on('readyforpreroll', spy);
   this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // entered ContentPlayback
   this.player.trigger('adsready');
-  assert.strictEqual(spy.getCall(0).args[0].type, 'readyforpreroll', 'readyforpreroll should have been triggered.');
+  assert.strictEqual(spy.callCount, 1, 'readyforpreroll should have been triggered.');
+});
+
+QUnit.test('adsready while preroll content resuming triggers readyforpreroll', function(assert) {
+  var spy = sinon.spy();
+
+  this.player.on('readyforpreroll', spy);
+  this.player.trigger('loadstart');
+  this.player.trigger('play');
+  this.player.trigger('adtimeout');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'should be resuming to content');
+  this.player.trigger('adsready');
+  assert.strictEqual(spy.callCount, 1, 'readyforpreroll should have been triggered.');
 });
 
 // ----------------------------------
@@ -578,6 +509,7 @@ QUnit.test('player events during midrolls are prefixed if tech is reused for ad'
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // return to content
   this.player.ads.startLinearAdMode();
 
   this.player.ads.snapshot = {
@@ -610,6 +542,7 @@ QUnit.test('player events during postrolls are prefixed if tech is reused for ad
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing'); // return to content
   this.player.trigger('ended');
   this.player.ads.startLinearAdMode();
 
@@ -645,6 +578,7 @@ QUnit.test('player events during stitched ads are prefixed', function(assert) {
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('adtimeout');
+  this.player.trigger('playing');
   this.player.ads.startLinearAdMode();
 
   // simulate video events that should be prefixed
@@ -731,7 +665,7 @@ QUnit.test('startLinearAdMode should only trigger adstart from correct states', 
 
   this.player.ads.endLinearAdMode();
   assert.strictEqual(adstart.callCount, 3, 'Ads done');
-  
+
 });
 
 QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert) {
@@ -740,7 +674,8 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll', function(assert
   this.player.trigger('play');
   this.player.trigger('adsready');
 
-  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isInAdMode(), true, 'in ad mode');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'content is resuming');
 });
 
 // Same test as above with different event order because this used to be broken.
@@ -750,7 +685,8 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll 2', function(asse
   this.player.trigger('adsready');
   this.player.trigger('play');
 
-  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isInAdMode(), true, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'content is resuming');
 });
 
 QUnit.test('ad impl can notify contrib-ads there is no preroll 3', function(assert) {
@@ -759,7 +695,8 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll 3', function(asse
   this.player.trigger('nopreroll');
   this.player.trigger('adsready');
 
-  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isInAdMode(), true, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'content is resuming');
 });
 
 QUnit.test('ad impl can notify contrib-ads there is no preroll 4', function(assert) {
@@ -768,7 +705,8 @@ QUnit.test('ad impl can notify contrib-ads there is no preroll 4', function(asse
   this.player.trigger('nopreroll');
   this.player.trigger('play');
 
-  assert.strictEqual(this.player.ads.isInAdMode(), false, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isInAdMode(), true, 'not in ad mode');
+  assert.strictEqual(this.player.ads.isContentResuming(), true, 'content is resuming');
 });
 
 QUnit.test('ended event is sent after nopostroll', function(assert) {
@@ -782,6 +720,7 @@ QUnit.test('ended event is sent after nopostroll', function(assert) {
   this.player.trigger('play');
   this.player.trigger('adsready');
   this.player.ads.skipLinearAdMode();
+  this.player.trigger('playing');
   this.player.trigger('contentended');
   this.clock.tick(1);
   assert.ok(ended.calledOnce, 'Ended triggered');
@@ -794,6 +733,7 @@ QUnit.test('ended event is sent with postroll', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.skipLinearAdMode();
+  this.player.trigger('playing');
 
   var ended = sinon.spy();
 

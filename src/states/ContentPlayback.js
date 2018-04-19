@@ -19,13 +19,8 @@ export default class ContentPlayback extends ContentState {
    * happen here, not in a constructor.
    */
   init(player) {
-    // Play the content if cancelContentPlay happened or we paused on 'contentupdate'
-    // and we haven't played yet. This happens if there was no preroll or if it
-    // errored, timed out, etc. Otherwise snapshot restore would play.
-    if (player.paused() &&
-        (player.ads._cancelledPlay || player.ads._pausedOnContentupdate)) {
-      player.play();
-    }
+    // Don't block calls to play in content playback
+    player.ads._shouldBlockPlay = false;
   }
 
   /*

@@ -8,8 +8,8 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
     var otherTrack = document.createElement('track');
 
     captionTrack.setAttribute('kind', 'captions');
-    captionTrack.setAttribute('src', 'lib/testcaption.vtt');
-    otherTrack.setAttribute('src', 'lib/testcaption.vtt');
+    captionTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
+    otherTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
     this.video.appendChild(captionTrack);
     this.video.appendChild(otherTrack);
 
@@ -20,7 +20,10 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
 }));
 
 QUnit.test('restores the original video src after ads', function(assert) {
-  var originalSrc = 'http://example.com/original.mp4';
+  var originalSrc = {
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  };
 
   assert.expect(1);
 
@@ -29,9 +32,12 @@ QUnit.test('restores the original video src after ads', function(assert) {
   this.player.trigger('adsready');
   this.player.trigger('play');
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.webm',
+    type: 'video/webm'
+  });
   this.player.ads.endLinearAdMode();
-  assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
+  assert.strictEqual(this.player.currentSrc(), originalSrc.src, 'the original src is restored');
 });
 
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
@@ -46,7 +52,10 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   setTimeoutSpy = sinon.spy(window, 'setTimeout');
   this.video.currentTime = 100;
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.webm',
+    type: 'video/webm'
+  });
 
   // the ad resets the current time
   this.video.currentTime = 0;
@@ -67,7 +76,10 @@ QUnit.test('the current time is restored at the end of an ad', function(assert) 
 
   // the video plays to time 100
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.webm',
+    type: 'video/webm'
+  });
 
   // the ad resets the current time
   this.video.currentTime = 0;
@@ -106,7 +118,10 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   var playSpy = sinon.spy(this.player, 'play');
 
   // start playback
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.trigger('adsready');
@@ -114,13 +129,19 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
 
   // trigger an ad
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.ads.endLinearAdMode();
 
   // resume playback
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('canplay');
 
@@ -144,7 +165,10 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
 
   // trigger a post-roll
   this.player.ads.startLinearAdMode();
-  this.player.src('//example.com/ad.mp4');
+  this.player.src({
+    src: '//example.com/ad.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('loadedmetadata');
   this.player.ads.endLinearAdMode();
@@ -189,7 +213,10 @@ QUnit.test('snapshot does not resume playback after a burned-in post-roll', func
 QUnit.test('snapshot does not resume playback after multiple post-rolls', function(assert) {
   var playSpy;
 
-  this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
+  this.player.src({
+    src: 'http://vjs.zencdn.net/v/oceans.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
@@ -215,9 +242,15 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
 
   // trigger a lot of post-rolls
   this.player.ads.startLinearAdMode();
-  this.player.src('http://example.com/ad1.mp4');
+  this.player.src({
+    src: 'http://example.com/ad1.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
-  this.player.src('http://example.com/ad2.mp4');
+  this.player.src({
+    src: 'http://example.com/ad2.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
@@ -232,7 +265,10 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   };
 
   // load and play the initial video
-  this.player.src('http://example.com/movie.mp4');
+  this.player.src({
+    src:'http://example.com/movie.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adsready');
@@ -243,10 +279,13 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
   this.player.trigger('playing');
 
   // change the content and timeout the new ad response
-  this.player.src('http://example.com/movie2.mp4');
+  this.player.src({
+    src: 'http://example.com/movie2.webm',
+    type: 'video/webm'
+  });
   this.player.trigger('loadstart');
   this.player.trigger('adtimeout');
-  assert.strictEqual('http://example.com/movie2.mp4', this.player.currentSrc(), 'playing the second video');
+  assert.strictEqual('http://example.com/movie2.webm', this.player.currentSrc(), 'playing the second video');
 });
 
 // changing the src attribute to a URL that AdBlocker is intercepting
@@ -256,11 +295,11 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   var updatedSrc;
 
   this.player.currentSrc = function() {
-    return 'content.mp4';
+    return 'content.webm';
   };
 
   this.player.currentType = function() {
-    return 'video/mp4';
+    return 'video/webm';
   };
 
   this.player.trigger('adsready');
@@ -272,14 +311,14 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
   // is called.
   this.player.tech_.src = function(source) {
     if (source === undefined) {
-      return 'ad.mp4';
+      return 'ad.webm';
     }
     updatedSrc = source;
   };
 
   this.player.src = function(source) {
     if (source === undefined) {
-      return 'ad.mp4';
+      return 'ad.webm';
     }
     updatedSrc = source;
   };
@@ -287,15 +326,15 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
-  assert.deepEqual(updatedSrc, {src: 'content.mp4', type: 'video/mp4'}, 'restored src attribute');
+  assert.deepEqual(updatedSrc, {src: 'content.webm', type: 'video/webm'}, 'restored src attribute');
 });
 
-QUnit.test('When captions are enabled, the video\'s tracks will be disabled during the ad', function(assert) {
-  const trackSrc = 'http://solutions.brightcove.com/' +
-      'bcls/captions/adding_captions_to_videos_french.vtt';
+QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
+  const trackSrc = '/base/test/integration/lib/testcaption.vtt';
+  let remoteTrack;
 
   // Add a text track
-  this.player.addRemoteTextTrack({
+  remoteTrack = this.player.addRemoteTextTrack({
     kind: 'captions',
     language: 'fr',
     label: 'French',
@@ -349,6 +388,9 @@ QUnit.test('When captions are enabled, the video\'s tracks will be disabled duri
   }
 
   assert.strictEqual(showing, tracks.length, 'all tracks should be showing');
+
+  // Cleanup
+  this.player.textTracks().removeTrack(remoteTrack);
 });
 
 QUnit.test('No snapshot if duration is Infinity', function(assert) {
@@ -357,20 +399,26 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 
   this.player.duration(Infinity);
 
-  this.player.src(originalSrc);
+  this.player.src({
+    src: originalSrc,
+    type: 'video/webm'
+  });
   this.player.trigger('adsready');
-  this.player.trigger('play');
+  this.player.play();
   this.player.ads.startLinearAdMode();
-  this.player.src(newSrc);
+  this.player.src({
+    src: newSrc,
+    type: 'video/webm'
+  });
   this.player.ads.endLinearAdMode();
   assert.strictEqual(this.player.currentSrc(), newSrc, 'source is not reset');
 });
 
 QUnit.test('Snapshot and text tracks', function(assert) {
-  const trackSrc = 'http://solutions.brightcove.com/' +
-    'bcls/captions/adding_captions_to_videos_french.vtt';
+  const trackSrc = '/base/test/integration/lib/testcaption.vtt';
   const originalAddTrack = this.player.addTextTrack;
   const originalTextTracks = this.player.textTracks;
+  let remoteTrack;
 
   // No text tracks at start
   assert.equal(this.player.textTracks().length, 0);
@@ -378,7 +426,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   this.player.addTextTrack('captions', 'Spanish', 'es');
 
   // Add a text track
-  this.player.addRemoteTextTrack({
+  remoteTrack = this.player.addRemoteTextTrack({
     kind: 'captions',
     language: 'fr',
     label: 'French',
@@ -437,13 +485,14 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks()[0].kind, 'captions');
   assert.equal(this.player.textTracks()[0].language, 'es');
   assert.equal(this.player.textTracks()[0].mode, 'showing');
-  
+
   assert.equal(this.player.remoteTextTrackEls().trackElements_[0].src, trackSrc);
   assert.equal(this.player.textTracks()[1].kind, 'captions');
   assert.equal(this.player.textTracks()[1].language, 'fr');
   assert.equal(this.player.textTracks()[1].mode, 'showing');
 
   // Resetting mocked methods
+  this.player.textTracks().removeTrack(remoteTrack);
   this.player.addTextTrack = originalAddTrack;
   this.player.textTracks = originalTextTracks;
 });

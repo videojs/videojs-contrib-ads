@@ -1,5 +1,4 @@
-import {ContentState, Preroll, ContentPlayback} from '../states.js';
-import cancelContentPlay from '../cancelContentPlay.js';
+import {ContentState, Preroll} from '../states.js';
 
 /*
  * This is the initial state for a player with an ad plugin. Normally, it remains in this
@@ -22,6 +21,11 @@ export default class BeforePreroll extends ContentState {
    */
   init(player) {
     this.adsReady = false;
+    this.shouldResumeToContent = false;
+
+    // Content playback should be blocked until we are done
+    // playing ads or we know there are no ads to play
+    player.ads._shouldBlockPlay = true;
   }
 
   /*
@@ -40,11 +44,8 @@ export default class BeforePreroll extends ContentState {
   onPlay(player) {
     player.ads.debug('Received play event (BeforePreroll)');
 
-    // Don't start content playback yet
-    cancelContentPlay(player);
-
     // Check for prerolls
-    this.transitionTo(Preroll, this.adsReady);
+    this.transitionTo(Preroll, this.adsReady, this.shouldResumeToContent);
   }
 
   /*
@@ -52,15 +53,15 @@ export default class BeforePreroll extends ContentState {
    */
   onAdsCanceled(player) {
     player.ads.debug('adscanceled (BeforePreroll)');
-
-    this.transitionTo(ContentPlayback);
+    this.shouldResumeToContent = true;
   }
 
   /*
    * An ad error occured. Play content instead.
    */
   onAdsError() {
-    this.transitionTo(ContentPlayback);
+    this.player.ads.debug('adserror (BeforePreroll)');
+    this.shouldResumeToContent = true;
   }
 
   /*
@@ -68,7 +69,7 @@ export default class BeforePreroll extends ContentState {
    */
   onNoPreroll() {
     this.player.ads.debug('Skipping prerolls due to nopreroll event (BeforePreroll)');
-    this.transitionTo(ContentPlayback);
+    this.shouldResumeToContent = true;
   }
 
   /*
@@ -78,7 +79,8 @@ export default class BeforePreroll extends ContentState {
     const player = this.player;
 
     player.trigger('adskip');
-    this.transitionTo(ContentPlayback);
+    player.ads.debug('skipLinearAdMode (BeforePreroll)');
+    this.shouldResumeToContent = true;
   }
 
   /*

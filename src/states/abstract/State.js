@@ -85,7 +85,7 @@ export default class State {
   }
 
   /*
-   * Overridden by PrerollState, MidrollState, and PostrollState.
+   * Overridden by Preroll, Midroll, and Postroll.
    */
   isContentResuming() {
     return false;

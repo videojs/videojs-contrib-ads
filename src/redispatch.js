@@ -39,7 +39,6 @@ const prefixEvent = (player, prefix, event) => {
 // * Normal playing event when there is no preroll
 // * No playing event before preroll
 // * At least one playing event after preroll
-// * A single adplaying event when an ad begins
 const handlePlaying = (player, event) => {
   if (player.ads.isInAdMode()) {
 
@@ -50,14 +49,11 @@ const handlePlaying = (player, event) => {
         prefixEvent(player, 'content', event);
       }
 
-    // adplaying was already sent due to cancelContentPlay. Avoid sending another.
-    } else if (player.ads._cancelledPlay) {
-      cancelEvent(player, event);
-
     // Prefix all other playing events during ads.
     } else {
       prefixEvent(player, 'ad', event);
     }
+
   }
 };
 
@@ -127,18 +123,21 @@ const handleLoadEvent = (player, event) => {
 // Play requests are unique because they represent user intention to play. They happen
 // because the user clicked play, or someone called player.play(), etc. It could happen
 // multiple times during ad loading, regardless of where we are in the process. With our
-// current architecture, this will always cause the content to play. Therefor, contrib-ads
-// must always cancelContentPlay if there is any possible chance the play caused the
-// content to play, even if we are technically in ad mode. In order for that to happen,
-// play events need to be unprefixed until the last possible moment. A better solution
-// would be to have a way to intercept play events rather than "cancel" them by pausing
-// after each one. To be continued...
+// current architecture, this could cause the content to start playing.
+// Therefore, contrib-ads must always either:
+//   - cancelContentPlay if there is any possible chance the play caused the
+//     content to start playing, even if we are technically in ad mode. In order for
+//     that to happen, play events need to be unprefixed until the last possible moment.
+//   - use playMiddleware to stop the play from reaching the Tech so there is no risk
+//     of the content starting to play.
+// Currently, playMiddleware is only supported on desktop browsers with
+// video.js after version 6.7.1.
 const handlePlay = (player, event) => {
-  const resumingAfterNoPreroll = player.ads._cancelledPlay && !player.ads.isInAdMode();
-
   if (player.ads.inAdBreak()) {
     prefixEvent(player, 'ad', event);
-  } else if (player.ads.isContentResuming() || resumingAfterNoPreroll) {
+
+  // Content resuming
+  } else if (player.ads.isContentResuming()) {
     prefixEvent(player, 'content', event);
   }
 };

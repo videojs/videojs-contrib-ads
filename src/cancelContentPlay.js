@@ -1,3 +1,14 @@
+import videojs from 'video.js';
+
+export default function initCancelContentPlay(player, debug) {
+  if (debug) {
+    videojs.log('ADS:', 'Using cancelContentPlay to block content playback');
+  }
+
+  // Listen to play events to "cancel" them afterward
+  player.on('play', cancelContentPlay);
+}
+
 /*
 This feature makes sure the player is paused during ad loading.
 
@@ -5,30 +16,23 @@ It does this by pausing the player immediately after a "play" where ads will be 
 then signalling that we should play after the ad is done.
 */
 
-export default function cancelContentPlay(player) {
-  if (player.ads.cancelPlayTimeout) {
-    // another cancellation is already in flight, so do nothing
+function cancelContentPlay() {
+  const player = this;
+
+  if (player.ads._shouldBlockPlay === false) {
+    // Only block play if the ad plugin is in a state when content
+    // playback should be blocked. This currently means during
+    // BeforePrerollState and PrerollState.
     return;
   }
 
-  // The timeout is necessary because pausing a video element while processing a `play`
-  // event on iOS can cause the video element to continuously toggle between playing and
-  // paused states.
-  player.ads.cancelPlayTimeout = player.setTimeout(function() {
-    // deregister the cancel timeout so subsequent cancels are scheduled
-    player.ads.cancelPlayTimeout = null;
+  // pause playback so ads can be handled.
+  if (!player.paused()) {
+    player.ads.debug('Play event was canceled');
+    player.pause();
+  }
 
-    if (!player.ads.isInAdMode()) {
-      return;
-    }
-
-    // pause playback so ads can be handled.
-    if (!player.paused()) {
-      player.pause();
-    }
-
-    // When the 'content-playback' state is entered, this will let us know to play.
-    // This is needed if there is no preroll or if it errors, times out, etc.
-    player.ads._cancelledPlay = true;
-  }, 1);
+  // When the 'content-playback' state is entered, this will let us know to play.
+  // This is needed if there is no preroll or if it errors, times out, etc.
+  player.ads._cancelledPlay = true;
 }

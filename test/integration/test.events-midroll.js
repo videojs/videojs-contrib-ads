@@ -7,7 +7,6 @@ TODO:
 * loadedmetadata, adloadedmetadata, contentloadedmetadata
 */
 
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
@@ -15,21 +14,20 @@ QUnit.module('Events and Midrolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
-
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'midrollPoint': 1
+    });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
     });
   },
 
@@ -133,6 +131,6 @@ QUnit.test('Midrolls', function(assert) {
     this.player.currentTime(.9);
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

@@ -8,7 +8,6 @@ TODO:
 * loadedmetadata, adloadedmetadata, contentloadedmetadata
 */
 
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
@@ -16,22 +15,22 @@ QUnit.module('Events and Postrolls', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
-
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
       'playPreroll': false,
       'playMidroll': false
     });
+
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
+    });
+
   },
 
   afterEach: function() {
@@ -75,8 +74,10 @@ QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(ass
     }, 1000);
   });
 
-  this.player.play();
-  this.player.currentTime(46);
+  this.player.ready(() => {
+    this.player.play();
+    this.player.currentTime(46);
+  });
 
 });
 
@@ -175,6 +176,6 @@ QUnit.test('Event prefixing and postrolls', function(assert) {
     this.player.currentTime(46);
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });

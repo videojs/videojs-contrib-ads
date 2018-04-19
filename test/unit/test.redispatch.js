@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import redispatch from '../../src/redispatch.js';
 
@@ -33,6 +32,10 @@ QUnit.module('Redispatch', {
 
         stitchedAds() {
           return false;
+        },
+
+        isResumingAfterNoPreroll() {
+          return false;
         }
       }
     };
@@ -55,6 +58,12 @@ QUnit.module('Redispatch', {
       }
 
     }
+  },
+
+  afterEach(assert) {
+    // Cleanup
+    this.player = null;
+    this.redispatch = null;
   }
 
 });
@@ -75,9 +84,38 @@ QUnit.test('playing event in different ad states', function(assert) {
 
 });
 
-QUnit.test('no adplaying event during ad playback if content play was cancelled', function(assert) {
+QUnit.test('play events in different states', function(assert) {
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => true;
+  assert.equal(this.redispatch('play'), 'contentplay',
+    'should be contentplay when content is resuming');
+
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._playRequested = false;
+  assert.strictEqual(this.redispatch('play'), 'ignored',
+    "should not be redispatched if play hasn't been requested yet");
+
+  this.player.ads.inAdBreak = () => false;
+  this.player.ads.isInAdMode = () => false;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._playRequested = true;
+  assert.strictEqual(this.redispatch('play'), 'ignored',
+    'should not be redispatched if in content state');
+
+  this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
-  this.player.ads._cancelledPlay = true;
-  assert.equal(this.redispatch('playing'), 'cancelled');
+  this.player.ads._playRequested = true;
+  assert.strictEqual(this.redispatch('play'), 'ignored',
+    'should not prefix when not in an ad break');
+
+  this.player.ads.inAdBreak = () => true;
+  this.player.ads.isInAdMode = () => true;
+  this.player.ads.isContentResuming = () => false;
+  this.player.ads._playRequested = true;
+  assert.strictEqual(this.redispatch('play'), 'adplay',
+    'should be adplay when in an ad break');
 });

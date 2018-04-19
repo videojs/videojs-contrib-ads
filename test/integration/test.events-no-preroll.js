@@ -1,4 +1,3 @@
-import QUnit from 'qunit';
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-integration.js';
 
@@ -6,16 +5,10 @@ QUnit.module('Initial Events With No Preroll', {
   beforeEach: function() {
     this.video = document.createElement('video');
 
-    this.fixture = document.createElement('div');
-    document.querySelector('body').appendChild(this.fixture);
+    this.fixture = document.querySelector('#qunit-fixture');
     this.fixture.appendChild(this.video);
 
     this.player = videojs(this.video);
-
-    this.player.src({
-      src: 'http://vjs.zencdn.net/v/oceans.webm',
-      type: 'video/webm'
-    });
 
     this.player.exampleAds({
       'adServerUrl': '/base/test/integration/lib/inventory.json',
@@ -23,6 +16,10 @@ QUnit.module('Initial Events With No Preroll', {
       'playMidroll': false
     });
 
+    this.player.src({
+      src: 'http://vjs.zencdn.net/v/oceans.webm',
+      type: 'video/webm'
+    });
   },
 
   afterEach: function() {
@@ -51,7 +48,7 @@ QUnit.test('initial play event with no preroll: one please', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -76,7 +73,7 @@ QUnit.test('initial playing event with no preroll: 1+', function(assert) {
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -102,7 +99,7 @@ QUnit.test('no ended event at start if video with no preroll', function(assert) 
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
 
@@ -127,6 +124,6 @@ QUnit.test('initial loadstart event with no preroll: one please', function(asser
     }
   });
 
-  this.player.play();
+  this.player.ready(this.player.play);
 
 });
