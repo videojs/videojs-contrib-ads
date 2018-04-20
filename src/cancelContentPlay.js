@@ -28,7 +28,7 @@ function cancelContentPlay() {
 
   // pause playback so ads can be handled.
   if (!player.paused()) {
-    player.ads.debug('Play event was canceled');
+    player.ads.debug('Playback was canceled by cancelContentPlay');
     player.pause();
   }
 
