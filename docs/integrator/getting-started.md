@@ -86,4 +86,41 @@ This is the basic flow for a simple use case, but there are other things the int
 There are some other useful events that videojs-contrib-ads may trigger:
 
  * `contentchanged` (EVENT) -- Fires when a new content video has been loaded in the player (specifically, at the same time as the `loadstart` media event for the new source). This means the ad workflow has restarted from the beginning. Your integration will need to trigger `adsready` again, for example. Note that when changing sources, the playback state of the player is retained: if the previous source was playing, the new source will also be playing and the ad workflow will not wait for a new `play` event.
- 
+
+## Single Preroll Example
+
+Here's an outline of what a basic ad integration might look like.
+It only plays a single preroll ad before each content video, but does demonstrate the interaction points offered by the ads plugin.
+
+This is not actually a runnable example, as it needs more information as specified in the code comments.
+
+```js
+videojs('video', {}, function() {
+
+  var player = this;
+  player.ads(); // initialize the ad framework
+
+  // request ads whenever there's new video content
+  player.on('contentupdate', function(){
+    // fetch ad inventory asynchronously, then ...
+    player.trigger('adsready');
+  });
+
+  player.on('readyforpreroll', function() {
+    player.ads.startLinearAdMode();
+    // play your linear ad content
+    player.src('http://url/to/your/ad.content');
+
+    // when all your linear ads have finished… do not confuse this with `ended`
+    player.one('adended', function() {
+      player.ads.endLinearAdMode();
+    });
+  });
+
+});
+```
+
+Your actual integration will be significantly more complex.
+To implement midroll ads, you'd want to listen to `timeupdate` events to monitor the progress of the content video's playback.
+
+For a more involved example that plays both prerolls and midrolls, see the [example directory](example) in this project.
