@@ -1,6 +1,6 @@
 <script src="./lib/railroad-diagrams.js"></script>
 <link rel="stylesheet" href="./lib/railroad-diagrams.css"/>
-<link rel="stylesheet" href=".states.css"/>
+<link rel="stylesheet" href="states.css"/>
 
 # States
 
@@ -33,9 +33,36 @@ Diagram(
 </script>
 <div id="diagram-1"></div>
 
+`onAdsCanceled` and `onAdsError` have been omitted from the diagram because they are deprecated.
+
 ## Preroll
 
 This state encapsulates checking for the presense of preroll ads, preparing for preroll ads, playing preroll ads, and restoring content after preroll ads. We move into this state when content playback is requested, resulting in a `play` event. At this point, playback is officially blocked by the ad plugin. We leave this state when content playback begins, resulting in a `playing` event.
+
+<script>
+Diagram(
+  NonTerminal('init'),
+  Optional(
+    NonTerminal('onAdsReady')
+  ),
+  Choice(
+    0,
+    Sequence(
+      NonTerminal('startLinearAdMode'),
+      Optional(
+        NonTerminal('onAdStarted')
+      ),
+      NonTerminal('endLinearAdMode'),
+    ),
+    NonTerminal('onAdTimeout'),
+    NonTerminal('onNoPreroll'),
+    NonTerminal('skipLinearAdMode')
+  ),
+  NonTerminal('cleanup')
+)
+.addTo(document.querySelector('#diagram-2'));
+</script>
+<div id="diagram-2"></div>
 
 ## ContentPlayback
 
