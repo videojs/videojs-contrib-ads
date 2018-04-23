@@ -8,13 +8,15 @@ videojs.contrib-ads moves through various states as a content video plays. Here'
 
 ![](ad-states.png)
 
+Ad states are yellow and content states are blue. If the current state is an ad state, the plugin is in ad mode.
+
 Many methods in the public API are implemented by inspecting the current state. The current state instance should not be inspected directly by integrations.
 
-States are implemented as classes with a 3-tiered inheritance hierarchy. All states are children of either `AdState` or `ContentState`. In turn, `AdState` and `ContentState` are children of `State`.
+States are implemented as classes with a 3-tiered inheritance hierarchy. All states extend either `AdState` or `ContentState`. In turn, `AdState` and `ContentState` extend `State`.
 
-## BeforePreroll
+## BeforePreroll (extends ContentState)
 
-The initial state. On source change, contrib-ads returns to this state for the new source. This state is not an ad state because content playback has not been blocked by the ad plugin yet.
+The initial state. On source change, contrib-ads returns to this state for the new source. This state is not an ad state because content playback has not been requested yet, therefor playback has not been blocked by the ad plugin yet.
 
 <script>
 Diagram(
@@ -33,9 +35,9 @@ Diagram(
 </script>
 <div id="diagram-1"></div>
 
-## Preroll
+## Preroll (extends AdState)
 
-This state encapsulates checking for the presense of preroll ads, preparing for preroll ads, playing preroll ads, and restoring content after preroll ads. We move into this state when content playback is requested, resulting in a `play` event. At this point, playback is officially blocked by the ad plugin. We leave this state when content playback begins, resulting in a `playing` event.
+This state encapsulates checking for the presense of preroll ads, preparing for preroll ads, playing preroll ads, and restoring content after preroll ads. We move into this state when content playback is requested, as indicated by the `play` event. At this point, playback is officially blocked by the ad plugin. We leave this state when content playback begins, resulting in a `playing` event.
 
 <script>
 Diagram(
@@ -62,7 +64,7 @@ Diagram(
 </script>
 <div id="diagram-2"></div>
 
-## ContentPlayback
+## ContentPlayback (extends ContentState)
 
 This state represents normal content playback, even if the player is paused.
 
@@ -80,9 +82,9 @@ Diagram(
 </script>
 <div id="diagram-3"></div>
 
-## Midroll
+## Midroll (extends AdState)
 
-This state encapsulates preparing for midroll ads, playing midroll ads, and restoring content after preroll ads. It begins when the integration invokes `startLinearAdMode` and it ends when content resumes, resulting in a `playing` event.
+This state encapsulates preparing for midroll ads, playing midroll ads, and restoring content after midroll ads. It begins when the integration invokes `startLinearAdMode` and it ends when content resumes, resulting in a `playing` event.
 
 <script>
 Diagram(
@@ -95,7 +97,7 @@ Diagram(
 </script>
 <div id="diagram-4"></div>
 
-## Postroll
+## Postroll (extends AdState)
 
 This state encapsulates checking for postroll ads and playing postroll ads. This state begins when content ends for the first time, resulting in a `contentended` event. This state leads to the AdsDone state; the ad plugin will not return to ContentPlayback for this source.
 
@@ -119,7 +121,7 @@ Diagram(
 </script>
 <div id="diagram-5"></div>
 
-## AdsDone
+## AdsDone (extends ContentState)
 
 No more ads will play. The user can seek and re-watch content as they please. The only way to leave this state is by changing the content source.
 
