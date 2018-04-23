@@ -1,6 +1,4 @@
-# videojs-contrib-ads documentation
-
-The documentation is spit into two parts by audience.
+The documentation is spit into parts by audience.
 
 ## Are you building an ad plugin using videojs-contrib-ads?
 
