@@ -1,5 +1,5 @@
 <script src="./lib/railroad-diagrams.js"></script>
-<link rel="stylesheet" href="railroad-diagrams.css"/>
+<link rel="stylesheet" href="./lib/railroad-diagrams.css"/>
 
 # States
 
