@@ -3,6 +3,25 @@
 
 @import "{{ site.theme }}";
 
+<<<<<<< HEAD
 body {
   color: red;
+=======
+a {
+  color: #0a03d6;
+}
+
+.text-gray {
+  color: #99a1ab !important;
+}
+
+.footer a {
+  color: #837ff3;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  border-bottom: none;
+>>>>>>> update docs style
 }
