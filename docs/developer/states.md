@@ -37,7 +37,7 @@ Diagram(
 
 ## Preroll (extends AdState)
 
-This state encapsulates checking for the presense of preroll ads, preparing for preroll ads, playing preroll ads, and restoring content after preroll ads. We move into this state when content playback is requested, as indicated by the `play` event. At this point, playback is officially blocked by the ad plugin. We leave this state when content playback begins, resulting in a `playing` event.
+We move into this state when content playback is requested, as indicated by the `play` event. At this point, playback is officially blocked by the ad plugin. Ads may or may not play during this time. For example, we we learn that there are no preroll ads and move on. We leave this state when content playback begins, resulting in a `playing` event.
 
 <script>
 Diagram(
@@ -99,7 +99,7 @@ Diagram(
 
 ## Postroll (extends AdState)
 
-This state encapsulates checking for postroll ads and playing postroll ads. This state begins when content ends for the first time, resulting in a `contentended` event. This state leads to the AdsDone state; the ad plugin will not return to ContentPlayback for this source.
+This state begins when content ends for the first time, resulting in a `contentended` event. A preroll may play during this state. This state leads to the AdsDone state; the ad plugin will not return to ContentPlayback for this source.
 
 <script>
 Diagram(

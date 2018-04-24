@@ -1,4 +1,4 @@
-videojs-contrib-ads does implement these. This page establishes a convention used some some integrations that you may want to consider sending for consistency as they may be useful.
+videojs-contrib-ads does not implement these. This page establishes a convention used some some integrations that you may want to consider sending for consistency as they may be useful.
 
 ### Events
 

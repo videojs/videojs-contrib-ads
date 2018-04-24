@@ -85,6 +85,14 @@ export default class State {
   }
 
   /*
+   * Overridden by Preroll and Postroll. Midrolls jump right into the ad break
+   * so there is no "waiting" state for them.
+   */
+  isWaitingForAdBreak() {
+    return false;
+  }
+
+  /*
    * Overridden by Preroll, Midroll, and Postroll.
    */
   isContentResuming() {
