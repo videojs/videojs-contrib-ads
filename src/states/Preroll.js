@@ -21,6 +21,8 @@ export default class Preroll extends AdState {
    * happen here, not in a constructor.
    */
   init(player, adsReady, shouldResumeToContent) {
+    this.waitingForAdBreak = true;
+
     // Loading spinner from now until ad start or end of ad break.
     player.addClass('vjs-ad-loading');
 
@@ -152,6 +154,7 @@ export default class Preroll extends AdState {
     if (this.adsReady && !player.ads.inAdBreak() && !this.isContentResuming()) {
       player.clearTimeout(this._timeout);
       player.ads.adType = 'preroll';
+      this.waitingForAdBreak = false;
       adBreak.start(player);
 
       // We don't need to block play calls anymore

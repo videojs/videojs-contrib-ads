@@ -2,7 +2,7 @@
 
 This page contains reference documentation for the interaction points between videojs-contrib-ads and ad plugins that use it.
 
-## Public Methods
+## Informational Methods
 
 These are methods on `player.ads` that can be called at runtime to inspect the ad plugin's state.
 
@@ -30,9 +30,9 @@ Returns true if the player is in ad mode.
 * An asynchronous ad request is ongoing while content is playing
 * A non-linear ad (such as an overlay) is active
 
-### isContentResuming()
+### isWaitingForAdBreak()
 
-Returns true if content is resuming after an ad. This is part of ad mode.
+This method returns true during ad mode if an ad break hasn't started yet.
 
 ### inAdBreak()
 
@@ -40,28 +40,60 @@ This method returns true during the time between startLinearAdMode and endLinear
 
 ### isAdPlaying()
 
-Deprecated. Does the same thing as `inAdBreak` but has a misleading name.
+Deprecated. Does the same thing as `inAdBreak` but has a misleading name. Being in an ad break doesn't strictly mean that an ad is playing.
 
-## Events
+## Events triggered by contrib-ads
 
 The plugin triggers a number of custom events on the player during its operation. As an ad provider, you can listen for them to trigger behavior in your implementation. They may also be useful for other plugins to track advertisement playback.
 
+### readyforpreroll
+
+Indicates that your integration may start a preroll ad break by calling `startLinearAdMode`.
+
+### contentended
+
+Indicates that your integration may start a postroll ad break by calling `startLinearAdMode`.
+
 ### adstart
+
 The player has entered linear ad playback mode. This event is fired directly as a consequence of calling `startLinearAdMode()`. This event only indicates that an ad break has begun; the start and end of individual ads must be signalled through some other mechanism.
 
 ### adend
+
 The player has returned from linear ad playback mode. This event is fired directly as a consequence of calling `endLinearAdMode()`. Note that multiple ads may have played back in the ad break between `adstart` and `adend`.
 
 ### adskip
+
 The player is skipping a linear ad opportunity and content-playback should resume immediately.  This event is fired directly as a consequence of calling `skipLinearAdMode()`. For example, it can indicate that an ad response was received but it included no linear ad content or that no ad call is going to be made due to an error.
 
 ### adtimeout
+
 A timeout managed by videojs-contrib-ads has expired and regular video content has begun to play. Ad integrations have a fixed amount of time to start an ad break when an opportunity arises. For example, if the ad integration is blocked by network conditions or an error, this event will fire and regular playback will resume rather than the player stalling indefinitely.
 
-## Properties
+### contentchanged
+
+Fires when a new content video has been loaded in the player (specifically, at the same time as the `loadstart` media event for the new source). This means the ad workflow has restarted from the beginning. Your integration will need to trigger `adsready` again, for example. Note that when changing sources, the playback state of the player is retained: if the previous source was playing, the new source will also be playing and the ad workflow will not wait for a new `play` event.
+
+## Playing Ads
+
+Your integration can invoke these methods and events to play (or skip) ads. See [Getting Started](getting-started.md) for more information.
+
+* adsready (EVENT) -- Trigger this event to indicate that the ad plugin is ready to play prerolls. `readyforpreroll` will not be sent until after you trigger `adsready`, but it may not be sent right away (for example, if the user has not clicked play yet).
+* startLinearAdMode (METHOD) -- Invoke this method to start an ad break.
+  * For a preroll ad, you can invoke `startLinearAdMode` after the `readyforpreroll` event if `isWaitingForAdBreak` is true.
+  * For a midroll ad, you can invoke `startLinearAdMode` during content playback if `isInAdMode()` is false.
+  * For a postroll ad, you can invoke `startLinearAdMode` after the `contentended` event if `isWaitingForAdBreak` is true.
+* ads-ad-started (event) -- Trigger this event during an ad break to indicate that an ad has actually started playing. This will hide the loading spinner. It is possible for an ad break to end without playing any ads.
+* endLinearAdMode (method) -- Invoke this method to end an ad break. This will cause content to resume. You can check if an ad break is active using `inAdBreak()`.
+* `skipLinearAdMode` (METHOD) -- At a time when `startLinearAdMode` is expected, calling `skipLinearAdMode` will immediately resume content playback instead.
+* `nopreroll` (EVENT) -- You can trigger this event even before `readyforpreroll` to indicate that no preroll will play. The ad plugin will not check for prerolls and will instead begin content playback after the `play` event (or immediately, if playback was already requested).
+* `nopostroll` (EVENT) -- Similar to `nopreroll`, you can trigger this event even before `contentended` to indicate that no postroll will play.  The ad plugin will not wait for a postroll to play and will instead immediately trigger the `ended` event.
+* `contentresumed` (EVENT) - If your integration does not result in a "playing" event when resuming content after an ad, send this event to signal that content can resume. This was added to support stitched ads and is not normally necessary.
+
+## Advanced Properties
 
 Once the plugin is initialized, there are a couple properties you can
-access to inspect the plugin's state and modify its behavior.
+access modify its behavior.
 
 ### contentSrc
 

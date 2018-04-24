@@ -10,6 +10,7 @@ export default class AdState extends State {
   constructor(player) {
     super(player);
     this.contentResuming = false;
+    this.waitingForAdBreak = false;
   }
 
   /*
@@ -38,6 +39,14 @@ export default class AdState extends State {
     if (this.contentResuming) {
       this.transitionTo(ContentPlayback);
     }
+  }
+
+  /*
+   * Check if we are in an ad state waiting for the integration to start
+   * an ad break.
+   */
+  isWaitingForAdBreak() {
+    return this.waitingForAdBreak;
   }
 
   /*

@@ -17,6 +17,8 @@ export default class Postroll extends AdState {
    * happen here, not in a constructor.
    */
   init(player) {
+    this.waitingForAdBreak = true;
+
     // Legacy name that now simply means "handling postrolls".
     player.ads._contentEnding = true;
 
@@ -51,6 +53,7 @@ export default class Postroll extends AdState {
     if (!player.ads.inAdBreak() && !this.isContentResuming()) {
       player.ads.adType = 'postroll';
       player.clearTimeout(this._postrollTimeout);
+      this.waitingForAdBreak = false;
       adBreak.start(player);
     } else {
       videojs.log.warn('Unexpected startLinearAdMode invocation (Postroll)');

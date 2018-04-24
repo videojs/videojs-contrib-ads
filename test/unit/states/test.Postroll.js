@@ -140,3 +140,10 @@ QUnit.test('can clean up', function(assert) {
   assert.equal(this.player.ads._contentEnding, false, '_contentEnding');
   assert.ok(clearSpy.calledWith(this.postroll._postrollTimeout), 'cleared timeout');
 });
+
+QUnit.test('can tell if waiting for ad break', function(assert) {
+  this.postroll.init(this.player);
+  assert.equal(this.postroll.isWaitingForAdBreak(), true, 'waiting for ad break');
+  this.postroll.startLinearAdMode();
+  assert.equal(this.postroll.isWaitingForAdBreak(), false, 'not waiting for ad break');
+});

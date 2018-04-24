@@ -308,6 +308,11 @@ const contribAdsPlugin = function(options) {
       return this._state.isAdState();
     },
 
+    // Returns true if in ad mode but an ad break hasn't started yet.
+    isWaitingForAdBreak() {
+      return this._state.isWaitingForAdBreak();
+    },
+
     // Returns true if content is resuming after an ad. This is part of ad mode.
     isContentResuming() {
       return this._state.isContentResuming();

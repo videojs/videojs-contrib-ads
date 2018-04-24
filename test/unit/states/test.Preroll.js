@@ -59,6 +59,7 @@ QUnit.test('plays a preroll (adsready true)', function(assert) {
   assert.equal(this.preroll.adsReady, true, 'adsready from init');
   assert.equal(this.events[0], 'readyforpreroll', 'readyforpreroll from init');
   assert.equal(this.preroll.inAdBreak(), false, 'not in ad break');
+  assert.equal(this.preroll.isWaitingForAdBreak(), true, 'waiting for ad break');
 
   this.preroll.startLinearAdMode();
   // Because adBreak.start is mocked.
@@ -67,10 +68,12 @@ QUnit.test('plays a preroll (adsready true)', function(assert) {
   assert.equal(this.player.ads.adType, 'preroll', 'adType is preroll');
   assert.equal(this.preroll.isContentResuming(), false, 'content not resuming');
   assert.equal(this.preroll.inAdBreak(), true, 'in ad break');
+  assert.equal(this.preroll.isWaitingForAdBreak(), false, 'not waiting for ad break');
 
   this.preroll.endLinearAdMode();
   assert.equal(this.adBreakEndStub.callCount, 1, 'ad break ended');
   assert.equal(this.preroll.isContentResuming(), true, 'content resuming');
+  assert.equal(this.preroll.isWaitingForAdBreak(), false, 'not waiting for ad break');
 
   this.preroll.onPlaying();
   assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
@@ -84,6 +87,7 @@ QUnit.test('plays a preroll (adsready false)', function(assert) {
   assert.equal(this.preroll.adsReady, true, 'adsready from init');
   assert.equal(this.events[0], 'readyforpreroll', 'readyforpreroll from init');
   assert.equal(this.preroll.inAdBreak(), false, 'not in ad break');
+  assert.equal(this.preroll.isWaitingForAdBreak(), true, 'waiting for ad break');
 
   this.preroll.startLinearAdMode();
   // Because adBreak.start is mocked.
@@ -92,10 +96,12 @@ QUnit.test('plays a preroll (adsready false)', function(assert) {
   assert.equal(this.player.ads.adType, 'preroll', 'adType is preroll');
   assert.equal(this.preroll.isContentResuming(), false, 'content not resuming');
   assert.equal(this.preroll.inAdBreak(), true, 'in ad break');
+  assert.equal(this.preroll.isWaitingForAdBreak(), false, 'not waiting for ad break');
 
   this.preroll.endLinearAdMode();
   assert.equal(this.adBreakEndStub.callCount, 1, 'ad break ended');
   assert.equal(this.preroll.isContentResuming(), true, 'content resuming');
+  assert.equal(this.preroll.isWaitingForAdBreak(), false, 'not waiting for ad break');
 
   this.preroll.onPlaying();
   assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
