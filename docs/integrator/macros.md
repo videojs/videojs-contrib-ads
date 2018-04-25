@@ -1,13 +1,12 @@
 # Macros
 
-An optional feature that contrib-ads supports is ad macros. Ad macros are often used by ad integrations
-to support addition of run-time values into a server URL or configuration.
+An optional feature that contrib-ads supports is ad macros. Ad macros are often used by ad plugins to support addition of run-time values into a server URL or configuration.
 
-For example, an ad integration that supports this feature might accept an ad server URL like this:
+For example, an ad plugin that supports this feature might accept an ad server URL like this:
 
 `'http://example.com/vmap.xml?id={player.id}'`
 
-In the ad integration, it would use the videojs-contrib-ads macro feature to process that URL like this:
+In the ad plugin code, it would use the videojs-contrib-ads macro feature to process that URL like this:
 
 `serverUrl = player.ads.adMacroReplacement(serverUrl, true, additionalMacros);`
 

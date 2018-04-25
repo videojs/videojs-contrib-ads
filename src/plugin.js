@@ -1,5 +1,5 @@
 /*
-This main plugin file is responsible for integration logic and enabling the features
+This main plugin file is responsible for the public API and enabling the features
 that live in in separate files.
 */
 
@@ -114,7 +114,7 @@ const contribAdsPlugin = function(options) {
   // element as the content.
   // The problem is that in IE11, we cannot play in addurationchange but in iOS8, we
   // cannot play from adcanplay.
-  // This will prevent ad-integrations from needing to do this themselves.
+  // This will prevent ad plugins from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
     if (player.ads.snapshot && player.currentSrc() === player.ads.snapshot.currentSrc) {
       return;

@@ -1,7 +1,7 @@
 /*
 
 This example shows how to include videojs-contrib-ads as a module import
-in an ad integration. It uses webpack to achieve this.
+in an ad plugin. It uses webpack to achieve this.
 
 To build this example:
 
@@ -22,7 +22,7 @@ import '../..';
 videojs.plugin('examplePlugin', function() {
   this.ads();
 
-  // Ad integration logic goes here
+  // Ad plugin logic goes here
 });
 
 var player = videojs('#player');

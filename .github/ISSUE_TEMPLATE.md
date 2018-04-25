@@ -20,7 +20,7 @@ Describe the behavior you observed here.
 
 ### Reproducing Unit Test
 
-Please include a unit test that fails in the most recent version of videojs-contrib-ads but should pass according to your expected results. This will help us understand what the root cause is and separate integration bugs from issues with this project. A unit test can be provided like below:
+Please include a unit test that fails in the most recent version of videojs-contrib-ads but should pass according to your expected results. This will help us understand what the root cause is and separate ad plugin bugs from issues with this project. A unit test can be provided like below:
 
 ```js
 import QUnit from 'qunit';
@@ -44,7 +44,7 @@ This example was pulled from [test/states/test.Midroll.js](../test/states/test.M
 
 **Video-js version**: the version of videojs you are using. If you are using npm, you can check this by running `npm ls video.js --depth=0` in your project.
 
-**Other plugins**: please list other plugins that may affect videojs-contrib-ads behavior, especially ad integration plugins.
+**Other plugins**: please list other plugins that may affect videojs-contrib-ads behavior, especially ad plugins.
 
 ### Platforms
 

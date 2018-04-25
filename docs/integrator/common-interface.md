@@ -1,6 +1,8 @@
-videojs-contrib-ads does not implement these. This page establishes a convention used some some integrations that you may want to consider sending for consistency as they may be useful.
+# Common Interface
 
-### Events
+videojs-contrib-ads does not implement these. This page establishes a convention used some some ad plugins that you may want to consider sending for consistency as they may be useful.
+
+## Events
 
 * `ads-request`: Fired when ad data is requested.
 * `ads-load`: Fired when ad data is available following an ad request.
@@ -17,7 +19,7 @@ videojs-contrib-ads does not implement these. This page establishes a convention
 * `ads-mute`: Fired when the ad volume has been muted.
 * `ads-click`: Fired when the ad is clicked.
 
-### Properties
+## Properties
 
 ```
 player.ads.provider = {

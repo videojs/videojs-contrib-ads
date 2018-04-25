@@ -1,5 +1,5 @@
 import videojs from 'video.js';
-import '../../examples/basic-ad-plugin/example-integration.js';
+import '../../examples/basic-ad-plugin/example-plugin.js';
 
 QUnit.module('Initial Events With No Preroll', {
   beforeEach: function() {

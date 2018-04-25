@@ -113,7 +113,7 @@ export default class Postroll extends AdState {
     player.ads.debug('Postroll abort (adserror)');
 
     // In the future, we may not want to do this automatically.
-    // Integrations should be able to choose to continue the ad break
+    // Ad plugins should be able to choose to continue the ad break
     // if there was an error.
     if (player.ads.inAdBreak()) {
       player.ads.endLinearAdMode();

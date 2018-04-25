@@ -29,7 +29,7 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
-   * The integration may trigger adsready before the play request. If so,
+   * The ad plugin may trigger adsready before the play request. If so,
    * we record that adsready already happened so the Preroll state will know.
    */
   onAdsReady(player) {
@@ -73,7 +73,7 @@ export default class BeforePreroll extends ContentState {
   }
 
   /*
-   * Prerolls skipped by integration. Play content instead.
+   * Prerolls skipped by ad plugin. Play content instead.
    */
   skipLinearAdMode() {
     const player = this.player;

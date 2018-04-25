@@ -11,7 +11,7 @@ export default class Midroll extends AdState {
   }
 
   /*
-   * Midroll breaks happen when the integration calls startLinearAdMode,
+   * Midroll breaks happen when the ad plugin calls startLinearAdMode,
    * which can happen at any time during content playback.
    */
   init(player) {
@@ -47,7 +47,7 @@ export default class Midroll extends AdState {
    */
   onAdsError(player) {
     // In the future, we may not want to do this automatically.
-    // Integrations should be able to choose to continue the ad break
+    // Ad plugins should be able to choose to continue the ad break
     // if there was an error.
     if (this.inAdBreak()) {
       player.ads.endLinearAdMode();

@@ -67,7 +67,7 @@ export default class Preroll extends AdState {
   }
 
   /*
-   * Ad integration is ready. Let's get started on this preroll.
+   * Ad plugin is ready. Let's get started on this preroll.
    */
   handleAdsReady() {
     this.adsReady = true;
@@ -133,7 +133,7 @@ export default class Preroll extends AdState {
   onAdsError(player) {
     videojs.log('adserror (Preroll)');
     // In the future, we may not want to do this automatically.
-    // Integrations should be able to choose to continue the ad break
+    // Ad plugins should be able to choose to continue the ad break
     // if there was an error.
     if (this.inAdBreak()) {
       player.ads.endLinearAdMode();
@@ -146,7 +146,7 @@ export default class Preroll extends AdState {
   }
 
   /*
-   * Integration invoked startLinearAdMode, the ad break starts now.
+   * Ad plugin invoked startLinearAdMode, the ad break starts now.
    */
   startLinearAdMode() {
     const player = this.player;
@@ -173,7 +173,7 @@ export default class Preroll extends AdState {
   }
 
   /*
-   * Integration invoked endLinearAdMode, the ad break ends now.
+   * Ad plugin invoked endLinearAdMode, the ad break ends now.
    */
   endLinearAdMode() {
     const player = this.player;
@@ -187,7 +187,7 @@ export default class Preroll extends AdState {
   }
 
   /*
-   * Ad skipped by integration. Play content instead.
+   * Ad skipped by ad plugin. Play content instead.
    */
   skipLinearAdMode() {
     const player = this.player;

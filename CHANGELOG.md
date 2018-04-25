@@ -81,7 +81,7 @@ This version features a major refactor for greatly improved stability and mainta
 ### Bug Fixes
 
 * Fix mis-named dists and potentially breaking change in package.json 'main' field. ([#280](https://github.com/videojs/videojs-contrib-ads/issues/280)) ([7633161](https://github.com/videojs/videojs-contrib-ads/commit/7633161))
-* Remove old call to player.load() during snapshot restoration for players which share the video element with the ad integration. This is causing problems in Chrome/Edge with Video.js 6 due to the asynchronous nature of calling player.src(). ([#257](https://github.com/videojs/videojs-contrib-ads/issues/257)) ([afb3ccf](https://github.com/videojs/videojs-contrib-ads/commit/afb3ccf))
+* Remove old call to player.load() during snapshot restoration for players which share the video element with the ad plugin. This is causing problems in Chrome/Edge with Video.js 6 due to the asynchronous nature of calling player.src(). ([#257](https://github.com/videojs/videojs-contrib-ads/issues/257)) ([afb3ccf](https://github.com/videojs/videojs-contrib-ads/commit/afb3ccf))
 * Fix issue where captions were showing during ads on iOS
 
 ### Chores

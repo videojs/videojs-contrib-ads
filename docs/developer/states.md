@@ -10,7 +10,7 @@ videojs.contrib-ads moves through various states as a content video plays. Here'
 
 Ad states are yellow and content states are blue. If the current state is an ad state, the plugin is in ad mode.
 
-Many methods in the public API are implemented by inspecting the current state. The current state instance should not be inspected directly by integrations.
+Many methods in the public API are implemented by inspecting the current state. The current state instance should not be inspected directly by ad plugins.
 
 States are implemented as classes with a 3-tiered inheritance hierarchy. All states extend either `AdState` or `ContentState`. In turn, `AdState` and `ContentState` extend `State`.
 
@@ -84,7 +84,7 @@ Diagram(
 
 ## Midroll (extends AdState)
 
-This state encapsulates preparing for midroll ads, playing midroll ads, and restoring content after midroll ads. It begins when the integration invokes `startLinearAdMode` and it ends when content resumes, resulting in a `playing` event.
+This state encapsulates preparing for midroll ads, playing midroll ads, and restoring content after midroll ads. It begins when the ad plugin invokes `startLinearAdMode` and it ends when content resumes, resulting in a `playing` event.
 
 <script>
 Diagram(

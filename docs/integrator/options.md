@@ -46,4 +46,4 @@ Type: `boolean`
 Default Value: false
 
 If debug is set to true, the ads plugin will output additional debugging information.
-This can be handy for diagnosing issues or unexpected behavior in an ad integration.
+This can be handy for diagnosing issues or unexpected behavior in an ad plugin.

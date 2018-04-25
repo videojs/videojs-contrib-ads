@@ -5,6 +5,7 @@ If you are building an ad plugin using videojs-contrib-ads, this documentation i
 * [Getting Started](./getting-started.md)
 * [Plugin Options](./options.md)
 * [API Reference](./api.md)
+* [Ad Mode](./ad-mode.md)
 * [Common Interface](./common-interface.md)
 * [Migration Guides](/migration.md)
 * Features

@@ -1,5 +1,5 @@
 /*
-This feature provides an optional method for ad integrations to insert run-time values
+This feature provides an optional method for ad plugins to insert run-time values
 into an ad server URL or configuration.
 */
 
@@ -31,7 +31,7 @@ const customFields = function(mediainfo, macros, customFieldsName) {
   }
 };
 
-// Public method that integrations use for ad macros.
+// Public method that ad plugins use for ad macros.
 // "string" is any string with macros to be replaced
 // "uriEncode" if true will uri encode macro values when replaced
 // "customMacros" is a object with custom macros and values to map them to

@@ -26,7 +26,7 @@ export default class ContentPlayback extends ContentState {
   /*
    * In the case of a timeout, adsready might come in late. This assumes the behavior
    * that if an ad times out, it could still interrupt the content and start playing.
-   * An integration could behave otherwise by ignoring this event.
+   * An ad plugin could behave otherwise by ignoring this event.
    */
   onAdsReady(player) {
     player.ads.debug('Received adsready event (ContentPlayback)');

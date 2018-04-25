@@ -1,27 +1,19 @@
 # Redispatch
 
 This project includes a feature called `redispatch` which will monitor all [media
-events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) and
-modify them with the goal of making the usage of ads transparent. For example, when an
-ad is playing, a `playing` event would be sent as an `adplaying` event. Code that
-listens to the `playing` event will not see `playing` events that result from an
-advertisement playing.
+events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) and modify them with the goal of making the usage of ads transparent. For example, in ad mode, a `playing` event would be sent as an `adplaying` event. Code that listens to the `playing` event will not see `playing` events that result from an advertisement playing.
 
-In order for redispatch to work correctly, any ad plugin built using contrib-ads must be
-initialized as soon as possible, before any other plugins that attach event listeners.
+In order for redispatch to work correctly, any ad plugin built using contrib-ads must be initialized as soon as possible, before any other plugins that attach event listeners.
 
-Different platforms, browsers, devices, etc. send different media events at different
-times. Redispatch does not guarentee a specific sequence of events, but instead ensures
-that certain expectations are met. The next section describes those expectations.
+Different platforms, browsers, devices, etc. send different media events at different times. Redispatch does not guarentee a specific sequence of events, but instead ensures that certain expectations are met. The next section describes those expectations.
 
 ## The Law of the Land: Redispatch Event Behavior
 
 ### `play` events
 
 * Play events represent intention to play, such as clicking the play button.
-* Play events do not occur during [ad playback](#isadplaying).
-* Play events can happen during [ad mode](#isinadmode) when [an ad is not currently
- playing](#isadplaying), but content will not play as a result.
+* Play events do not occur during ad breaks.
+* Play events can happen during [ad mode when not currently in an ad break](ad-mode.md), but content will not play as a result.
 
 ### `playing` events
 
@@ -44,4 +36,4 @@ that certain expectations are met. The next section describes those expectations
 ### Other events
 
 * As a general rule, usual events are not sent if the plugin is in
- [ad mode](#isinadmode).
+ [ad mode](ad-mode.md).

@@ -9,7 +9,7 @@ This means from the perspective of a (non-ad) plugin author, video.js will behav
 And if someoene wants to write a plugin that is ad-aware, those original events are still available for them to hook into.
 
 ## Migration
-If you've written your own ad integration on top of videojs-contrib-ads, there's a couple things you should do to prepare for the upgrade:
+If you've written your own ad plugin on top of videojs-contrib-ads, there's a couple things you should do to prepare for the upgrade:
 
 - Apply the appropriate prefix to your event handlers.
 If you were listening for `timeupdate` events during ad playback, you should now be listening for `adtimeupdate`.

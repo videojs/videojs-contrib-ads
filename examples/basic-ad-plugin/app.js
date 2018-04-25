@@ -9,7 +9,7 @@
 
   var player = videojs('examplePlayer');
 
-  // initalize example ads integration for this player
+  // initalize example ad plugin for this player
   player.exampleAds({
     debug: true
   });

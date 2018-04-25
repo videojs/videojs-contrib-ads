@@ -1,7 +1,7 @@
 /*
  * Encapsulates logic for starting and ending ad breaks. An ad break
  * is the time between startLinearAdMode and endLinearAdMode. The ad
- * integration may play 0 or more ads during this time.
+ * plugin may play 0 or more ads during this time.
  */
 
 import * as snapshot from './snapshot.js';
