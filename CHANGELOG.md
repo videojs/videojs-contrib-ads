@@ -3,12 +3,7 @@
 
 ### Features
 
-* add playMiddleware to avoid calling play on tech when possible ([#337](https://github.com/videojs/videojs-contrib-ads/issues/337)) ([1482511](https://github.com/videojs/videojs-contrib-ads/commit/1482511))
-
-### Bug Fixes
-
-* Address iOS playsinline flash of BPB + poster ([#360](https://github.com/videojs/videojs-contrib-ads/issues/360)) ([33de864](https://github.com/videojs/videojs-contrib-ads/commit/33de864))
-* make the ads VERSION inline properly ([#332](https://github.com/videojs/videojs-contrib-ads/issues/332)) ([0b67022](https://github.com/videojs/videojs-contrib-ads/commit/0b67022))
+* Add `readyforpostroll` event. Replaces the current meaning of `contentended`. Use of `contentended` to trigger postrolls is now deprecated but will continue to work until a later update.
 
 ### Chores
 
