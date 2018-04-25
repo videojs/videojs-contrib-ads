@@ -15,9 +15,9 @@ The current set of options are described in detail below.
 Type: `number`
 Default Value: 5000
 
-The maximum amount of time to wait in ad mode before an ad begins. If this time elapses, ad mode ends and content resumes.
+The maximum amount of time to wait in ad mode before an ad break begins. If this time elapses, ad mode ends and content resumes.
 
-Some ad plugins may want to play a preroll ad even after the timeout has expired and content has begun playing. To facilitate this, videojs-contrib-ads will respond to an `adsready` event during content playback with a `readyforpreroll` event. If you want to avoid this behavior, make sure your plugin does not send `adsready` if `player.ads.isInAdMode()` is `false`.
+Some ad plugins may want to play a preroll ad even after the timeout has expired and content has begun playing. To facilitate this, videojs-contrib-ads will respond to an `adsready` event during content playback with a `readyforpreroll` event. If you want to avoid this behavior, make sure your plugin does not send `adsready` after `adtimeout`.
 
 ### prerollTimeout
 

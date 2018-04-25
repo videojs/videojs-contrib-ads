@@ -2,7 +2,7 @@ var timerExists = function(env, id) {
   return env.clock.timers.hasOwnProperty(id);
 };
 
-QUnit.module('Ad Framework', window.sharedModuleHooks());
+QUnit.module('Contrib Ads', window.sharedModuleHooks());
 
 QUnit.test('begins in BeforePreroll', function(assert) {
   assert.equal(this.player.ads._state.constructor.name, 'BeforePreroll');

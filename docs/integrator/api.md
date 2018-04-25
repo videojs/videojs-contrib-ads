@@ -1,18 +1,13 @@
 # API Reference
 
-This page contains reference documentation for the interaction points between videojs-contrib-ads and ad plugins that use it.
+This page contains reference documentation for the interaction points between videojs-contrib-ads and ad plugins that use it. All methods are called on `player.ads`; for example, `player.ads.isInAdMode()`. All events are triggered or listened to on the `player` object; for example `player.trigger('nopreroll')` or `player.on('readyforpreroll', () => {...})`.
 
-All methods are called on `player.ads`, for example, `player.ads.isInAdMode()`. All events are triggered or listened to on the `player` object, for example `player.trigger('nopreroll')` or `player.on('readyforpreroll', () => {...})`.
-
-## Informational methods
+## Informational methods and events
 
 * `isInAdMode()` (METHOD) -- Returns true if the player is in [ad mode](ad-mode.md).
 * `isWaitingForAdBreak()` (METHOD) -- This method returns true during ad mode if an ad break hasn't started yet.
 * `inAdBreak()` (METHOD) -- This method returns true after `startLinearAdMode` and before `endLinearAdMode`. This is the part of ad mode when an ad plugin may play ads.
 * `isContentResuming()` (METHOD) -- This method returns true during ad mode after an ad break has ended but before content has resumed playing.
-
-## Informational events
-
 * `adstart` (EVENT) -- This event is fired directly as a consequence of calling `startLinearAdMode()`.
 * `adend` (EVENT) -- This event is fired directly as a consequence of calling `endLinearAdMode()`.
 * `adskip` (EVENT) -- This event is fired directly as a consequence of calling `skipLinearAdMode()`.
@@ -89,4 +84,4 @@ The following are slated for removal from contrib-ads and will have no special b
 * `adserror` (EVENT) -- In the future, this event will no longer result in special behavior in contrib-ads. Today, this event skips prerolls when seen before a preroll ad break. It skips postrolls if seen after `readyforpostroll` and before a postroll ad break. It ends linear ad mode if seen during an ad break. These behaviors should be replaced using `skipLinearAdMode` and `endLinearAdMode` in the ad plugin.
 * `adplaying` (EVENT) -- In the future, this event is no longer guaranteed to happen once per ad break. Your ad plugin should trigger a `ads-pod-started` event to indicate the beginning of an ad break. The `ads-ad-started` event can be used to indicate the start of an individual ad in an ad break. There should be multiple `ads-ad-started` events corresponding to each ad in the ad break.
 * `isAdPlaying()` (METHOD) -- Does the same thing as `inAdBreak` but has a misleading name. Being in an ad break doesn't strictly mean that an ad is playing.
-* `contentended` (EVENT) -- This used to be the event that was used to indicate that content had ended and that it was time to play postrolls. The name was confusing because the content prefix is usually used during content restoration after an ad. Integrations should use `readyforpostroll` instead. In the future, the meaning of contentended will be updated to match what is expected by the prefix.
+* `contentended` (EVENT) -- This used to be the event that was used to indicate that content had ended and that it was time to play postrolls. The name was confusing because the content prefix is usually used during content restoration after an ad. Integrations should use `readyforpostroll` instead. In the future, the meaning of `contentended` will be updated to match what is expected by the prefix.

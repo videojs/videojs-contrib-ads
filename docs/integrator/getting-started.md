@@ -12,13 +12,13 @@ npm install videojs-contrib-ads
 
 This is the recommended approach. If you are including `videojs-contrib-ads` using a module bundler such as [webpack](https://webpack.js.org/), this example is a useful starting point:
 
-https://github.com/videojs/videojs-contrib-ads/blob/master/examples/module-import/entry.js
+[https://github.com/videojs/videojs-contrib-ads/blob/master/examples/module-import/entry.js](https://github.com/videojs/videojs-contrib-ads/blob/master/examples/module-import/entry.js)
 
 With this basic structure in place, you're ready to develop an ad plugin.
 
 ### Including the files in your HTML
 
-This is not the recommended approach, but may be useful in some cases. In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`. After you build the project they are both in the `dist` directory.
+This is not the recommended approach, but may be useful in some cases. In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`. After you [build the project](../getting-started.md) they are both in the `dist` directory.
 
 Include the CSS in your HTML's `<head>` section with a `<link>` tag:
 
@@ -35,7 +35,7 @@ Then, include the JavaScript file after video.js, but before your ad plugin code
 <script>
 videojs('video', {}, function() {
   var player = this;
-  player.ads(); // initialize the ad framework
+  player.ads(); // initialize videojs-contrib-ads
   // your custom ad plugin code
 });
 </script>
@@ -81,7 +81,7 @@ It only plays a single preroll ad before each content video, but does demonstrat
 This is not actually a runnable example, as it needs more information as specified in the code comments.
 
 ```js
-player.ads(); // initialize the ad framework
+player.ads(); // initialize videojs-contrib-ads
 
 // request ads whenever there's new video content
 player.on('contentchanged', function(){
@@ -104,4 +104,4 @@ player.on('readyforpreroll', function() {
 Your actual ad plugin will be significantly more complex.
 To implement midroll ads, you might listen to `timeupdate` events to monitor the progress of the content video's playback. To implement postroll ads, you'd listen to the `readyforpostroll` event.
 
-For a more involved example that plays both prerolls and midrolls, see the [example directory](example) in this project. For more detailed information about what events and methods are available, see the [API reference](api.md).
+For a more involved example that plays both prerolls and midrolls, see the [examples directory](https://github.com/videojs/videojs-contrib-ads/tree/master/examples) in this project. For more detailed information about what events and methods are available, see the [API reference](api.md).

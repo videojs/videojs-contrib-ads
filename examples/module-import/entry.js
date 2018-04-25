@@ -5,8 +5,8 @@ in an ad plugin. It uses webpack to achieve this.
 
 To build this example:
 
-* follow instructions in README to build videojs-contrib-ads
-  * https://github.com/videojs/videojs-contrib-ads/#building
+* follow instructions in the documentation to build videojs-contrib-ads
+  * http://videojs.github.io/videojs-contrib-ads/developer/getting-started.html
 * cd to this directory
 * npm install webpack -g
 * webpack ./entry.js bundle.js
@@ -16,7 +16,8 @@ To build this example:
 import videojs from 'video.js';
 
 // This import works because we're inside the contrib-ads project.
-// You will want to import 'videojs-contrib-ads' in your code.
+// You will want to import 'videojs-contrib-ads' in your code after
+// installing via NPM.
 import '../..';
 
 videojs.plugin('examplePlugin', function() {

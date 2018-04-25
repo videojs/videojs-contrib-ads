@@ -19,11 +19,7 @@ import {BeforePreroll} from './states.js';
 const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
-// ---------------------------------------------------------------------------
-// Ad Framework
-// ---------------------------------------------------------------------------
-
-// default framework settings
+// default settings
 const defaults = {
   // maximum amount of time in ms to wait to receive `adsready` from the ad
   // implementation after play has been requested. Ad implementations are
