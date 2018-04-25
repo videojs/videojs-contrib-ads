@@ -3,7 +3,7 @@ TODO:
 * adplay, contentplay
 * adplaying, contentplaying
 * adloadstart, contentloadstart
-* adended, contentended
+* adended
 * adloadeddata, contentloadeddata
 * adloadedmetadata, contentloadedmetadata
 */

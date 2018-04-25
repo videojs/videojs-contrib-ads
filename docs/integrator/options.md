@@ -31,7 +31,7 @@ Override the `timeout` setting just for preroll ads (the time between `play` and
 Type: `number`
 No Default Value
 
-Override the `timeout` setting just for preroll ads (the time between `contentended` and `startLinearAdMode`)
+Override the `timeout` setting just for preroll ads (the time between `readyforpostroll` and `startLinearAdMode`)
 
 ### stitchedAds
 

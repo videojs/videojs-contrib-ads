@@ -280,7 +280,7 @@ QUnit.test('ended event happens after postroll skipped', function(assert) {
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // preroll times out
   this.player.trigger('playing'); // Entered content
-  this.player.trigger('ended'); // content ends (contentended)
+  this.player.trigger('ended'); // content ends
   this.player.ads.skipLinearAdMode();
 
   this.clock.tick(1);
@@ -297,9 +297,9 @@ QUnit.test('an "ended" event is fired after postroll if not fired naturally', fu
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // skip preroll
   this.player.trigger('playing'); // return to content
-  this.player.trigger('ended'); // will be redispatched as contentended
+  this.player.trigger('ended'); // handled by redispatch
 
-  assert.strictEqual(endedSpy.callCount, 0, 'ended was redispatched as contentended');
+  assert.strictEqual(endedSpy.callCount, 0, 'no ended event before postroll');
 
   this.player.ads.startLinearAdMode(); // start postroll
   this.player.ads.endLinearAdMode();
@@ -316,7 +316,7 @@ QUnit.test('ended events when content ends first and second time', function(asse
   this.player.trigger('play');
   this.player.trigger('adtimeout'); // Preroll times out
   this.player.trigger('playing'); // Entered content
-  this.player.trigger('ended'); // Content ends (contentended)
+  this.player.trigger('ended'); // Triggers readyforpostroll
 
   this.player.ads.startLinearAdMode(); // Postroll starts
   this.player.ads.endLinearAdMode();
@@ -721,7 +721,7 @@ QUnit.test('ended event is sent after nopostroll', function(assert) {
   this.player.trigger('adsready');
   this.player.ads.skipLinearAdMode();
   this.player.trigger('playing');
-  this.player.trigger('contentended');
+  this.player.trigger('readyforpostroll');
   this.clock.tick(1);
   assert.ok(ended.calledOnce, 'Ended triggered');
 
@@ -739,7 +739,7 @@ QUnit.test('ended event is sent with postroll', function(assert) {
 
   this.player.on('ended', ended);
 
-  this.player.trigger('contentended');
+  this.player.trigger('readyforpostroll');
 
   this.clock.tick(10000);
   assert.ok(ended.calledOnce, 'Ended triggered');
@@ -898,7 +898,7 @@ QUnit.test('Plugin sets adType as expected', function(assert) {
   this.player.trigger('playing');
 
   // postroll starts
-  this.player.trigger('contentended');
+  this.player.trigger('readyforpostroll');
   this.player.ads.startLinearAdMode();
   assert.strictEqual(this.player.ads.adType, 'postroll');
 
