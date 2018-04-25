@@ -51,7 +51,7 @@ You may also use the Javascript and CSS links from the following to get started:
 In order to function correctly, videojs-contrib-ads must be initialized immediately after video.js (in the same [tick](http://blog.carbonfive.com/2013/10/27/the-javascript-event-loop-explained/)). This is for two reasons:
 
 * This plugin relies on `loadstart` events, and initializing the plugin late means the plugin may miss an initial `loadstart`.
-* For [Redispatch](#redispatch) to function it must be initialized before any other code that listens to media events.
+* For [Redispatch](redispatch.md) to function it must be initialized before any other code that listens to media events.
 
 The plugin will emit an error if it detects that it it missed a `loadstart` event. If this happens, it is likely that downstream failures will occur, so it's important to resolve this issue.
 
@@ -78,30 +78,36 @@ This is the basic flow for a simple use case, but there are other things the ad 
 Here's an outline of what a basic ad plugin might look like.
 It only plays a single preroll ad before each content video, but does demonstrate the interaction points offered by the ads plugin.
 
-This is not actually a runnable example, as it needs more information as specified in the code comments.
-
 ```js
 player.ads(); // initialize videojs-contrib-ads
 
 // request ads whenever there's new video content
-player.on('contentchanged', function(){
-  // fetch ad inventory asynchronously, then ...
+player.on('contentchanged', function() {
+  // in a real plugin, you might fetch new ad inventory here
   player.trigger('adsready');
 });
 
 player.on('readyforpreroll', function() {
   player.ads.startLinearAdMode();
   // play your linear ad content
-  player.src('http://url/to/your/ad.content');
+  // in this example, we use a static mp4
+  player.src('kitteh.mp4');
+
+  // send event when ad is playing to remove loading spinner
+  player.one('adplaying', function() {
+    player.trigger('ads-ad-started');
+  });
 
   // resume content when all your linear ads have finished
   player.one('adended', function() {
     player.ads.endLinearAdMode();
   });
 });
+
+// in a real plugin, you might fetch ad inventory here
+player.trigger('adsready');
 ```
 
-Your actual ad plugin will be significantly more complex.
 To implement midroll ads, you might listen to `timeupdate` events to monitor the progress of the content video's playback. To implement postroll ads, you'd listen to the `readyforpostroll` event.
 
 For a more involved example that plays both prerolls and midrolls, see the [examples directory](https://github.com/videojs/videojs-contrib-ads/tree/master/examples) in this project. For more detailed information about what events and methods are available, see the [API reference](api.md).

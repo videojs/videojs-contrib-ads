@@ -46,8 +46,8 @@ The states folder contains the various states that videojs-contrib-ads can be in
 
 ### states/abstract
 
- States in the `abstract` subfolder are subclassed by the main states in the `states` folder itself. They implement common functionality used by similar states.
+States in the `abstract` subfolder are subclassed by the main states in the `states` folder itself. They implement common functionality used by similar states.
 
- ## What's Next
+## What's Next
 
- Learn more about [states](states.md).
+Learn more about [states](states.md).

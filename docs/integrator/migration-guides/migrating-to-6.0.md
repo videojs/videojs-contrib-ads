@@ -10,7 +10,7 @@ Version 6 of videojs-contrib-ads includes a major refactor and cleanup of the st
 that is triggered by linear ad mode ending. Ad plugins must not emit ended events
 after the end of linear ad mode.
 * There will no longer be a `contentended` event when content ends after the first time content ends.
-* `ads.state` has been removed. Methods have been added to replace state checks, such as `ads.isInAdMode()`. See the README for a list of available methods. `ads._state` has been
+* `ads.state` has been removed. Methods have been added to replace state checks, such as `ads.isInAdMode()`. See the documentation for a [list of available methods](http://videojs.github.io/videojs-contrib-ads/integrator/api.html). `ads._state` has been
 added, but it is not compatible with the old `ads.state` and should not be inspected by ad plugins.
 * The event parameter `triggerevent` has been removed. It is unlikely that ad plugins used it, but any usage must be migrated.
 * We no longer trigger a `readyforpreroll` event after receiving a `nopreroll` event.
@@ -25,7 +25,7 @@ Deprecated interfaces will be removed in a future major version update.
 
 * `contentupdate` is now deprecated. It has been replaced by `contentchanged`. `contentupdate` was never intended to fire for the initial source, but over time its behavior eroded. To make migration easier for anyone who depends on the current behavior, we're providing a deprecation period and a new event with correct behavior.
 * `adscanceled` is now deprecated. Instead, use `nopreroll` and `nopostroll`. `adscanceled` was initially intended to function similarly to calling both `nopreroll` and `nopostroll` but it was never fully implemented.
-* `adserror` is now deprecated. Currently this event will skip prerolls when seen before a preroll ad break, skip postrolls if called after contentended and before a postroll ad break, and end linear ad mode if seen during an ad break. It is more declarative for the ad plugin to do these things explicitly with `skipLinearAdMode` and `endLinearAdMode`. In the future, this event will not have any special behavior. The event isn't being "removed" in any sense because contrib-ads does not trigger this event, so ad plugins may continue to use it for other purposes.
+* `adserror` is now deprecated. Currently this event will skip prerolls when seen before a preroll ad break, skip postrolls if called after contentended and before a postroll ad break, and end linear ad mode if seen during an ad break. It is more declarative for the ad plugin to do these things explicitly with `skipLinearAdMode` and `endLinearAdMode`. In the future, this event will not have any special behavior in contrib-ads. Ad plugins may continue to use it for other purposes.
 
 ## Timeout behavior changes
 
