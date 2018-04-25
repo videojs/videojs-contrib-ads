@@ -143,7 +143,7 @@ export default class Postroll extends AdState {
    */
   onNoPostroll(player) {
     if (!this.isContentResuming() && !this.inAdBreak()) {
-      this.transitionTo(AdsDone);
+      this.abort(player);
     } else {
       videojs.log.warn('Unexpected nopostroll event (Postroll)');
     }
