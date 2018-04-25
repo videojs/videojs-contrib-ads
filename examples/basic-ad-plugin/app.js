@@ -27,6 +27,7 @@
     'contentupdate',
     'contentplayback',
     'readyforpreroll',
+    'readyforpostroll',
     // events emitted by third party ad implementors
     'adsready',
     'adscanceled',

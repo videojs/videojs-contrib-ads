@@ -75,6 +75,9 @@ const handleEnded = (player, event) => {
 
       // Important: do not use this event outside of videojs-contrib-ads.
       // It will be removed and your code will break.
+      // Ideally this would simply be `contentended`, but until
+      // `contentended` no longer has a special meaning it cannot be
+      // changed.
       player.trigger('resumeended');
 
     // Ad prefix in ad mode
@@ -84,7 +87,13 @@ const handleEnded = (player, event) => {
 
   // Prefix ended due to content ending before postroll check
   } else if (!player.ads._contentHasEnded) {
+
+    // This will change to cancelEvent after the contentended deprecation
+    // period (contrib-ads 7)
     prefixEvent(player, 'content', event);
+
+    // Content ended for the first time, time to check for postrolls
+    player.trigger('readyforpostroll');
   }
 };
 

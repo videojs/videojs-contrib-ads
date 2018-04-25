@@ -74,7 +74,7 @@ Diagram(
   Optional('onAdsReady'),
   Choice(
       0,
-      NonTerminal('onContentEnded'),
+      NonTerminal('onReadyForPostroll'),
       NonTerminal('startLinearAdMode')
    )
 )
@@ -99,7 +99,7 @@ Diagram(
 
 ## Postroll (extends AdState)
 
-This state begins when content ends for the first time, resulting in a `contentended` event. A preroll may play during this state. This state leads to the AdsDone state; the ad plugin will not return to ContentPlayback for this source.
+This state begins when content ends for the first time, resulting in a `readyforpostroll` event. A preroll may play during this state. This state leads to the AdsDone state; the ad plugin will not return to ContentPlayback for this source.
 
 <script>
 Diagram(

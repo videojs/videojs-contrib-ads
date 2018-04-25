@@ -108,7 +108,7 @@
       requestAds();
     });
 
-    player.on('contentended', function() {
+    player.on('readyforpostroll', function() {
       if (!state.postrollPlayed && playPostroll) {
         state.postrollPlayed = true;
         playAd();

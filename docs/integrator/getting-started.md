@@ -67,7 +67,7 @@ First you call `player.ads()` to initialize the plugin. Afterwards, the flow of 
 * Ad plugin calls `player.ads.endLinearAdMode()` (METHOD) -- This ends an ad break. As a result, content will play.
 * Content plays.
 * To play a Midroll ad, start and end an ad break with `player.ads.startLinearAdMode()` and `player.ads.endLinearAdMode()` at any time during content playback.
-* Contrib Ads triggers `contentended` (EVENT) -- This event means that it's time to play a postroll ad.
+* Contrib Ads triggers `readyforpostroll` (EVENT) -- This event means that it's time to play a postroll ad.
 * To play a Postroll ad, start and end an ad break with `player.ads.startLinearAdMode()` and `player.ads.endLinearAdMode()`.
 * Contrib Ads triggers `ended` (EVENT) -- This standard media event happens when all ads and content have completed. After this, no additional ads are expected, even if the user seeks backwards.
 
@@ -102,6 +102,6 @@ player.on('readyforpreroll', function() {
 ```
 
 Your actual ad plugin will be significantly more complex.
-To implement midroll ads, you might listen to `timeupdate` events to monitor the progress of the content video's playback. To implement postroll ads, you'd listen to the `contentended` event.
+To implement midroll ads, you might listen to `timeupdate` events to monitor the progress of the content video's playback. To implement postroll ads, you'd listen to the `readyforpostroll` event.
 
 For a more involved example that plays both prerolls and midrolls, see the [example directory](example) in this project. For more detailed information about what events and methods are available, see the [API reference](api.md).
