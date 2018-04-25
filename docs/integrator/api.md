@@ -1,4 +1,4 @@
-# Integrator API Reference
+# API Reference
 
 This page contains reference documentation for the interaction points between videojs-contrib-ads and ad plugins that use it.
 
