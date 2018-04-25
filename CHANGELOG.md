@@ -1,3 +1,19 @@
+<a name="6.2.0"></a>
+# [6.2.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.0.1...v6.2.0) (2018-04-25)
+
+### Features
+
+* add playMiddleware to avoid calling play on tech when possible ([#337](https://github.com/videojs/videojs-contrib-ads/issues/337)) ([1482511](https://github.com/videojs/videojs-contrib-ads/commit/1482511))
+
+### Bug Fixes
+
+* Address iOS playsinline flash of BPB + poster ([#360](https://github.com/videojs/videojs-contrib-ads/issues/360)) ([33de864](https://github.com/videojs/videojs-contrib-ads/commit/33de864))
+* make the ads VERSION inline properly ([#332](https://github.com/videojs/videojs-contrib-ads/issues/332)) ([0b67022](https://github.com/videojs/videojs-contrib-ads/commit/0b67022))
+
+### Chores
+
+* **package:** update karma to version 2.0.2 ([#366](https://github.com/videojs/videojs-contrib-ads/issues/366)) ([8a6b878](https://github.com/videojs/videojs-contrib-ads/commit/8a6b878))
+
 <a name="6.1.0"></a>
 # [6.1.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.0.1...v6.1.0) (2018-04-19)
 
