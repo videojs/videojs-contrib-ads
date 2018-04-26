@@ -33,7 +33,14 @@ Different platforms, browsers, devices, etc. send different media events at diff
 * There is always a loadstart when the source changes.
 * There is never a loadstart due to an ad loading.
 
-### Other events
+### Ad events
 
-* As a general rule, usual events are not sent if the plugin is in
- [ad mode](ad-mode.md).
+* Events are given the `ad` prefix in [ad mode](ad-mode.md) unless content is resuming. For example, if the video element emits a `playing` event during an ad break, that event would be redispatched as `adplaying`. These events can be useful when building ad plugins that use the content video element for ad playback, particularly `adplaying` and `adended`. See [getting started](getting-started.md) for an example that does this.
+
+Exceptions:
+
+* `loadstart`, `loadeddata`, and `loadedmetadata` can occur much later than the source set that triggered them. Contrib Ads will not prefix them during ad mode if they originated from a source change before ad mode began.
+
+### Content resuming events
+
+* Events are given the `content` prefix while content is resuming (while `isContentResuming()` is true). These events are not particularly useful to listen to; they mainly exist to prevent extra unprefixed events that would be confusing otherwise.
