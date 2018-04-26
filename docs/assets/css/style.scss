@@ -32,6 +32,10 @@ code {
   background: #eee;
 }
 
+pre code {
+  background: transparent;
+}
+
 ul {
   padding-left: 2em;
   margin: 1em 0;
@@ -42,7 +46,7 @@ li {
 }
 
 li ul {
-  margin-top: 0;
+  margin-top: .2em;
 }
 
 pre {
@@ -51,6 +55,10 @@ pre {
 
 svg {
   max-width: 100%;
+}
+
+h1 {
+  margin: .2em 0;
 }
 
 h2, h3, h4, h5, h6 {
