@@ -18,9 +18,17 @@ header {
 
 .wrapper {
   margin: 0 auto;
-  padding: .2em 1em .7em;
+  padding: .5em 1em;
   text-align: left;
   max-width: 1000px;
+}
+
+header .wrapper {
+  padding: .1em 1em .9em;
+}
+
+header h1 {
+  margin-bottom: 0;
 }
 
 a {
@@ -36,7 +44,7 @@ pre code {
   background: transparent;
 }
 
-ul {
+ul, ol {
   padding-left: 2em;
   margin: 1em 0;
 }
@@ -45,8 +53,20 @@ li {
   margin: 0 0 .3em;
 }
 
-li ul {
+li ul, li ol {
   margin-top: .2em;
+}
+
+table {
+  border: solid #ccc 2px;
+}
+
+thead {
+  background: #ccc;
+}
+
+td, th {
+  padding: 1px 5px;
 }
 
 pre {
