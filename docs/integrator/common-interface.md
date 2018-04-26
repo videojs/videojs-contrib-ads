@@ -21,7 +21,7 @@ videojs-contrib-ads does not implement these. This page establishes a convention
 
 ## Properties
 
-```
+```js
 player.ads.provider = {
   "type": `String`,
   "event": `Object`

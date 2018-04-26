@@ -8,7 +8,7 @@ For example, an ad plugin may want to make an ad request when a cuepoint change 
 
 where processMetadataTrack could be something like this:
 
-```
+```js
 function processMetadataTrack(player, track) {
   track.addEventListener('cuechange', function() {
     var cues = this.cues;
@@ -33,7 +33,7 @@ For more information on the utility methods that are available, see [cueTextTrac
 
 A track is 'enabled' if the track.mode is set to `hidden` or `showing`. Otherwise, a track is `disabled` and is not updated. It is important to note that some tracks may be disabled as a workaround of not being able to remove them, and so should not be re-enabled. Ad plugins should be careful about setting the mode of tracks in these cases and shadow `setMetadataTrackMode` to determine which tracks are safe to change. For example, if all tracks should be hidden:
 
-```
+```js
 player.ads.cueTextTracks.setMetadataTrackMode = function(track) {
   // Hide the tracks so they are enabled and get updated
   // but are not shown in the UI
