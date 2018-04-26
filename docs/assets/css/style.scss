@@ -18,7 +18,7 @@ header {
 
 .wrapper {
   margin: 0 auto;
-  padding: 2em 0 .7em;
+  padding: .2em 1em .7em;
   text-align: left;
   max-width: 1000px;
 }
@@ -37,8 +37,12 @@ ul {
   margin: 1em 0;
 }
 
-li ul {
-  margin-top: 0;
+li {
+  margin: 0 0 .3em;
+
+  ul {
+    margin-top: 0;
+  }
 }
 
 pre {
@@ -47,4 +51,12 @@ pre {
 
 svg {
   max-width: 100%;
+}
+
+h2, h3, h4, h5, h6 {
+  margin: .5em 0;
+}
+
+.highlight {
+  margin: .5em 0;
 }
