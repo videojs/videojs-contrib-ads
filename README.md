@@ -16,7 +16,7 @@ Maintenance Status: Stable
 * Ad timeouts are implemented by default. If ads take too long to load, content automatically plays.
 * Player state is automatically restored after ad playback, even if the ad played back in the content's video element.
 * Content is automatically paused and a loading spinner is shown while preroll ads load.
-* [Media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) will fire as though ads don't exist. For more information, read the section on [Redispatch](https://github.com/videojs/videojs-contrib-ads#redispatch).
+* [Media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) will fire as though ads don't exist. For more information, read the documentation on [Redispatch](http://videojs.github.io/videojs-contrib-ads/integrator/redispatch.html).
 * Useful macros in ad server URLs are provided.
 * Preroll checks automatically happen again when the video source changes.
 
