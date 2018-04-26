@@ -14,14 +14,13 @@ header {
 
 .page-content {
   text-align: center;
-  margin: 0 auto;
-  padding: 0 1em;
-  max-width: 1000px;
 }
 
 .wrapper {
-  margin: 1em 0;
+  margin: 0 auto;
+  padding: 2em 0 .7em;
   text-align: left;
+  max-width: 1000px;
 }
 
 a {
@@ -36,6 +35,10 @@ code {
 ul {
   padding-left: 2em;
   margin: 1em 0;
+}
+
+li ul {
+  margin-top: 0;
 }
 
 pre {
