@@ -39,10 +39,10 @@ ul {
 
 li {
   margin: 0 0 .3em;
+}
 
-  ul {
-    margin-top: 0;
-  }
+li ul {
+  margin-top: 0;
 }
 
 pre {
