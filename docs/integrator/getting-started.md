@@ -18,7 +18,7 @@ With this basic structure in place, you're ready to develop an ad plugin.
 
 ### Including the files in your HTML
 
-This is not the recommended approach, but may be useful in some cases. In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`. After you [build the project](../getting-started.md) they are both in the `dist` directory.
+This is not the recommended approach, but may be useful in some cases. In addition to the video.js library, you'll need two files from this project: `videojs.ads.js` and `videojs.ads.css`. After you [build the project](/developer/getting-started.md) they are both in the `dist` directory.
 
 Include the CSS in your HTML's `<head>` section with a `<link>` tag:
 
@@ -63,7 +63,7 @@ First you call `player.ads()` to initialize the plugin. Afterwards, the flow of 
 * Ad Plugin triggers `adsready` (EVENT) -- Your ad plugin should trigger this event on the player to indicate that it is initialized. This can happen before or after the `play` event.
 * Contrib Ads triggers `readyforpreroll` (EVENT) -- This event is fired after both `play` and `adsready` have ocurred. This signals that the ad plugin may begin an ad break by calling `startLinearAdMode`.
 * Ad plugin calls `player.ads.startLinearAdMode()` (METHOD) -- This begins an ad break. During this time, your ad plugin plays ads. videojs-contrib-ads does not handle actual ad playback.
-* Ad plugin triggers `ads-ad-started` (EVENT) - Trigger this when each individual ad begins with an event paramter `indexInBreak` that is the zero-based index of the individual ad out of the ads in the ad break. This removes the loading spinner, which otherwise stays up during the ad break. It's possible for an ad break to end without an ad starting, in which case the spinner stays up the whole time.
+* Ad plugin triggers `ads-ad-started` (EVENT) - Trigger this when each individual ad begins. This removes the loading spinner, which otherwise stays up until the end of the ad break. [More information](common-interface.md).
 * Ad plugin calls `player.ads.endLinearAdMode()` (METHOD) -- This ends an ad break. As a result, content will play.
 * Content plays.
 * To play a Midroll ad, start and end an ad break with `player.ads.startLinearAdMode()` and `player.ads.endLinearAdMode()` at any time during content playback.

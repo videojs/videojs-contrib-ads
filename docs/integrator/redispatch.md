@@ -5,7 +5,7 @@ events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) 
 
 In order for redispatch to work correctly, any ad plugin built using contrib-ads must be initialized as soon as possible, before any other plugins that attach event listeners.
 
-Different platforms, browsers, devices, etc. send different media events at different times. Redispatch does not guarentee a specific sequence of events, but instead ensures that certain expectations are met. The next section describes those expectations.
+Different platforms, browsers, devices, etc. send different media events at different times. Redispatch does not guarantee a specific sequence of events, but instead ensures that certain expectations are met. The next section describes those expectations.
 
 ## The Law of the Land: Redispatch Event Behavior
 

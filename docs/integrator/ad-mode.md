@@ -1,6 +1,6 @@
 # What is ad mode?
 
-Defining "ad mode" has turned out to be an interesting challenge for this project. A naive defintion might be "is an ad playing or not?" It turns out there are a lot of edge cases that this naive definition does not cover. The following precise definition of ad mode drives the implementation of contrib-ads and ad plugins should be careful to follow it as well to assure maximum correctness.
+Defining "ad mode" has turned out to be an interesting challenge for this project. A naive definition might be "is an ad playing or not?" It turns out there are a lot of edge cases that this naive definition does not cover. The following precise definition of ad mode drives the implementation of contrib-ads and ad plugins should be careful to follow it as well to assure maximum correctness.
 
 Ad mode is split into three parts as identified by the methods `isWaitingForAdBreak()`, `inAdBreak()`, and `isContentResuming()`. See the [API reference](api.md) for more information.
 
