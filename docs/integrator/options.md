@@ -40,6 +40,13 @@ Default Value: `false`
 
 Set this to true if you are using ads stitched into the content video. This is necessary for ad events to be sent correctly.
 
+### contentIsLive
+
+Type: `boolean`
+No Default Value
+
+Use this to override detection of if the content video is a live stream. Live detection checks if the duration is `Infinity` but there are cases when this check is insufficient.
+
 ### debug
 
 Type: `boolean`

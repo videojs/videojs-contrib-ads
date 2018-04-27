@@ -42,7 +42,12 @@ const defaults = {
   debug: false,
 
   // set this to true when using ads that are part of the content video
-  stitchedAds: false
+  stitchedAds: false,
+
+  // force content to be treated as live or not live
+  // if not defined, the code will try to infer if content is live,
+  // which can have limitations.
+  contentIsLive: undefined
 };
 
 const contribAdsPlugin = function(options) {
@@ -264,9 +269,12 @@ const contribAdsPlugin = function(options) {
     },
 
     // Returns a boolean indicating if given player is in live mode.
-    // Can be replaced when this is fixed: https://github.com/videojs/video.js/issues/3262
+    // One reason for this: https://github.com/videojs/video.js/issues/3262
+    // Also, some live content can have a duration.
     isLive(somePlayer) {
-      if (somePlayer.duration() === Infinity) {
+      if (typeof this.settings.contentIsLive === 'boolean') {
+        return this.settings.contentIsLive;
+      } else if (somePlayer.duration() === Infinity) {
         return true;
       } else if (videojs.browser.IOS_VERSION === '8' && somePlayer.duration() === 0) {
         return true;
