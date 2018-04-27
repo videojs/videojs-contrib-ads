@@ -17,7 +17,7 @@ QUnit.module('Ads Object', {
   /*
    * Basic live detection
    */
-  QUnit.only('isLive', function(assert) {
+  QUnit.test('isLive', function(assert) {
     this.player.duration = () => 5;
     assert.equal(this.player.ads.isLive(this.player), false);
 
@@ -28,21 +28,21 @@ QUnit.module('Ads Object', {
   /*
    * `contentIsLive` setting overrides live detection
    */
-  QUnit.only('isLive and contentIsLive', function(assert) {
+  QUnit.test('isLive and contentIsLive', function(assert) {
     this.player.duration = () => 5;
-    this.player.settings.contentIsLive = true;
+    this.player.ads.settings.contentIsLive = true;
     assert.equal(this.player.ads.isLive(this.player), true);
 
     this.player.duration = () => 5;
-    this.player.settings.contentIsLive = false;
+    this.player.ads.settings.contentIsLive = false;
     assert.equal(this.player.ads.isLive(this.player), false);
 
     this.player.duration = () => Infinity;
-    this.player.settings.contentIsLive = true;
+    this.player.ads.settings.contentIsLive = true;
     assert.equal(this.player.ads.isLive(this.player), true);
 
     this.player.duration = () => Infinity;
-    this.player.settings.contentIsLive = false;
+    this.player.ads.settings.contentIsLive = false;
     assert.equal(this.player.ads.isLive(this.player), false);
   });
 });
