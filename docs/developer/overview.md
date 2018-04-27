@@ -6,7 +6,11 @@ videojs-contrib-ads is separated into files by module.
 
 ### plugin.js
 
-The entry point of the application. Registers the plugin with video.js. Implements [public API](../integrator/api.md). Manages application-level state on `player.ads` and resets state on source change. Initializes other feature modules.
+The entry point of the application. Registers the plugin with video.js and initializes other feature modules.
+
+### ads.js
+
+Implements the [public API](../integrator/api.md).
 
 ### adBreak.js
 

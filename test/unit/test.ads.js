@@ -1,4 +1,4 @@
-import plugin from '../../src/plugin.js';
+import getAds from '../../src/ads.js';
 
 QUnit.module('Ads Object', {
   beforeEach: function() {
@@ -10,7 +10,8 @@ QUnit.module('Ads Object', {
       ready: () => {},
       setTimeout: () => {}
     };
-    plugin.call(this.player);
+    this.player.ads = getAds(this.player);
+    this.player.ads.settings = {};
   }
 }, function() {
 
