@@ -58,3 +58,7 @@ A macro such as {pageVariable.foobar} allows the user access the value of any pr
 | Null      | Returns the string `"null"`           |
 | Undefined | Logs warning and returns empty string |
 | Other     | Logs warning and returns empty string |
+
+## Default values in macros
+
+A default value can be provided within a macro, in which case this value will be used where not resolvable e.g. `http://example.com/ad/{pageVariable.adConf=1234}` becomes `http://example.com/ad/1234` if `window.adConf` is undefined.

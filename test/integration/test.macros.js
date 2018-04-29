@@ -158,3 +158,48 @@ QUnit.test('customMacros', function(assert) {
 
   assert.equal(result, 'The sky is blue. Hooray!');
 });
+
+QUnit.test('default values', function(assert) {
+  this.player.mediainfo = {
+    customFields: {
+      set: 1
+    },
+    reference_id: 'abc'
+  };
+  window.testvar1 = 'a';
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{mediainfo.customFields.set=other}'), '1',
+    'custom fields: set value is not replaced by default'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{mediainfo.customFields.unsset=2}'), '2',
+    'custom fields: unset value is replaced by default'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{mediainfo.ad_keys=key=value}'), 'key=value',
+    'equals in default value preserved'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{mediainfo.reference_id=Other}'), 'abc',
+    'mediainfo: set value is not replaced by default'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{mediainfo.description=xyz}'), 'xyz',
+    'mediainfo: unset value is replaced by default'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{pageVariable.testvar1=b}'), 'a',
+    'pageVariable: set value is not replaced by default'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{pageVariable.testvar2=c}'), 'c',
+    'pageVariable: unset value is replaced by default'
+  );
+});
