@@ -39,11 +39,12 @@ obj.playMiddleware = function(player) {
       // ad supported player
       if (player.ads && player.ads._shouldBlockPlay === true) {
         player.ads.debug('Using playMiddleware to block content playback');
+        player.ads._playBlocked = true;
         return videojsReference.middleware.TERMINATOR;
       }
     },
     play(terminated, value) {
-      if (player.ads && terminated) {
+      if (player.ads && player.ads._playBlocked && terminated) {
         player.ads.debug('Play call to Tech was terminated.');
         // Trigger play event to match the user's intent to play.
         // The call to play on the Tech has been blocked, so triggering
@@ -51,6 +52,8 @@ obj.playMiddleware = function(player) {
         player.trigger('play');
         // At this point the player has technically started
         player.addClass('vjs-has-started');
+        // Reset playBlocked
+        player.ads._playBlocked = false;
       }
     }
   };
