@@ -1,6 +1,14 @@
 <a name="6.2.1"></a>
 ## [6.2.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.2.0...v6.2.1) (2018-04-30)
 
+## Bug Fixes
+
+* Only trigger play event when our play middleware terminates
+
+### Documentation
+
+* New documentation site: http://videojs.github.io/videojs-contrib-ads/
+
 <a name="6.2.0"></a>
 # [6.2.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.0.1...v6.2.0) (2018-04-25)
 
