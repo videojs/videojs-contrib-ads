@@ -1,3 +1,7 @@
+/*
+ * Implements the public API available in `player.ads` as well as application state.
+ */
+
 import videojs from 'video.js';
 
 import {version as adsVersion} from '../package.json';
@@ -33,6 +37,10 @@ export default function getAds(player) {
 
     // Should we block calls to play on the content player?
     _shouldBlockPlay: false,
+
+    // Was play blocked by the plugin's playMiddleware feature?
+    _playBlocked: false,
+
     // Tracks whether play has been requested for this source,
     // either by the play method or user interaction
     _playRequested: false,
@@ -53,6 +61,7 @@ export default function getAds(player) {
       player.ads._hasThereBeenALoadedMetaData = false;
       player.ads._cancelledPlay = false;
       player.ads._shouldBlockPlay = false;
+      player.ads._playBlocked = false;
       player.ads.nopreroll_ = false;
       player.ads.nopostroll_ = false;
       player.ads._playRequested = false;
