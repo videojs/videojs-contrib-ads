@@ -88,7 +88,7 @@ const contribAdsPlugin = function(options) {
         'videojs-contrib-ads was initialized too late. It must be initialized ' +
         'immediately after video.js in the same tick. As a result, some ads will not ' +
         'play and some media events will be incorrect. For more information, see ' +
-        'https://github.com/videojs/videojs-contrib-ads#important-note-about-initialization');
+        'http://videojs.github.io/videojs-contrib-ads/integrator/getting-started.html');
     }
   }, 5000);
 
