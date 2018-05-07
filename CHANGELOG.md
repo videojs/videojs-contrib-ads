@@ -1,3 +1,14 @@
+<a name="6.3.0"></a>
+# [6.3.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.2.1...v6.3.0) (2018-05-07)
+
+### Features
+
+* Add contentIsLive setting ([#374](https://github.com/videojs/videojs-contrib-ads/issues/374)) ([59d90ed](https://github.com/videojs/videojs-contrib-ads/commit/59d90ed))
+
+### Bug Fixes
+
+* Update link with initialization info ([#378](https://github.com/videojs/videojs-contrib-ads/issues/378)) ([3fda394](https://github.com/videojs/videojs-contrib-ads/commit/3fda394))
+
 <a name="6.2.1"></a>
 ## [6.2.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.2.0...v6.2.1) (2018-04-30)
 
