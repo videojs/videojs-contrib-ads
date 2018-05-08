@@ -182,6 +182,9 @@ export default class Preroll extends AdState {
       player.removeClass('vjs-ad-loading');
       player.addClass('vjs-ad-content-resuming');
       adBreak.end(player);
+
+      // Removes the native poster avoiding content flash after preroll
+      player.ads.removeNativePoster();
       this.contentResuming = true;
     }
   }
