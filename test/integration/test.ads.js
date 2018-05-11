@@ -135,17 +135,6 @@ QUnit.test('removes the poster attribute so it does not flash between videos', f
   assert.strictEqual(this.video.poster, '', 'poster is removed');
 });
 
-QUnit.test('restores the poster attribute after ads have ended', function(assert) {
-  this.video.poster = 'http://www.videojs.com/img/poster.jpg';
-  this.player.trigger('adsready');
-  this.player.trigger('play');
-  this.player.ads.startLinearAdMode();
-  this.player.ads.endLinearAdMode();
-  assert.ok(this.video.poster, 'the poster is restored');
-
-  this.player.trigger('playing');
-});
-
 QUnit.test('changing the src triggers "contentupdate"', function(assert) {
   var spy = sinon.spy();
 
