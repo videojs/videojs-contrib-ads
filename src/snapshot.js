@@ -38,7 +38,6 @@ export function getPlayerSnapshot(player) {
   };
 
   if (tech) {
-    snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
   }
 
