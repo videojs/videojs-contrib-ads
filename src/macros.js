@@ -84,13 +84,6 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   customFields(this.mediainfo, macros, 'custom_fields');
   customFields(this.mediainfo, macros, 'customFields');
 
-  // Set any defaults for undefined custom fields
-  Object.keys(defaults).filter(function(m) {
-    return (m.substr(0, 17) === '{mediainfo.custom' && typeof macros[m] === 'undefined');
-  }).forEach(function(m) {
-    macros[m] = defaults[m];
-  });
-
   // Go through all the replacement macros and apply them to the string.
   // This will replace all occurrences of the replacement macros.
   for (const i in macros) {
@@ -113,17 +106,15 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
       }
     }
 
-    // Use default if provided
-    if (typeof value === 'undefined' && defaults[`{pageVariable.${name}}`]) {
-      value = defaults[`{pageVariable.${name}}`];
-    }
-
     const type = typeof value;
 
     // Only allow certain types of values. Anything else is probably a mistake.
     if (value === null) {
       return 'null';
     } else if (value === undefined) {
+      if (defaults[`{pageVariable.${name}}`]) {
+        return defaults[`{pageVariable.${name}}`];
+      }
       videojs.log.warn(`Page variable "${name}" not found`);
       return '';
     } else if (type !== 'string' && type !== 'number' && type !== 'boolean') {
@@ -133,6 +124,11 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
 
     return uriEncodeIfNeeded(String(value), uriEncode);
   });
+
+  // Replace defaults
+  for (const defaultVal in defaults) {
+    string = string.replace(defaultVal, defaults[defaultVal]);
+  }
 
   return string;
 }
