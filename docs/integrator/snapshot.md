@@ -4,6 +4,5 @@ The snapshot feature records the player state when an ad break begins and restor
 
 * Content source
 * Current time
-* Poster image
 * Style attribute
 * Text tracks
