@@ -40,6 +40,15 @@ const customFields = function(mediainfo, macros, customFieldsName) {
 //  - For example: adMacroReplacement('{player.id}') returns a string of the player id
 export default function adMacroReplacement(string, uriEncode, customMacros) {
 
+  const defaults = {};
+
+  // Get macros with defaults e.g. {x=y}, store values and replace with standard macros
+  string = string.replace(/{([^}=]+)=([^}]+)}/g, function(match, name, defaultVal) {
+    defaults[`{${name}}`] = defaultVal;
+
+    return `{${name}}`;
+  });
+
   if (uriEncode === undefined) {
     uriEncode = false;
   }
@@ -54,16 +63,22 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   macros['{player.id}'] = this.options_['data-player'];
   macros['{mediainfo.id}'] = this.mediainfo ? this.mediainfo.id : '';
   macros['{mediainfo.name}'] = this.mediainfo ? this.mediainfo.name : '';
-  macros['{mediainfo.description}'] = this.mediainfo ? this.mediainfo.description : '';
-  macros['{mediainfo.tags}'] = this.mediainfo ? this.mediainfo.tags : '';
-  macros['{mediainfo.reference_id}'] = this.mediainfo ? this.mediainfo.reference_id : '';
   macros['{mediainfo.duration}'] = this.mediainfo ? this.mediainfo.duration : '';
-  macros['{mediainfo.ad_keys}'] = this.mediainfo ? this.mediainfo.ad_keys : '';
   macros['{player.duration}'] = this.duration();
   macros['{timestamp}'] = new Date().getTime();
   macros['{document.referrer}'] = document.referrer;
   macros['{window.location.href}'] = window.location.href;
   macros['{random}'] = Math.floor(Math.random() * 1000000000000);
+
+  ['description', 'tags', 'reference_id', 'ad_keys'].forEach((prop) => {
+    if (this.mediainfo && this.mediainfo[prop]) {
+      macros[`{mediainfo.${prop}}`] = this.mediainfo[prop];
+    } else if (defaults[`{mediainfo.${prop}}`]) {
+      macros[`{mediainfo.${prop}}`] = defaults[`{mediainfo.${prop}}`];
+    } else {
+      macros[`{mediainfo.${prop}}`] = '';
+    }
+  });
 
   // Custom fields in mediainfo
   customFields(this.mediainfo, macros, 'custom_fields');
@@ -97,6 +112,9 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
     if (value === null) {
       return 'null';
     } else if (value === undefined) {
+      if (defaults[`{pageVariable.${name}}`]) {
+        return defaults[`{pageVariable.${name}}`];
+      }
       videojs.log.warn(`Page variable "${name}" not found`);
       return '';
     } else if (type !== 'string' && type !== 'number' && type !== 'boolean') {
@@ -106,6 +124,11 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
 
     return uriEncodeIfNeeded(String(value), uriEncode);
   });
+
+  // Replace defaults
+  for (const defaultVal in defaults) {
+    string = string.replace(defaultVal, defaults[defaultVal]);
+  }
 
   return string;
 }
