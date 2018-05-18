@@ -36,8 +36,7 @@ function start(player) {
   }
 
   // This removes the native poster so the ads don't show the content
-  // poster if content element is reused for ad playback. The snapshot
-  // will restore it afterwards.
+  // poster if content element is reused for ad playback.
   player.ads.removeNativePoster();
 }
 

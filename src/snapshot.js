@@ -38,7 +38,6 @@ export function getPlayerSnapshot(player) {
   };
 
   if (tech) {
-    snapshotObject.nativePoster = tech.poster;
     snapshotObject.style = tech.getAttribute('style');
   }
 
@@ -177,10 +176,6 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
       }
     }
   };
-
-  if (snapshotObject.nativePoster) {
-    tech.poster = snapshotObject.nativePoster;
-  }
 
   if ('style' in snapshotObject) {
     // overwrite all css style properties to restore state precisely
