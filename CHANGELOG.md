@@ -1,3 +1,18 @@
+<a name="6.4.0"></a>
+# [6.4.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.3.0...v6.4.0) (2018-06-06)
+
+### Features
+
+* Allow default values for macros ([#383](https://github.com/videojs/videojs-contrib-ads/issues/383)) ([09e7f59](https://github.com/videojs/videojs-contrib-ads/commit/09e7f59))
+
+### Bug Fixes
+
+* hide loading spinner after nopostroll ([#373](https://github.com/videojs/videojs-contrib-ads/issues/373)) ([79a72ff](https://github.com/videojs/videojs-contrib-ads/commit/79a72ff))
+
+### Chores
+
+* **package:** update rollup-plugin-json to version 3.0.0 ([#381](https://github.com/videojs/videojs-contrib-ads/issues/381)) ([c1f23c7](https://github.com/videojs/videojs-contrib-ads/commit/c1f23c7))
+
 <a name="6.3.0"></a>
 # [6.3.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.2.1...v6.3.0) (2018-05-07)
 
