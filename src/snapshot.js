@@ -5,6 +5,8 @@ restoring the player state after an ad.
 
 import videojs from 'video.js';
 
+let tryToResumeTimeout_;
+
 /*
  * Returns an object that captures the portions of player state relevant to
  * video playback. The result of this function can be passed to
@@ -117,7 +119,13 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
     } else {
       // Prerolls and midrolls, just seek to the player time before the ad.
       player.currentTime(snapshotObject.currentTime);
-      player.play();
+      const playPromise = player.play();
+
+      if (playPromise) {
+        playPromise.catch((error) => {
+          videojs.log.warn('Play promise rejected in snapshot resume', error);
+        });
+      }
     }
 
     // if we added autoplay to force content loading on iOS, remove it now
@@ -139,9 +147,8 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
     // way it could've been called by removing the listener and clearing out
     // the timeout.
     player.off('contentcanplay', tryToResume);
-    if (player.ads.tryToResumeTimeout_) {
-      player.clearTimeout(player.ads.tryToResumeTimeout_);
-      player.ads.tryToResumeTimeout_ = null;
+    if (tryToResumeTimeout_) {
+      player.clearTimeout(tryToResumeTimeout_);
     }
 
     // Tech may have changed depending on the differences in sources of the
@@ -211,7 +218,7 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
     // in some browsers (firefox) `canplay` may not fire correctly.
     // Reace the `canplay` event with a timeout.
     player.one('contentcanplay', tryToResume);
-    player.ads.tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
+    tryToResumeTimeout_ = player.setTimeout(tryToResume, 2000);
   } else {
     // if we didn't change the src, just restore the tracks
     restoreTracks();
@@ -221,7 +228,13 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
     if (!player.ended()) {
       // the src didn't change and this wasn't a postroll
       // just resume playback at the current time.
-      player.play();
+      const playPromise = player.play();
+
+      if (playPromise) {
+        playPromise.catch((error) => {
+          videojs.log.warn('Play promise rejected in snapshot restore', error);
+        });
+      }
     }
 
     // snapshot restore is complete

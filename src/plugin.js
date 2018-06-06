@@ -126,7 +126,13 @@ const contribAdsPlugin = function(options) {
       return;
     }
 
-    player.play();
+    const playPromise = player.play();
+
+    if (playPromise) {
+      playPromise.catch((error) => {
+        videojs.log.warn('Play promise rejected when playing ad', error);
+      });
+    }
   });
 
   player.on('nopreroll', function() {
