@@ -121,7 +121,7 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
       player.currentTime(snapshotObject.currentTime);
       const playPromise = player.play();
 
-      if (playPromise) {
+      if (playPromise && playPromise.catch) {
         playPromise.catch((error) => {
           videojs.log.warn('Play promise rejected in snapshot resume', error);
         });
@@ -230,7 +230,7 @@ export function restorePlayerSnapshot(player, snapshotObject, callback) {
       // just resume playback at the current time.
       const playPromise = player.play();
 
-      if (playPromise) {
+      if (playPromise && playPromise.catch) {
         playPromise.catch((error) => {
           videojs.log.warn('Play promise rejected in snapshot restore', error);
         });
