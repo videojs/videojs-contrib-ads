@@ -128,7 +128,7 @@ const contribAdsPlugin = function(options) {
 
     const playPromise = player.play();
 
-    if (playPromise) {
+    if (playPromise && playPromise.catch) {
       playPromise.catch((error) => {
         videojs.log.warn('Play promise rejected when playing ad', error);
       });
