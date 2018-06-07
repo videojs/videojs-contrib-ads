@@ -1,6 +1,10 @@
 <a name="6.4.1"></a>
 ## [6.4.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.0...v6.4.1) (2018-06-07)
 
+### Bug Fixes
+
+* Safter play promise usage
+
 <a name="6.4.0"></a>
 # [6.4.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.3.0...v6.4.0) (2018-06-06)
 
