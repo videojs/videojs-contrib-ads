@@ -25,8 +25,6 @@ QUnit.test('restores the original video src after ads', function(assert) {
     type: 'video/webm'
   };
 
-  assert.expect(1);
-
   this.player.src(originalSrc);
 
   this.player.trigger('adsready');
@@ -478,7 +476,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   assert.equal(this.player.textTracks()[1].mode, 'disabled');
 
   // Restore the snapshot, as if an ad is ending
-  snapshot.restorePlayerSnapshot(this.player, this.player.ads.snapshot);
+  snapshot.restorePlayerSnapshot(this.player);
 
   // Everything is back to normal
   assert.equal(this.player.textTracks().length, 2);
@@ -495,4 +493,12 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   this.player.textTracks().removeTrack(remoteTrack);
   this.player.addTextTrack = originalAddTrack;
   this.player.textTracks = originalTextTracks;
+});
+
+QUnit.test('Snapshot object is cleaned up', function(assert) {
+  assert.equal(typeof this.player.ads.snapshot, 'undefined', 'no snapshot before ad');
+  this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
+  assert.equal(typeof this.player.ads.snapshot, 'object', 'snapshot during ad');
+  snapshot.restorePlayerSnapshot(this.player);
+  assert.equal(typeof this.player.ads.snapshot, 'undefined', 'no snapshot after ad');
 });

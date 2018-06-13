@@ -65,7 +65,7 @@ function end(player, callback) {
 
   // Restore snapshot
   if (!player.ads.shouldPlayContentBehindAd(player)) {
-    snapshot.restorePlayerSnapshot(player, player.ads.snapshot, callback);
+    snapshot.restorePlayerSnapshot(player, callback);
 
   // Reset the volume to pre-ad levels
   } else {
