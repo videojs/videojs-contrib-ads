@@ -43,7 +43,7 @@ obj.playMiddleware = function(player) {
         return videojsReference.middleware.TERMINATOR;
       }
     },
-    play(terminated, value) {
+    play(terminated, playPromise) {
       if (player.ads && player.ads._playBlocked && terminated) {
         player.ads.debug('Play call to Tech was terminated.');
         // Trigger play event to match the user's intent to play.
@@ -54,6 +54,17 @@ obj.playMiddleware = function(player) {
         player.addClass('vjs-has-started');
         // Reset playBlocked
         player.ads._playBlocked = false;
+
+      // Safari issues a pause event when autoplay is blocked but Chrome does not.
+      // We fingerprint Chrome using e.message and send a pause for consistency.
+      // This keeps the play button synchronized if play is rejected.
+      } else if (playPromise) {
+        playPromise.catch((e) => {
+          if (e.message === 'play() failed because the user didn\'t interact with the ' +
+            'document first. https://goo.gl/xX8pDD') {
+            player.trigger('pause');
+          }
+        });
       }
     }
   };
