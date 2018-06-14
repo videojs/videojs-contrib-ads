@@ -58,7 +58,7 @@ obj.playMiddleware = function(player) {
       // Safari issues a pause event when autoplay is blocked but Chrome does not.
       // We fingerprint Chrome using e.message and send a pause for consistency.
       // This keeps the play button synchronized if play is rejected.
-      } else if (playPromise) {
+      } else if (playPromise && playPromise.catch) {
         playPromise.catch((e) => {
           if (e.message === 'play() failed because the user didn\'t interact with the ' +
             'document first. https://goo.gl/xX8pDD') {
