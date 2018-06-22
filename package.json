@@ -107,7 +107,7 @@
     "video.js": "^5.19.2 || ^6 || ^7"
   },
   "generator-videojs-plugin": {
-    "version": "6.0.8"
+    "version": "6.0.9"
   },
   "greenkeeper": {
     "ignore": [
