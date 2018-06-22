@@ -21,7 +21,7 @@ QUnit.module('Events and Prerolls', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json'
+      'adServerUrl': '/test/integration/lib/inventory.json'
     });
 
     this.player.src({
@@ -93,8 +93,10 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
     }
   });
 
-  this.player.ready(this.player.play);
-
+  this.player.ready(function() {
+    debugger;
+    this.play();
+  });
 });
 
 QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {

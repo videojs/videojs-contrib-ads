@@ -21,7 +21,7 @@ QUnit.module('Events and Postrolls', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json',
+      'adServerUrl': '/test/integration/lib/inventory.json',
       'playPreroll': false,
       'playMidroll': false
     });

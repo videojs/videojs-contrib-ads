@@ -38,15 +38,10 @@ module.exports = function(config) {
       'node_modules/es5-shim/es5-shim.js',
       'node_modules/sinon/pkg/sinon.js',
       'node_modules/video.js/dist/video.js',
-      {pattern: 'dist/videojs-contrib-ads.js', nocache: true},
-      {pattern: 'dist/videojs-contrib-ads.css', nocache: true},
-      {pattern: 'test/integration/lib/shared-module-hooks.js', nocache: true},
-      {pattern: 'test/dist/bundle.js', nocache: true},
-
-      // Test Data
-      {pattern: 'test/integration/lib/inventory.json', included: false, served: true},
-      {pattern: 'examples/basic-ad-plugin/superclip-low.webm', included: false, served: true},
-      {pattern: 'test/integration/lib/testcaption.vtt', included: false, served: true}
+      'dist/videojs-contrib-ads.js',
+      'dist/videojs-contrib-ads.css',
+      'test/integration/lib/shared-module-hooks.js',
+      'test/dist/bundle.js'
     ],
     customLaunchers: {
       travisChrome: {

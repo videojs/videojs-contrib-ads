@@ -20,7 +20,7 @@ QUnit.module('Events and Midrolls', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json',
+      'adServerUrl': '/test/integration/lib/inventory.json',
       'playPreroll': false,
       'midrollPoint': 1
     });

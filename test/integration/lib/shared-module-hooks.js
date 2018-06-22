@@ -48,7 +48,7 @@ window.sharedModuleHooks = (function(){
 
       document.getElementById('qunit-fixture').appendChild(this.video);
 
-      this.player = videojs(this.video);
+      this.player = videojs(this.video, {volume: 0});
 
       // Tick the clock because videojs player creation is now async.
       this.clock.tick(1000);
