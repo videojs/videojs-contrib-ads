@@ -1,8 +1,25 @@
+/* eslint-disable no-console */
+const serveStatic = require('serve-static');
+const path = require('path');
+const serve = serveStatic(
+  path.join(__dirname, '..'),
+  {index: ['index.html', 'index.htm']}
+);
+
+const StaticMiddlewareFactory = function(config) {
+  console.log(`**** Dev server started at http://${config.listenAddress}:${config.port}/ *****`);
+
+  return function(req, res, next) {
+    res.setHeader('Cache-Control', 'no-cache,must-revalidate');
+    return serve(req, res, next);
+  };
+};
+
 module.exports = function(config) {
-  var detectBrowsers = {
+  const detectBrowsers = {
     enabled: false,
     usePhantomJS: false,
-    postDetection: function(browsers) {
+    postDetection(browsers) {
       const toKeep = ['Firefox', 'Chrome'];
       const filteredBrowsers = [];
 
@@ -25,7 +42,7 @@ module.exports = function(config) {
 
   // If no browsers are specified, we enable `karma-detect-browsers`
   // this will detect all browsers that are available for testing
-  if (!config.browsers.length) {
+  if (config.browsers !== false && !config.browsers.length) {
     detectBrowsers.enabled = true;
   }
 
@@ -35,7 +52,6 @@ module.exports = function(config) {
     files: [
       'node_modules/video.js/dist/video-js.css',
       'node_modules/lodash/lodash.js',
-      'node_modules/es5-shim/es5-shim.js',
       'node_modules/sinon/pkg/sinon.js',
       'node_modules/video.js/dist/video.js',
       'dist/videojs-contrib-ads.js',
@@ -53,18 +69,26 @@ module.exports = function(config) {
         flags: ['--autoplay-policy=no-user-gesture-required']
       }
     },
-    detectBrowsers: detectBrowsers,
+    client: {
+      clearContext: false,
+      qunit: {
+        showUI: true,
+        testTimeout: 15000
+      }
+    },
+    detectBrowsers,
     reporters: ['dots'],
-    port: 9876,
+    port: 9999,
+    urlRoot: '/test/',
+    plugins: [
+      {'middleware:static': ['factory', StaticMiddlewareFactory]},
+      'karma-*'
+    ],
+    middleware: ['static'],
     colors: true,
     autoWatch: false,
     singleRun: true,
     concurrency: 1,
-    browserNoActivityTimeout: 300000,
-    client: {
-      qunit: {
-        testTimeout: 15000
-      }
-    }
+    browserNoActivityTimeout: 300000
   });
 };

@@ -93,10 +93,7 @@ QUnit.test('ended event and prerolls: not even once', function(assert) {
     }
   });
 
-  this.player.ready(function() {
-    debugger;
-    this.play();
-  });
+  this.player.ready(this.player.play);
 });
 
 QUnit.test('loadstart event and prerolls: 1 before preroll, 0 after', function(assert) {

@@ -1,0 +1,14 @@
+{
+  "generator-videojs-plugin": {
+    "scope": "",
+    "name": "contrib-ads",
+    "description": "A framework that provides common functionality needed by video advertisement libraries working with video.js.",
+    "author": "Brightcove, Inc.",
+    "license": "apache2",
+    "pluginType": "advanced",
+    "css": true,
+    "docs": false,
+    "lang": false,
+    "husky": "lint"
+  }
+}
