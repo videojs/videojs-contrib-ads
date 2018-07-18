@@ -40,6 +40,15 @@ Default Value: `false`
 
 Set this to true if you are using ads stitched into the content video. This is necessary for ad events to be sent correctly.
 
+### liveCuePoints
+
+Type: `boolean`
+Default Value: `true`
+
+If set to true, content will play muted behind ads on supported platforms when the content is detected to be a live stream. This is to support ads on video metadata cuepoints during a live stream. It also results in more precise resumes after ads during a live stream. If set to true, content will be paused while an ad is playing and will be restored at the position it was at when the ad break began.
+
+Note: In a future major version update, we plan to change the default to `false` because we believe this reflects a more intuitive and common default behavior. The default is `true` for backwards compatibility. If you want to avoid having to migrate in the future, you might consider setting an explicit value for `liveCuePoints` instead of relying on the default.
+
 ### contentIsLive
 
 Type: `boolean`
@@ -50,7 +59,7 @@ Use this to override detection of if the content video is a live stream. Live de
 ### debug
 
 Type: `boolean`
-Default Value: false
+Default Value: `false`
 
 If debug is set to true, the ads plugin will output additional debugging information.
 This can be handy for diagnosing issues or unexpected behavior in an ad plugin.

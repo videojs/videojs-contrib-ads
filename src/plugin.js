@@ -18,35 +18,40 @@ import {BeforePreroll} from './states.js';
 const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
-// default settings
+// Default settings
 const defaults = {
-  // maximum amount of time in ms to wait to receive `adsready` from the ad
+  // Maximum amount of time in ms to wait to receive `adsready` from the ad
   // implementation after play has been requested. Ad implementations are
   // expected to load any dynamic libraries and make any requests to determine
   // ad policies for a video during this time.
   timeout: 5000,
 
-  // maximum amount of time in ms to wait for the ad implementation to start
+  // Maximum amount of time in ms to wait for the ad implementation to start
   // linear ad mode after `readyforpreroll` has fired. This is in addition to
   // the standard timeout.
   prerollTimeout: undefined,
 
-  // maximum amount of time in ms to wait for the ad implementation to start
+  // Maximum amount of time in ms to wait for the ad implementation to start
   // linear ad mode after `readyforpostroll` has fired.
   postrollTimeout: undefined,
 
-  // when truthy, instructs the plugin to output additional information about
+  // When truthy, instructs the plugin to output additional information about
   // plugin state to the video.js log. On most devices, the video.js log is
   // the same as the developer console.
   debug: false,
 
-  // set this to true when using ads that are part of the content video
+  // Set this to true when using ads that are part of the content video
   stitchedAds: false,
 
-  // force content to be treated as live or not live
+  // Force content to be treated as live or not live
   // if not defined, the code will try to infer if content is live,
   // which can have limitations.
-  contentIsLive: undefined
+  contentIsLive: undefined,
+
+  // If set to true, content will play muted behind ads on supported platforms. This is
+  // to support ads on video metadata cuepoints during a live stream. It also results in
+  // more precise resumes after ads during a live stream.
+  liveCuePoints: true
 };
 
 const contribAdsPlugin = function(options) {
@@ -55,7 +60,7 @@ const contribAdsPlugin = function(options) {
 
   const settings = videojs.mergeOptions(defaults, options);
 
-  // prefix all video element events during ad playback
+  // Prefix all video element events during ad playback
   // if the video element emits ad-related events directly,
   // plugins that aren't ad-aware will break. prefixing allows
   // plugins that wish to handle ad events to do so while
