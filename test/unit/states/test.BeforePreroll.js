@@ -94,7 +94,7 @@ QUnit.test('skips the preroll', function(assert) {
   assert.equal(this.transitionArg2, true);
 });
 
-QUnit.test('does nothing on content change', function(assert) {
+QUnit.skip('does nothing on content change', function(assert) {
   this.beforePreroll.init(this.player);
   this.beforePreroll.onContentChanged(this.player);
   assert.equal(this.newState, undefined);
