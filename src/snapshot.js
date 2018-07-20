@@ -109,6 +109,19 @@ export function restorePlayerSnapshot(player, callback) {
           currentTime = player.currentTime();
         }
         player.currentTime(currentTime);
+
+      }
+
+      // iOS live play after restore if player was paused (would not be paused if
+      // ad played muted behind ad)
+      if (player.paused()) {
+        const playPromise = player.play();
+
+        if (playPromise && playPromise.catch) {
+          playPromise.catch((error) => {
+            videojs.log.warn('Play promise rejected in IOS snapshot resume', error);
+          });
+        }
       }
 
     // Restore the video position after an ad.
