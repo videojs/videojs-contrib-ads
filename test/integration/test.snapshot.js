@@ -502,3 +502,29 @@ QUnit.test('Snapshot object is cleaned up', function(assert) {
   snapshot.restorePlayerSnapshot(this.player);
   assert.equal(typeof this.player.ads.snapshot, 'undefined', 'no snapshot after ad');
 });
+
+QUnit.test('Call play after live preroll on iOS', function(assert) {
+  let played = 0;
+
+  this.player.duration(Infinity);
+  this.player.ads.videoElementRecycled = () => true;
+  videojs.browser = {IS_IOS: true};
+  this.player.play = () => {
+    played++;
+  };
+
+  this.player.trigger('loadstart');
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+
+  this.player.ads.startLinearAdMode();
+  this.player.ads.endLinearAdMode();
+  this.player.el().querySelector = query => {
+    if (query === '.vjs-tech') {
+      return {seekable: {length: 1}};
+    }
+  };
+  assert.strictEqual(played, 0, 'No play yet');
+  this.player.trigger('contentcanplay');
+  assert.strictEqual(played, 1, 'Play happened');
+});
