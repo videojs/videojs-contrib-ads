@@ -94,10 +94,18 @@ QUnit.test('skips the preroll', function(assert) {
   assert.equal(this.transitionArg2, true);
 });
 
-QUnit.skip('does nothing on content change', function(assert) {
-  this.beforePreroll.init(this.player);
+QUnit.test('handles content change', function(assert) {
+  sinon.spy(this.beforePreroll, "init");
+  sinon.spy(this.beforePreroll, "onPlay");
   this.beforePreroll.onContentChanged(this.player);
-  assert.equal(this.newState, undefined);
+  assert.equal(this.beforePreroll.init.calledOnce, true);
+  assert.equal(this.beforePreroll.onPlay.calledOnce, true);
+});
+
+QUnit.test('handles dispose', function(assert) {
+  sinon.spy(this.beforePreroll, "init");
+  this.beforePreroll.onDispose(this.player);
+  assert.equal(this.beforePreroll.init.calledOnce, true);
 });
 
 QUnit.test('sets _shouldBlockPlay to true', function(assert) {
