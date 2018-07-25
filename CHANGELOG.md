@@ -1,3 +1,10 @@
+<a name="6.5.0"></a>
+# [6.5.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.1...v6.5.0) (2018-07-25)
+
+### Chores
+
+* Allow vjs7 dependency ([#413](https://github.com/videojs/videojs-contrib-ads/issues/413)) ([e4fe32e](https://github.com/videojs/videojs-contrib-ads/commit/e4fe32e))
+
 <a name="6.4.1"></a>
 ## [6.4.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.0...v6.4.1) (2018-06-07)
 
