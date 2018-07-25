@@ -292,12 +292,8 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
 QUnit.test('checks for a src attribute change that isn\'t reflected in currentSrc', function(assert) {
   var updatedSrc;
 
-  this.player.currentSrc = function() {
-    return 'content.webm';
-  };
-
-  this.player.currentType = function() {
-    return 'video/webm';
+  this.player.currentSource = function() {
+    return {src: 'content.webm', type: 'video/webm'};
   };
 
   this.player.trigger('adsready');
@@ -324,7 +320,7 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
-  assert.deepEqual(updatedSrc, {src: 'content.webm', type: 'video/webm'}, 'restored src attribute');
+  assert.deepEqual(updatedSrc, [this.player.currentSource()], 'restored src attribute');
 });
 
 QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
