@@ -109,7 +109,7 @@
   ],
   "dependencies": {
     "global": "^4.3.2",
-    "video.js": "^5.19.2 || ^6"
+    "video.js": "^5.19.2 || ^6 || ^7"
   },
   "generator-videojs-plugin": {
     "version": "5.0.0"
