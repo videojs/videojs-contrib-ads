@@ -1,3 +1,11 @@
+<a name="6.4.2"></a>
+## [6.4.2](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.1...v6.4.2) (2018-07-31)
+
+### Chores
+
+* Allow vjs7 dependency ([#413](https://github.com/videojs/videojs-contrib-ads/issues/413)) ([e4fe32e](https://github.com/videojs/videojs-contrib-ads/commit/e4fe32e))
+* **package:** update conventional-changelog-cli to version 2.0.1 ([#414](https://github.com/videojs/videojs-contrib-ads/issues/414)) ([6d5ff0f](https://github.com/videojs/videojs-contrib-ads/commit/6d5ff0f)), closes [#393](https://github.com/videojs/videojs-contrib-ads/issues/393)
+
 <a name="6.4.1"></a>
 ## [6.4.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.0...v6.4.1) (2018-06-07)
 
