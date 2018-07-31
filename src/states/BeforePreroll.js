@@ -83,10 +83,15 @@ export default class BeforePreroll extends ContentState {
     this.shouldResumeToContent = true;
   }
 
-  /*
-   * Content source change before preroll is currently not handled. When
-   * developed, this is where to start.
-   */
-  onContentChanged() {}
+  onContentChanged() {
+    this.init(this.player);
+
+    // TODO: Handle case where player does not play on content change
+    this.onPlay(this.player);
+  }
+
+  onDispose() {
+    this.init(this.player);
+  }
 
 }

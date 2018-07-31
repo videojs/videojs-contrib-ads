@@ -232,13 +232,14 @@ const contribAdsPlugin = function(options) {
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
     'ads-ad-started',
-    'contentchanged', 'contentresumed', 'readyforpostroll',
+    'contentchanged', 'dispose', 'contentresumed', 'readyforpostroll',
     'nopreroll', 'nopostroll'], (e) => {
     player.ads._state.handleEvent(e.type);
   });
 
   // Clear timeouts and handlers when player is disposed
   player.on('dispose', function() {
+    player.ads.reset();
     player.textTracks().removeEventListener('change', textTrackChangeHandler);
   });
 
