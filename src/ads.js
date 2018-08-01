@@ -6,6 +6,8 @@ import videojs from 'video.js';
 
 import {version as adsVersion} from '../package.json';
 
+import {BeforePreroll} from './states.js';
+
 export default function getAds(player) {
   return {
 
@@ -86,10 +88,23 @@ export default function getAds(player) {
       player.ads._state.skipLinearAdMode();
     },
 
-    stitchedAds(arg) {
-      if (arg !== undefined) {
-        this._stitchedAds = !!arg;
+    stitchedAds(value) {
+      if (value !== undefined) {
+        const current = this._stitchedAds;
+        const next = !!value;
+
+        // Did the state actually change?
+        if (current !== next) {
+          this._stitchedAds = next;
+
+          // If the stitched-ads state actually changed, we need to transition
+          // back to the BeforePreroll state.
+          if (this._state) {
+            this._state.transitionTo(BeforePreroll);
+          }
+        }
       }
+
       return this._stitchedAds;
     },
 
@@ -116,7 +131,7 @@ export default function getAds(player) {
     // Returns a boolean indicating if given player is in live mode.
     // One reason for this: https://github.com/videojs/video.js/issues/3262
     // Also, some live content can have a duration.
-    isLive(somePlayer) {
+    isLive(somePlayer = player) {
       if (typeof somePlayer.ads.settings.contentIsLive === 'boolean') {
         return somePlayer.ads.settings.contentIsLive;
       } else if (somePlayer.duration() === Infinity) {
@@ -130,7 +145,7 @@ export default function getAds(player) {
     // Return true if content playback should mute and continue during ad breaks.
     // This is only done during live streams on platforms where it's supported.
     // This improves speed and accuracy when returning from an ad break.
-    shouldPlayContentBehindAd(somePlayer) {
+    shouldPlayContentBehindAd(somePlayer = player) {
       if (!somePlayer) {
         throw new Error('shouldPlayContentBehindAd requires a player as a param');
       } else if (!somePlayer.ads.settings.liveCuePoints) {
@@ -140,6 +155,12 @@ export default function getAds(player) {
                !videojs.browser.IS_ANDROID &&
                somePlayer.duration() === Infinity;
       }
+    },
+
+    // Return true if the ads plugin should save and restore snapshots of the
+    // player state when moving into and out of ad mode.
+    shouldTakeSnapshots(somePlayer = player) {
+      return !this.shouldPlayContentBehindAd(somePlayer) && !this.stitchedAds();
     },
 
     // Returns true if player is in ad mode.

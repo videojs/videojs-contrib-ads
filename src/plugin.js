@@ -177,10 +177,10 @@ const contribAdsPlugin = function(options) {
   player.ads = getAds(player);
 
   player.ads.settings = settings;
+  player.ads.stitchedAds(settings.stitchedAds);
+
   player.ads._state = new BeforePreroll(player);
   player.ads._state.init(player);
-
-  player.ads.stitchedAds(settings.stitchedAds);
 
   player.ads.cueTextTracks = cueTextTracks;
   player.ads.adMacroReplacement = adMacroReplacement.bind(player);

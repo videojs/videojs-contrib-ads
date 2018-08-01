@@ -40,6 +40,8 @@ Default Value: `false`
 
 Set this to true if you are using ads stitched into the content video. This is necessary for ad events to be sent correctly.
 
+**NOTE:** This value is reset to the default when the source changes. Integrations built on top of contrib-ads should account for this by setting the value as needed for each new source.
+
 ### liveCuePoints
 
 Type: `boolean`

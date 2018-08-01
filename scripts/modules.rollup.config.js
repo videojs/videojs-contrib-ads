@@ -9,8 +9,8 @@ import babel from 'rollup-plugin-babel';
 import json from 'rollup-plugin-json';
 
 export default {
-  moduleName: 'videojsContribAds',
-  entry: 'src/plugin.js',
+  name: 'videojsContribAds',
+  input: 'src/plugin.js',
   external: [
     'global/document',
     'global/window',
@@ -19,6 +19,13 @@ export default {
   globals: {
     'video.js': 'videojs'
   },
+  output: [{
+    file: 'dist/videojs-contrib-ads.cjs.js',
+    format: 'cjs',
+  }, {
+    file: 'dist/videojs-contrib-ads.es.js',
+    format: 'es'
+  }],
   legacy: true,
   plugins: [
     json(),
@@ -37,9 +44,5 @@ export default {
         'transform-object-assign'
       ]
     })
-  ],
-  targets: [
-    {dest: 'dist/videojs-contrib-ads.cjs.js', format: 'cjs'},
-    {dest: 'dist/videojs-contrib-ads.es.js', format: 'es'}
   ]
 };

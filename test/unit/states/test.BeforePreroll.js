@@ -8,9 +8,11 @@ import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 QUnit.module('BeforePreroll', {
   beforeEach: function() {
     this.events = [];
+    this.stitchedAds = false;
 
     this.player = {
       ads: {
+        stitchedAds: () => this.stitchedAds,
         debug: () => {},
         _shouldBlockPlay: false
       },

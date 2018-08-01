@@ -10,9 +10,11 @@ QUnit.module('Preroll', {
   beforeEach: function() {
     this.events = [];
     this.playTriggered = false;
+    this.stitchedAds = false;
 
     this.player = {
       ads: {
+        stitchedAds: () => this.stitchedAds,
         debug: () => {},
         settings: {},
         inAdBreak: () => false,
