@@ -6,8 +6,6 @@ import videojs from 'video.js';
 
 import {version as adsVersion} from '../package.json';
 
-import {BeforePreroll} from './states.js';
-
 export default function getAds(player) {
   return {
 
@@ -88,21 +86,15 @@ export default function getAds(player) {
       player.ads._state.skipLinearAdMode();
     },
 
-    stitchedAds(value) {
-      if (value !== undefined) {
-        const current = this._stitchedAds;
-        const next = !!value;
-
-        // Did the state actually change?
-        if (current !== next) {
-          this._stitchedAds = next;
-
-          // If the stitched-ads state actually changed, we need to transition
-          // back to the BeforePreroll state.
-          if (this._state) {
-            this._state.transitionTo(BeforePreroll);
-          }
-        }
+    // With no arguments, returns a boolean value indicating whether or not
+    // contrib-ads is set to treat ads as stitched with content in a single
+    // stream.
+    // With an argument, turns stitched ads mode on or off. This is best used
+    // immediately preceding a source change where the state would change to
+    // or from stitched ads.
+    stitchedAds(arg) {
+      if (arg !== undefined) {
+        this._stitchedAds = !!arg;
       }
 
       return this._stitchedAds;
