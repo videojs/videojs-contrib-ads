@@ -88,10 +88,8 @@ export default function getAds(player) {
 
     // With no arguments, returns a boolean value indicating whether or not
     // contrib-ads is set to treat ads as stitched with content in a single
-    // stream.
-    // With an argument, turns stitched ads mode on or off. This is best used
-    // immediately preceding a source change where the state would change to
-    // or from stitched ads.
+    // stream. With arguments, treated as a setter, but this behavior is
+    // deprecated.
     stitchedAds(arg) {
       if (arg !== undefined) {
         videojs.log.warn('Using player.ads.stitchedAds() as a setter is deprecated.');
