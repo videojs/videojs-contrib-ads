@@ -181,7 +181,8 @@ const contribAdsPlugin = function(options) {
   // Set the stitched ads state. This needs to happen before the `_state` is
   // initialized below - BeforePreroll needs to know whether contrib-ads is
   // playing stitched ads or not.
-  player.ads.stitchedAds(settings.stitchedAds);
+  // The setter is deprecated, so this does not use it.
+  player.ads._stitchedAds = !!settings.stitchedAds;
 
   player.ads._state = new BeforePreroll(player);
   player.ads._state.init(player);

@@ -94,6 +94,7 @@ export default function getAds(player) {
     // or from stitched ads.
     stitchedAds(arg) {
       if (arg !== undefined) {
+        videojs.log.warn('Using player.ads.stitchedAds() as a setter is deprecated.');
         this._stitchedAds = !!arg;
       }
 
