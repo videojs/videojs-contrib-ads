@@ -177,6 +177,10 @@ const contribAdsPlugin = function(options) {
   player.ads = getAds(player);
 
   player.ads.settings = settings;
+
+  // Set the stitched ads state. This needs to happen before the `_state` is
+  // initialized below - BeforePreroll needs to know whether contrib-ads is
+  // playing stitched ads or not.
   player.ads.stitchedAds(settings.stitchedAds);
 
   player.ads._state = new BeforePreroll(player);

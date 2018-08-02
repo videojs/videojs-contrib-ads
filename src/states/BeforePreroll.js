@@ -23,16 +23,10 @@ export default class BeforePreroll extends ContentState {
     this.adsReady = false;
     this.shouldResumeToContent = false;
 
-    // Also, when ads are stitched into the content, content playback should
-    // not be blocked and we should move immediately into the Preroll state.
-    if (player.ads.stitchedAds()) {
-      player.ads._shouldBlockPlay = false;
-      return this.transitionTo(Preroll, this.adsReady, this.shouldResumeToContent);
-    }
-
     // Content playback should be blocked until we are done
-    // playing ads or we know there are no ads to play
-    player.ads._shouldBlockPlay = true;
+    // playing ads or we know there are no ads to play or when ads are stitched
+    // into the content.
+    player.ads._shouldBlockPlay = !player.ads.stitchedAds();
   }
 
   /*
