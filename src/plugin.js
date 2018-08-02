@@ -182,7 +182,9 @@ const contribAdsPlugin = function(options) {
   // initialized below - BeforePreroll needs to know whether contrib-ads is
   // playing stitched ads or not.
   // The setter is deprecated, so this does not use it.
-  player.ads._stitchedAds = !!settings.stitchedAds;
+  // But first, cast to boolean.
+  settings.stitchedAds = !!settings.stitchedAds;
+  player.ads._stitchedAds = settings.stitchedAds;
 
   player.ads._state = new BeforePreroll(player);
   player.ads._state.init(player);

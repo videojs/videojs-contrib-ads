@@ -1,3 +1,4 @@
+import videojs from 'video.js';
 import getAds from '../../src/ads.js';
 
 QUnit.module('Ads Object', {
@@ -45,6 +46,23 @@ QUnit.module('Ads Object', {
     this.player.duration = () => Infinity;
     this.player.ads.settings.contentIsLive = false;
     assert.equal(this.player.ads.isLive(this.player), false);
+  });
+
+  QUnit.test('stitchedAds', function(assert) {
+    assert.notOk(this.player.ads.stitchedAds());
+
+    this.player.ads.settings.stitchedAds = true;
+
+    assert.ok(this.player.ads.stitchedAds());
+
+    sinon.spy(videojs.log, 'warn');
+    this.player.ads.stitchedAds(false);
+
+    assert.ok(videojs.log.warn.calledOnce, 'using as a setter is deprecated');
+    assert.notOk(this.player.ads.stitchedAds());
+    assert.notOk(this.player.ads.settings.stitchedAds);
+
+    videojs.log.warn.restore();
   });
 
   QUnit.test('shouldPlayContentBehindAd', function(assert) {
@@ -124,5 +142,21 @@ QUnit.module('Ads Object', {
     videojs.browser.IS_IOS = false;
     videojs.browser.IS_ANDROID = true;
     assert.equal(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+  });
+
+  QUnit.test('shouldTakeSnapshots', function(assert) {
+    this.player.ads.shouldPlayContentBehindAd = () => false;
+    this.player.ads.stitchedAds = () => false;
+
+    assert.ok(this.player.ads.shouldTakeSnapshots());
+
+    this.player.ads.shouldPlayContentBehindAd = () => true;
+
+    assert.notOk(this.player.ads.shouldTakeSnapshots());
+
+    this.player.ads.shouldPlayContentBehindAd = () => false;
+    this.player.ads.stitchedAds = () => true;
+
+    assert.notOk(this.player.ads.shouldTakeSnapshots());
   });
 });
