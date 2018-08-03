@@ -7,6 +7,7 @@ import adBreak from '../../../src/adBreak.js';
  */
 QUnit.module('Midroll', {
   beforeEach: function() {
+    this.stitchedAds = false;
     this.player = {
       addClass: () => {},
       removeClass: () => {},
@@ -14,7 +15,8 @@ QUnit.module('Midroll', {
         _inLinearAdMode: true,
         endLinearAdMode: () => {
           this.calledEndLinearAdMode = true;
-        }
+        },
+        stitchedAds: () => this.stitchedAds
       }
     };
 

@@ -7,13 +7,15 @@ import adBreak from '../../../src/adBreak.js';
  */
 QUnit.module('Postroll', {
   beforeEach: function() {
+    this.stitchedAds = false;
     this.events = [];
 
     this.player = {
       ads: {
         settings: {},
         debug: () => {},
-        inAdBreak: () => false
+        inAdBreak: () => false,
+        stitchedAds: () => this.stitchedAds
       },
       addClass: () => {},
       removeClass: () => {},
