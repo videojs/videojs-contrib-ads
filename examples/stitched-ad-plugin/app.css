@@ -1,0 +1,25 @@
+.ad-event {
+  background-color: #ffe400;
+}
+.content-event {
+  background-color: #66a8cc;
+}
+.content-adplugin-event {
+  background-color: #00a866;
+}
+ol {
+  list-style-type: none;
+  padding: 0;
+  font-family: monospace;
+  white-space: pre;
+}
+
+/* cue-text-tracks-example Styles */
+
+.ad-container .vjs-play-progress.vjs-slider-bar {
+  background-color: #ff0000;
+}
+
+.ad-container .vjs-big-play-button {
+  display: none;
+}

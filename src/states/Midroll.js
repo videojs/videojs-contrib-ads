@@ -15,9 +15,14 @@ export default class Midroll extends AdState {
    * which can happen at any time during content playback.
    */
   init(player) {
+    const stitchedAds = player.ads.stitchedAds();
+
     player.ads.adType = 'midroll';
     adBreak.start(player);
-    player.addClass('vjs-ad-loading');
+
+    if (!stitchedAds) {
+      player.addClass('vjs-ad-loading');
+    }
   }
 
   /*

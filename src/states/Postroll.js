@@ -17,6 +17,8 @@ export default class Postroll extends AdState {
    * happen here, not in a constructor.
    */
   init(player) {
+    const stitchedAds = player.ads.stitchedAds();
+
     this.waitingForAdBreak = true;
 
     // Legacy name that now simply means "handling postrolls".
@@ -24,18 +26,22 @@ export default class Postroll extends AdState {
 
     // Start postroll process.
     if (!player.ads.nopostroll_) {
-      player.addClass('vjs-ad-loading');
 
-      // Determine postroll timeout based on plugin settings
-      let timeout = player.ads.settings.timeout;
+      // For stitched ads, we don't need the loading state or timeout detection.
+      if (!stitchedAds) {
+        player.addClass('vjs-ad-loading');
 
-      if (typeof player.ads.settings.postrollTimeout === 'number') {
-        timeout = player.ads.settings.postrollTimeout;
+        // Determine postroll timeout based on plugin settings
+        let timeout = player.ads.settings.timeout;
+
+        if (typeof player.ads.settings.postrollTimeout === 'number') {
+          timeout = player.ads.settings.postrollTimeout;
+        }
+
+        this._postrollTimeout = player.setTimeout(function() {
+          player.trigger('adtimeout');
+        }, timeout);
       }
-
-      this._postrollTimeout = player.setTimeout(function() {
-        player.trigger('adtimeout');
-      }, timeout);
 
     // No postroll, ads are done
     } else {
