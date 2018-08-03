@@ -1,6 +1,9 @@
 <a name="6.4.3"></a>
 ## [6.4.3](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.2...v6.4.3) (2018-08-03)
 
+* Restore all sources instead of single source on snapshot restore
+* Send pause event when autoplay blocked on Chrome to be consistent with Safari
+
 <a name="6.4.2"></a>
 ## [6.4.2](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.1...v6.4.2) (2018-07-31)
 
