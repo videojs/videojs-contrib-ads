@@ -34,6 +34,7 @@ export function getPlayerSnapshot(player) {
   const snapshotObject = {
     ended: player.ended(),
     currentSrc: player.currentSrc(),
+    sources: player.currentSources(),
     src: player.tech_.src(),
     currentTime,
     type: player.currentType()
@@ -218,7 +219,7 @@ export function restorePlayerSnapshot(player, callback) {
     }
 
     // if the src changed for ad playback, reset it
-    player.src({ src: snapshotObject.currentSrc, type: snapshotObject.type });
+    player.src(snapshotObject.sources);
 
     // and then resume from the snapshots time once the original src has loaded
     // in some browsers (firefox) `canplay` may not fire correctly.
