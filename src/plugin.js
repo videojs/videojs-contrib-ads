@@ -184,7 +184,6 @@ const contribAdsPlugin = function(options) {
   // The setter is deprecated, so this does not use it.
   // But first, cast to boolean.
   settings.stitchedAds = !!settings.stitchedAds;
-  player.ads._stitchedAds = settings.stitchedAds;
 
   player.ads._state = new BeforePreroll(player);
   player.ads._state.init(player);

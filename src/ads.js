@@ -92,11 +92,11 @@ export default function getAds(player) {
     // deprecated.
     stitchedAds(arg) {
       if (arg !== undefined) {
-        videojs.log.warn('Using player.ads.stitchedAds() as a setter is deprecated.');
+        videojs.log.warn('Using player.ads.stitchedAds() as a setter is deprecated, it should be set as an option upon initialization of contrib-ads.');
 
         // Keep the private property and the settings in sync. When this
         // setter is removed, we can probably stop using the private property.
-        this._stitchedAds = this.settings.stitchedAds = !!arg;
+        this.settings.stitchedAds = !!arg;
       }
 
       return this.settings.stitchedAds;
