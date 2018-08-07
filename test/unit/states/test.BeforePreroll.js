@@ -116,7 +116,7 @@ QUnit.test('sets _shouldBlockPlay to true', function(assert) {
 });
 
 QUnit.test('when ads are stitched, sets _shouldBlockPlay to false', function(assert) {
-  this.stitchedAds = false;
+  this.stitchedAds = true;
   this.beforePreroll.init(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, false);
 });
