@@ -34,7 +34,7 @@ videojs.registerPlugin('exampleStitchedAds', function(options) {
 
   var simulateStartOfAd = function(time) {
     return waitForCurrentTime(time, function() {
-      player.on(['timeupdate', 'adtimeupdate'], simulateEndOfAd(time + 5));
+      player.on('adtimeupdate', simulateEndOfAd(time + 5));
       player.ads.startLinearAdMode();
     });
   };
@@ -46,14 +46,14 @@ videojs.registerPlugin('exampleStitchedAds', function(options) {
   });
 
   // Simulate a mid-roll at 15 seconds.
-  player.on(['timeupdate', 'adtimeupdate'], simulateStartOfAd(15));
+  player.on('timeupdate', simulateStartOfAd(15));
 
   // Simulate a post-roll at 5 seconds from the actual end of content.
   // This is a bit strange. In reality, you'd probably want to use middleware
   // to adjust the timelines to behave more like you'd expect, but this is a
   // reasonable approximation.
   player.one('canplaythrough', function() {
-    player.on(['timeupdate', 'adtimeupdate'], waitForCurrentTime(player.duration() - 5, function() {
+    player.on('timeupdate', waitForCurrentTime(player.duration() - 5, function() {
       player.tech(true).trigger('ended');
       player.play();
     }));
