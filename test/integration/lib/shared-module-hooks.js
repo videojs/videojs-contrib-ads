@@ -57,7 +57,7 @@ window.sharedModuleHooks = (function(){
         return videojs.createTimeRange(0, 0);
       };
 
-      this.player.ads();
+      this.player.ads(this.adsOptions);
     },
 
     afterEach: function() {
