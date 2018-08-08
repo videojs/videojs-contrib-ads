@@ -34,6 +34,17 @@ export default class StitchedAdRoll extends AdState {
   onContentResumed() {}
 
   /*
+   * When we see an "adended" event, it means that we are in a postroll that
+   * has ended (because the media ended and we are still in an ad state).
+   *
+   * In these cases, we transition back to content mode and fire ended.
+   */
+  onAdEnded() {
+    this.endLinearAdMode();
+    this.player.trigger('ended');
+  }
+
+  /*
    * StitchedAdRoll break is done.
    */
   endLinearAdMode() {

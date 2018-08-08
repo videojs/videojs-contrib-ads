@@ -246,7 +246,7 @@ const contribAdsPlugin = function(options) {
   // Event handling for the current state.
   player.on([
     'play', 'playing', 'ended',
-    'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
+    'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout', 'adended',
     'ads-ad-started',
     'contentchanged', 'dispose', 'contentresumed', 'readyforpostroll',
     'nopreroll', 'nopostroll'], (e) => {

@@ -7,7 +7,7 @@
     return (x + (new Array(n).join(c || '0'))).slice(0, n);
   };
 
-  var player = videojs('examplePlayer');
+  var player = window.player = videojs('examplePlayer');
 
   // initalize example ad plugin for this player
   player.exampleStitchedAds({

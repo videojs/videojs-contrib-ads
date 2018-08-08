@@ -33,8 +33,6 @@ videojs.registerPlugin('exampleStitchedAds', function(options) {
         var currentTime = player.currentTime();
         var duration = player.duration();
 
-        videojs.log(e.type + ' ' + currentTime + ' of ' + duration);
-
         // End the pre-roll.
         if (!havePlayedPreroll && currentTime >= 5) {
           havePlayedPreroll = true;
@@ -56,7 +54,8 @@ videojs.registerPlugin('exampleStitchedAds', function(options) {
           return;
         }
 
-        // Start the post-roll. The post-roll will be ended via the `adended` event.
+        // Start the post-roll.
+        // The post-roll will be ended automatically via the `adended` event.
         if (!haveStartedPostroll && currentTime >= duration - 5) {
           haveStartedPostroll = true;
           player.ads.startLinearAdMode();
@@ -64,11 +63,5 @@ videojs.registerPlugin('exampleStitchedAds', function(options) {
         }
       });
     });
-  });
-
-  // The actual ended event will now happen during the postroll playback.
-  player.one('adended', function() {
-    player.ads.endLinearAdMode();
-    player.trigger('ended');
   });
 });
