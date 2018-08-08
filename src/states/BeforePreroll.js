@@ -24,9 +24,8 @@ export default class BeforePreroll extends ContentState {
     this.shouldResumeToContent = false;
 
     // Content playback should be blocked until we are done
-    // playing ads or we know there are no ads to play or when ads are stitched
-    // into the content.
-    player.ads._shouldBlockPlay = !player.ads.stitchedAds();
+    // playing ads or we know there are no ads to play
+    player.ads._shouldBlockPlay = true;
   }
 
   /*

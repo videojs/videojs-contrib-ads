@@ -21,17 +21,10 @@ export default class Preroll extends AdState {
    * happen here, not in a constructor.
    */
   init(player, adsReady, shouldResumeToContent) {
-    const stitchedAds = player.ads.stitchedAds();
-
     this.waitingForAdBreak = true;
 
-    // With stitched ads, we won't need to wait for a preroll and we can
-    // allow the integration to call startLinearAdMode whenever it's ready.
-    if (!stitchedAds) {
-
-      // Loading spinner from now until ad start or end of ad break.
-      player.addClass('vjs-ad-loading');
-    }
+    // Loading spinner from now until ad start or end of ad break.
+    player.addClass('vjs-ad-loading');
 
     // If adserror, adscanceled, nopreroll or skipLinearAdMode already
     // ocurred, resume to content immediately
@@ -39,20 +32,17 @@ export default class Preroll extends AdState {
       return this.resumeAfterNoPreroll(player);
     }
 
-    if (!stitchedAds) {
+    // Determine preroll timeout based on plugin settings
+    let timeout = player.ads.settings.timeout;
 
-      // Determine preroll timeout based on plugin settings
-      let timeout = player.ads.settings.timeout;
-
-      if (typeof player.ads.settings.prerollTimeout === 'number') {
-        timeout = player.ads.settings.prerollTimeout;
-      }
-
-      // Start the clock ticking for ad timeout
-      this._timeout = player.setTimeout(function() {
-        player.trigger('adtimeout');
-      }, timeout);
+    if (typeof player.ads.settings.prerollTimeout === 'number') {
+      timeout = player.ads.settings.prerollTimeout;
     }
+
+    // Start the clock ticking for ad timeout
+    this._timeout = player.setTimeout(function() {
+      player.trigger('adtimeout');
+    }, timeout);
 
     // If adsready already happened, lets get started. Otherwise,
     // wait until onAdsReady.

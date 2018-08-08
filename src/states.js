@@ -11,6 +11,8 @@ import Postroll from './states/Postroll.js';
 import BeforePreroll from './states/BeforePreroll.js';
 import ContentPlayback from './states/ContentPlayback.js';
 import AdsDone from './states/AdsDone.js';
+import StitchedAdRoll from './states/StitchedAdRoll.js';
+import StitchedContentPlayback from './states/StitchedContentPlayback.js';
 
 export {
   State,
@@ -21,5 +23,7 @@ export {
   Postroll,
   BeforePreroll,
   ContentPlayback,
-  AdsDone
+  AdsDone,
+  StitchedAdRoll,
+  StitchedContentPlayback
 };

@@ -13,7 +13,7 @@ import cueTextTracks from './cueTextTracks.js';
 import initCancelContentPlay from './cancelContentPlay.js';
 import playMiddlewareFeature from './playMiddleware.js';
 
-import {BeforePreroll} from './states.js';
+import {BeforePreroll, StitchedContentPlayback} from './states.js';
 
 const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
@@ -185,7 +185,12 @@ const contribAdsPlugin = function(options) {
   // But first, cast to boolean.
   settings.stitchedAds = !!settings.stitchedAds;
 
-  player.ads._state = new BeforePreroll(player);
+  if (settings.stitchedAds) {
+    player.ads._state = new StitchedContentPlayback(player);
+  } else {
+    player.ads._state = new BeforePreroll(player);
+  }
+
   player.ads._state.init(player);
 
   player.ads.cueTextTracks = cueTextTracks;

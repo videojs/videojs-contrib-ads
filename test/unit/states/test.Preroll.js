@@ -10,11 +10,9 @@ QUnit.module('Preroll', {
   beforeEach: function() {
     this.events = [];
     this.playTriggered = false;
-    this.stitchedAds = false;
 
     this.player = {
       ads: {
-        stitchedAds: () => this.stitchedAds,
         debug: () => {},
         settings: {},
         inAdBreak: () => false,
@@ -223,13 +221,4 @@ QUnit.test('resets _shouldBlockPlay to false when no preroll', function(assert) 
   this.preroll.init(this.player, true, false);
   this.preroll.resumeAfterNoPreroll(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, false);
-});
-
-QUnit.test('when ads are stitched, does not add ad loading class or create a timeout timer', function(assert) {
-  const addClassSpy = sinon.spy(this.player, 'addClass');
-
-  this.stitchedAds = true;
-  this.preroll.init(this.player);
-  assert.ok(addClassSpy.notCalled, 'no class added');
-  assert.notOk(this.preroll._timeout, 'no timer created');
 });

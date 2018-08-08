@@ -7,15 +7,13 @@ import adBreak from '../../../src/adBreak.js';
  */
 QUnit.module('Postroll', {
   beforeEach: function() {
-    this.stitchedAds = false;
     this.events = [];
 
     this.player = {
       ads: {
         settings: {},
         debug: () => {},
-        inAdBreak: () => false,
-        stitchedAds: () => this.stitchedAds
+        inAdBreak: () => false
       },
       addClass: () => {},
       removeClass: () => {},
@@ -148,13 +146,4 @@ QUnit.test('can tell if waiting for ad break', function(assert) {
   assert.equal(this.postroll.isWaitingForAdBreak(), true, 'waiting for ad break');
   this.postroll.startLinearAdMode();
   assert.equal(this.postroll.isWaitingForAdBreak(), false, 'not waiting for ad break');
-});
-
-QUnit.test('when ads are stitched, does not add ad loading class or create a timeout timer', function(assert) {
-  const addClassSpy = sinon.spy(this.player, 'addClass');
-
-  this.stitchedAds = true;
-  this.postroll.init(this.player);
-  assert.ok(addClassSpy.notCalled, 'no class added');
-  assert.notOk(this.postroll._postrollTimeout, 'no timer created');
 });

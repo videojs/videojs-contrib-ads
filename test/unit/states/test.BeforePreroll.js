@@ -8,11 +8,9 @@ import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 QUnit.module('BeforePreroll', {
   beforeEach: function() {
     this.events = [];
-    this.stitchedAds = false;
 
     this.player = {
       ads: {
-        stitchedAds: () => this.stitchedAds,
         debug: () => {},
         _shouldBlockPlay: false
       },
@@ -113,12 +111,6 @@ QUnit.test('handles dispose', function(assert) {
 QUnit.test('sets _shouldBlockPlay to true', function(assert) {
   this.beforePreroll.init(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, true);
-});
-
-QUnit.test('when ads are stitched, sets _shouldBlockPlay to false', function(assert) {
-  this.stitchedAds = true;
-  this.beforePreroll.init(this.player);
-  assert.equal(this.player.ads._shouldBlockPlay, false);
 });
 
 QUnit.test('updates `shouldResumeToContent` on `nopreroll`', function(assert) {
