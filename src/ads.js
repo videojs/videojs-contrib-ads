@@ -131,6 +131,9 @@ export default function getAds(player) {
     // This is only done during live streams on platforms where it's supported.
     // This improves speed and accuracy when returning from an ad break.
     shouldPlayContentBehindAd(somePlayer) {
+      if (this.settings.liveCuePoints === false) {
+        return false;
+      }
       return !videojs.browser.IS_IOS &&
              !videojs.browser.IS_ANDROID &&
              somePlayer.duration() === Infinity;
