@@ -156,7 +156,7 @@ const builds = {
     }]
   }),
   test: makeBuild('test', {
-    input: 'test/**/*.test.js',
+    input: 'test/**/test.*.js',
     output: [{
       name: `${moduleName}Tests`,
       file: 'test/dist/bundle.js',
