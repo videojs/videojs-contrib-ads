@@ -1,6 +1,8 @@
 <a name="6.5.0"></a>
 # [6.5.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.3...v6.5.0) (2018-08-13)
 
+* Added liveCuePoints option
+
 <a name="6.4.3"></a>
 ## [6.4.3](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.2...v6.4.3) (2018-08-03)
 
