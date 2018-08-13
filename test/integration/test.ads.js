@@ -811,6 +811,21 @@ QUnit.test('shouldPlayContentBehindAd', function(assert) {
   videojs.browser.IS_ANDROID = false;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+  try {
+    this.player.ads.shouldPlayContentBehindAd();
+  } catch (error) {
+    assert.strictEqual(error.message,
+      'shouldPlayContentBehindAd requires a player as a param');
+  }
+
+  this.player.duration = function() {return Infinity;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = false;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 });
 
 QUnit.test('Check incorrect addition of vjs-live during ad-playback', function(assert) {
