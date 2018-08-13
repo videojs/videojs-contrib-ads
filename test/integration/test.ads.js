@@ -774,41 +774,66 @@ QUnit.test('shouldPlayContentBehindAd', function(assert) {
   this.player.duration = function() {return Infinity;};
   videojs.browser.IS_IOS = true;
   videojs.browser.IS_ANDROID = true;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
   this.player.duration = function() {return Infinity;};
   videojs.browser.IS_IOS = true;
   videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
   this.player.duration = function() {return Infinity;};
   videojs.browser.IS_IOS = false;
   videojs.browser.IS_ANDROID = true;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
   this.player.duration = function() {return Infinity;};
   videojs.browser.IS_IOS = false;
   videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), true);
 
   this.player.duration = function() {return 5;};
   videojs.browser.IS_IOS = true;
   videojs.browser.IS_ANDROID = true;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
   this.player.duration = function() {return 5;};
   videojs.browser.IS_IOS = true;
   videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
   this.player.duration = function() {return 5;};
   videojs.browser.IS_IOS = false;
   videojs.browser.IS_ANDROID = true;
+  this.player.ads.settings.liveCuePoints = true;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
   this.player.duration = function() {return 5;};
   videojs.browser.IS_IOS = false;
   videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = true;
+  assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = true;
+  try {
+    this.player.ads.shouldPlayContentBehindAd();
+  } catch (error) {
+    assert.strictEqual(error.message,
+      'shouldPlayContentBehindAd requires a player as a param');
+  }
+
+  this.player.duration = function() {return 5;};
+  videojs.browser.IS_IOS = false;
+  videojs.browser.IS_ANDROID = false;
+  this.player.ads.settings.liveCuePoints = false;
   assert.strictEqual(this.player.ads.shouldPlayContentBehindAd(this.player), false);
 
 });
