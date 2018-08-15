@@ -33,6 +33,7 @@
     "prestart": "npm run build",
     "start": "npm-run-all -p start:* watch",
     "start:server": "static -a 0.0.0.0 -p 9999 -H '{\"Cache-Control\": \"no-cache, must-revalidate\"}' .",
+    "start:test": "karma start --no-single-run --browsers Chrome test/karma.conf.js",
     "pretest": "npm-run-all lint build",
     "test": "karma start test/karma.conf.js",
     "preversion": "npm test",

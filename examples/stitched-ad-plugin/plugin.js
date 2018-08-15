@@ -11,6 +11,7 @@
 videojs.registerPlugin('exampleStitchedAds', function(options) {
   var player = this;
 
+  options = options || {};
   options.stitchedAds = true;
 
   // Initialize contrib-ads.
