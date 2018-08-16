@@ -41,10 +41,3 @@ QUnit.test('sets _shouldBlockPlay to false on init', function(assert) {
   this.stitchedContentPlayback.init();
   assert.equal(this.player.ads._shouldBlockPlay, false);
 });
-
-QUnit.test('sets _contentHasEnded to false on init to tell redispatch not to intercept ended events', function(assert) {
-  assert.equal(this.player.ads._contentHasEnded, false);
-
-  this.stitchedContentPlayback.init();
-  assert.equal(this.player.ads._contentHasEnded, true);
-});

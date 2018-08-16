@@ -20,10 +20,6 @@ export default class StitchedContentPlayback extends ContentState {
 
     // Don't block calls to play in stitched ad players, ever.
     this.player.ads._shouldBlockPlay = false;
-
-    // Tell redispatch not to intercept ended events. This should prevent
-    // the firing of readyforpostroll.
-    this.player.ads._contentHasEnded = true;
   }
 
   /*
