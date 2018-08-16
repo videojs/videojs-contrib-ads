@@ -16,14 +16,14 @@ export default class StitchedContentPlayback extends ContentState {
    * For state transitions to work correctly, initialization should
    * happen here, not in a constructor.
    */
-  init(player) {
+  init() {
 
     // Don't block calls to play in stitched ad players, ever.
-    player.ads._shouldBlockPlay = false;
+    this.player.ads._shouldBlockPlay = false;
 
     // Tell redispatch not to intercept ended events. This should prevent
     // the firing of readyforpostroll.
-    player.ads._contentHasEnded = true;
+    this.player.ads._contentHasEnded = true;
   }
 
   /*
@@ -31,8 +31,8 @@ export default class StitchedContentPlayback extends ContentState {
    * contentchanged does not fire during ad breaks, so we don't need to
    * worry about that.
    */
-  onContentChanged(player) {
-    player.ads.debug(`Received contentchanged event (${this._getName()})`);
+  onContentChanged() {
+    this.player.ads.debug(`Received contentchanged event (${this._getName()})`);
   }
 
   /*

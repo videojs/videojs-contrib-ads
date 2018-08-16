@@ -14,11 +14,11 @@ export default class StitchedAdRoll extends AdState {
    * StitchedAdRoll breaks happen when the ad plugin calls startLinearAdMode,
    * which can happen at any time during content playback.
    */
-  init(player) {
+  init() {
     this.waitingForAdBreak = false;
     this.contentResuming = false;
-    player.ads.adType = 'stitched';
-    adBreak.start(player);
+    this.player.ads.adType = 'stitched';
+    adBreak.start(this.player);
   }
 
   /*
