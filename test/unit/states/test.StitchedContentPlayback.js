@@ -17,6 +17,7 @@ QUnit.module('StitchedContentPlayback', {
       },
       ads: {
         debug: () => {},
+        _contentHasEnded: false,
         _shouldBlockPlay: true
       }
     };
