@@ -12,10 +12,11 @@ import adMacroReplacement from './macros.js';
 import cueTextTracks from './cueTextTracks.js';
 import initCancelContentPlay from './cancelContentPlay.js';
 import playMiddlewareFeature from './playMiddleware.js';
+import register from './register.js';
 
 import {BeforePreroll, StitchedContentPlayback} from './states.js';
 
-const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
+const { isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
 
 // Default settings
@@ -261,17 +262,7 @@ const contribAdsPlugin = function(options) {
 
 };
 
-const registerPlugin = videojs.registerPlugin || videojs.plugin;
-
-// Register this plugin with videojs
-registerPlugin('ads', contribAdsPlugin);
-
-// Register the Play Middleware with video.js on script execution,
-// to avoid a new playMiddleware factory being created on
-// videojs for each player created.
-if (isMiddlewareMediatorSupported()) {
-  // Register the play middleware
-  videojs.use('*', playMiddleware);
-}
+// Attempt to register the plugin, if we can.
+register(contribAdsPlugin);
 
 export default contribAdsPlugin;
