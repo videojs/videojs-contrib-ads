@@ -5,6 +5,8 @@ that live in in separate files.
 
 import videojs from 'video.js';
 
+import {version as adsVersion} from '../package.json';
+
 import getAds from './ads.js';
 import redispatch from './redispatch.js';
 import initializeContentupdate from './contentupdate.js';
@@ -261,6 +263,10 @@ const contribAdsPlugin = function(options) {
   });
 
 };
+
+// Expose the contrib-ads version before it is initialized. Will be replaced
+// after initialization in ads.js
+contribAdsPlugin.VERSION = adsVersion;
 
 // Attempt to register the plugin, if we can.
 register(contribAdsPlugin);
