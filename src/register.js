@@ -3,9 +3,6 @@ import playMiddlewareFeature from './playMiddleware.js';
 
 const {playMiddleware, isMiddlewareMediatorSupported} = playMiddlewareFeature;
 
-// The plugin name.
-const NAME = 'ads';
-
 /**
  * Whether or not this copy of Video.js has the ads plugin.
  *
@@ -13,13 +10,16 @@ const NAME = 'ads';
  *         If `true`, has the plugin. `false` otherwise.
  */
 const hasAdsPlugin = () => {
+
+  // Video.js 6 and 7 have a getPlugin method.
   if (videojs.getPlugin) {
-    return Boolean(videojs.getPlugin(NAME));
+    return Boolean(videojs.getPlugin('ads'));
   }
 
+  // Video.js 5 does not have a getPlugin method, so check the player prototype.
   const Player = videojs.getComponent('Player');
 
-  return Boolean(Player && Player.prototype[NAME]);
+  return Boolean(Player && Player.prototype.ads);
 };
 
 /**
@@ -53,7 +53,7 @@ function register(contribAdsPlugin) {
   const registerPlugin = videojs.registerPlugin || videojs.plugin;
 
   // Register this plugin with Video.js.
-  registerPlugin(NAME, contribAdsPlugin);
+  registerPlugin('ads', contribAdsPlugin);
 
   // Register the play middleware with Video.js on script execution,
   // to avoid a new playMiddleware factory being added for each player.
@@ -70,4 +70,4 @@ function register(contribAdsPlugin) {
 }
 
 export default register;
-export {NAME, hasAdsPlugin};
+export {hasAdsPlugin};

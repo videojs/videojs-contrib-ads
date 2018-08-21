@@ -1,26 +1,30 @@
 import videojs from 'video.js';
 import contribAdsPlugin from '../../src/plugin.js';
 import register from '../../src/register.js';
-import {NAME, hasAdsPlugin} from '../../src/register.js';
+import { hasAdsPlugin} from '../../src/register.js';
 
 // Cross-compatible plugin de-registration.
 const deregister = () => {
+
+  // Video.js 7.2+
   if (videojs.deregisterPlugin) {
-    return videojs.deregisterPlugin(NAME);
+    return videojs.deregisterPlugin('ads');
   }
 
+  // Video.js 6.0 thru 7.1
   if (videojs.getPlugin) {
     const Plugin = videojs.getPlugin('plugin');
 
     if (Plugin && Plugin.deregisterPlugin) {
-      return Plugin.deregisterPlugin(NAME);
+      return Plugin.deregisterPlugin('ads');
     }
   }
 
+  // Video.js 5
   const Player = videojs.getComponent('Player');
 
-  if (Player && Player.prototype[NAME]) {
-    delete Player.prototype[NAME];
+  if (Player && Player.prototype.ads) {
+    delete Player.prototype.ads;
   }
 };
 
