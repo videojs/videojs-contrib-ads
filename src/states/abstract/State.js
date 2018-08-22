@@ -54,7 +54,6 @@ export default class State {
   onAdTimeout() {}
   onAdStarted() {}
   onContentChanged() {}
-  onDispose() {}
   onContentResumed() {}
   onReadyForPostroll() {
     videojs.log.warn('Unexpected readyforpostroll event');
@@ -124,8 +123,6 @@ export default class State {
       this.onAdStarted(player);
     } else if (type === 'contentchanged') {
       this.onContentChanged(player);
-    } else if (type === 'dispose') {
-      this.onDispose(player);
     } else if (type === 'contentresumed') {
       this.onContentResumed(player);
     } else if (type === 'readyforpostroll') {

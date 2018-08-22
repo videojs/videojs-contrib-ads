@@ -90,8 +90,4 @@ export default class BeforePreroll extends ContentState {
     this.onPlay(this.player);
   }
 
-  onDispose() {
-    this.init(this.player);
-  }
-
 }
