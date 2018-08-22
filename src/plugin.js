@@ -83,11 +83,7 @@ const contribAdsPlugin = function(options) {
   // will disallow calling play once play blocking is lifted)
   // The middleware must also be registered outside of the plugin,
   // to avoid a middleware factory being created for each player
-  if (isMiddlewareMediatorSupported() && settings.debug) {
-    // We log the debug message here as the plugin settings are available here
-    videojs.log('ADS:', 'Play middleware has been registered with videojs');
-  } else {
-    // Register the cancelContentPlay feature on the player
+  if (!isMiddlewareMediatorSupported()) {
     initCancelContentPlay(player, settings.debug);
   }
 

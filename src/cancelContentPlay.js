@@ -2,7 +2,7 @@ import videojs from 'video.js';
 
 export default function initCancelContentPlay(player, debug) {
   if (debug) {
-    videojs.log('ADS:', 'Using cancelContentPlay to block content playback');
+    videojs.log('Using cancelContentPlay to block content playback');
   }
 
   // Listen to play events to "cancel" them afterward
