@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Stitched Ads Example</title>
+  <link rel="stylesheet" href="../../node_modules/video.js/dist/video-js.css">
+  <script src="../../node_modules/video.js/dist/video.js"></script>
+  <link rel="stylesheet" href="../../dist/videojs-contrib-ads.css">
+  <script src="../../dist/videojs-contrib-ads.js"></script>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <h1>Stitched Ads Example</h1>
+
+  <p>This page uses the built files, so you must do a local build before the example will work.</p>
+
+  <p>This is a limited example implementation that puts the player into and out of ad mode for 5 seconds at specific times.</p>
+
+  <video
+    id="examplePlayer"
+    class="video-js vjs-default-skin"
+    width="640"
+    height="264"
+    poster="http://vjs.zencdn.net/v/oceans.png"
+    controls>
+    <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+    <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm">
+    <source src="http://vjs.zencdn.net/v/oceans.ogv" type="video/ogg">
+  </video>
+
+  <h2>Events</h2>
+
+  <ol class="log"></ol>
+
+  <script src="./plugin.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

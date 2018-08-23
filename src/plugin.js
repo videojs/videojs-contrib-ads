@@ -13,7 +13,7 @@ import cueTextTracks from './cueTextTracks.js';
 import initCancelContentPlay from './cancelContentPlay.js';
 import playMiddlewareFeature from './playMiddleware.js';
 
-import {BeforePreroll} from './states.js';
+import {BeforePreroll, StitchedContentPlayback} from './states.js';
 
 const { playMiddleware, isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
@@ -177,10 +177,21 @@ const contribAdsPlugin = function(options) {
   player.ads = getAds(player);
 
   player.ads.settings = settings;
-  player.ads._state = new BeforePreroll(player);
-  player.ads._state.init(player);
 
-  player.ads.stitchedAds(settings.stitchedAds);
+  // Set the stitched ads state. This needs to happen before the `_state` is
+  // initialized below - BeforePreroll needs to know whether contrib-ads is
+  // playing stitched ads or not.
+  // The setter is deprecated, so this does not use it.
+  // But first, cast to boolean.
+  settings.stitchedAds = !!settings.stitchedAds;
+
+  if (settings.stitchedAds) {
+    player.ads._state = new StitchedContentPlayback(player);
+  } else {
+    player.ads._state = new BeforePreroll(player);
+  }
+
+  player.ads._state.init(player);
 
   player.ads.cueTextTracks = cueTextTracks;
   player.ads.adMacroReplacement = adMacroReplacement.bind(player);
@@ -235,7 +246,7 @@ const contribAdsPlugin = function(options) {
   // Event handling for the current state.
   player.on([
     'play', 'playing', 'ended',
-    'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout',
+    'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout', 'adended',
     'ads-ad-started',
     'contentchanged', 'dispose', 'contentresumed', 'readyforpostroll',
     'nopreroll', 'nopostroll'], (e) => {

@@ -20,10 +20,14 @@ const restoreVideojs = function() {
 };
 
 // Run custom hooks before sharedModuleHooks, as videojs must be
-// modified before seting up the player and videojs-contrib-ads
+// modified before setting up the player and videojs-contrib-ads
 QUnit.module('Cancel Content Play', {
-  beforeEach: _.flow(fakeVideojs, sharedHooks.beforeEach),
-  afterEach: _.flow(restoreVideojs, sharedHooks.afterEach)
+  beforeEach: _.flow(function() {
+    this.adsOptions = {};
+  }, fakeVideojs, sharedHooks.beforeEach),
+  afterEach: _.flow(function() {
+    this.adsOptions = null;
+  }, restoreVideojs, sharedHooks.afterEach)
 });
 
 QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
@@ -41,7 +45,6 @@ QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', func
 
   assert.strictEqual(spy.callCount, 2, 'play attempts are paused');
 });
-
 
 QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
   var pauseSpy = sinon.spy(this.player, 'pause');
@@ -133,4 +136,47 @@ QUnit.test('content is resumed after ads if a user initiated play event is cance
 
   this.player.trigger('play');
   assert.ok(pauseSpy.callCount, 1, 'pause was not called again');
+});
+
+// Set up contrib-ads options and run custom hooks before sharedModuleHooks, as
+// videojs must be modified before setting up the player and videojs-contrib-ads
+QUnit.module('Cancel Content Play (w/ Stitched Ads)', {
+  beforeEach: _.flow(function() {
+    this.adsOptions = {
+      stitchedAds: true
+    };
+  }, fakeVideojs, sharedHooks.beforeEach),
+  afterEach: _.flow(function() {
+    this.adsOptions = null;
+  }, restoreVideojs, sharedHooks.afterEach)
+});
+
+QUnit.test('does not pause to wait for prerolls when the plugin loads BEFORE play', function(assert) {
+  var spy = sinon.spy(this.player, 'pause');
+
+  this.player.paused = function() {
+    return false;
+  };
+
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+  this.clock.tick(1);
+  this.player.trigger('play');
+  this.clock.tick(1);
+
+  assert.strictEqual(spy.callCount, 0, 'play attempts are not paused');
+});
+
+QUnit.test('does not pause to wait for prerolls when the plugin loads AFTER play', function(assert) {
+  var pauseSpy = sinon.spy(this.player, 'pause');
+
+  this.player.paused = function() {
+    return false;
+  };
+
+  this.player.trigger('play');
+  this.clock.tick(1);
+  this.player.trigger('play');
+  this.clock.tick(1);
+  assert.equal(pauseSpy.callCount, 0, 'play attempts are not paused');
 });

@@ -15,7 +15,7 @@ function start(player) {
   player.trigger('adstart');
 
   // Capture current player state snapshot
-  if (!player.ads.shouldPlayContentBehindAd(player)) {
+  if (player.ads.shouldTakeSnapshots()) {
     player.ads.snapshot = snapshot.getPlayerSnapshot(player);
   }
 
@@ -64,7 +64,7 @@ function end(player, callback) {
   }
 
   // Restore snapshot
-  if (!player.ads.shouldPlayContentBehindAd(player)) {
+  if (player.ads.shouldTakeSnapshots()) {
     snapshot.restorePlayerSnapshot(player, callback);
 
   // Reset the volume to pre-ad levels

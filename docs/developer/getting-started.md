@@ -35,7 +35,7 @@ npm run test
 
 ### In browser
 
-Run `./node_modules/.bin/karma start --no-single-run --browsers Chrome test/karma.conf.js` then open `localhost:9876/debug.html`. This can be useful for debugging tests.
+Run `npm start` and a Chrome instance will launch with Karma's debug interface at `localhost:9876`, allowing you to debug tests. Also, a static server will run and allow you to look at examples at `localhost:9999`.
 
 ## What's Next
 

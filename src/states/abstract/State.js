@@ -46,6 +46,7 @@ export default class State {
   onPlay() {}
   onPlaying() {}
   onEnded() {}
+  onAdEnded() {}
   onAdsReady() {
     videojs.log.warn('Unexpected adsready event');
   }
@@ -138,6 +139,8 @@ export default class State {
       this.onNoPreroll(player);
     } else if (type === 'nopostroll') {
       this.onNoPostroll(player);
+    } else if (type === 'adended') {
+      this.onAdEnded(player);
     }
   }
 
