@@ -1,3 +1,14 @@
+<a name="6.6.0"></a>
+# [6.6.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.3...v6.6.0) (2018-08-23)
+
+### Features
+
+* More complete support for stitched ad scenarios. ([#415](https://github.com/videojs/videojs-contrib-ads/issues/415)) ([a533bbb](https://github.com/videojs/videojs-contrib-ads/commit/a533bbb))
+
+### Bug Fixes
+
+* Avoid multiple-registration warning messages by accepting only the first contrib-ads per context. ([#421](https://github.com/videojs/videojs-contrib-ads/issues/421)) ([c46ed1a](https://github.com/videojs/videojs-contrib-ads/commit/c46ed1a))
+
 <a name="6.5.0"></a>
 # [6.5.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.3...v6.5.0) (2018-08-13)
 
