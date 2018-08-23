@@ -85,9 +85,6 @@ export default class BeforePreroll extends ContentState {
 
   onContentChanged() {
     this.init(this.player);
-
-    // TODO: Handle case where player does not play on content change
-    this.onPlay(this.player);
   }
 
   onDispose() {
