@@ -102,12 +102,6 @@ QUnit.test('handles content change', function(assert) {
   assert.equal(this.beforePreroll.onPlay.calledOnce, true);
 });
 
-QUnit.test('handles dispose', function(assert) {
-  sinon.spy(this.beforePreroll, "init");
-  this.beforePreroll.onDispose(this.player);
-  assert.equal(this.beforePreroll.init.calledOnce, true);
-});
-
 QUnit.test('sets _shouldBlockPlay to true', function(assert) {
   this.beforePreroll.init(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, true);
