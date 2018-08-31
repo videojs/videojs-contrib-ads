@@ -1,3 +1,22 @@
+<a name="6.6.1"></a>
+## [6.6.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.3...v6.6.1) (2018-08-31)
+
+### Features
+
+* More complete support for stitched ad scenarios. ([#415](https://github.com/videojs/videojs-contrib-ads/issues/415)) ([a533bbb](https://github.com/videojs/videojs-contrib-ads/commit/a533bbb))
+
+### Bug Fixes
+
+* Avoid multiple-registration warning messages by accepting only the first contrib-ads per context. ([#421](https://github.com/videojs/videojs-contrib-ads/issues/421)) ([c46ed1a](https://github.com/videojs/videojs-contrib-ads/commit/c46ed1a))
+* middleware log message ([#423](https://github.com/videojs/videojs-contrib-ads/issues/423)) ([852e6c5](https://github.com/videojs/videojs-contrib-ads/commit/852e6c5))
+* remove hack ([#424](https://github.com/videojs/videojs-contrib-ads/issues/424)) ([578ee12](https://github.com/videojs/videojs-contrib-ads/commit/578ee12))
+* set contentresuming before calling adBreak.end ([#418](https://github.com/videojs/videojs-contrib-ads/issues/418)) ([627e94b](https://github.com/videojs/videojs-contrib-ads/commit/627e94b))
+
+### Chores
+
+* all lint warnings gone ([#428](https://github.com/videojs/videojs-contrib-ads/issues/428)) ([4a4a0f6](https://github.com/videojs/videojs-contrib-ads/commit/4a4a0f6))
+* Remove unneeded onDispose handling ([#422](https://github.com/videojs/videojs-contrib-ads/issues/422)) ([b8e8dcc](https://github.com/videojs/videojs-contrib-ads/commit/b8e8dcc))
+
 <a name="6.6.0"></a>
 # [6.6.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.3...v6.6.0) (2018-08-23)
 
