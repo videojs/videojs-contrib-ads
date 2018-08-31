@@ -181,8 +181,8 @@ export default class Preroll extends AdState {
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
       player.addClass('vjs-ad-content-resuming');
-      adBreak.end(player);
       this.contentResuming = true;
+      adBreak.end(player);
     }
   }
 
