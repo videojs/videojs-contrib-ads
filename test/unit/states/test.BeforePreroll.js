@@ -96,10 +96,8 @@ QUnit.test('skips the preroll', function(assert) {
 
 QUnit.test('handles content change', function(assert) {
   sinon.spy(this.beforePreroll, "init");
-  sinon.spy(this.beforePreroll, "onPlay");
   this.beforePreroll.onContentChanged(this.player);
   assert.equal(this.beforePreroll.init.calledOnce, true);
-  assert.equal(this.beforePreroll.onPlay.calledOnce, true);
 });
 
 QUnit.test('sets _shouldBlockPlay to true', function(assert) {
