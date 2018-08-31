@@ -30,4 +30,4 @@ A short list of features, fixes and changes for each release is available in [CH
 
 ## License
 
-See [LICENSE-APACHE2](LICENSE-APACHE2).
+See [LICENSE-APACHE2](LICENSE).
