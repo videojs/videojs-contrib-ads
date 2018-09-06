@@ -1,8 +1,11 @@
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-plugin.js';
+import QUnit from 'qunit';
+import document from 'global/document';
+import sinon from 'sinon';
 
 QUnit.module('Integration: play middleware', {
-  beforeEach: function() {
+  beforeEach() {
     this.video = document.createElement('video');
 
     this.fixture = document.querySelector('#qunit-fixture');
@@ -11,11 +14,11 @@ QUnit.module('Integration: play middleware', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json'
+      adServerUrl: '/base/test/integration/lib/inventory.json'
     });
   },
 
-  afterEach: function() {
+  afterEach() {
     this.player.dispose();
   }
 });
@@ -31,7 +34,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   // When the preroll starts
   this.player.on('adstart', () => {
     assert.strictEqual(this.player.ads._playRequested, true,
-    '_playRequested is true when the play method is used');
+      '_playRequested is true when the play method is used');
     done();
   });
 
@@ -39,7 +42,7 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 0) {
       assert.strictEqual(this.player.ads._playRequested, true,
-      '_playRequested is true when the play method is used');
+        '_playRequested is true when the play method is used');
       done();
     }
   });
@@ -151,7 +154,7 @@ QUnit.test("don't trigger play event if another middleware terminates", function
   const playSpy = sinon.spy();
 
   let shouldTerminate = true;
-  let anotherMiddleware = function(player) {
+  const anotherMiddleware = function(player) {
     return {
       setSource(srcObj, next) {
         next(null, srcObj);
@@ -166,14 +169,13 @@ QUnit.test("don't trigger play event if another middleware terminates", function
       }
     };
   };
-  let localPlayer;
 
   // Register the other middleware
   videojs.use('video/webm', anotherMiddleware);
 
   // Don't use the shared player, setup new localPlayer
   fixture.appendChild(vid);
-  localPlayer = videojs(vid);
+  const localPlayer = videojs(vid);
 
   // Setup before example integration
   localPlayer.on('nopreroll', () => {
@@ -182,7 +184,7 @@ QUnit.test("don't trigger play event if another middleware terminates", function
 
   // Don't play preroll ads
   localPlayer.exampleAds({
-    'adServerUrl': '/base/test/integration/lib/inventory.json',
+    adServerUrl: '/base/test/integration/lib/inventory.json',
     playPreroll: false
   });
 

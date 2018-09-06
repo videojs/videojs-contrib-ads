@@ -1,6 +1,10 @@
-QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
+import QUnit from 'qunit';
+import sinon from 'sinon';
+import sharedModuleHooks from './lib/shared-module-hooks.js';
 
-  beforeEach: function() {
+QUnit.module('Cue Metadata Text Tracks', sharedModuleHooks({
+
+  beforeEach() {
     this.tt = {
       player: this.player,
       kind: 'metadata',
@@ -8,7 +12,7 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
       id: '1',
       startTime: 1,
       endTime: 2,
-      addEventListener: function(event, cb) {
+      addEventListener(event, cb) {
         if (event === 'cuechange') {
           cb.apply(this, [this]);
         }
@@ -16,7 +20,7 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
       activeCues: []
     };
   },
-  afterEach: function() {
+  afterEach() {
     this.player.ads.cueTextTracks.getSupportedAdCue = function(player, cue) {
       return cue;
     };
@@ -30,9 +34,9 @@ QUnit.module('Cue Metadata Text Tracks', window.sharedModuleHooks({
 }));
 
 QUnit.test('runs processMetadataTrack callback as tracks are added', function(assert) {
-  var tt = this.tt;
-  var processMetadataTrackSpy = sinon.spy();
-  var cueTextTracks = this.player.ads.cueTextTracks;
+  const tt = this.tt;
+  const processMetadataTrackSpy = sinon.spy();
+  const cueTextTracks = this.player.ads.cueTextTracks;
 
   // Start by adding a text track before processing
   this.player.addRemoteTextTrack(tt);
@@ -49,23 +53,24 @@ QUnit.test('runs processMetadataTrack callback as tracks are added', function(as
 });
 
 QUnit.test('does not call processMetadataTrack callback until tracks available', function(assert) {
-  var processMetadataTrackSpy = sinon.spy();
-  var cueTextTracks = this.player.ads.cueTextTracks;
+  const processMetadataTrackSpy = sinon.spy();
+  const cueTextTracks = this.player.ads.cueTextTracks;
 
   cueTextTracks.processMetadataTracks(this.player, processMetadataTrackSpy);
   assert.strictEqual(processMetadataTrackSpy.callCount, 0);
 
-  var addTrackEvent = {
+  const addTrackEvent = {
     track: this.tt,
     type: 'addtrack'
   };
+
   this.player.textTracks().trigger(addTrackEvent);
   assert.strictEqual(processMetadataTrackSpy.callCount, 1);
 });
 
 QUnit.test('setMetadataTrackMode should work when overriden', function(assert) {
-  var tt = this.tt;
-  var cueTextTracks = this.player.ads.cueTextTracks;
+  const tt = this.tt;
+  const cueTextTracks = this.player.ads.cueTextTracks;
 
   cueTextTracks.setMetadataTrackMode(tt);
   assert.strictEqual(tt.mode, 'hidden');
@@ -78,16 +83,17 @@ QUnit.test('setMetadataTrackMode should work when overriden', function(assert) {
 });
 
 QUnit.test('getSupportedAdCue should work when overriden', function(assert) {
-  var cue = {
+  const cue = {
     startTime: 0,
     endTime: 1
   };
 
-  var cueTextTracks = this.player.ads.cueTextTracks;
-  var supportedCue = cueTextTracks.getSupportedAdCue(this.player, cue);
+  const cueTextTracks = this.player.ads.cueTextTracks;
+  let supportedCue = cueTextTracks.getSupportedAdCue(this.player, cue);
+
   assert.strictEqual(supportedCue, cue);
 
-  cueTextTracks.getSupportedAdCue = function(player, cue) {
+  cueTextTracks.getSupportedAdCue = function(player, subcue) {
     return -1;
   };
   supportedCue = cueTextTracks.getSupportedAdCue(this.player, cue);
@@ -95,8 +101,8 @@ QUnit.test('getSupportedAdCue should work when overriden', function(assert) {
 });
 
 QUnit.test('getCueId should work when overriden', function(assert) {
-  var originalTextTracks = this.player.textTracks;
-  var cue = {
+  const originalTextTracks = this.player.textTracks;
+  const cue = {
     startTime: 0,
     endTime: 1,
     id: 1,
@@ -104,7 +110,8 @@ QUnit.test('getCueId should work when overriden', function(assert) {
       id: 2
     }
   };
-  var tt = this.tt;
+  const tt = this.tt;
+
   tt.activeCues = [cue];
 
   this.player.textTracks = function() {
@@ -114,12 +121,13 @@ QUnit.test('getCueId should work when overriden', function(assert) {
     };
   };
 
-  var cueTextTracks = this.player.ads.cueTextTracks;
-  var cueId = cueTextTracks.getCueId(cue);
+  const cueTextTracks = this.player.ads.cueTextTracks;
+  let cueId = cueTextTracks.getCueId(cue);
+
   assert.strictEqual(cueId, 1);
 
-  cueTextTracks.getCueId = function(cue) {
-    return cue.inner.id;
+  cueTextTracks.getCueId = function(subcue) {
+    return subcue.inner.id;
   };
   cueId = cueTextTracks.getCueId(cue);
   assert.strictEqual(cueId, 2);
@@ -129,9 +137,9 @@ QUnit.test('getCueId should work when overriden', function(assert) {
 });
 
 QUnit.test('processAdTrack runs processCue callback', function(assert) {
-  var processCueSpy = sinon.spy();
-  var cueTextTracks = this.player.ads.cueTextTracks;
-  var cues = [{
+  const processCueSpy = sinon.spy();
+  const cueTextTracks = this.player.ads.cueTextTracks;
+  const cues = [{
     startTime: 0,
     endTime: 1,
     id: 1,
@@ -141,26 +149,27 @@ QUnit.test('processAdTrack runs processCue callback', function(assert) {
   cueTextTracks.processAdTrack(this.player, cues, processCueSpy);
   assert.strictEqual(processCueSpy.callCount, 1);
 
-  var processCue = function(player, cueData, cueId, startTime) {
+  const processCue = function(player, cueData, cueId, startTime) {
     cueData.callCount += 1;
   };
+
   cueTextTracks.processAdTrack(this.player, cues, processCue);
   assert.strictEqual(cues[0].callCount, 1);
 });
 
 QUnit.test('processAdTrack runs cancelAds callback', function(assert) {
-  var cancelAdsSpy = sinon.spy();
-  var cueTextTracks = this.player.ads.cueTextTracks;
-  var cues = [{
+  const cancelAdsSpy = sinon.spy();
+  const cueTextTracks = this.player.ads.cueTextTracks;
+  const cues = [{
     startTime: 0,
     endTime: 1,
     id: 1,
     callCount: 0
   }];
-  var processCue = function(player, cueData, cueId, startTime) {
+  const processCue = function(player, cueData, cueId, startTime) {
     return;
   };
-  var cancelAds = function(player, cueData, cueId, startTime) {
+  const cancelAds = function(player, cueData, cueId, startTime) {
     cueData.callCount += 1;
   };
 

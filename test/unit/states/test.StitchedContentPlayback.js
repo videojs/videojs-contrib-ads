@@ -1,11 +1,12 @@
 import {StitchedContentPlayback} from '../../../src/states.js';
+import QUnit from 'qunit';
 
 /*
  * These tests are intended to be isolated unit tests for one state with all
  * other modules mocked.
  */
 QUnit.module('StitchedContentPlayback', {
-  beforeEach: function() {
+  beforeEach() {
     this.events = [];
     this.playTriggered = false;
 

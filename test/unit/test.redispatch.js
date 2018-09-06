@@ -1,5 +1,5 @@
-import videojs from 'video.js';
 import redispatch from '../../src/redispatch.js';
+import QUnit from 'qunit';
 
 QUnit.module('Redispatch', {
 
@@ -53,11 +53,10 @@ QUnit.module('Redispatch', {
         return 'cancelled';
       } else if (eventBuffer.length === 0) {
         return 'ignored';
-      } else {
-        throw new Error('Event buffer has more than 1 event');
       }
+      throw new Error('Event buffer has more than 1 event');
 
-    }
+    };
   },
 
   afterEach(assert) {

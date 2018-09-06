@@ -10,9 +10,11 @@ TODO:
 
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-plugin.js';
+import document from 'global/document';
+import QUnit from 'qunit';
 
 QUnit.module('Events and Postrolls', {
-  beforeEach: function() {
+  beforeEach() {
     this.video = document.createElement('video');
 
     this.fixture = document.querySelector('#qunit-fixture');
@@ -21,9 +23,9 @@ QUnit.module('Events and Postrolls', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json',
-      'playPreroll': false,
-      'playMidroll': false
+      adServerUrl: '/base/test/integration/lib/inventory.json',
+      playPreroll: false,
+      playMidroll: false
     });
 
     this.player.src({
@@ -33,17 +35,17 @@ QUnit.module('Events and Postrolls', {
 
   },
 
-  afterEach: function() {
+  afterEach() {
     this.player.dispose();
   }
 });
 
 QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(assert) {
-  var done = assert.async();
+  const done = assert.async();
 
-  var beforePostroll = true;
-  var endedBeforePostroll = 0;
-  var endedAfterPostroll = 0;
+  let beforePostroll = true;
+  let endedBeforePostroll = 0;
+  let endedAfterPostroll = 0;
 
   this.player.on('adend', () => {
     beforePostroll = false;
@@ -82,19 +84,19 @@ QUnit.test('ended event and postrolls: 0 before postroll, 1 after', function(ass
 });
 
 QUnit.test('Event prefixing and postrolls', function(assert) {
-  var done = assert.async();
+  const done = assert.async();
 
-  var beforePostroll = true;
-  var seenInAdMode = [];
-  var seenInContentResuming = [];
-  var seenOutsideAdModeBefore = [];
-  var seenOutsideAdModeAfter = [];
+  let beforePostroll = true;
+  const seenInAdMode = [];
+  const seenInContentResuming = [];
+  const seenOutsideAdModeBefore = [];
+  const seenOutsideAdModeAfter = [];
 
   this.player.on('adend', () => {
     beforePostroll = false;
   });
 
-  var events = [
+  let events = [
     'suspend',
     'abort',
     'error',
@@ -127,19 +129,18 @@ QUnit.test('Event prefixing and postrolls', function(assert) {
     if (e.type === 'contentended') {
       return;
     }
-    var str = e.type;
+    const str = e.type;
+
     if (this.player.ads.isInAdMode()) {
       if (this.player.ads.isContentResuming()) {
         seenInContentResuming.push(str);
       } else {
         seenInAdMode.push(str);
       }
+    } else if (beforePostroll) {
+      seenOutsideAdModeBefore.push(str);
     } else {
-      if (beforePostroll) {
-        seenOutsideAdModeBefore.push(str);
-      } else {
-        seenOutsideAdModeAfter.push(str);
-      }
+      seenOutsideAdModeAfter.push(str);
     }
   });
 

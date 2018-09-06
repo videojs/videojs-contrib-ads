@@ -1,5 +1,6 @@
+import QUnit from 'qunit';
+import sinon from 'sinon';
 import {Preroll} from '../../../src/states.js';
-import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 import adBreak from '../../../src/adBreak.js';
 
 /*
@@ -7,7 +8,7 @@ import adBreak from '../../../src/adBreak.js';
  * other modules mocked.
  */
 QUnit.module('Preroll', {
-  beforeEach: function() {
+  beforeEach() {
     this.events = [];
     this.playTriggered = false;
 

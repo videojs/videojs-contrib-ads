@@ -1,8 +1,8 @@
 module.exports = function(config) {
-  var detectBrowsers = {
+  const detectBrowsers = {
     enabled: false,
     usePhantomJS: false,
-    postDetection: function(browsers) {
+    postDetection(browsers) {
       const toKeep = ['Firefox', 'Chrome'];
       const filteredBrowsers = [];
 
@@ -40,7 +40,6 @@ module.exports = function(config) {
       'node_modules/video.js/dist/video.js',
       {pattern: 'dist/videojs-contrib-ads.js', nocache: true},
       {pattern: 'dist/videojs-contrib-ads.css', nocache: true},
-      {pattern: 'test/integration/lib/shared-module-hooks.js', nocache: true},
       {pattern: 'test/dist/bundle.js', nocache: true},
 
       // Test Data
@@ -58,7 +57,7 @@ module.exports = function(config) {
         flags: ['--autoplay-policy=no-user-gesture-required']
       }
     },
-    detectBrowsers: detectBrowsers,
+    detectBrowsers,
     reporters: ['dots'],
     port: 9876,
     colors: true,

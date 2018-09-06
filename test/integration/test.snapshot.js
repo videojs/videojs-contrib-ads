@@ -1,11 +1,16 @@
 import videojs from 'video.js';
 import * as snapshot from '../../src/snapshot.js';
+import QUnit from 'qunit';
+import document from 'global/document';
+import window from 'global/window';
+import sinon from 'sinon';
+import sharedModuleHooks from './lib/shared-module-hooks.js';
 
-QUnit.module('Video Snapshot', window.sharedModuleHooks({
+QUnit.module('Video Snapshot', sharedModuleHooks({
 
-  beforeEach: function() {
-    var captionTrack = document.createElement('track');
-    var otherTrack = document.createElement('track');
+  beforeEach() {
+    const captionTrack = document.createElement('track');
+    const otherTrack = document.createElement('track');
 
     captionTrack.setAttribute('kind', 'captions');
     captionTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
@@ -20,7 +25,7 @@ QUnit.module('Video Snapshot', window.sharedModuleHooks({
 }));
 
 QUnit.test('restores the original video src after ads', function(assert) {
-  var originalSrc = {
+  const originalSrc = {
     src: 'http://vjs.zencdn.net/v/oceans.webm',
     type: 'video/webm'
   };
@@ -39,7 +44,6 @@ QUnit.test('restores the original video src after ads', function(assert) {
 });
 
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
-  var setTimeoutSpy;
 
   assert.expect(2);
 
@@ -47,7 +51,8 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   this.player.trigger('play');
 
   // the video plays to time 100
-  setTimeoutSpy = sinon.spy(window, 'setTimeout');
+  const setTimeoutSpy = sinon.spy(window, 'setTimeout');
+
   this.video.currentTime = 100;
   this.player.ads.startLinearAdMode();
   this.player.src({
@@ -58,7 +63,8 @@ QUnit.test('waits for the video to become seekable before restoring the time', f
   // the ad resets the current time
   this.video.currentTime = 0;
   this.player.ads.endLinearAdMode();
-  setTimeoutSpy.reset(); // we call setTimeout an extra time restorePlayerSnapshot
+  // we call setTimeout an extra time restorePlayerSnapshot
+  setTimeoutSpy.reset();
   this.player.trigger('canplay');
   assert.strictEqual(setTimeoutSpy.callCount, 1, 'restoring the time should be delayed');
   assert.strictEqual(this.video.currentTime, 0, 'currentTime is not modified');
@@ -88,13 +94,11 @@ QUnit.test('the current time is restored at the end of an ad', function(assert) 
 });
 
 QUnit.test('only restores the player snapshot if the src changed', function(assert) {
-  var playSpy, srcSpy, currentTimeSpy;
-
   this.player.trigger('adsready');
   this.player.trigger('play');
-  playSpy = sinon.spy(this.player, 'play');
-  srcSpy = sinon.spy(this.player, 'src');
-  currentTimeSpy = sinon.spy(this.player, 'currentTime');
+  const playSpy = sinon.spy(this.player, 'play');
+  const srcSpy = sinon.spy(this.player, 'src');
+  const currentTimeSpy = sinon.spy(this.player, 'currentTime');
 
   // with a separate video display or server-side ad insertion, ads play but
   // the src never changes. Modifying the src or currentTime would introduce
@@ -113,7 +117,7 @@ QUnit.test('only restores the player snapshot if the src changed', function(asse
 });
 
 QUnit.test('snapshot does not resume playback after post-rolls', function(assert) {
-  var playSpy = sinon.spy(this.player, 'play');
+  const playSpy = sinon.spy(this.player, 'play');
 
   // start playback
   this.player.src({
@@ -176,12 +180,11 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
 });
 
 QUnit.test('snapshot does not resume playback after a burned-in post-roll', function(assert) {
-  var playSpy, loadSpy;
-
   this.player.trigger('adsready');
   this.player.trigger('play');
-  playSpy = sinon.spy(this.player, 'play');
-  loadSpy = sinon.spy(this.player, 'load');
+  const playSpy = sinon.spy(this.player, 'play');
+  const loadSpy = sinon.spy(this.player, 'load');
+
   this.player.ads.startLinearAdMode();
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
@@ -209,8 +212,6 @@ QUnit.test('snapshot does not resume playback after a burned-in post-roll', func
 });
 
 QUnit.test('snapshot does not resume playback after multiple post-rolls', function(assert) {
-  var playSpy;
-
   this.player.src({
     src: 'http://vjs.zencdn.net/v/oceans.webm',
     type: 'video/webm'
@@ -218,7 +219,7 @@ QUnit.test('snapshot does not resume playback after multiple post-rolls', functi
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
   this.player.trigger('play');
-  playSpy = sinon.spy(this.player, 'play');
+  const playSpy = sinon.spy(this.player, 'play');
 
   // with a separate video display or server-side ad insertion, ads play but
   // the src never changes. Modifying the src or currentTime would introduce
@@ -264,7 +265,7 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
 
   // load and play the initial video
   this.player.src({
-    src:'http://example.com/movie.webm',
+    src: 'http://example.com/movie.webm',
     type: 'video/webm'
   });
   this.player.trigger('loadstart');
@@ -290,7 +291,7 @@ QUnit.test('changing the source and then timing out does not restore a snapshot'
 // doesn't update currentSrc, so when restoring the snapshot we
 // should check for src attribute modifications as well
 QUnit.test('checks for a src attribute change that isn\'t reflected in currentSrc', function(assert) {
-  var updatedSrc;
+  let updatedSrc;
 
   this.player.currentSource = function() {
     return {src: 'content.webm', type: 'video/webm'};
@@ -317,7 +318,6 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
     updatedSrc = source;
   };
 
-
   this.player.ads.endLinearAdMode();
   this.player.trigger('playing');
   assert.deepEqual(updatedSrc, [this.player.currentSource()], 'restored src attribute');
@@ -325,20 +325,19 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 
 QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
   const trackSrc = '/base/test/integration/lib/testcaption.vtt';
-  let remoteTrack;
 
   // Add a text track
-  remoteTrack = this.player.addRemoteTextTrack({
+  const remoteTrack = this.player.addRemoteTextTrack({
     kind: 'captions',
     language: 'fr',
     label: 'French',
     src: trackSrc
   });
 
-  var tracks = this.player.textTracks ? this.player.textTracks() : [];
-  var showing = 0;
-  var disabled = 0;
-  var i;
+  const tracks = this.player.textTracks ? this.player.textTracks() : [];
+  let showing = 0;
+  let disabled = 0;
+  let i;
 
   if (tracks.length <= 0) {
     assert.expect(0);
@@ -388,8 +387,8 @@ QUnit.test('When captions are enabled, the content\'s tracks will be disabled du
 });
 
 QUnit.test('No snapshot if duration is Infinity', function(assert) {
-  var originalSrc = 'foobar';
-  var newSrc = 'barbaz';
+  const originalSrc = 'foobar';
+  const newSrc = 'barbaz';
 
   this.player.duration(Infinity);
 
@@ -412,7 +411,6 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   const trackSrc = '/base/test/integration/lib/testcaption.vtt';
   const originalAddTrack = this.player.addTextTrack;
   const originalTextTracks = this.player.textTracks;
-  let remoteTrack;
 
   // No text tracks at start
   assert.equal(this.player.textTracks().length, 0);
@@ -420,7 +418,7 @@ QUnit.test('Snapshot and text tracks', function(assert) {
   this.player.addTextTrack('captions', 'Spanish', 'es');
 
   // Add a text track
-  remoteTrack = this.player.addRemoteTextTrack({
+  const remoteTrack = this.player.addRemoteTextTrack({
     kind: 'captions',
     language: 'fr',
     label: 'French',

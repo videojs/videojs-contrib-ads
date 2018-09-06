@@ -1,4 +1,7 @@
 import pm from '../../src/playMiddleware.js';
+import QUnit from 'qunit';
+import sinon from 'sinon';
+import videojs from 'video.js';
 
 QUnit.module('Play Middleware', {}, function() {
   const baseMockedVjsNotSupported = {
@@ -16,15 +19,15 @@ QUnit.module('Play Middleware', {}, function() {
       IS_ANDROID: false
     },
     middleware: {
-      TERMINATOR: new Object('fake terminator')
+      TERMINATOR: {fake: 'terminator'}
     }
   };
 
   QUnit.module('Not supported unit tests', {
-    beforeEach: function() {
+    beforeEach() {
       this.videojs = videojs.mergeOptions({}, baseMockedVjsNotSupported);
     },
-    afterEach: function() {
+    afterEach() {
       this.videojs = null;
     }
   }, function() {
@@ -56,7 +59,7 @@ QUnit.module('Play Middleware', {}, function() {
   });
 
   QUnit.module('Supported unit tests', {
-    beforeEach: function() {
+    beforeEach() {
       // Stub videojs to force playMiddleware to be used
       this.videojs = videojs.mergeOptions({}, baseMockedVjsIsSupported);
       pm.testHook(this.videojs);
@@ -77,11 +80,11 @@ QUnit.module('Play Middleware', {}, function() {
         addClass: (className) => {
           this.addedClass = className;
         }
-      }
+      };
 
       this.sandbox = sinon.sandbox.create();
     },
-    afterEach: function() {
+    afterEach() {
       // Reset variables
       this.videojs = null;
       this.sandbox.restore();
@@ -107,7 +110,7 @@ QUnit.module('Play Middleware', {}, function() {
     const m = pm.playMiddleware(this.player);
 
     this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
-    this.player.ads._shouldBlockPlay = true
+    this.player.ads._shouldBlockPlay = true;
     assert.equal(m.callPlay(), this.videojs.middleware.TERMINATOR,
       'callPlay returns terminator');
     assert.strictEqual(this.player.ads._playBlocked, true,
@@ -164,7 +167,7 @@ QUnit.module('Play Middleware', {}, function() {
       '_playBlocked is reset');
   });
 
-  QUnit.test("playMiddleware play will not trigger play event if another middleware terminated", function(assert) {
+  QUnit.test('playMiddleware play will not trigger play event if another middleware terminated', function(assert) {
     const m = pm.playMiddleware(this.player);
 
     this.sandbox.stub(pm, 'isMiddlewareMediatorSupported').returns(true);
@@ -213,6 +216,4 @@ QUnit.module('Play Middleware', {}, function() {
   });
 
 });
-
-
 
