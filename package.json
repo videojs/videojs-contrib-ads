@@ -83,7 +83,7 @@
     "semver": "^5.3.0",
     "sinon": "^2.2.0",
     "uglify-js": "^3.0.7",
-    "videojs-standard": "^7.0.1"
+    "videojs-standard": "^7.1.0"
   },
   "keywords": [
     "videojs",
@@ -97,7 +97,6 @@
       "docs",
       "test/dist",
       "examples"
-
     ]
   },
   "files": [
