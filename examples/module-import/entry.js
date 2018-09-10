@@ -9,7 +9,8 @@ To build this example:
   * http://videojs.github.io/videojs-contrib-ads/developer/getting-started.html
 * cd to this directory
 * npm install webpack -g
-* webpack ./entry.js bundle.js
+* npm install webpack-command -g
+* webpack ./entry.js --output=bundle.js
 
 */
 
