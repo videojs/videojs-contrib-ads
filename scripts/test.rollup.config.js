@@ -20,13 +20,15 @@ export default {
     'qunit',
     'qunitjs',
     'sinon',
-    'video.js'
+    'video.js',
+    'lodash'
   ],
   globals: {
     'qunit': 'QUnit',
     'qunitjs': 'QUnit',
     'sinon': 'sinon',
-    'video.js': 'videojs'
+    'video.js': 'videojs',
+    'lodash': '_'
   },
   legacy: true,
   plugins: [

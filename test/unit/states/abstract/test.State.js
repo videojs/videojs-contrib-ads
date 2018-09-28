@@ -1,3 +1,5 @@
+import QUnit from 'qunit';
+import sinon from 'sinon';
 import {State} from '../../../../src/states.js';
 
 /*
@@ -5,7 +7,7 @@ import {State} from '../../../../src/states.js';
  * other modules mocked.
  */
 QUnit.module('State', {
-  beforeEach: function() {
+  beforeEach() {
     this.player = {
       ads: {
         debug: () => {}
@@ -45,7 +47,7 @@ QUnit.test('throws error if isAdState is not implemented', function(assert) {
 
   try {
     this.state.isAdState();
-  } catch(e) {
+  } catch (e) {
     error = e;
   }
   assert.equal(error.message, 'isAdState unimplemented for Anonymous State');

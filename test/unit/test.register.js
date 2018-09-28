@@ -2,6 +2,7 @@ import videojs from 'video.js';
 import contribAdsPlugin from '../../src/plugin.js';
 import register from '../../src/register.js';
 import { hasAdsPlugin} from '../../src/register.js';
+import QUnit from 'qunit';
 
 // Cross-compatible plugin de-registration.
 const deregister = () => {

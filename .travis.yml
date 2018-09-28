@@ -1,32 +1,16 @@
 sudo: false
 dist: trusty
 language: node_js
-node_js:
-  - 'node'
-  - 'lts/argon'
+# node version is specified using the .nvmrc file
+before_install:
+  - npm install -g greenkeeper-lockfile@1
 before_script:
-
-  # Check if the current version is equal to the major version for the env.
-  - 'export IS_INSTALLED="$(npm list video.js | grep "video.js@$VJS")"'
-
-  # We have to add semicolons to the end of each line in the if as Travis runs
-  # this all on one line.
-  - 'if [ -z "$IS_INSTALLED" ]; then
-      echo "INSTALLING video.js@>=$VJS.0.0-RC.0 <$(($VJS+1)).0.0";
-      npm i "video.js@>=$VJS.0.0-RC.0 <\$(($VJS+1)).0.0";
-    else
-      echo "video.js@$VJS ALREADY INSTALLED";
-    fi'
-  - export CHROME_BIN=/usr/bin/google-chrome
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-env:
-  - VJS=5
-  - VJS=6
+  - greenkeeper-lockfile-update
+after_script:
+  - greenkeeper-lockfile-upload
 addons:
   firefox: latest
-  apt:
-    sources:
-    - google-chrome
-    packages:
-    - google-chrome-stable
+  chrome: stable
+

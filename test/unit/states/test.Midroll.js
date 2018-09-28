@@ -1,3 +1,5 @@
+import QUnit from 'qunit';
+import sinon from 'sinon';
 import {Midroll} from '../../../src/states.js';
 import adBreak from '../../../src/adBreak.js';
 
@@ -6,7 +8,7 @@ import adBreak from '../../../src/adBreak.js';
  * other modules mocked.
  */
 QUnit.module('Midroll', {
-  beforeEach: function() {
+  beforeEach() {
     this.player = {
       addClass: () => {},
       removeClass: () => {},

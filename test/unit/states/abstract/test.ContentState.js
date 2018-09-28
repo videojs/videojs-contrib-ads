@@ -1,3 +1,5 @@
+import QUnit from 'qunit';
+import sinon from 'sinon';
 import {ContentState} from '../../../../src/states.js';
 
 /*
@@ -5,7 +7,7 @@ import {ContentState} from '../../../../src/states.js';
  * other modules mocked.
  */
 QUnit.module('ContentState', {
-  beforeEach: function() {
+  beforeEach() {
     this.player = {
       ads: {
         debug: () => {}

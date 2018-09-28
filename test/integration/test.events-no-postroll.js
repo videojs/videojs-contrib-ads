@@ -1,8 +1,10 @@
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-plugin.js';
+import QUnit from 'qunit';
+import document from 'global/document';
 
 QUnit.module('Final Events With No Postroll', {
-  beforeEach: function() {
+  beforeEach() {
     this.video = document.createElement('video');
 
     this.fixture = document.querySelector('#qunit-fixture');
@@ -11,10 +13,10 @@ QUnit.module('Final Events With No Postroll', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json',
-      'playPreroll': false,
-      'playMidroll': false,
-      'playPostroll': false
+      adServerUrl: '/base/test/integration/lib/inventory.json',
+      playPreroll: false,
+      playMidroll: false,
+      playPostroll: false
     });
 
     this.player.src({
@@ -23,14 +25,14 @@ QUnit.module('Final Events With No Postroll', {
     });
   },
 
-  afterEach: function() {
+  afterEach() {
     this.player.dispose();
   }
 });
 
 QUnit.test('final ended event with no postroll: just 1', function(assert) {
-  var done = assert.async();
-  var endedEvents = 0;
+  const done = assert.async();
+  let endedEvents = 0;
 
   // Prevent the test from timing out by making it run faster
   this.player.ads.settings.postrollTimeout = 1;

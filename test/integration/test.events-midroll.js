@@ -9,9 +9,11 @@ TODO:
 
 import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-plugin.js';
+import document from 'global/document';
+import QUnit from 'qunit';
 
 QUnit.module('Events and Midrolls', {
-  beforeEach: function() {
+  beforeEach() {
     this.video = document.createElement('video');
 
     this.fixture = document.querySelector('#qunit-fixture');
@@ -20,9 +22,9 @@ QUnit.module('Events and Midrolls', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      'adServerUrl': '/base/test/integration/lib/inventory.json',
-      'playPreroll': false,
-      'midrollPoint': 1
+      adServerUrl: '/base/test/integration/lib/inventory.json',
+      playPreroll: false,
+      midrollPoint: 1
     });
 
     this.player.src({
@@ -31,25 +33,25 @@ QUnit.module('Events and Midrolls', {
     });
   },
 
-  afterEach: function() {
+  afterEach() {
     this.player.dispose();
   }
 });
 
 QUnit.test('Midrolls', function(assert) {
-  var done = assert.async();
+  const done = assert.async();
 
-  var beforeMidroll = true;
-  var seenInAdMode = [];
-  var seenInContentResuming = [];
-  var seenOutsideAdModeBefore = [];
-  var seenOutsideAdModeAfter = [];
+  let beforeMidroll = true;
+  const seenInAdMode = [];
+  const seenInContentResuming = [];
+  const seenOutsideAdModeBefore = [];
+  const seenOutsideAdModeAfter = [];
 
   this.player.on('adend', () => {
     beforeMidroll = false;
   });
 
-  var events = [
+  let events = [
     'suspend',
     'abort',
     'error',
@@ -79,19 +81,18 @@ QUnit.test('Midrolls', function(assert) {
   }));
 
   this.player.on(events, (e) => {
-    var str = e.type;
+    const str = e.type;
+
     if (this.player.ads.isInAdMode()) {
       if (this.player.ads.isContentResuming()) {
         seenInContentResuming.push(str);
       } else {
         seenInAdMode.push(str);
       }
+    } else if (beforeMidroll) {
+      seenOutsideAdModeBefore.push(str);
     } else {
-      if (beforeMidroll) {
-        seenOutsideAdModeBefore.push(str);
-      } else {
-        seenOutsideAdModeAfter.push(str);
-      }
+      seenOutsideAdModeAfter.push(str);
     }
   });
 
@@ -128,7 +129,7 @@ QUnit.test('Midrolls', function(assert) {
 
   // Seek to right before the midroll
   this.player.one('playing', () => {
-    this.player.currentTime(.9);
+    this.player.currentTime(0.9);
   });
 
   this.player.ready(this.player.play);

@@ -17,13 +17,14 @@ export default class State {
    */
   transitionTo(NewState, ...args) {
     const player = this.player;
-    const previousState = this;
 
-    previousState.cleanup(player);
+    // Since State is an abstract class, this will refer to
+    // the state that is extending this class
+    this.cleanup(player);
     const newState = new NewState(player);
 
     player.ads._state = newState;
-    player.ads.debug(previousState.constructor._getName() + ' -> ' +
+    player.ads.debug(this.constructor._getName() + ' -> ' +
       newState.constructor._getName());
     newState.init(player, ...args);
   }

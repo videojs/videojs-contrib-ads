@@ -1,3 +1,6 @@
+import QUnit from 'qunit';
+import sinon from 'sinon';
+
 import {BeforePreroll} from '../../../src/states.js';
 import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 
@@ -6,7 +9,7 @@ import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
  * other modules mocked.
  */
 QUnit.module('BeforePreroll', {
-  beforeEach: function() {
+  beforeEach() {
     this.events = [];
 
     this.player = {
@@ -30,7 +33,7 @@ QUnit.module('BeforePreroll', {
     this.cancelContentPlayStub = sinon.stub(CancelContentPlay, 'cancelContentPlay');
   },
 
-  afterEach: function() {
+  afterEach() {
     this.cancelContentPlayStub.restore();
   }
 });
@@ -95,7 +98,7 @@ QUnit.test('skips the preroll', function(assert) {
 });
 
 QUnit.test('handles content change', function(assert) {
-  sinon.spy(this.beforePreroll, "init");
+  sinon.spy(this.beforePreroll, 'init');
   this.beforePreroll.onContentChanged(this.player);
   assert.equal(this.beforePreroll.init.calledOnce, true);
 });

@@ -17,9 +17,9 @@ then signalling that we should play after the ad is done.
 */
 
 function cancelContentPlay() {
-  const player = this;
+  // this function is in the player's context
 
-  if (player.ads._shouldBlockPlay === false) {
+  if (this.ads._shouldBlockPlay === false) {
     // Only block play if the ad plugin is in a state when content
     // playback should be blocked. This currently means during
     // BeforePrerollState and PrerollState.
@@ -27,12 +27,12 @@ function cancelContentPlay() {
   }
 
   // pause playback so ads can be handled.
-  if (!player.paused()) {
-    player.ads.debug('Playback was canceled by cancelContentPlay');
-    player.pause();
+  if (!this.paused()) {
+    this.ads.debug('Playback was canceled by cancelContentPlay');
+    this.pause();
   }
 
   // When the 'content-playback' state is entered, this will let us know to play.
   // This is needed if there is no preroll or if it errors, times out, etc.
-  player.ads._cancelledPlay = true;
+  this.ads._cancelledPlay = true;
 }
