@@ -87,34 +87,44 @@ QUnit.test('play events in different states', function(assert) {
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => true;
-  assert.equal(this.redispatch('play'), 'contentplay',
-    'should be contentplay when content is resuming');
+  assert.equal(
+    this.redispatch('play'), 'contentplay',
+    'should be contentplay when content is resuming'
+  );
 
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => false;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = false;
-  assert.strictEqual(this.redispatch('play'), 'ignored',
-    "should not be redispatched if play hasn't been requested yet");
+  assert.strictEqual(
+    this.redispatch('play'), 'ignored',
+    "should not be redispatched if play hasn't been requested yet"
+  );
 
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => false;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = true;
-  assert.strictEqual(this.redispatch('play'), 'ignored',
-    'should not be redispatched if in content state');
+  assert.strictEqual(
+    this.redispatch('play'), 'ignored',
+    'should not be redispatched if in content state'
+  );
 
   this.player.ads.inAdBreak = () => false;
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = true;
-  assert.strictEqual(this.redispatch('play'), 'ignored',
-    'should not prefix when not in an ad break');
+  assert.strictEqual(
+    this.redispatch('play'), 'ignored',
+    'should not prefix when not in an ad break'
+  );
 
   this.player.ads.inAdBreak = () => true;
   this.player.ads.isInAdMode = () => true;
   this.player.ads.isContentResuming = () => false;
   this.player.ads._playRequested = true;
-  assert.strictEqual(this.redispatch('play'), 'adplay',
-    'should be adplay when in an ad break');
+  assert.strictEqual(
+    this.redispatch('play'), 'adplay',
+    'should be adplay when in an ad break'
+  );
 });

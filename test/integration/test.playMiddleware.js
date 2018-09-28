@@ -33,16 +33,20 @@ QUnit.test('the `_playRequested` flag is set on the first play request', functio
 
   // When the preroll starts
   this.player.on('adstart', () => {
-    assert.strictEqual(this.player.ads._playRequested, true,
-      '_playRequested is true when the play method is used');
+    assert.strictEqual(
+      this.player.ads._playRequested, true,
+      '_playRequested is true when the play method is used'
+    );
     done();
   });
 
   // If there wasn't an ad
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 0) {
-      assert.strictEqual(this.player.ads._playRequested, true,
-        '_playRequested is true when the play method is used');
+      assert.strictEqual(
+        this.player.ads._playRequested, true,
+        '_playRequested is true when the play method is used'
+      );
       done();
     }
   });
@@ -63,20 +67,28 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
 
   // When the preroll starts
   this.player.on('adstart', () => {
-    assert.strictEqual(techPlaySpy.callCount, 0,
-      "tech play shouldn't be called while waiting for prerolls");
-    assert.strictEqual(playEventSpy.callCount, 1,
-      'play event should be triggered');
+    assert.strictEqual(
+      techPlaySpy.callCount, 0,
+      "tech play shouldn't be called while waiting for prerolls"
+    );
+    assert.strictEqual(
+      playEventSpy.callCount, 1,
+      'play event should be triggered'
+    );
     done();
   });
 
   // Once we are in content
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 0) {
-      assert.strictEqual(techPlaySpy.callCount, 0,
-        "tech play shouldn't be called while waiting for prerolls");
-      assert.strictEqual(playEventSpy.callCount, 1,
-        'play event should be triggered');
+      assert.strictEqual(
+        techPlaySpy.callCount, 0,
+        "tech play shouldn't be called while waiting for prerolls"
+      );
+      assert.strictEqual(
+        playEventSpy.callCount, 1,
+        'play event should be triggered'
+      );
       done();
     }
   });
@@ -110,8 +122,10 @@ QUnit.test('stops blocking play when an ad is playing', function(assert) {
 
   // Wait for the ad to start playing
   this.player.on('ads-ad-started', () => {
-    assert.strictEqual(this.player.ads._shouldBlockPlay, false,
-      'should stop blocking once in an adbreak');
+    assert.strictEqual(
+      this.player.ads._shouldBlockPlay, false,
+      'should stop blocking once in an adbreak'
+    );
     done();
   });
 
@@ -133,8 +147,10 @@ QUnit.test("playMiddleware doesn\'t block play in content playback", function(as
   // Wait for the ad to start playing
   this.player.on('timeupdate', () => {
     if (this.player.currentTime() > 0) {
-      assert.strictEqual(this.player.ads._shouldBlockPlay, false,
-        'should stop blocking in content');
+      assert.strictEqual(
+        this.player.ads._shouldBlockPlay, false,
+        'should stop blocking in content'
+      );
       done();
     }
   });
@@ -192,10 +208,14 @@ QUnit.test("don't trigger play event if another middleware terminates", function
 
   // Wait for the middleware to run
   localPlayer.setTimeout(() => {
-    assert.strictEqual(localPlayer.ads._playBlocked, false,
-      'play should not have been blocked');
-    assert.strictEqual(playSpy.callCount, 0,
-      'play event should not be triggered');
+    assert.strictEqual(
+      localPlayer.ads._playBlocked, false,
+      'play should not have been blocked'
+    );
+    assert.strictEqual(
+      playSpy.callCount, 0,
+      'play event should not be triggered'
+    );
     done();
   }, 1);
 

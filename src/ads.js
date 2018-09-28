@@ -113,8 +113,7 @@ export default function getAds(player) {
       }
 
       if (!this.snapshot) {
-        throw new Error(
-          'You cannot use videoElementRecycled while there is no snapshot.');
+        throw new Error('You cannot use videoElementRecycled while there is no snapshot.');
       }
 
       const srcChanged = player.tech_.src() !== this.snapshot.src;

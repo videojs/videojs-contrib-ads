@@ -24,15 +24,13 @@ QUnit.test('mediainfo', function(assert) {
     ad_keys: 7
   };
   /* eslint-enable camelcase */
-  const result = this.player.ads.adMacroReplacement(
-    '{mediainfo.id}' +
+  const result = this.player.ads.adMacroReplacement('{mediainfo.id}' +
     '{mediainfo.name}' +
     '{mediainfo.description}' +
     '{mediainfo.tags}' +
     '{mediainfo.reference_id}' +
     '{mediainfo.duration}' +
-    '{mediainfo.ad_keys}'
-  );
+    '{mediainfo.ad_keys}');
 
   assert.equal(result, '1234567');
 });
@@ -61,7 +59,8 @@ QUnit.test('document.referrer', function(assert) {
   assert.equal(
     result,
     document.referrer,
-    '"' + result + '" was the document.referrer');
+    '"' + result + '" was the document.referrer'
+  );
 });
 
 QUnit.test('window.location.href', function(assert) {
@@ -70,7 +69,8 @@ QUnit.test('window.location.href', function(assert) {
   assert.equal(
     result,
     window.location.href,
-    '"' + result + '" was the window.location.href');
+    '"' + result + '" was the window.location.href'
+  );
 });
 
 QUnit.test('random', function(assert) {
@@ -94,14 +94,12 @@ QUnit.test('mediainfo.custom_fields', function(assert) {
     }
   };
   /* eslint-enable camelcase */
-  const result = this.player.ads.adMacroReplacement(
-    '{mediainfo.custom_fields.dog}' +
+  const result = this.player.ads.adMacroReplacement('{mediainfo.custom_fields.dog}' +
     '{mediainfo.custom_fields.cat}' +
     '{mediainfo.custom_fields.guinea_pig}' +
     '{mediainfo.customFields.dog}' +
     '{mediainfo.customFields.cat}' +
-    '{mediainfo.customFields.guinea_pig}'
-  );
+    '{mediainfo.customFields.guinea_pig}');
 
   assert.equal(result, '123123');
 });
@@ -122,8 +120,7 @@ QUnit.test('pageVariables', function(assert) {
   window.foo = function() {};
   window.bar = {};
 
-  const result = this.player.ads.adMacroReplacement(
-    'Number: {pageVariable.scrollX}, ' +
+  const result = this.player.ads.adMacroReplacement('Number: {pageVariable.scrollX}, ' +
     'Boolean: {pageVariable.isAwesome}, ' +
     'Null: {pageVariable.bird}, ' +
     'Undefined: {pageVariable.thisDoesNotExist}, ' +
@@ -131,10 +128,10 @@ QUnit.test('pageVariables', function(assert) {
     'Object: {pageVariable.bar}, ' +
     'Nested 2x: {pageVariable.animal.dog}, ' +
     'Nested 3x: {pageVariable.animal.cat.maineCoon}, ' +
-    'Nested 4x: {pageVariable.animal.cat.champion.name}'
-  );
+    'Nested 4x: {pageVariable.animal.cat.champion.name}');
 
-  assert.equal(result,
+  assert.equal(
+    result,
     'Number: 0, ' +
     'Boolean: true, ' +
     'Null: null, ' +
@@ -156,20 +153,16 @@ QUnit.test('uriEncode', function(assert) {
   };
   /* eslint-enable camelcase */
   window.foo = '& ?';
-  const result = this.player.ads.adMacroReplacement(
-    '{mediainfo.custom_fields.urlParam}{pageVariable.foo}', true
-  );
+  const result = this.player.ads.adMacroReplacement('{mediainfo.custom_fields.urlParam}{pageVariable.foo}', true);
 
   assert.equal(result, '%3F%20%26%26%20%3F');
 });
 
 QUnit.test('customMacros', function(assert) {
-  const result = this.player.ads.adMacroReplacement(
-    'The sky is {skyColor}. {exclamation}!', false, {
-      '{skyColor}': 'blue',
-      '{exclamation}': 'Hooray'
-    }
-  );
+  const result = this.player.ads.adMacroReplacement('The sky is {skyColor}. {exclamation}!', false, {
+    '{skyColor}': 'blue',
+    '{exclamation}': 'Hooray'
+  });
 
   assert.equal(result, 'The sky is blue. Hooray!');
 });

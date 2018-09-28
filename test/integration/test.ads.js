@@ -209,16 +209,24 @@ QUnit.test('changing src does not trigger "contentupdate" during ad playback', f
 QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
   this.player.trigger('loadstart');
   this.player.trigger('adsready');
-  assert.strictEqual(this.player.ads._playRequested, false,
-    'initially set to false');
-  assert.strictEqual(this.player.ads.isInAdMode(), false,
-    'starts in a content state');
+  assert.strictEqual(
+    this.player.ads._playRequested, false,
+    'initially set to false'
+  );
+  assert.strictEqual(
+    this.player.ads.isInAdMode(), false,
+    'starts in a content state'
+  );
 
   this.player.trigger('play');
-  assert.strictEqual(this.player.ads._playRequested, true,
-    '_playRequested is now true');
-  assert.strictEqual(this.player.ads.isInAdMode(), true,
-    'now in ad state');
+  assert.strictEqual(
+    this.player.ads._playRequested, true,
+    '_playRequested is now true'
+  );
+  assert.strictEqual(
+    this.player.ads.isInAdMode(), true,
+    'now in ad state'
+  );
 });
 
 QUnit.test('ended event happens after postroll errors out', function(assert) {
@@ -404,8 +412,10 @@ QUnit.test('skipLinearAdMode during ad playback does not trigger adskip', functi
   this.player.ads.startLinearAdMode();
 
   this.player.ads.skipLinearAdMode();
-  assert.strictEqual(adskipSpy.callCount, 0,
-    'adskip event should not trigger when skipLinearAdMode is called during an ad');
+  assert.strictEqual(
+    adskipSpy.callCount, 0,
+    'adskip event should not trigger when skipLinearAdMode is called during an ad'
+  );
 });
 
 QUnit.test('adsready in content-playback triggers readyforpreroll', function(assert) {
@@ -851,8 +861,10 @@ QUnit.test('shouldPlayContentBehindAd', function(assert) {
   try {
     this.player.ads.shouldPlayContentBehindAd();
   } catch (error) {
-    assert.strictEqual(error.message,
-      'shouldPlayContentBehindAd requires a player as a param');
+    assert.strictEqual(
+      error.message,
+      'shouldPlayContentBehindAd requires a player as a param'
+    );
   }
 
   this.player.duration = function() {
@@ -871,7 +883,8 @@ QUnit.test('Check incorrect addition of vjs-live during ad-playback', function(a
 
 });
 
-QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
+QUnit.test(
+  'Check for existence of vjs-live after ad-end for LIVE videos',
   function(assert) {
     this.player.trigger('loadstart');
     this.player.trigger('adsready');
@@ -884,7 +897,8 @@ QUnit.test('Check for existence of vjs-live after ad-end for LIVE videos',
     this.player.trigger('playing');
     assert.strictEqual(this.player.ads.isLive(this.player), true, 'Content is LIVE');
     assert.ok(this.player.hasClass('vjs-live'), 'We should be having vjs-live class here');
-  });
+  }
+);
 
 QUnit.test('Plugin state resets after contentchanged', function(assert) {
 
