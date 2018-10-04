@@ -1,5 +1,6 @@
+import QUnit from 'qunit';
+import sinon from 'sinon';
 import {Preroll} from '../../../src/states.js';
-import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 import adBreak from '../../../src/adBreak.js';
 
 /*
@@ -7,7 +8,7 @@ import adBreak from '../../../src/adBreak.js';
  * other modules mocked.
  */
 QUnit.module('Preroll', {
-  beforeEach: function() {
+  beforeEach() {
     this.events = [];
     this.playTriggered = false;
 
@@ -163,43 +164,55 @@ QUnit.test('only plays after no ad in correct conditions', function(assert) {
   this.player.ads._pausedOnContentupdate = false;
   this.player.paused = () => false;
   this.preroll.resumeAfterNoPreroll(this.player);
-  assert.equal(this.playTriggered, false,
-    'should not call play when playing already');
+  assert.equal(
+    this.playTriggered, false,
+    'should not call play when playing already'
+  );
 
   this.player.ads._playRequested = true;
   this.player.ads._pausedOnContentupdate = false;
   this.player.paused = () => false;
   this.preroll.resumeAfterNoPreroll(this.player);
-  assert.equal(this.playTriggered, false,
-    'should not call play when playing already 2');
+  assert.equal(
+    this.playTriggered, false,
+    'should not call play when playing already 2'
+  );
 
   this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = true;
   this.player.paused = () => false;
   this.preroll.resumeAfterNoPreroll(this.player);
-  assert.equal(this.playTriggered, false,
-    'should not call play when playing already 3');
+  assert.equal(
+    this.playTriggered, false,
+    'should not call play when playing already 3'
+  );
 
   this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = false;
   this.player.paused = () => true;
   this.preroll.resumeAfterNoPreroll(this.player);
-  assert.equal(this.playTriggered, false,
-    'should not call play when playback has never started');
+  assert.equal(
+    this.playTriggered, false,
+    'should not call play when playback has never started'
+  );
 
   this.player.ads._playRequested = true;
   this.player.ads._pausedOnContentupdate = false;
   this.player.paused = () => true;
   this.preroll.resumeAfterNoPreroll(this.player);
-  assert.equal(this.playTriggered, true,
-    'should call play when playback had been started and the player is paused');
+  assert.equal(
+    this.playTriggered, true,
+    'should call play when playback had been started and the player is paused'
+  );
 
   this.player.ads._playRequested = false;
   this.player.ads._pausedOnContentupdate = true;
   this.player.paused = () => true;
   this.preroll.resumeAfterNoPreroll(this.player);
-  assert.equal(this.playTriggered, true,
-    'should call play when playback had been started on the last source and the player is paused');
+  assert.equal(
+    this.playTriggered, true,
+    'should call play when playback had been started on the last source and the player is paused'
+  );
 });
 
 QUnit.test('remove ad loading class on cleanup', function(assert) {

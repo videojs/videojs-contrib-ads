@@ -1,4 +1,11 @@
-const sharedHooks = window.sharedModuleHooks();
+import QUnit from 'qunit';
+import sinon from 'sinon';
+import videojs from 'video.js';
+import window from 'global/window';
+import sharedModuleHooks from './lib/shared-module-hooks.js';
+import _ from 'lodash';
+
+const sharedHooks = sharedModuleHooks();
 
 const timerExists = function(env, id) {
   return env.clock.timers.hasOwnProperty(id);
@@ -31,7 +38,7 @@ QUnit.module('Cancel Content Play', {
 });
 
 QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', function(assert) {
-  var spy = sinon.spy(this.player, 'pause');
+  const spy = sinon.spy(this.player, 'pause');
 
   this.player.paused = function() {
     return false;
@@ -47,7 +54,7 @@ QUnit.test('pauses to wait for prerolls when the plugin loads BEFORE play', func
 });
 
 QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', function(assert) {
-  var pauseSpy = sinon.spy(this.player, 'pause');
+  const pauseSpy = sinon.spy(this.player, 'pause');
 
   this.player.paused = function() {
     return false;
@@ -61,8 +68,8 @@ QUnit.test('pauses to wait for prerolls when the plugin loads AFTER play', funct
 });
 
 QUnit.test('stops canceling play events when an ad is playing', function(assert) {
-  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
-  var pauseSpy = sinon.spy(this.player, 'pause');
+  const setTimeoutSpy = sinon.spy(window, 'setTimeout');
+  const pauseSpy = sinon.spy(this.player, 'pause');
 
   // Throughout this test, we check both that the expected timeout is
   // populated on the `clock` _and_ that `setTimeout` has been called the
@@ -71,7 +78,7 @@ QUnit.test('stops canceling play events when an ad is playing', function(assert)
 
   this.player.paused = () => {
     return false;
-  }
+  };
   this.player.trigger('play');
   assert.strictEqual(setTimeoutSpy.callCount, 1, 'one timer was created (`_prerollTimeout`)');
   assert.ok(timerExists(this, this.player.ads._state._timeout), 'preroll timeout exists after play');
@@ -99,11 +106,13 @@ QUnit.test("cancelContentPlay doesn\'t block play in content playback", function
   this.player.trigger('adscanceled');
   this.player.paused = () => {
     return false;
-  }
+  };
   this.player.trigger('play');
   assert.strictEqual(pauseSpy.callCount, 1, 'pause should have been called');
-  assert.strictEqual(this.player.ads._cancelledPlay, true,
-    'cancelContentPlay is called while resuming');
+  assert.strictEqual(
+    this.player.ads._cancelledPlay, true,
+    'cancelContentPlay is called while resuming'
+  );
 
   // enters ContentPlayback
   this.player.trigger('playing');
@@ -114,13 +123,13 @@ QUnit.test("cancelContentPlay doesn\'t block play in content playback", function
 });
 
 QUnit.test('content is resumed after ads if a user initiated play event is canceled', function(assert) {
-  var playSpy = sinon.spy(this.player, 'play');
-  var setTimeoutSpy = sinon.spy(window, 'setTimeout');
-  var pauseSpy = sinon.spy(this.player, 'pause');
+  const playSpy = sinon.spy(this.player, 'play');
+  const setTimeoutSpy = sinon.spy(window, 'setTimeout');
+  const pauseSpy = sinon.spy(this.player, 'pause');
 
   this.player.paused = () => {
     return false;
-  }
+  };
 
   this.player.trigger('play');
   this.player.trigger('adsready');
@@ -152,7 +161,7 @@ QUnit.module('Cancel Content Play (w/ Stitched Ads)', {
 });
 
 QUnit.test('does not pause to wait for prerolls when the plugin loads BEFORE play', function(assert) {
-  var spy = sinon.spy(this.player, 'pause');
+  const spy = sinon.spy(this.player, 'pause');
 
   this.player.paused = function() {
     return false;
@@ -168,7 +177,7 @@ QUnit.test('does not pause to wait for prerolls when the plugin loads BEFORE pla
 });
 
 QUnit.test('does not pause to wait for prerolls when the plugin loads AFTER play', function(assert) {
-  var pauseSpy = sinon.spy(this.player, 'pause');
+  const pauseSpy = sinon.spy(this.player, 'pause');
 
   this.player.paused = function() {
     return false;

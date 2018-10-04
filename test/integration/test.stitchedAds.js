@@ -8,9 +8,11 @@ TODO:
 */
 
 import videojs from 'video.js';
+import QUnit from 'qunit';
+import document from 'global/document';
 import '../../examples/stitched-ad-plugin/plugin.js';
 
-let originalTestTimeout = QUnit.config.testTimeout;
+const originalTestTimeout = QUnit.config.testTimeout;
 
 QUnit.module('Events and Stitched Ads', {
 

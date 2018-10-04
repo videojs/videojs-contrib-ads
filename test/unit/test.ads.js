@@ -1,8 +1,10 @@
 import videojs from 'video.js';
 import getAds from '../../src/ads.js';
+import QUnit from 'qunit';
+import sinon from 'sinon';
 
 QUnit.module('Ads Object', {
-  beforeEach: function() {
+  beforeEach() {
     this.player = {
       currentSrc: () => {},
       duration: () => {},

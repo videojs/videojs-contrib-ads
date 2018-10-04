@@ -21,7 +21,7 @@ export default {
   },
   output: [{
     file: 'dist/videojs-contrib-ads.cjs.js',
-    format: 'cjs',
+    format: 'cjs'
   }, {
     file: 'dist/videojs-contrib-ads.es.js',
     format: 'es'

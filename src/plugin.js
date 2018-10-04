@@ -248,7 +248,8 @@ const contribAdsPlugin = function(options) {
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout', 'adended',
     'ads-ad-started',
     'contentchanged', 'dispose', 'contentresumed', 'readyforpostroll',
-    'nopreroll', 'nopostroll'], (e) => {
+    'nopreroll', 'nopostroll'
+  ], (e) => {
     player.ads._state.handleEvent(e.type);
   });
 

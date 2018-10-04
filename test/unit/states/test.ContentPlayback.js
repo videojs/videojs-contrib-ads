@@ -1,3 +1,4 @@
+import QUnit from 'qunit';
 import {ContentPlayback} from '../../../src/states.js';
 
 /*
@@ -5,7 +6,7 @@ import {ContentPlayback} from '../../../src/states.js';
  * other modules mocked.
  */
 QUnit.module('ContentPlayback', {
-  beforeEach: function() {
+  beforeEach() {
     this.events = [];
     this.playTriggered = false;
 

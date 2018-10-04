@@ -1,4 +1,5 @@
-
+import QUnit from 'qunit';
+import sinon from 'sinon';
 import {AdsDone} from '../../../src/states.js';
 
 /*
@@ -6,7 +7,7 @@ import {AdsDone} from '../../../src/states.js';
  * other modules mocked.
  */
 QUnit.module('AdsDone', {
-  beforeEach: function() {
+  beforeEach() {
     this.events = [];
     this.player = {
       trigger: (event) => {
