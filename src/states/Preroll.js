@@ -228,6 +228,7 @@ export default class Preroll extends AdState {
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;
     player.ads._shouldBlockPlay = false;
+    player.removeClass('vjs-ad-loading');
 
     // Play the content if we had requested play or we paused on 'contentupdate'
     // and we haven't played yet. This happens if there was no preroll or if it
