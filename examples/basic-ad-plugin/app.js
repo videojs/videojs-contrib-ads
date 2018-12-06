@@ -99,6 +99,13 @@
 
   document.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
-    player.src(document.querySelector('input[type="url"]').value);
+    if (player.ads.inAdBreak()) {
+      // if in an adbreak while change source, call endLinearAdMode
+      player.ads.endLinearAdMode();
+      player.src(document.querySelector('input[type="url"]').value);
+    } else {
+      player.src(document.querySelector('input[type="url"]').value);
+    }
+    
   });
 })();

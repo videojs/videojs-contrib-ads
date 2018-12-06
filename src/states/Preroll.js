@@ -1,6 +1,6 @@
 import videojs from 'video.js';
 
-import {AdState} from '../states.js';
+import {AdState, BeforePreroll} from '../states.js';
 import adBreak from '../adBreak.js';
 
 /*
@@ -222,6 +222,13 @@ export default class Preroll extends AdState {
     } else {
       this.noPreroll();
     }
+  }
+
+  /**
+   * If content changes while in Preroll state, transition to BeforePreroll
+   */
+  onContentChanged() {
+    this.transitionTo(BeforePreroll);
   }
 
   resumeAfterNoPreroll(player) {
