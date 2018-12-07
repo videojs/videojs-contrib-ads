@@ -78,6 +78,7 @@
 
         // tell videojs to load the ad
         var media = state.inventory[Math.floor(Math.random() * state.inventory.length)];
+        player.exampleAds._settingAd = true;
         player.src(media);
         player.trigger('ads-ad-started');
 
@@ -147,6 +148,26 @@
 
     });
 
+  });
+
+  videojs.use('*', player => {
+    return {
+      setSource: (srcObj, next) => {
+        if (player.ads.inAdBreak()) {
+   
+          // End current ad if there is one
+          if (player.exampleAds && !player.exampleAds._settingAd) {
+            player.ads.disableNextSnapshotRestore = true;
+            player.ads.endLinearAdMode();
+            player.trigger('contentresumed');
+          }
+
+          player.exampleAds._settingAd = false;
+
+        }
+        next(null, srcObj);
+      }
+    }
   });
 
 })(window, document, videojs);
