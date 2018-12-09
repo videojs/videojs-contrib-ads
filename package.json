@@ -78,7 +78,7 @@
     "rollup-plugin-commonjs": "8.3.0",
     "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-multi-entry": "^2.0.1",
-    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-watch": "^3.2.2",
     "semver": "^5.3.0",
     "sinon": "^2.2.0",
