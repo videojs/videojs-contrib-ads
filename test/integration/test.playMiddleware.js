@@ -14,7 +14,7 @@ QUnit.module('Integration: play middleware', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      adServerUrl: '/base/test/integration/lib/inventory.json'
+      adServerUrl: '/test/integration/lib/inventory.json'
     });
   },
 
@@ -200,7 +200,7 @@ QUnit.test("don't trigger play event if another middleware terminates", function
 
   // Don't play preroll ads
   localPlayer.exampleAds({
-    adServerUrl: '/base/test/integration/lib/inventory.json',
+    adServerUrl: '/test/integration/lib/inventory.json',
     playPreroll: false
   });
 

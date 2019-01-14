@@ -5,7 +5,6 @@ module.exports = function(config) {
   // see https://github.com/videojs/videojs-generate-karma-config
   // for options
   const options = {
-    reportCoverage: false,
     preferHeadless: false,
     travisLaunchers(defaults) {
       defaults.travisChrome.flags.push('--autoplay-policy=no-user-gesture-required');
@@ -21,6 +20,9 @@ module.exports = function(config) {
       });
     },
     browsers(browsers) {
+      if (process.env.TRAVIS) {
+        return browsers;
+      }
       const toKeep = ['Firefox', 'Chrome'];
       const filteredBrowsers = [];
 

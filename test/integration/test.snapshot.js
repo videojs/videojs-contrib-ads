@@ -13,8 +13,8 @@ QUnit.module('Video Snapshot', sharedModuleHooks({
     const otherTrack = document.createElement('track');
 
     captionTrack.setAttribute('kind', 'captions');
-    captionTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
-    otherTrack.setAttribute('src', '/base/test/integration/lib/testcaption.vtt');
+    captionTrack.setAttribute('src', '/test/integration/lib/testcaption.vtt');
+    otherTrack.setAttribute('src', '/test/integration/lib/testcaption.vtt');
     this.video.appendChild(captionTrack);
     this.video.appendChild(otherTrack);
 
@@ -324,7 +324,7 @@ QUnit.test('checks for a src attribute change that isn\'t reflected in currentSr
 });
 
 QUnit.test('When captions are enabled, the content\'s tracks will be disabled during the ad', function(assert) {
-  const trackSrc = '/base/test/integration/lib/testcaption.vtt';
+  const trackSrc = '/test/integration/lib/testcaption.vtt';
 
   // Add a text track
   const remoteTrack = this.player.addRemoteTextTrack({
@@ -408,7 +408,7 @@ QUnit.test('No snapshot if duration is Infinity', function(assert) {
 });
 
 QUnit.test('Snapshot and text tracks', function(assert) {
-  const trackSrc = '/base/test/integration/lib/testcaption.vtt';
+  const trackSrc = '/test/integration/lib/testcaption.vtt';
   const originalAddTrack = this.player.addTextTrack;
   const originalTextTracks = this.player.textTracks;
 
