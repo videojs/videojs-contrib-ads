@@ -1,7 +1,9 @@
-import {AdState, StitchedContentPlayback} from '../states.js';
 import adBreak from '../adBreak.js';
+import States from '../states.js';
 
-export default class StitchedAdRoll extends AdState {
+const AdState = States.getState('AdState');
+
+class StitchedAdRoll extends AdState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -48,7 +50,13 @@ export default class StitchedAdRoll extends AdState {
    * StitchedAdRoll break is done.
    */
   endLinearAdMode() {
+    const StitchedContentPlayback = States.getState('StitchedContentPlayback');
+
     adBreak.end(this.player);
     this.transitionTo(StitchedContentPlayback);
   }
 }
+
+States.registerState('StitchedAdRoll', StitchedAdRoll);
+
+export default StitchedAdRoll;

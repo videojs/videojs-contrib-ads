@@ -16,7 +16,18 @@ import initCancelContentPlay from './cancelContentPlay.js';
 import playMiddlewareFeature from './playMiddleware.js';
 import register from './register.js';
 
-import {BeforePreroll, StitchedContentPlayback} from './states.js';
+import States from './states.js';
+import './states/abstract/State.js';
+import './states/abstract/AdState.js';
+import './states/abstract/ContentState.js';
+import './states/AdsDone.js';
+import './states/Preroll.js';
+import './states/BeforePreroll.js';
+import './states/Midroll.js';
+import './states/Postroll.js';
+import './states/ContentPlayback.js';
+import './states/StitchedContentPlayback.js';
+import './states/StitchedAdRoll.js';
 
 const { isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
@@ -185,9 +196,9 @@ const contribAdsPlugin = function(options) {
   settings.stitchedAds = !!settings.stitchedAds;
 
   if (settings.stitchedAds) {
-    player.ads._state = new StitchedContentPlayback(player);
+    player.ads._state = new (States.getState('StitchedContentPlayback'))(player);
   } else {
-    player.ads._state = new BeforePreroll(player);
+    player.ads._state = new (States.getState('BeforePreroll'))(player);
   }
 
   player.ads._state.init(player);

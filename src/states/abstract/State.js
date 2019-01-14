@@ -1,6 +1,7 @@
 import videojs from 'video.js';
+import States from '../../states.js';
 
-export default class State {
+class State {
 
   static _getName() {
     return 'Anonymous State';
@@ -143,3 +144,7 @@ export default class State {
   }
 
 }
+
+States.registerState('State', State);
+
+export default State;

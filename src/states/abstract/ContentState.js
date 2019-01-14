@@ -1,6 +1,7 @@
-import {State, BeforePreroll, Preroll} from '../../states.js';
+import States from '../../states.js';
+import State from './State.js';
 
-export default class ContentState extends State {
+class ContentState extends State {
 
   /*
    * Overrides State.isAdState
@@ -14,6 +15,9 @@ export default class ContentState extends State {
    * fire during ad breaks, so we don't need to worry about that.
    */
   onContentChanged(player) {
+    const BeforePreroll = States.getState('BeforePreroll');
+    const Preroll = States.getState('Preroll');
+
     player.ads.debug('Received contentchanged event (ContentState)');
     if (player.paused()) {
       this.transitionTo(BeforePreroll);
@@ -25,3 +29,7 @@ export default class ContentState extends State {
   }
 
 }
+
+States.registerState('ContentState', ContentState);
+
+export default ContentState;

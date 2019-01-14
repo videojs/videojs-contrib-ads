@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
 import sinon from 'sinon';
-import {Postroll} from '../../../src/states.js';
+import Postroll from '../../../src/states/Postroll.js';
 import adBreak from '../../../src/adBreak.js';
 
 /*

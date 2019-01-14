@@ -1,7 +1,9 @@
-import {AdState} from '../states.js';
+import States from '../states.js';
 import adBreak from '../adBreak.js';
 
-export default class Midroll extends AdState {
+const AdState = States.getState('AdState');
+
+class Midroll extends AdState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -63,3 +65,7 @@ export default class Midroll extends AdState {
   }
 
 }
+
+States.registerState('Midroll', Midroll);
+
+export default Midroll;

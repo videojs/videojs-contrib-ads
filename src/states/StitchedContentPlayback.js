@@ -1,9 +1,11 @@
-import {ContentState, StitchedAdRoll} from '../states.js';
+import States from '../states.js';
+
+const ContentState = States.getState('ContentState');
 
 /*
  * This state represents content playback when stitched ads are in play.
  */
-export default class StitchedContentPlayback extends ContentState {
+class StitchedContentPlayback extends ContentState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -35,6 +37,12 @@ export default class StitchedContentPlayback extends ContentState {
    * This is how stitched ads start.
    */
   startLinearAdMode() {
+    const StitchedAdRoll = States.getState('StitchedAdRoll');
+
     this.transitionTo(StitchedAdRoll);
   }
 }
+
+States.registerState('StitchedContentPlayback', StitchedContentPlayback);
+
+export default StitchedContentPlayback;

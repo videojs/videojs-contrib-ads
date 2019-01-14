@@ -1,11 +1,13 @@
-import {ContentState, Midroll, Postroll} from '../states.js';
+import States from '../states.js';
+
+const ContentState = States.getState('ContentState');
 
 /*
  * This state represents content playback the first time through before
  * content ends. After content has ended once, we check for postrolls and
  * move on to the AdsDone state rather than returning here.
  */
-export default class ContentPlayback extends ContentState {
+class ContentPlayback extends ContentState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -41,6 +43,8 @@ export default class ContentPlayback extends ContentState {
    * Content ended before postroll checks.
    */
   onReadyForPostroll(player) {
+    const Postroll = States.getState('Postroll');
+
     player.ads.debug('Received readyforpostroll event');
     this.transitionTo(Postroll);
   }
@@ -49,7 +53,13 @@ export default class ContentPlayback extends ContentState {
    * This is how midrolls start.
    */
   startLinearAdMode() {
+    const Midroll = States.getState('Midroll');
+
     this.transitionTo(Midroll);
   }
 
 }
+
+States.registerState('ContentPlayback', ContentPlayback);
+
+export default ContentPlayback;

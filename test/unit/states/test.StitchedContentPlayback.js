@@ -1,4 +1,4 @@
-import {StitchedContentPlayback} from '../../../src/states.js';
+import StitchedContentPlayback from '../../../src/states/StitchedContentPlayback.js';
 import QUnit from 'qunit';
 
 /*

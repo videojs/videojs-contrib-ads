@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
 import sinon from 'sinon';
-import {StitchedAdRoll} from '../../../src/states.js';
+import StitchedAdRoll from '../../../src/states/StitchedAdRoll.js';
 import adBreak from '../../../src/adBreak.js';
 
 /*

@@ -1,11 +1,12 @@
-import {State, ContentPlayback} from '../../states.js';
+import States from '../../states.js';
+import State from './State.js';
 
 /*
  * This class contains logic for all ads, be they prerolls, midrolls, or postrolls.
  * Primarily, this involves handling startLinearAdMode and endLinearAdMode.
  * It also handles content resuming.
  */
-export default class AdState extends State {
+class AdState extends State {
 
   constructor(player) {
     super(player);
@@ -25,6 +26,8 @@ export default class AdState extends State {
    * moment that content playback is no longer blocked by ads.
    */
   onPlaying() {
+    const ContentPlayback = States.getState('ContentPlayback');
+
     if (this.contentResuming) {
       this.transitionTo(ContentPlayback);
     }
@@ -36,6 +39,8 @@ export default class AdState extends State {
    * resume. The main use case for this is when ads are stitched into the content video.
    */
   onContentResumed() {
+    const ContentPlayback = States.getState('ContentPlayback');
+
     if (this.contentResuming) {
       this.transitionTo(ContentPlayback);
     }
@@ -64,3 +69,7 @@ export default class AdState extends State {
   }
 
 }
+
+States.registerState('AdState', AdState);
+
+export default AdState;
