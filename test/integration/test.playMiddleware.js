@@ -2,6 +2,7 @@ import videojs from 'video.js';
 import '../../examples/basic-ad-plugin/example-plugin.js';
 import QUnit from 'qunit';
 import document from 'global/document';
+import window from 'global/window';
 import sinon from 'sinon';
 
 QUnit.module('Integration: play middleware', {
@@ -92,15 +93,18 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
   };
 
   const onAdstart = () => {
-    assert.strictEqual(
-      techPlaySpy.callCount, 0,
-      "tech play shouldn't be called while waiting for prerolls"
-    );
-    assert.strictEqual(
-      playEventSpy.callCount, 1,
-      'play event should be triggered'
-    );
-    finish();
+    // sometimes play will happen just after adstart
+    window.setTimeout(() => {
+      assert.strictEqual(
+        techPlaySpy.callCount, 0,
+        "tech play shouldn't be called while waiting for prerolls"
+      );
+      assert.strictEqual(
+        playEventSpy.callCount, 1,
+        'play event should be triggered'
+      );
+      finish();
+    }, 1);
   };
 
   const onError = function() {
