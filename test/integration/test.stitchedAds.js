@@ -53,6 +53,7 @@ QUnit.test('Stitched Ads', function(assert) {
   const seenDuringMidroll = [];
   const seenAfterMidroll = [];
   let currentEventLog = seenBeforePreroll;
+  let finish;
 
   let events = [
     'suspend',
@@ -99,12 +100,12 @@ QUnit.test('Stitched Ads', function(assert) {
 
   player.on(events, (e) => currentEventLog.push(e.type));
 
-  player.on(['error', 'aderror'], () => {
+  const onError = () => {
     assert.ok(false, 'no errors');
-    done();
-  });
+    finish();
+  };
 
-  player.on('timeupdate', () => {
+  const onTimeupdate = () => {
     videojs.log(player.currentTime(), player.currentSrc());
 
     if (player.currentTime() > 21) {
@@ -131,9 +132,17 @@ QUnit.test('Stitched Ads', function(assert) {
         assert.ok(!/^content/.test(event), event + ' has no content prefix after midroll');
       });
 
-      done();
+      finish();
     }
-  });
+  };
 
+  finish = () => {
+    player.off('timeupdate', onTimeupdate);
+    player.off(['error', 'aderror'], onError);
+    done();
+  };
+
+  player.on(['error', 'aderror'], onError);
+  player.on('timeupdate', onTimeupdate);
   player.ready(player.play);
 });

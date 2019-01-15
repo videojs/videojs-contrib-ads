@@ -25,31 +25,42 @@ QUnit.module('Integration: play middleware', {
 
 QUnit.test('the `_playRequested` flag is set on the first play request', function(assert) {
   const done = assert.async();
+  let finish;
 
   this.player.src({
     src: 'http://vjs.zencdn.net/v/oceans.webm',
     type: 'video/webm'
   });
 
-  // When the preroll starts
-  this.player.on('adstart', () => {
+  const onAdstart = () => {
     assert.strictEqual(
       this.player.ads._playRequested, true,
       '_playRequested is true when the play method is used'
     );
-    done();
-  });
+    finish();
+  };
 
-  // If there wasn't an ad
-  this.player.on('timeupdate', () => {
+  const onTimeupdate = () => {
     if (this.player.currentTime() > 0) {
       assert.strictEqual(
         this.player.ads._playRequested, true,
         '_playRequested is true when the play method is used'
       );
-      done();
+      finish();
     }
-  });
+  };
+
+  finish = () => {
+    this.player.off('adstart', onAdstart);
+    this.player.off('timeupdate', onTimeupdate);
+    done();
+  };
+
+  // When the preroll starts
+  this.player.on('adstart', onAdstart);
+
+  // If there wasn't an ad
+  this.player.on('timeupdate', onTimeupdate);
 
   this.player.ready(this.player.play);
 });
@@ -59,27 +70,14 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
   const techPlaySpy = sinon.spy(this.video, 'play');
   const playEventSpy = sinon.spy();
   let seenAdsReady = false;
+  let finish;
 
   this.player.on('play', playEventSpy);
   this.player.on('adsready', () => {
     seenAdsReady = true;
   });
 
-  // When the preroll starts
-  this.player.on('adstart', () => {
-    assert.strictEqual(
-      techPlaySpy.callCount, 0,
-      "tech play shouldn't be called while waiting for prerolls"
-    );
-    assert.strictEqual(
-      playEventSpy.callCount, 1,
-      'play event should be triggered'
-    );
-    done();
-  });
-
-  // Once we are in content
-  this.player.on('timeupdate', () => {
+  const onTimeupdate = function() {
     if (this.player.currentTime() > 0) {
       assert.strictEqual(
         techPlaySpy.callCount, 0,
@@ -89,14 +87,40 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
         playEventSpy.callCount, 1,
         'play event should be triggered'
       );
-      done();
+      finish();
     }
-  });
+  };
 
-  this.player.on(['error', 'aderror', 'adtimeout'], () => {
+  const onAdstart = function() {
+    assert.strictEqual(
+      techPlaySpy.callCount, 0,
+      "tech play shouldn't be called while waiting for prerolls"
+    );
+    assert.strictEqual(
+      playEventSpy.callCount, 1,
+      'play event should be triggered'
+    );
+    finish();
+  };
+
+  const onError = function() {
     assert.ok(false, 'no errors, or adtimeout');
+    finish();
+  };
+
+  finish = () => {
+    this.player.off('adstart', onAdstart);
+    this.player.off('timeupdate', onTimeupdate);
+    this.player.off(['error', 'aderror', 'adtimeout'], onError);
     done();
-  });
+  };
+
+  // When the preroll starts
+  this.player.on('adstart', onAdstart);
+
+  // Once we are in content
+  this.player.on('timeupdate', onTimeupdate);
+  this.player.on(['error', 'aderror', 'adtimeout'], onError);
 
   this.player.src({
     src: 'http://vjs.zencdn.net/v/oceans.webm',
@@ -144,16 +168,19 @@ QUnit.test("playMiddleware doesn\'t block play in content playback", function(as
     assert.strictEqual(this.player.ads._shouldBlockPlay, true);
   });
 
-  // Wait for the ad to start playing
-  this.player.on('timeupdate', () => {
+  const onTimeupdate = () => {
     if (this.player.currentTime() > 0) {
       assert.strictEqual(
         this.player.ads._shouldBlockPlay, false,
         'should stop blocking in content'
       );
+      this.player.off('timeupdate', onTimeupdate);
       done();
     }
-  });
+  };
+
+  // Wait for the ad to start playing
+  this.player.on('timeupdate', onTimeupdate);
 
   this.player.src({
     src: 'http://vjs.zencdn.net/v/oceans.webm',
