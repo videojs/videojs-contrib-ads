@@ -77,7 +77,7 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
     seenAdsReady = true;
   });
 
-  const onTimeupdate = function() {
+  const onTimeupdate = () => {
     if (this.player.currentTime() > 0) {
       assert.strictEqual(
         techPlaySpy.callCount, 0,
@@ -91,7 +91,7 @@ QUnit.test('blocks calls to play to wait for prerolls if adsready BEFORE play', 
     }
   };
 
-  const onAdstart = function() {
+  const onAdstart = () => {
     assert.strictEqual(
       techPlaySpy.callCount, 0,
       "tech play shouldn't be called while waiting for prerolls"

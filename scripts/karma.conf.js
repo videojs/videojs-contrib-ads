@@ -6,6 +6,9 @@ module.exports = function(config) {
   // for options
   const options = {
     preferHeadless: false,
+    serverBrowser(defaults) {
+      return ['autoplayDisabledChrome'];
+    },
     travisLaunchers(defaults) {
       defaults.travisChrome.flags.push('--autoplay-policy=no-user-gesture-required');
 
