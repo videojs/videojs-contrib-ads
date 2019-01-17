@@ -7,8 +7,6 @@ It takes care of a number of concerns for you, reducing the code you have to wri
 
 `videojs-contrib-ads` is not a stand-alone ad plugin. It is a library that is used by other ad plugins in order to fully support video.js. If you want to build an ad plugin, you've come to the right place. If you want to play ads in video.js without writing code, this is not the right project for you.
 
-Lead Maintainer: Greg Smith [https://github.com/incompl](https://github.com/incompl)
-
 Maintenance Status: Stable
 
 ## Benefits
