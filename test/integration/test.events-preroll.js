@@ -23,7 +23,7 @@ QUnit.module('Events and Prerolls', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      adServerUrl: '/base/test/integration/lib/inventory.json'
+      adServerUrl: '/test/integration/lib/inventory.json'
     });
 
     this.player.src({

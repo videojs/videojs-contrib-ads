@@ -13,7 +13,7 @@ QUnit.module('Final Events With No Postroll', {
     this.player = videojs(this.video);
 
     this.player.exampleAds({
-      adServerUrl: '/base/test/integration/lib/inventory.json',
+      adServerUrl: '/test/integration/lib/inventory.json',
       playPreroll: false,
       playMidroll: false,
       playPostroll: false
