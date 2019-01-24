@@ -1,29 +1,25 @@
-/*
- * This file is necessary to avoid this rollup issue:
- * https://github.com/rollup/rollup/issues/1089
- */
-import State from './states/abstract/State.js';
-import AdState from './states/abstract/AdState.js';
-import ContentState from './states/abstract/ContentState.js';
-import Preroll from './states/Preroll.js';
-import Midroll from './states/Midroll.js';
-import Postroll from './states/Postroll.js';
-import BeforePreroll from './states/BeforePreroll.js';
-import ContentPlayback from './states/ContentPlayback.js';
-import AdsDone from './states/AdsDone.js';
-import StitchedAdRoll from './states/StitchedAdRoll.js';
-import StitchedContentPlayback from './states/StitchedContentPlayback.js';
+export default class States {
+  static getState(name) {
+    if (!name) {
+      return;
+    }
 
-export {
-  State,
-  AdState,
-  ContentState,
-  Preroll,
-  Midroll,
-  Postroll,
-  BeforePreroll,
-  ContentPlayback,
-  AdsDone,
-  StitchedAdRoll,
-  StitchedContentPlayback
-};
+    if (States.states_ && States.states_[name]) {
+      return States.states_[name];
+    }
+  }
+
+  static registerState(name, StateToRegister) {
+    if (typeof name !== 'string' || !name) {
+      throw new Error(`Illegal state name, "${name}"; must be a non-empty string.`);
+    }
+
+    if (!States.states_) {
+      States.states_ = {};
+    }
+
+    States.states_[name] = StateToRegister;
+
+    return StateToRegister;
+  }
+}

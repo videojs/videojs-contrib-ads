@@ -1,9 +1,10 @@
 import videojs from 'video.js';
-
-import {AdState, BeforePreroll, Preroll, AdsDone} from '../states.js';
 import adBreak from '../adBreak.js';
+import States from '../states.js';
 
-export default class Postroll extends AdState {
+const AdState = States.getState('AdState');
+
+class Postroll extends AdState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -40,6 +41,9 @@ export default class Postroll extends AdState {
     // No postroll, ads are done
     } else {
       this.resumeContent(player);
+
+      const AdsDone = States.getState('AdsDone');
+
       this.transitionTo(AdsDone);
     }
   }
@@ -73,6 +77,7 @@ export default class Postroll extends AdState {
    */
   endLinearAdMode() {
     const player = this.player;
+    const AdsDone = States.getState('AdsDone');
 
     if (this.inAdBreak()) {
       player.removeClass('vjs-ad-loading');
@@ -129,11 +134,15 @@ export default class Postroll extends AdState {
     // Content resuming after Postroll. Content is paused
     // at this point, since it is done playing.
     if (this.isContentResuming()) {
+      const BeforePreroll = States.getState('BeforePreroll');
+
       this.transitionTo(BeforePreroll);
 
     // Waiting for postroll to start. Content is considered playing
     // at this point, since it had to be playing to start the postroll.
     } else if (!this.inAdBreak()) {
+      const Preroll = States.getState('Preroll');
+
       this.transitionTo(Preroll);
     }
   }
@@ -159,6 +168,8 @@ export default class Postroll extends AdState {
    * refactor this class so that `cleanup` handles all of this.
    */
   abort(player) {
+    const AdsDone = States.getState('AdsDone');
+
     this.resumeContent(player);
     player.removeClass('vjs-ad-loading');
     this.transitionTo(AdsDone);
@@ -174,3 +185,7 @@ export default class Postroll extends AdState {
   }
 
 }
+
+States.registerState('Postroll', Postroll);
+
+export default Postroll;

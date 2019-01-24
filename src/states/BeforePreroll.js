@@ -1,4 +1,6 @@
-import {ContentState, Preroll} from '../states.js';
+import States from '../states.js';
+
+const ContentState = States.getState('ContentState');
 
 /*
  * This is the initial state for a player with an ad plugin. Normally, it remains in this
@@ -6,7 +8,7 @@ import {ContentState, Preroll} from '../states.js';
  * prerolls. This happens regardless of whether or not any prerolls ultimately will play.
  * Errors and other conditions may lead us directly from here to ContentPlayback.
  */
-export default class BeforePreroll extends ContentState {
+class BeforePreroll extends ContentState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -42,6 +44,8 @@ export default class BeforePreroll extends ContentState {
    * content playback is blocked by the ad plugin.
    */
   onPlay(player) {
+    const Preroll = States.getState('Preroll');
+
     player.ads.debug('Received play event (BeforePreroll)');
 
     // Check for prerolls
@@ -88,3 +92,7 @@ export default class BeforePreroll extends ContentState {
   }
 
 }
+
+States.registerState('BeforePreroll', BeforePreroll);
+
+export default BeforePreroll;

@@ -1,8 +1,9 @@
 import videojs from 'video.js';
+import States from '../states.js';
 
-import {ContentState} from '../states.js';
+const ContentState = States.getState('ContentState');
 
-export default class AdsDone extends ContentState {
+class AdsDone extends ContentState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -29,3 +30,7 @@ export default class AdsDone extends ContentState {
   }
 
 }
+
+States.registerState('AdsDone', AdsDone);
+
+export default AdsDone;

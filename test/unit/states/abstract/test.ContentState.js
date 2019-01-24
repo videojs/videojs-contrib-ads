@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
 import sinon from 'sinon';
-import {ContentState} from '../../../../src/states.js';
+import ContentState from '../../../../src/states/abstract/ContentState.js';
 
 /*
  * These tests are intended to be isolated unit tests for one state with all

@@ -1,13 +1,15 @@
 import videojs from 'video.js';
-
-import {AdState} from '../states.js';
 import adBreak from '../adBreak.js';
+
+import States from '../states.js';
+
+const AdState = States.getState('AdState');
 
 /*
  * This state encapsulates waiting for prerolls, preroll playback, and
  * content restoration after a preroll.
  */
-export default class Preroll extends AdState {
+class Preroll extends AdState {
 
   /*
    * Allows state name to be logged even after minification.
@@ -252,3 +254,7 @@ export default class Preroll extends AdState {
   }
 
 }
+
+States.registerState('Preroll', Preroll);
+
+export default Preroll;

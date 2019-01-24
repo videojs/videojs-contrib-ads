@@ -1,7 +1,7 @@
 import QUnit from 'qunit';
 import sinon from 'sinon';
 
-import {BeforePreroll} from '../../../src/states.js';
+import BeforePreroll from '../../../src/states/BeforePreroll.js';
 import * as CancelContentPlay from '../../../src/cancelContentPlay.js';
 
 /*
