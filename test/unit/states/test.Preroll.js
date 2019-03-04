@@ -11,6 +11,7 @@ QUnit.module('Preroll', {
   beforeEach() {
     this.events = [];
     this.playTriggered = false;
+    this.classes = [];
 
     this.player = {
       ads: {
@@ -22,8 +23,9 @@ QUnit.module('Preroll', {
       },
       setTimeout: () => {},
       clearTimeout: () => {},
-      addClass: () => {},
-      removeClass: () => {},
+      addClass: (name) => this.classes.push(name),
+      removeClass: (name) => this.classes.splice(this.classes.indexOf(name), 1),
+      hasClass: (name) => this.classes.indexOf(name) !== -1,
       one: () => {},
       trigger: (event) => {
         this.events.push(event);
@@ -120,6 +122,9 @@ QUnit.test('can handle adscanceled', function(assert) {
   this.preroll.init(this.player, false, false);
   this.preroll.onAdsCanceled(this.player);
   assert.equal(this.preroll.isContentResuming(), true);
+  assert.notOk(this.player.hasClass('vjs-ad-loading'));
+  assert.notOk(this.player.hasClass('vjs-ad-content-resuming'));
+  assert.notOk(this.preroll._timeout);
   this.preroll.onPlaying(this.player);
   assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
@@ -128,6 +133,9 @@ QUnit.test('can handle adserror', function(assert) {
   this.preroll.init(this.player, false, false);
   this.preroll.onAdsError(this.player);
   assert.equal(this.preroll.isContentResuming(), true);
+  assert.notOk(this.player.hasClass('vjs-ad-loading'));
+  assert.notOk(this.player.hasClass('vjs-ad-content-resuming'));
+  assert.notOk(this.preroll._timeout);
   this.preroll.onPlaying(this.player);
   assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
@@ -140,10 +148,13 @@ QUnit.test('can skip linear ad mode', function(assert) {
   assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });
 
-QUnit.test('plays content after ad timeout', function(assert) {
+QUnit.test('can handle adtimeout', function(assert) {
   this.preroll.init(this.player, false, false);
   this.preroll.onAdTimeout(this.player);
   assert.equal(this.preroll.isContentResuming(), true);
+  assert.notOk(this.player.hasClass('vjs-ad-loading'));
+  assert.notOk(this.player.hasClass('vjs-ad-content-resuming'));
+  assert.notOk(this.preroll._timeout);
   this.preroll.onPlaying(this.player);
   assert.equal(this.newState, 'ContentPlayback', 'transitioned to ContentPlayback');
 });

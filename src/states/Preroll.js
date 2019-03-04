@@ -154,7 +154,7 @@ class Preroll extends AdState {
     const player = this.player;
 
     if (this.adsReady && !player.ads.inAdBreak() && !this.isContentResuming()) {
-      player.clearTimeout(this._timeout);
+      this.clearTimeout(player);
       player.ads.adType = 'preroll';
       this.waitingForAdBreak = false;
       adBreak.start(player);
@@ -227,16 +227,21 @@ class Preroll extends AdState {
   }
 
   resumeAfterNoPreroll(player) {
+
     // Resume to content and unblock play as there is no preroll ad
     this.contentResuming = true;
     player.ads._shouldBlockPlay = false;
+    this.cleanupPartial(player);
 
     // Play the content if we had requested play or we paused on 'contentupdate'
     // and we haven't played yet. This happens if there was no preroll or if it
     // errored, timed out, etc. Otherwise snapshot restore would play.
-    if (player.paused() &&
-        (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
-      player.play();
+    if (player.paused() && (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
+      const playPromise = player.play();
+
+      if (playPromise) {
+        playPromise.then(() => {}).catch(() => {});
+      }
     }
   }
 
@@ -247,12 +252,26 @@ class Preroll extends AdState {
     if (!player.ads._hasThereBeenALoadStartDuringPlayerLife) {
       videojs.log.warn('Leaving Preroll state before loadstart event can cause issues.');
     }
-
-    player.removeClass('vjs-ad-loading');
-    player.removeClass('vjs-ad-content-resuming');
-    player.clearTimeout(this._timeout);
+    this.cleanupPartial(player);
   }
 
+  /*
+   * Performs cleanup tasks without depending on a state transition. This is
+   * used mainly in cases where a preroll failed.
+   */
+  cleanupPartial(player) {
+    player.removeClass('vjs-ad-loading');
+    player.removeClass('vjs-ad-content-resuming');
+    this.clearTimeout(player);
+  }
+
+  /*
+   * Clear the preroll timeout and nulls out the pointer.
+   */
+  clearTimeout(player) {
+    player.clearTimeout(this._timeout);
+    this._timeout = null;
+  }
 }
 
 States.registerState('Preroll', Preroll);
