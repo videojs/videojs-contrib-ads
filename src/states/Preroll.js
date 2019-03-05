@@ -239,8 +239,8 @@ class Preroll extends AdState {
     if (player.paused() && (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
       const playPromise = player.play();
 
-      if (playPromise) {
-        playPromise.then(() => {}).catch(() => {});
+      if (playPromise && playPromise.then) {
+        playPromise.then(null, (e) => {});
       }
     }
   }
