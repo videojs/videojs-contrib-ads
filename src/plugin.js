@@ -79,11 +79,14 @@ const contribAdsPlugin = function(options) {
   // plugins that aren't ad-aware will break. prefixing allows
   // plugins that wish to handle ad events to do so while
   // avoiding the complexity for common usage
-  const videoEvents = VIDEO_EVENTS.concat([
-    'firstplay',
-    'loadedalldata',
-    'playing'
-  ]);
+  const videoEvents = [];
+
+  // dedupe event names
+  VIDEO_EVENTS.concat(['firstplay', 'loadedalldata', 'playing']).forEach(function(eventName) {
+    if (videoEvents.indexOf(eventName) === -1) {
+      videoEvents.push(eventName);
+    }
+  });
 
   // Set up redispatching of player events
   player.on(videoEvents, redispatch);
