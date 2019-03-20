@@ -1,3 +1,21 @@
+<a name="6.6.2"></a>
+## [6.6.2](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.1...v6.6.2) (2019-03-20)
+
+### Bug Fixes
+
+* Clean up player when a preroll fails and prevent uncaught play promise exceptions. ([#470](https://github.com/videojs/videojs-contrib-ads/issues/470)) ([07946db](https://github.com/videojs/videojs-contrib-ads/commit/07946db))
+* Remove duplicate playing listener from redispatch. ([#473](https://github.com/videojs/videojs-contrib-ads/issues/473)) ([944c363](https://github.com/videojs/videojs-contrib-ads/commit/944c363))
+
+### Chores
+
+* fix examples ([#429](https://github.com/videojs/videojs-contrib-ads/issues/429)) ([fc5bf22](https://github.com/videojs/videojs-contrib-ads/commit/fc5bf22))
+* lint to code to vjs 7 standards ([#433](https://github.com/videojs/videojs-contrib-ads/issues/433)) ([df10d45](https://github.com/videojs/videojs-contrib-ads/commit/df10d45))
+* Update development tooling ([#462](https://github.com/videojs/videojs-contrib-ads/issues/462)) ([d1171ec](https://github.com/videojs/videojs-contrib-ads/commit/d1171ec))
+
+### Code Refactoring
+
+* Add internal registration system for states to work around circular dependency issues. ([af9c527](https://github.com/videojs/videojs-contrib-ads/commit/af9c527))
+
 <a name="6.6.1"></a>
 ## [6.6.1](https://github.com/videojs/videojs-contrib-ads/compare/v6.4.3...v6.6.1) (2018-08-31)
 
