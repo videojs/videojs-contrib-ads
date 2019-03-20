@@ -82,7 +82,7 @@ const contribAdsPlugin = function(options) {
   const videoEvents = [];
 
   // dedupe event names
-  VIDEO_EVENTS.concat(['firstplay', 'loadedalldata', 'playing']).forEach(function(eventName) {
+  VIDEO_EVENTS.concat(['firstplay', 'loadedalldata']).forEach(function(eventName) {
     if (videoEvents.indexOf(eventName) === -1) {
       videoEvents.push(eventName);
     }
