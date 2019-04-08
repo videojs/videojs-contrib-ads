@@ -57,7 +57,7 @@ obj.playMiddleware = function(player) {
 
       // Safari issues a pause event when autoplay is blocked but Chrome and Firefox
       // do not, so we send a pause for consistency in those cases. This keeps the
-      // play button synchronized if play is rejected.
+      // play button in the correct state if play is rejected.
       } else if (playPromise && playPromise.catch) {
         playPromise.catch((e) => {
           if (e.name === 'NotAllowedError' && (videojs.browser.IS_CHROME || videojs.browser.IS_FIREFOX)) {
