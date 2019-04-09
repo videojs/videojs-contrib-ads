@@ -55,12 +55,12 @@ obj.playMiddleware = function(player) {
         // Reset playBlocked
         player.ads._playBlocked = false;
 
-      // Safari issues a pause event when autoplay is blocked but Chrome and Firefox
+      // Safari issues a pause event when autoplay is blocked but other browsers
       // do not, so we send a pause for consistency in those cases. This keeps the
       // play button in the correct state if play is rejected.
       } else if (playPromise && playPromise.catch) {
         playPromise.catch((e) => {
-          if (e.name === 'NotAllowedError' && (videojs.browser.IS_CHROME || videojs.browser.IS_FIREFOX)) {
+          if (e.name === 'NotAllowedError' && !videojs.browser.IS_SAFARI) {
             player.trigger('pause');
           }
         });
