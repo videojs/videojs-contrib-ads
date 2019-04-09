@@ -27,6 +27,8 @@ adMacroReplacement takes 3 arguments:
 | Name                     | Value                          |
 |:-------------------------|:-------------------------------|
 | {player.id}              | The player ID                  |
+| {player.width}           | The current player width       |
+| {player.heigth}          | The current player heigth      |
 | {player.duration}        | The duration of current video* |
 | {timestamp}              | Current epoch time             |
 | {document.referrer}      | Value of document.referrer     |
