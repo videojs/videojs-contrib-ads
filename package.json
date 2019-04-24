@@ -42,7 +42,7 @@
     "prepublishOnly": "npm-run-all build test:verify"
   },
   "devDependencies": {
-    "@videojs/generator-helpers": "~1.0.0",
+    "@videojs/generator-helpers": "~1.1.0",
     "karma": "^4.0.1",
     "lodash": "^4.17.4",
     "node-sass": "^4.5.3",
