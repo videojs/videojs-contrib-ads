@@ -33,6 +33,8 @@ QUnit.module('Events and Postrolls', {
       type: 'video/webm'
     });
 
+    // Mute the player to allow playback without user interaction
+    this.player.muted(true);
   },
 
   afterEach() {

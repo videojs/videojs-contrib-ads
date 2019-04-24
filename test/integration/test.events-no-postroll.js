@@ -23,6 +23,9 @@ QUnit.module('Final Events With No Postroll', {
       src: 'http://vjs.zencdn.net/v/oceans.webm',
       type: 'video/webm'
     });
+
+    // Mute the player to allow playback without user interaction
+    this.player.muted(true);
   },
 
   afterEach() {
