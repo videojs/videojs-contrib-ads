@@ -1,3 +1,10 @@
+<a name="6.6.3"></a>
+## [6.6.3](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.2...v6.6.3) (2019-04-29)
+
+### Bug Fixes
+
+* playToggle state incorrect when autoplay is blocked in Firefox ([#474](https://github.com/videojs/videojs-contrib-ads/issues/474)) ([f95c5e6](https://github.com/videojs/videojs-contrib-ads/commit/f95c5e6))
+
 <a name="6.6.2"></a>
 ## [6.6.2](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.1...v6.6.2) (2019-03-20)
 
