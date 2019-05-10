@@ -134,6 +134,12 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad plugins from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
+    // Some techs may retrigger canplay after playback has begun.
+    // So we want to procceed only if playback hasn't started.
+    if (player.hasStarted()) {
+      return;
+    }
+
     if (player.ads.snapshot && player.currentSrc() === player.ads.snapshot.currentSrc) {
       return;
     }
