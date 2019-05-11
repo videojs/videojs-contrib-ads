@@ -134,6 +134,11 @@ const contribAdsPlugin = function(options) {
   // cannot play from adcanplay.
   // This will prevent ad plugins from needing to do this themselves.
   player.on(['addurationchange', 'adcanplay'], function() {
+    // We don't need to handle this for stitched ads because
+    // linear ads in such cases are stitched into the content.
+    if (player.ads.settings.stitchedAds) {
+      return;
+    }
     // Some techs may retrigger canplay after playback has begun.
     // So we want to procceed only if playback hasn't started.
     if (player.hasStarted()) {
