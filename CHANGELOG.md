@@ -1,3 +1,18 @@
+<a name="6.6.4"></a>
+## [6.6.4](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.3...v6.6.4) (2019-05-17)
+
+### Bug Fixes
+
+* when the video element is shared, do not request playback when ads are loaded for stitched ads or if playback has already started ([75ee707](https://github.com/videojs/videojs-contrib-ads/commit/75ee707))
+
+### Chores
+
+* **package:** Update dependencies ([#487](https://github.com/videojs/videojs-contrib-ads/issues/487)) ([734ebf7](https://github.com/videojs/videojs-contrib-ads/commit/734ebf7))
+
+### Code Refactoring
+
+* change log level for play middleware to debug ([#485](https://github.com/videojs/videojs-contrib-ads/issues/485)) ([cc00120](https://github.com/videojs/videojs-contrib-ads/commit/cc00120))
+
 <a name="6.6.3"></a>
 ## [6.6.3](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.2...v6.6.3) (2019-04-29)
 
