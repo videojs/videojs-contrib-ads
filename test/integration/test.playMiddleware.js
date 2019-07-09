@@ -17,6 +17,9 @@ QUnit.module('Integration: play middleware', {
     this.player.exampleAds({
       adServerUrl: '/test/integration/lib/inventory.json'
     });
+
+    // Mute the player to allow playback without user interaction
+    this.player.muted(true);
   },
 
   afterEach() {

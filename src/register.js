@@ -64,7 +64,7 @@ function register(contribAdsPlugin) {
     // Register the play middleware
     videojs.use('*', playMiddleware);
     videojs.usingContribAdsMiddleware_ = true;
-    videojs.log('Play middleware has been registered with videojs');
+    videojs.log.debug('Play middleware has been registered with videojs');
   }
 
   return true;
