@@ -39,6 +39,8 @@ adMacroReplacement takes 3 arguments:
 | {mediainfo.reference_id} | Pulled from mediainfo object   |
 | {mediainfo.duration}     | Pulled from mediainfo object   |
 | {mediainfo.ad_keys}      | Pulled from mediainfo object   |
+| {playlistinfo.id}        | Pulled from playlistinfo object   |
+| {playlistinfo.name}      | Pulled from playlistinfo object   |
 
 \* Returns 0 if video is not loaded. Be careful timing your ad request with this macro.
 
