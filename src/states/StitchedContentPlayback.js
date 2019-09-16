@@ -30,7 +30,7 @@ class StitchedContentPlayback extends ContentState {
    * worry about that.
    */
   onContentChanged() {
-    this.player.ads.debug(`Received contentchanged event (${this._getName()})`);
+    this.player.ads.debug(`Received contentchanged event (${this.constructor._getName()})`);
   }
 
   /*
