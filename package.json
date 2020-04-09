@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@videojs/generator-helpers": "~1.0.0",
-    "karma": "^4.0.1",
+    "karma": "^5.0.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.5.3",
     "rollup": "1.1.0",
