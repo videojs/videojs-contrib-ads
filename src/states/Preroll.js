@@ -210,8 +210,11 @@ class Preroll extends AdState {
    */
   onAdTimeout(player) {
     this.afterLoadStart(() => {
+      const ContentPlayback = States.getState('ContentPlayback');
+
       player.ads.debug('adtimeout (Preroll)');
       this.resumeAfterNoPreroll(player);
+      this.transitionTo(ContentPlayback);
     });
   }
 
