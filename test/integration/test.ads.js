@@ -117,8 +117,8 @@ QUnit.test('begins resuming to content if there is no preroll', function(assert)
   this.player.trigger('adtimeout');
 
   assert.strictEqual(this.player.ads.inAdBreak(), false, 'should not be in an ad break');
-  assert.strictEqual(this.player.ads.isContentResuming(), true, 'should be resuming content');
-  assert.strictEqual(this.player.ads.isInAdMode(), true, 'should be in ad mode');
+  assert.strictEqual(this.player.ads.isContentResuming(), false, 'should not be resuming content after timeout');
+  assert.strictEqual(this.player.ads.isInAdMode(), false, 'should not  be in ad mode after timeout');
 });
 
 QUnit.test('removes the poster attribute so it does not flash between videos', function(assert) {
@@ -438,7 +438,7 @@ QUnit.test('adsready while preroll content resuming triggers readyforpreroll', f
   this.player.trigger('loadstart');
   this.player.trigger('play');
   this.player.trigger('adtimeout');
-  assert.strictEqual(this.player.ads.isContentResuming(), true, 'should be resuming to content');
+  assert.strictEqual(this.player.ads.isContentResuming(), false, 'should not be resuming to content');
   this.player.trigger('adsready');
   assert.strictEqual(spy.callCount, 1, 'readyforpreroll should have been triggered.');
 });
