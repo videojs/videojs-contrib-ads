@@ -77,7 +77,9 @@
     "test/"
   ],
   "dependencies": {
-    "global": "^4.3.2",
+    "global": "^4.3.2"
+  },
+  "peerDependencies": {
     "video.js": "^6 || ^7"
   },
   "generator-videojs-plugin": {
