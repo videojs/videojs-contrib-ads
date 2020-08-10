@@ -1,3 +1,16 @@
+<a name="6.7.0"></a>
+# [6.7.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.5...v6.7.0) (2020-08-10)
+
+### Features
+
+* add pageUrl macro ([#476](https://github.com/videojs/videojs-contrib-ads/issues/476)) ([ba7fdfa](https://github.com/videojs/videojs-contrib-ads/commit/ba7fdfa))
+* Add playlistinfo macros ([#491](https://github.com/videojs/videojs-contrib-ads/issues/491)) ([f4b5ff7](https://github.com/videojs/videojs-contrib-ads/commit/f4b5ff7))
+* Add width and height macros ([#475](https://github.com/videojs/videojs-contrib-ads/issues/475)) ([48e13eb](https://github.com/videojs/videojs-contrib-ads/commit/48e13eb))
+
+### Chores
+
+* update travis-ci badge ([e2d2c5e](https://github.com/videojs/videojs-contrib-ads/commit/e2d2c5e))
+
 <a name="6.6.5"></a>
 ## [6.6.5](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.4...v6.6.5) (2019-09-16)
 
