@@ -27,7 +27,10 @@ adMacroReplacement takes 3 arguments:
 | Name                     | Value                          |
 |:-------------------------|:-------------------------------|
 | {player.id}              | The player ID                  |
+| {player.width}           | The current player width       |
+| {player.height}          | The current player height      |
 | {player.duration}        | The duration of current video* |
+| {player.pageUrl}         | The page URL **                |
 | {timestamp}              | Current epoch time             |
 | {document.referrer}      | Value of document.referrer     |
 | {window.location.href}   | Value of window.location.href  |
@@ -43,6 +46,7 @@ adMacroReplacement takes 3 arguments:
 | {playlistinfo.name}      | Pulled from playlistinfo object   |
 
 \* Returns 0 if video is not loaded. Be careful timing your ad request with this macro.
+\** Returns document referrer if in an iframe otherwise window location.
 
 ## Dynamic Macro: mediainfo.custom_fields.*
 

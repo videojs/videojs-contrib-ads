@@ -1,3 +1,10 @@
+<a name="6.6.5"></a>
+## [6.6.5](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.4...v6.6.5) (2019-09-16)
+
+### Bug Fixes
+
+* Fix an error being thrown when using changing sources with stitched ads scenarios ([#500](https://github.com/videojs/videojs-contrib-ads/issues/500)) ([7deadc4](https://github.com/videojs/videojs-contrib-ads/commit/7deadc4))
+
 <a name="6.6.4"></a>
 ## [6.6.4](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.3...v6.6.4) (2019-05-17)
 

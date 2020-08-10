@@ -12,6 +12,17 @@ QUnit.test('player.id', function(assert) {
   assert.equal(result, '12345');
 });
 
+QUnit.test('player dimensions', function(assert) {
+  this.player.options_['data-player'] = '12345';
+  this.player.dimensions(200, 100);
+
+  const resultHeight = this.player.ads.adMacroReplacement('{player.height}');
+  const resultWidth = this.player.ads.adMacroReplacement('{player.width}');
+
+  assert.equal(resultHeight, 100, 'player.height was replaced');
+  assert.equal(resultWidth, 200, 'player.width was replaced');
+});
+
 QUnit.test('mediainfo', function(assert) {
   /* eslint-disable camelcase */
   this.player.mediainfo = {
@@ -53,6 +64,12 @@ QUnit.test('player.duration', function(assert) {
   const result = this.player.ads.adMacroReplacement('{player.duration}');
 
   assert.equal(result, 5);
+});
+
+QUnit.test('player.pageUrl', function(assert) {
+  const result = this.player.ads.adMacroReplacement('{player.pageUrl}');
+
+  assert.equal(result, document.referrer, 'tests run in iframe, so referrer should be used');
 });
 
 QUnit.test('timestamp', function(assert) {

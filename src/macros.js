@@ -61,10 +61,13 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
 
   // Static macros
   macros['{player.id}'] = this.options_['data-player'];
+  macros['{player.height}'] = this.currentHeight();
+  macros['{player.width}'] = this.currentWidth();
   macros['{mediainfo.id}'] = this.mediainfo ? this.mediainfo.id : '';
   macros['{mediainfo.name}'] = this.mediainfo ? this.mediainfo.name : '';
   macros['{mediainfo.duration}'] = this.mediainfo ? this.mediainfo.duration : '';
   macros['{player.duration}'] = this.duration();
+  macros['{player.pageUrl}'] = videojs.dom.isInFrame() ? document.referrer : window.location.href;
   macros['{playlistinfo.id}'] = this.playlistinfo ? this.playlistinfo.id : '';
   macros['{playlistinfo.name}'] = this.playlistinfo ? this.playlistinfo.name : '';
   macros['{timestamp}'] = new Date().getTime();
