@@ -46,6 +46,17 @@ QUnit.test('mediainfo', function(assert) {
   assert.equal(result, '1234567');
 });
 
+QUnit.test('playlistinfo', function(assert) {
+  this.player.playlistinfo = {
+    id: 1,
+    name: 2
+  };
+  const result = this.player.ads.adMacroReplacement('{playlistinfo.id}' +
+    '{playlistinfo.name}');
+
+  assert.equal(result, '12');
+});
+
 QUnit.test('player.duration', function(assert) {
   this.player.duration = function() {
     return 5;
