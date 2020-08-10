@@ -12,6 +12,17 @@ QUnit.test('player.id', function(assert) {
   assert.equal(result, '12345');
 });
 
+QUnit.test('player dimensions', function(assert) {
+  this.player.options_['data-player'] = '12345';
+  this.player.dimensions(200, 100);
+
+  const resultHeight = this.player.ads.adMacroReplacement('{player.height}');
+  const resultWidth = this.player.ads.adMacroReplacement('{player.width}');
+
+  assert.equal(resultHeight, 100, 'player.height was replaced');
+  assert.equal(resultWidth, 200, 'player.width was replaced');
+});
+
 QUnit.test('mediainfo', function(assert) {
   /* eslint-disable camelcase */
   this.player.mediainfo = {
