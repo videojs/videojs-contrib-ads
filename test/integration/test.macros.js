@@ -55,6 +55,12 @@ QUnit.test('player.duration', function(assert) {
   assert.equal(result, 5);
 });
 
+QUnit.test('player.pageUrl', function(assert) {
+  const result = this.player.ads.adMacroReplacement('{player.pageUrl}');
+
+  assert.equal(result, document.referrer, 'tests run in iframe, so referrer should be used');
+});
+
 QUnit.test('timestamp', function(assert) {
   this.player.duration = function() {
     return 5;

@@ -67,6 +67,7 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   macros['{mediainfo.name}'] = this.mediainfo ? this.mediainfo.name : '';
   macros['{mediainfo.duration}'] = this.mediainfo ? this.mediainfo.duration : '';
   macros['{player.duration}'] = this.duration();
+  macros['{player.pageUrl}'] = videojs.dom.isInFrame() ? document.referrer : window.location.href;
   macros['{timestamp}'] = new Date().getTime();
   macros['{document.referrer}'] = document.referrer;
   macros['{window.location.href}'] = window.location.href;
