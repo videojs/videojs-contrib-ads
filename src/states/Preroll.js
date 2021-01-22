@@ -143,10 +143,16 @@ class Preroll extends AdState {
     } else {
       this.afterLoadStart(() => {
         this.resumeAfterNoPreroll(player);
+        // When Ad plugin throws and adserror (Preroll) after initialation due AdError 1009: The VAST response document is empty
+        // ad plugin state won't transition from Preroll -> ContentPlayback and will be stuck in AdMode
+        // so any event like timeupdate will be redispatched with the prefix content (contenttimeupdate)
+        if (!player.paused() && !player.ads.inAdBreak() && player.ads.isContentResuming()) {
+          // trigger contentresumed to switch from Preroll -> ContentPlayback
+          player.trigger('contentresumed');
+        }
       });
     }
   }
-
   /*
    * Ad plugin invoked startLinearAdMode, the ad break starts now.
    */
@@ -242,12 +248,6 @@ class Preroll extends AdState {
       if (playPromise && playPromise.then) {
         playPromise.then(null, (e) => { });
       }
-      // When Ad plugin throws and adserror (Preroll) after initialation due AdError 1009: The VAST response document is empty
-      // ad plugin state won't transition from Preroll -> ContentPlayback and will be stuck in AdMode
-      // so any event like timeupdate will be redispatched with the prefix content (contenttimeupdate)
-    } else if (!player.paused() && !player.ads.inAdBreak() && !player.ads.isAdPlaying() && player.ads.isContentResuming()) {
-      // trigger contentresumed to switch from Preroll -> ContentPlayback
-      player.trigger('contentresumed');
     }
 
   }
