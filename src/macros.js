@@ -8,6 +8,8 @@ import document from 'global/document';
 
 import videojs from 'video.js';
 
+import { tcData } from './tcf.js';
+
 // Return URI encoded version of value if uriEncode is true
 const uriEncodeIfNeeded = function(value, uriEncode) {
   if (uriEncode) {
@@ -60,7 +62,7 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   }
 
   // Static macros
-  macros['{player.id}'] = this.options_['data-player'];
+  macros['{player.id}'] = this.options_['data-player'] || this.id_;
   macros['{player.height}'] = this.currentHeight();
   macros['{player.width}'] = this.currentWidth();
   macros['{mediainfo.id}'] = this.mediainfo ? this.mediainfo.id : '';
@@ -88,6 +90,14 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   // Custom fields in mediainfo
   customFields(this.mediainfo, macros, 'custom_fields');
   customFields(this.mediainfo, macros, 'customFields');
+
+  // tcf macros
+  Object.keys(tcData).forEach(key => {
+    macros[`{tcf.${key}}`] = tcData[key];
+  });
+
+  // Ad servers commonly want this bool as an int
+  macros['{tcf.gdprAppliesInt}'] = tcData.gdprApplies ? 1 : 0;
 
   // Go through all the replacement macros and apply them to the string.
   // This will replace all occurrences of the replacement macros.

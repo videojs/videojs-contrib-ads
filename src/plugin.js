@@ -15,6 +15,7 @@ import cueTextTracks from './cueTextTracks.js';
 import initCancelContentPlay from './cancelContentPlay.js';
 import playMiddlewareFeature from './playMiddleware.js';
 import register from './register.js';
+import { listenToTcf } from './tcf.js';
 
 import States from './states.js';
 import './states/abstract/State.js';
@@ -283,6 +284,12 @@ const contribAdsPlugin = function(options) {
     player.ads.reset();
     player.textTracks().removeEventListener('change', textTrackChangeHandler);
   });
+
+  // Listen to TCF changes
+  listenToTcf();
+
+  // Can be called for testing, or if the TCF CMP has loaded late
+  player.ads.listenToTcf = listenToTcf;
 
 };
 

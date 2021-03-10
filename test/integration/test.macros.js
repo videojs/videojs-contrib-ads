@@ -241,3 +241,51 @@ QUnit.test('default values', function(assert) {
     'pageVariable: unset value is replaced by default'
   );
 });
+
+QUnit.test('tcfMacros', function(assert) {
+  let callback;
+
+  const dummyData = {
+    cmpId: 10,
+    cmpVersion: 27,
+    gdprApplies: true,
+    tcfPolicyVersion: 2,
+    eventStatus: 'cmpuishown',
+    cmpStatus: 'loaded',
+    listenerId: null,
+    tcString: 'abcdefg',
+    isServiceSpecific: true,
+    useNonStandardStacks: false,
+    purposeOneTreatment: false,
+    publisherCC: 'DE'
+  };
+
+  const oldtcf = window.__tcfapi;
+
+  // Stub of TCF API, enough to register an event listener. The callback is called immediately and on change to consent data.
+  // https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md
+  window.__tcfapi = function(cmd, version, cb) {
+    if (cmd === 'addEventListener') {
+      callback = cb;
+      cb(dummyData, true);
+    }
+  };
+
+  this.player.ads.listenToTcf();
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{tcf.gdprApplies}&{tcf.gdprAppliesInt}&{tcf.tcString}'), 'true&1&abcdefg',
+    'tcf macros resolved'
+  );
+
+  // Call callbak with changed data
+  dummyData.tcString = 'zyxwvu';
+  callback(dummyData, true);
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{tcf.tcString}'), 'zyxwvu',
+    'tcf macros resolved with updated data'
+  );
+
+  window.__tcfapi = oldtcf;
+});
