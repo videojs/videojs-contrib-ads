@@ -49,7 +49,7 @@ adMacroReplacement takes 3 arguments:
 
 \** Returns document referrer if in an iframe otherwise window location.
 
-\*** Docuemnt referrer may not return the full URL depending on the effective [referrer policy][referrer-policy].
+\*** Document referrer may not return the full URL depending on the effective [referrer policy][referrer-policy].
 
 ## Dynamic Macro: mediainfo.custom_fields.*
 
