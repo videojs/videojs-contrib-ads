@@ -247,6 +247,7 @@ class Preroll extends AdState {
 
       } else {
         player.ads.debug('resumeAfterNoPreroll: already playing (Preroll)');
+        player.trigger('play');
         player.trigger('playing');
       }
     }
