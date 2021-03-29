@@ -246,3 +246,20 @@ QUnit.test('resets _shouldBlockPlay to false when no preroll', function(assert) 
   this.preroll.resumeAfterNoPreroll(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, false);
 });
+
+QUnit.test('adserror (Preroll) will trigger play & playing if its already playing', function(assert) {
+  this.preroll.init(this.player, false, false);
+  this.playingTriggered = false;
+  // due AdError 1009: The VAST response document is empty
+  this.player.ads._playRequested = true;
+  this.player.ads._pausedOnContentupdate = false;
+  this.player.paused = () => false;
+  this.preroll.onAdsError(this.player);
+
+  assert.equal(this.preroll.adType, null);
+  assert.equal(this.events[0], 'play', 'playing from adserror');
+  assert.equal(this.events[1], 'playing', 'playing from adserror');
+  assert.equal(this.player.ads._shouldBlockPlay, false);
+  assert.equal(this.preroll.isContentResuming(), true);
+
+});

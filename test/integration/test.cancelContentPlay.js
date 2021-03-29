@@ -110,8 +110,8 @@ QUnit.test("cancelContentPlay doesn\'t block play in content playback", function
   this.player.trigger('play');
   assert.strictEqual(pauseSpy.callCount, 1, 'pause should have been called');
   assert.strictEqual(
-    this.player.ads._cancelledPlay, true,
-    'cancelContentPlay is called while resuming'
+    this.player.ads._cancelledPlay, false,
+    'cancelContentPlay is not called while resuming'
   );
 
   // enters ContentPlayback

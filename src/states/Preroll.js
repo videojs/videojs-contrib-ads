@@ -146,7 +146,6 @@ class Preroll extends AdState {
       });
     }
   }
-
   /*
    * Ad plugin invoked startLinearAdMode, the ad break starts now.
    */
@@ -236,13 +235,23 @@ class Preroll extends AdState {
     // Play the content if we had requested play or we paused on 'contentupdate'
     // and we haven't played yet. This happens if there was no preroll or if it
     // errored, timed out, etc. Otherwise snapshot restore would play.
-    if (player.paused() && (player.ads._playRequested || player.ads._pausedOnContentupdate)) {
-      const playPromise = player.play();
+    if (player.ads._playRequested || player.ads._pausedOnContentupdate) {
+      if (player.paused()) {
+        player.ads.debug('resumeAfterNoPreroll: attempting to resume playback (Preroll)');
 
-      if (playPromise && playPromise.then) {
-        playPromise.then(null, (e) => {});
+        const playPromise = player.play();
+
+        if (playPromise && playPromise.then) {
+          playPromise.then(null, function(e) { });
+        }
+
+      } else {
+        player.ads.debug('resumeAfterNoPreroll: already playing (Preroll)');
+        player.trigger('play');
+        player.trigger('playing');
       }
     }
+
   }
 
   /*
