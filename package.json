@@ -34,7 +34,6 @@
     "test:unit": "karma start scripts/karma.conf.js",
     "test:verify": "vjsverify --verbose",
     "update-changelog": "conventional-changelog -p videojs -i CHANGELOG.md -s",
-    "preversion": "npm test",
     "version": "is-prerelease || npm run update-changelog && git add CHANGELOG.md",
     "watch": "npm-run-all -p watch:*",
     "watch:css": "npm run build:css:sass -- -w",
