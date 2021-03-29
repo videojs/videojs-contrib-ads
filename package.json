@@ -41,16 +41,17 @@
     "prepublishOnly": "npm-run-all build test:verify"
   },
   "devDependencies": {
-    "@videojs/generator-helpers": "~1.0.0",
-    "karma": "^4.0.1",
-    "lodash": "^4.17.15",
-    "node-sass": "^4.5.3",
-    "rollup": "1.1.0",
+    "@babel/cli": "^7.13.14",
+    "@videojs/generator-helpers": "^2.0.2",
+    "karma": "^6.3.1",
+    "lodash": "^4.17.21",
+    "node-sass": "^4.14.1",
+    "rollup": "^2.44.0",
     "sinon": "^2.2.0",
-    "videojs-generate-karma-config": "~5.1.0",
-    "videojs-generate-rollup-config": "~3.1.0",
-    "videojs-generator-verify": "~1.2.0",
-    "videojs-standard": "^8.0.1"
+    "videojs-generate-karma-config": "^7.1.0",
+    "videojs-generate-rollup-config": "^6.2.0",
+    "videojs-generator-verify": "^3.0.3",
+    "videojs-standard": "^8.0.4"
   },
   "keywords": [
     "videojs",
@@ -76,8 +77,8 @@
     "test/"
   ],
   "dependencies": {
-    "global": "^4.3.2",
-    "video.js": "^6 || ^7"
+    "global": "^4.4.0",
+    "video.js": "^7.11.4"
   },
   "generator-videojs-plugin": {
     "version": "7.6.1"
