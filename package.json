@@ -78,17 +78,10 @@
   ],
   "dependencies": {
     "global": "^4.4.0",
-    "video.js": "^7.11.4"
+    "video.js": "^6 || ^7"
   },
   "generator-videojs-plugin": {
     "version": "7.6.1"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "sinon",
-      "rollup",
-      "rollup-plugin-commonjs"
-    ]
   },
   "browserslist": [
     "defaults",
