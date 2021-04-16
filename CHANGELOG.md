@@ -1,3 +1,6 @@
+<a name="6.8.0"></a>
+# [6.8.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.8.0-0...v6.8.0) (2021-04-16)
+
 <a name="6.7.0"></a>
 # [6.7.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.6.5...v6.7.0) (2020-08-10)
 
