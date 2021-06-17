@@ -25,8 +25,8 @@ class BeforePreroll extends ContentState {
     this.adsReady = false;
     this.shouldResumeToContent = false;
 
-    // Content playback should be blocked until we are done
-    // playing ads or we know there are no ads to play
+    // Content playback should be blocked by callPlay() middleware if the allowVjsAutoplay
+    // option hasn't been provided and autoplay is not desired.
     player.ads._shouldBlockPlay = player.ads.settings.allowVjsAutoplay ? !player.autoplay() : true;
   }
 
