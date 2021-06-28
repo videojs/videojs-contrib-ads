@@ -72,7 +72,7 @@ const defaults = {
   // BeforePreroll if the player intends to autoplay. This allows the manual autoplay
   // attempt made by video.js to resolve/reject naturally and trigger an 'autoplay-success'
   // or 'autoplay-failure' event with which other plugins can interface.
-  allowVjsAutoplay: false
+  allowVjsAutoplay: videojs.options.normalizeAutoplay || false
 };
 
 const contribAdsPlugin = function(options) {
