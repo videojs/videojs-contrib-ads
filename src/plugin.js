@@ -66,7 +66,13 @@ const defaults = {
   // If set to true, content will play muted behind ads on supported platforms. This is
   // to support ads on video metadata cuepoints during a live stream. It also results in
   // more precise resumes after ads during a live stream.
-  liveCuePoints: true
+  liveCuePoints: true,
+
+  // If set to true, callPlay middleware will not terminate the first play request in
+  // BeforePreroll if the player intends to autoplay. This allows the manual autoplay
+  // attempt made by video.js to resolve/reject naturally and trigger an 'autoplay-success'
+  // or 'autoplay-failure' event with which other plugins can interface.
+  allowVjsAutoplay: videojs.options.normalizeAutoplay || false
 };
 
 const contribAdsPlugin = function(options) {

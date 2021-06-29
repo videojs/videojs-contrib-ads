@@ -15,7 +15,8 @@ QUnit.module('BeforePreroll', {
     this.player = {
       ads: {
         debug: () => {},
-        _shouldBlockPlay: false
+        _shouldBlockPlay: false,
+        settings: {}
       },
       setTimeout: () => {},
       trigger: (event) => {
@@ -103,9 +104,27 @@ QUnit.test('handles content change', function(assert) {
   assert.equal(this.beforePreroll.init.calledOnce, true);
 });
 
-QUnit.test('sets _shouldBlockPlay to true', function(assert) {
+QUnit.test('sets _shouldBlockPlay to true by default', function(assert) {
   this.beforePreroll.init(this.player);
   assert.equal(this.player.ads._shouldBlockPlay, true);
+});
+
+QUnit.test('sets _shouldBlockPlay to true if allowVjsAutoplay option is true and player.autoplay() is false', function(assert) {
+  this.player.ads.settings.allowVjsAutoplay = true;
+
+  this.player.autoplay = () => false;
+
+  this.beforePreroll.init(this.player);
+  assert.equal(this.player.ads._shouldBlockPlay, true);
+});
+
+QUnit.test('sets _shouldBlockPlay to false if allowVjsAutoplay option is true and player.autoplay() is truthy', function(assert) {
+  this.player.ads.settings.allowVjsAutoplay = true;
+
+  this.player.autoplay = () => 'play';
+
+  this.beforePreroll.init(this.player);
+  assert.equal(this.player.ads._shouldBlockPlay, false);
 });
 
 QUnit.test('updates `shouldResumeToContent` on `nopreroll`', function(assert) {
