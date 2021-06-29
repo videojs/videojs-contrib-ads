@@ -1,3 +1,18 @@
+<a name="6.9.0"></a>
+# [6.9.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.8.0...v6.9.0) (2021-06-29)
+
+### Features
+
+* Add `allowVjsAutoplay` option to add support for custom video.js autoplay settings ([#532](https://github.com/videojs/videojs-contrib-ads/issues/532)) ([245b208](https://github.com/videojs/videojs-contrib-ads/commit/245b208))
+
+### Chores
+
+* **nvmrc:** use erbium ([#530](https://github.com/videojs/videojs-contrib-ads/issues/530)) ([cf691e7](https://github.com/videojs/videojs-contrib-ads/commit/cf691e7))
+
+### Tests
+
+* add test for multiple identical macros in string ([#531](https://github.com/videojs/videojs-contrib-ads/issues/531)) ([9f08d80](https://github.com/videojs/videojs-contrib-ads/commit/9f08d80))
+
 <a name="6.8.0"></a>
 # [6.8.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.8.0-0...v6.8.0) (2021-04-16)
 
