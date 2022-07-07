@@ -45,7 +45,7 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   const defaults = {};
 
   // Get macros with defaults e.g. {x=y}, store values and replace with standard macros
-  string = string.replace(/{([^}=]+)=([^}]+)}/g, function(match, name, defaultVal) {
+  string = string.replace(/{([^}=]+)=([^}]*)}/g, function(match, name, defaultVal) {
     defaults[`{${name}}`] = defaultVal;
 
     return `{${name}}`;
@@ -65,10 +65,13 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
   macros['{player.id}'] = this.options_['data-player'] || this.id_;
   macros['{player.height}'] = this.currentHeight();
   macros['{player.width}'] = this.currentWidth();
+  macros['{player.heightInt}'] = Math.round(this.currentHeight());
+  macros['{player.widthInt}'] = Math.round(this.currentWidth());
   macros['{mediainfo.id}'] = this.mediainfo ? this.mediainfo.id : '';
   macros['{mediainfo.name}'] = this.mediainfo ? this.mediainfo.name : '';
   macros['{mediainfo.duration}'] = this.mediainfo ? this.mediainfo.duration : '';
   macros['{player.duration}'] = this.duration();
+  macros['{player.durationInt}'] = Math.round(this.duration());
   macros['{player.pageUrl}'] = videojs.dom.isInFrame() ? document.referrer : window.location.href;
   macros['{playlistinfo.id}'] = this.playlistinfo ? this.playlistinfo.id : '';
   macros['{playlistinfo.name}'] = this.playlistinfo ? this.playlistinfo.name : '';
