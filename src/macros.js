@@ -118,6 +118,9 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
         value = context[names[i]];
       } else {
         context = context[names[i]];
+        if (typeof context === 'undefined') {
+          break;
+        }
       }
     }
 

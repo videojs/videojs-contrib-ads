@@ -156,7 +156,8 @@ QUnit.test('pageVariables', function(assert) {
     'Object: {pageVariable.bar}, ' +
     'Nested 2x: {pageVariable.animal.dog}, ' +
     'Nested 3x: {pageVariable.animal.cat.maineCoon}, ' +
-    'Nested 4x: {pageVariable.animal.cat.champion.name}');
+    'Nested 4x: {pageVariable.animal.cat.champion.name}, ' +
+    'Nested missing parent: {pageVariable.animal.ape.human}');
 
   assert.equal(
     result,
@@ -168,7 +169,8 @@ QUnit.test('pageVariables', function(assert) {
     'Object: , ' +
     'Nested 2x: Old Buddy, ' +
     'Nested 3x: Huge the Cat, ' +
-    'Nested 4x: Champ'
+    'Nested 4x: Champ, ' +
+    'Nested missing parent: '
   );
 });
 
