@@ -56,6 +56,13 @@ No Default Value
 
 Use this to override detection of if the content video is a live stream. Live detection checks if the duration is `Infinity` but there are cases when this check is insufficient.
 
+### allowVjsAutoplay
+
+Type: `boolean`
+Default Value: `videojs.options.normalizeAutoplay || false`
+
+Set this to `true` if you intend to use video.js's custom autoplay settings ("play", "muted", or "any"). It defaults to `true` if the videojs `normalizeAutoplay` option is `true` since `normalizeAutoplay` signals an intent to use `autoplay: "play"` behavior.
+
 ### debug
 
 Type: `boolean`

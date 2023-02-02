@@ -172,6 +172,17 @@ QUnit.test('pageVariables', function(assert) {
   );
 });
 
+QUnit.test('multiple, identical macros', function(assert) {
+  const result = this.player.ads.adMacroReplacement('...&documentrefferer1={document.referrer}&documentrefferer2={document.referrer}&windowlocation1={window.location.href}&windowlocation2={window.location.href}');
+  const expected = `...&documentrefferer1=${document.referrer}&documentrefferer2=${document.referrer}&windowlocation1=${window.location.href}&windowlocation2=${window.location.href}`;
+
+  assert.equal(
+    result,
+    expected,
+    `"${result}" includes 2 replaced document.referrer and 2 window.location.href strings`
+  );
+});
+
 QUnit.test('uriEncode', function(assert) {
   /* eslint-disable camelcase */
   this.player.mediainfo = {
