@@ -79,7 +79,7 @@ const contribAdsPlugin = function(options) {
 
   const player = this; // eslint-disable-line consistent-this
 
-  const settings = videojs.mergeOptions(defaults, options);
+  const settings = videojs.obj.merge(defaults, options);
 
   // Prefix all video element events during ad playback
   // if the video element emits ad-related events directly,
