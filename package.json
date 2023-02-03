@@ -47,6 +47,7 @@
     "node-sass": "^4.5.3",
     "rollup": "1.1.0",
     "sinon": "^2.2.0",
+    "video.js": "^8",
     "videojs-generate-karma-config": "~5.1.0",
     "videojs-generate-rollup-config": "~3.1.0",
     "videojs-generator-verify": "~1.2.0",
@@ -76,7 +77,9 @@
     "test/"
   ],
   "dependencies": {
-    "global": "^4.3.2",
+    "global": "^4.3.2"
+  },
+  "peerDependencies": {
     "video.js": "^8"
   },
   "generator-videojs-plugin": {
