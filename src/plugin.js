@@ -278,7 +278,7 @@ const contribAdsPlugin = function(options) {
   player.on([
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout', 'adended',
-    'ads-ad-started',
+    'ads-ad-started', 'ads-ad-skipped',
     'contentchanged', 'dispose', 'contentresumed', 'readyforpostroll',
     'nopreroll', 'nopostroll'
   ], (e) => {
