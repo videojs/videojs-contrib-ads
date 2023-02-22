@@ -1,3 +1,10 @@
+<a name="7.1.0"></a>
+# [7.1.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.0.0...v7.1.0) (2023-02-22)
+
+### Features
+
+* Standardize ads-ad-skipped event ([#542](https://github.com/videojs/videojs-contrib-ads/issues/542)) ([ad64309](https://github.com/videojs/videojs-contrib-ads/commit/ad64309))
+
 <a name="7.0.0"></a>
 # [7.0.0](https://github.com/videojs/videojs-contrib-ads/compare/v6.9.0...v7.0.0) (2023-02-03)
 
