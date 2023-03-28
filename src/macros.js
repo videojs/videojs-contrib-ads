@@ -3,9 +3,6 @@ This feature provides an optional method for ad plugins to insert run-time value
 into an ad server URL or configuration.
 */
 
-// TODO
-// Move mediainfo macros out of static macros into the mediainfo handler
-
 import window from 'global/window';
 import document from 'global/document';
 
@@ -62,8 +59,8 @@ const getDefaultValues = function(string) {
   return {defaults, modifiedString};
 };
 
-const getStaticMacros = function(overrides = {}) {
-  const defaultMacros = {
+const getStaticMacros = function() {
+  return {
     '{player.id}': this.options_['data-player'] || this.id_,
     '{player.height}': this.currentHeight(),
     '{player.width}': this.currentWidth(),
@@ -79,18 +76,6 @@ const getStaticMacros = function(overrides = {}) {
     '{window.location.href}': window.location.href,
     '{random}': Math.floor(Math.random() * 1000000000000)
   };
-
-  const finalMacros = {};
-
-  Object.entries(defaultMacros).forEach(([key, value]) => {
-    if (overrides[key]) {
-      finalMacros[overrides[key]] = value;
-    } else {
-      finalMacros[key] = value;
-    }
-  });
-
-  return finalMacros;
 };
 
 const getTcfMacros = function(tcDataObj) {
@@ -99,16 +84,10 @@ const getTcfMacros = function(tcDataObj) {
   Object.keys(tcDataObj).forEach((key) => {
     tcfMacros[`{tcf.${key}}`] = tcDataObj[key];
   });
+
   tcfMacros['{tcf.gdprAppliesInt}'] = tcDataObj.gdprApplies ? 1 : 0;
 
   return tcfMacros;
-};
-
-const replaceMacros = function(string, macros, uriEncode) {
-  for (const i in macros) {
-    string = string.split(i).join(uriEncodeIfNeeded(macros[i], uriEncode));
-  }
-  return string;
 };
 
 const getPageVariableMacros = function(string, defaults) {
@@ -125,8 +104,6 @@ const getPageVariableMacros = function(string, defaults) {
     const names = name.split('.');
     let context = window;
     let value;
-
-    videojs.log('names:', names);
 
     // Iterate down multiple levels of selector without using eval
     // This makes things like pageVariable.foo.bar work
@@ -161,24 +138,42 @@ const getPageVariableMacros = function(string, defaults) {
   return pageVariablesMacros;
 };
 
-// Public method that ad plugins use for ad macros.
-// "string" is any string with macros to be replaced
-// "uriEncode" if true will uri encode macro values when replaced
-// "customMacros" is a object with custom macros and values to map them to
-//  - For example: {'{five}': 5}
-// Return value is is "string" with macros replaced
-//  - For example: adMacroReplacement('{player.id}') returns a string of the player id
+const replaceMacros = function(string, macros, uriEncode, overrides = {}) {
+  for (const macroName in macros) {
+    const resolvedMacroName = overrides.hasOwnProperty(macroName) ? overrides[macroName] : macroName;
+
+    string = string.split(resolvedMacroName).join(uriEncodeIfNeeded(macros[macroName], uriEncode));
+  }
+  return string;
+};
+
+/**
+ *
+ * @param {string} string
+ *                 Any string with macros to be replaced
+ * @param {boolean} uriEncode
+ *                  A Boolean value indicating whether the macros should be replaced with URI-encoded values
+ * @param {object} customMacros
+ *                 An object with custom macros and values to map them to. For example: {'{five}': 5}
+ * @param {boolean} customMacros.disableDefaultMacros
+ *                  A boolean indicating whether replacement of default macros should be forgone in favor of only customMacros
+ * @param {object} customMacros.macroNameOverrides
+ *                 An object that specifies custom names for default macros, following the following format:
+ *                 // {'{default-macro-name}': '{new-macro-name}'}
+ *                 {'{player.id}': '{{PLAYER_ID}}', ...}
+ * @returns {string}
+ *          The provided string with all macros replaced. For example: adMacroReplacement('{player.id}') returns a string of the player id
+ */
 export default function adMacroReplacement(string, uriEncode = false, customMacros = {}) {
-  const disableStaticMacros = customMacros.disableStaticMacros || false;
-  const staticMacroOverrides = customMacros.staticMacroOverrides || {};
+  const disableDefaultMacros = customMacros.disableDefaultMacros || false;
+  const macroNameOverrides = customMacros.macroNameOverrides || {};
 
   // Remove special properties from customMacros
-  delete customMacros.disableStaticMacros;
-  delete customMacros.staticMacroOverrides;
+  delete customMacros.disableDefaultMacros;
+  delete customMacros.macroNameOverrides;
 
-  // ALEX TODO: Do we need to support default values in custom macros?
-  if (disableStaticMacros) {
-    return replaceMacros(string, customMacros, uriEncode);
+  if (disableDefaultMacros) {
+    return replaceMacros(string, customMacros, uriEncode, macroNameOverrides);
   }
 
   // Get macros with defaults e.g. {x=y}, store the values in `defaults` and replace with standard macros in the string
@@ -187,14 +182,14 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
 
   string = modifiedString;
 
-  // Get macro values
-  Object.assign(macros, getStaticMacros.call(this, staticMacroOverrides));
+  // Get all macro values
+  Object.assign(macros, getStaticMacros.call(this));
   Object.assign(macros, getMediaInfoMacros(this.mediainfo, defaults));
   Object.assign(macros, getTcfMacros(tcData));
   Object.assign(macros, getPageVariableMacros(string, defaults));
 
   // Perform macro replacement
-  string = replaceMacros(string, macros, uriEncode);
+  string = replaceMacros(string, macros, uriEncode, macroNameOverrides);
 
   // Replace any remaining default values that have not already been replaced. This includes mediainfo custom fields.
   for (const macro in defaults) {

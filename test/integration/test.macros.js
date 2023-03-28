@@ -206,7 +206,7 @@ QUnit.test('customMacros', function(assert) {
   assert.equal(result, 'The sky is blue. Hooray!');
 });
 
-QUnit.only('default values', function(assert) {
+QUnit.test('default values', function(assert) {
   /* eslint-disable camelcase */
   this.player.mediainfo = {
     customFields: {
