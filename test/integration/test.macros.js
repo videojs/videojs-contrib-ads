@@ -425,6 +425,7 @@ QUnit.test('TCF macro names can be overridden', function(assert) {
 
   this.player.ads.listenToTcf();
 
+  const string = '{{GDPR_APPLIES}}&{{GDPR_APPLIES_INT}}&{{TCF_STRING}}';
   const customMacros = {
     macroNameOverrides: {
       '{tcf.gdprApplies}': '{{GDPR_APPLIES}}',
@@ -432,11 +433,9 @@ QUnit.test('TCF macro names can be overridden', function(assert) {
       '{tcf.gdprAppliesInt}': '{{GDPR_APPLIES_INT}}'
     }
   };
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
 
-  assert.equal(
-    this.player.ads.adMacroReplacement('{{GDPR_APPLIES}}&{{GDPR_APPLIES_INT}}&{{TCF_STRING}}', false, customMacros), 'true&1&abcdefg',
-    'tcf macro names correctly overridden'
-  );
+  assert.equal(result, 'true&1&abcdefg', 'tcf macro names correctly overridden');
 
   window.__tcfapi = oldtcf;
 });
