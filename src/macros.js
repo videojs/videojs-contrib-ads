@@ -59,6 +59,21 @@ const getDefaultValues = function(string) {
   return {defaults, modifiedString};
 };
 
+const processMacroNameOverrides = function(string, macroNameOverrides) {
+  const foundOverrides = {};
+
+  for (const defaultMacro in macroNameOverrides) {
+    const customMacro = macroNameOverrides[defaultMacro];
+
+    if (string.includes(customMacro)) {
+      foundOverrides[defaultMacro] = customMacro;
+      string = string.replace(new RegExp(customMacro, 'g'), defaultMacro);
+    }
+  }
+
+  return {string, foundOverrides};
+};
+
 const getStaticMacros = function() {
   return {
     '{player.id}': this.options_['data-player'] || this.id_,
@@ -172,13 +187,17 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
   delete customMacros.disableDefaultMacros;
   delete customMacros.macroNameOverrides;
 
+  const macros = customMacros;
+  const {string: updatedString, macrosToOverride} = processMacroNameOverrides(string, macroNameOverrides);
+
+  string = updatedString;
+
   if (disableDefaultMacros) {
-    return replaceMacros(string, customMacros, uriEncode, macroNameOverrides);
+    return replaceMacros(string, macros, uriEncode, macrosToOverride);
   }
 
   // Get macros with defaults e.g. {x=y}, store the values in `defaults` and replace with standard macros in the string
   const {defaults, modifiedString} = getDefaultValues(string);
-  const macros = customMacros;
 
   string = modifiedString;
 
@@ -189,7 +208,7 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
   Object.assign(macros, getPageVariableMacros(string, defaults));
 
   // Perform macro replacement
-  string = replaceMacros(string, macros, uriEncode, macroNameOverrides);
+  string = replaceMacros(string, macros, uriEncode, macrosToOverride);
 
   // Replace any remaining default values that have not already been replaced. This includes mediainfo custom fields.
   for (const macro in defaults) {
