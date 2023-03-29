@@ -23,6 +23,17 @@ QUnit.test('player dimensions', function(assert) {
   assert.equal(resultWidth, 200, 'player.width was replaced');
 });
 
+QUnit.test('player dimensions as ints', function(assert) {
+  this.player.options_['data-player'] = '12345';
+  this.player.dimensions(200.3, 100.7);
+
+  const resultHeight = this.player.ads.adMacroReplacement('{player.heightInt}');
+  const resultWidth = this.player.ads.adMacroReplacement('{player.widthInt}');
+
+  assert.equal(resultHeight, 101, 'player.height was replaced with int');
+  assert.equal(resultWidth, 200, 'player.width was replaced with int');
+});
+
 QUnit.test('mediainfo', function(assert) {
   /* eslint-disable camelcase */
   this.player.mediainfo = {
@@ -64,6 +75,15 @@ QUnit.test('player.duration', function(assert) {
   const result = this.player.ads.adMacroReplacement('{player.duration}');
 
   assert.equal(result, 5);
+});
+
+QUnit.test('player.durationInt', function(assert) {
+  this.player.duration = function() {
+    return 5.2;
+  };
+  const result = this.player.ads.adMacroReplacement('{player.durationInt}');
+
+  assert.equal(result, 5, 'float diration returns as int');
 });
 
 QUnit.test('player.pageUrl', function(assert) {
@@ -156,7 +176,8 @@ QUnit.test('pageVariables', function(assert) {
     'Object: {pageVariable.bar}, ' +
     'Nested 2x: {pageVariable.animal.dog}, ' +
     'Nested 3x: {pageVariable.animal.cat.maineCoon}, ' +
-    'Nested 4x: {pageVariable.animal.cat.champion.name}');
+    'Nested 4x: {pageVariable.animal.cat.champion.name}, ' +
+    'Nested missing parent: {pageVariable.animal.ape.human}');
 
   assert.equal(
     result,
@@ -168,7 +189,8 @@ QUnit.test('pageVariables', function(assert) {
     'Object: , ' +
     'Nested 2x: Old Buddy, ' +
     'Nested 3x: Huge the Cat, ' +
-    'Nested 4x: Champ'
+    'Nested 4x: Champ, ' +
+    'Nested missing parent: '
   );
 });
 
@@ -250,6 +272,11 @@ QUnit.test('default values', function(assert) {
   assert.equal(
     this.player.ads.adMacroReplacement('{pageVariable.testvar2=c}'), 'c',
     'pageVariable: unset value is replaced by default'
+  );
+
+  assert.equal(
+    this.player.ads.adMacroReplacement('{pageVariable.testvar3=}'), '',
+    'pageVariable: unset value is replaced by default empty string'
   );
 });
 

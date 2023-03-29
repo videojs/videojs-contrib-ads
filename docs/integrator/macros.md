@@ -33,26 +33,30 @@ Replaces macros in a given string with their corresponding values.
 
 ### Static Macros
 
-| Name                     | Value                             |
-|:-------------------------|:----------------------------------|
-| {player.id}              | The player ID                     |
-| {player.width}           | The current player width          |
-| {player.height}          | The current player height         |
-| {player.duration}        | The duration of current video *   |
-| {player.pageUrl}         | The page URL ** ***               |
-| {timestamp}              | Current epoch time                |
-| {document.referrer}      | Value of document.referrer ***    |
-| {window.location.href}   | Value of window.location.href     |
-| {random}                 | A random number 0-1 trillion      |
-| {mediainfo.id}           | Pulled from mediainfo object      |
-| {mediainfo.name}         | Pulled from mediainfo object      |
-| {mediainfo.description}  | Pulled from mediainfo object      |
-| {mediainfo.tags}         | Pulled from mediainfo object      |
-| {mediainfo.reference_id} | Pulled from mediainfo object      |
-| {mediainfo.duration}     | Pulled from mediainfo object      |
-| {mediainfo.ad_keys}      | Pulled from mediainfo object      |
-| {playlistinfo.id}        | Pulled from playlistinfo object   |
-| {playlistinfo.name}      | Pulled from playlistinfo object   |
+| Name                     | Value                                 |
+|:-------------------------|:--------------------------------------|
+| {player.id}              | The player ID                         |
+| {player.width}           | The current player width              |
+| {player.height}          | The current player height             |
+| {player.widthInt}        | The current player width as int       |
+| {player.heightInt}       | The current player height as int      |
+| {player.duration}        | The duration of current video *       |
+| {player.durationInt}     | The duration as int *                  |
+| {player.pageUrl}         | The page URL ** ***                   |
+| {timestamp}              | Current epoch time                    |
+| {document.referrer}      | Value of document.referrer ***        |
+| {window.location.href}   | Value of window.location.href         |
+| {random}                 | A random number 0-1 trillion          |
+| {mediainfo.id}           | Pulled from mediainfo object          |
+| {mediainfo.name}         | Pulled from mediainfo object          |
+| {mediainfo.description}  | Pulled from mediainfo object          |
+| {mediainfo.tags}         | Pulled from mediainfo object          |
+| {mediainfo.reference_id} | Pulled from mediainfo object          |
+| {mediainfo.duration}     | Duration from mediainfo object        |
+| {mediainfo.durationInt}  | Duration from mediainfo object as int |
+| {mediainfo.ad_keys}      | Pulled from mediainfo object          |
+| {playlistinfo.id}        | Pulled from playlistinfo object       |
+| {playlistinfo.name}      | Pulled from playlistinfo object       |
 
 \* Returns 0 if video is not loaded. Be careful timing your ad request with this macro.
 
@@ -92,7 +96,7 @@ If the player is in an iframe, a proxy will be added if any parent frame is dete
 
 ### Default values in macros
 
-A default value can be provided within a macro, in which case this value will be used where not resolvable e.g. `http://example.com/ad/{pageVariable.adConf=1234}` becomes `http://example.com/ad/1234` if `window.adConf` is undefined.
+A default value can be provided within a macro in the format `{MACRO=DEFAULT}`, in which case this value will be used where not resolvable e.g. `http://example.com/ad/{pageVariable.adConf=1234}` becomes `http://example.com/ad/1234` if `window.adConf` is undefined. If a blank default is given, there will be a blank param, `http://example.com/ad?config={pageVariable.adConf=}&a=b` becomes `http://example.com/ad?config=&a=b` if `window.adConf` is unset.
 
 [tcf]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md
 [tcdata]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md#tcdata

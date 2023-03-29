@@ -79,10 +79,13 @@ const getStaticMacros = function() {
     '{player.id}': this.options_['data-player'] || this.id_,
     '{player.height}': this.currentHeight(),
     '{player.width}': this.currentWidth(),
+    '{player.heightInt}': Math.round(this.currentHeight()),
+    '{player.widthInt}': Math.round(this.currentWidth()),
     '{mediainfo.id}': this.mediainfo ? this.mediainfo.id : '',
     '{mediainfo.name}': this.mediainfo ? this.mediainfo.name : '',
     '{mediainfo.duration}': this.mediainfo ? this.mediainfo.duration : '',
     '{player.duration}': this.duration(),
+    '{player.durationInt}': Math.round(this.duration()),
     '{player.pageUrl}': videojs.dom.isInFrame() ? document.referrer : window.location.href,
     '{playlistinfo.id}': this.playlistinfo ? this.playlistinfo.id : '',
     '{playlistinfo.name}': this.playlistinfo ? this.playlistinfo.name : '',
@@ -127,6 +130,9 @@ const getPageVariableMacros = function(string, defaults) {
         value = context[names[i]];
       } else {
         context = context[names[i]];
+        if (typeof context === 'undefined') {
+          break;
+        }
       }
     }
 
