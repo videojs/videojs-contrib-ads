@@ -51,7 +51,7 @@ const getMediaInfoMacros = function(mediainfo, defaults) {
 
 const getDefaultValues = function(string) {
   const defaults = {};
-  const modifiedString = string.replace(/{([^}=]+)=([^}]+)}/g, (match, name, defaultVal) => {
+  const modifiedString = string.replace(/{([^}=]+)=([^}]*)}/g, (match, name, defaultVal) => {
     defaults[`{${name}}`] = defaultVal;
     return `{${name}}`;
   });
