@@ -38,6 +38,12 @@ function start(player) {
   // This removes the native poster so the ads don't show the content
   // poster if content element is reused for ad playback.
   player.ads.removeNativePoster();
+
+  player.ads.preAdPlaybackRate_ = player.playbackRate();
+  player.playbackRate(1);
+  if (player.controlBar.playbackRateMenuButton) {
+    player.controlBar.playbackRateMenuButton.disable();
+  }
 }
 
 function end(player, callback) {
@@ -73,6 +79,10 @@ function end(player, callback) {
     callback();
   }
 
+  player.playbackRate(player.ads.preAdPlaybackRate_);
+  if (player.controlBar.playbackRateMenuButton) {
+    player.controlBar.playbackRateMenuButton.enable();
+  }
 }
 
 const obj = {start, end};
