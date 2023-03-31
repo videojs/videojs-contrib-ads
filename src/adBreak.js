@@ -42,7 +42,7 @@ function start(player) {
   player.ads.preAdPlaybackRate_ = player.playbackRate();
   player.playbackRate(1);
   if (player.controlBar.playbackRateMenuButton) {
-    player.controlBar.playbackRateMenuButton.disable();
+    player.controlBar.playbackRateMenuButton.hide();
   }
 }
 
@@ -81,7 +81,7 @@ function end(player, callback) {
 
   player.playbackRate(player.ads.preAdPlaybackRate_);
   if (player.controlBar.playbackRateMenuButton) {
-    player.controlBar.playbackRateMenuButton.enable();
+    player.controlBar.playbackRateMenuButton.show();
   }
 }
 
