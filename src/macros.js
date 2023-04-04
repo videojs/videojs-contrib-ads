@@ -74,21 +74,21 @@ const processMacroNameOverrides = function(string, macroNameOverrides) {
   return {string, foundOverrides};
 };
 
-const getStaticMacros = function() {
+const getStaticMacros = function(player) {
   return {
-    '{player.id}': this.options_['data-player'] || this.id_,
-    '{player.height}': this.currentHeight(),
-    '{player.width}': this.currentWidth(),
-    '{player.heightInt}': Math.round(this.currentHeight()),
-    '{player.widthInt}': Math.round(this.currentWidth()),
-    '{mediainfo.id}': this.mediainfo ? this.mediainfo.id : '',
-    '{mediainfo.name}': this.mediainfo ? this.mediainfo.name : '',
-    '{mediainfo.duration}': this.mediainfo ? this.mediainfo.duration : '',
-    '{player.duration}': this.duration(),
-    '{player.durationInt}': Math.round(this.duration()),
+    '{player.id}': player.options_['data-player'] || player.id_,
+    '{player.height}': player.currentHeight(),
+    '{player.width}': player.currentWidth(),
+    '{player.heightInt}': Math.round(player.currentHeight()),
+    '{player.widthInt}': Math.round(player.currentWidth()),
+    '{mediainfo.id}': player.mediainfo ? player.mediainfo.id : '',
+    '{mediainfo.name}': player.mediainfo ? player.mediainfo.name : '',
+    '{mediainfo.duration}': player.mediainfo ? player.mediainfo.duration : '',
+    '{player.duration}': player.duration(),
+    '{player.durationInt}': Math.round(player.duration()),
     '{player.pageUrl}': videojs.dom.isInFrame() ? document.referrer : window.location.href,
-    '{playlistinfo.id}': this.playlistinfo ? this.playlistinfo.id : '',
-    '{playlistinfo.name}': this.playlistinfo ? this.playlistinfo.name : '',
+    '{playlistinfo.id}': player.playlistinfo ? player.playlistinfo.id : '',
+    '{playlistinfo.name}': player.playlistinfo ? player.playlistinfo.name : '',
     '{timestamp}': new Date().getTime(),
     '{document.referrer}': document.referrer,
     '{window.location.href}': window.location.href,
@@ -208,10 +208,13 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
   string = modifiedString;
 
   // Get all macro values
-  Object.assign(macros, getStaticMacros.call(this));
-  Object.assign(macros, getMediaInfoMacros(this.mediainfo, defaults));
-  Object.assign(macros, getTcfMacros(tcData));
-  Object.assign(macros, getPageVariableMacros(string, defaults));
+  Object.assign(
+    macros,
+    getStaticMacros(this),
+    getMediaInfoMacros(this.mediainfo, defaults),
+    getTcfMacros(tcData),
+    getPageVariableMacros(string, defaults)
+  );
 
   // Perform macro replacement
   string = replaceMacros(string, macros, uriEncode, macrosToOverride);

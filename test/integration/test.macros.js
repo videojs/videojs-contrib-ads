@@ -466,3 +466,17 @@ QUnit.test('TCF macro names can be overridden', function(assert) {
 
   window.__tcfapi = oldtcf;
 });
+
+QUnit.test('disableDefaultMacros and macroNameOverrides customMacro properties should not be replaced in string', function(assert) {
+  const string = 'disableDefaultMacros-macroNameOverrides';
+  const customMacros = {
+    disableDefaultMacros: false,
+    macroNameOverrides: {
+      'default-macro-name': 'new-macro-name'
+    }
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, string, 'default macros should not be replaced');
+});
