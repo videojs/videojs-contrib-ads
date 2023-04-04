@@ -327,3 +327,142 @@ QUnit.test('tcfMacros', function(assert) {
 
   window.__tcfapi = oldtcf;
 });
+
+QUnit.test('default macros should not be replaced when disableDefaultMacros is true', function(assert) {
+  const string = '{player.id}';
+  const customMacros = {
+    disableDefaultMacros: true
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, string, 'default macros should not be replaced');
+});
+
+QUnit.test('custom macros should still be replaced when disableDefaultMacros is true', function(assert) {
+  const string = '{customMacro}';
+  const customMacros = {
+    disableDefaultMacros: true, // eslint-disable-line quote-props
+    '{customMacro}': 'customValue'
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, 'customValue', 'custom macros should be replaced');
+});
+
+QUnit.test('default macro name should be replaced with custom name when macroNameOverrides is provided', function(assert) {
+  const string = '{{PLAYER_ID}}';
+  const playerId = 'somePlayerId';
+  const customMacros = {
+    macroNameOverrides: {
+      '{player.id}': '{{PLAYER_ID}}'
+    }
+  };
+
+  this.player.options_ = {'data-player': playerId};
+  this.player.id_ = playerId;
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, playerId, 'default macro name should be replaced with custom name');
+});
+
+QUnit.test('multiple macro name overrides should work correctly', function(assert) {
+  const string = '{{PLAYER_ID}}-{{MEDIAINFO_ID}}';
+  const playerId = 'somePlayerId';
+  const mediaInfoId = 'someMediaInfoId';
+  const customMacros = {
+    macroNameOverrides: {
+      '{player.id}': '{{PLAYER_ID}}',
+      '{mediainfo.id}': '{{MEDIAINFO_ID}}'
+    }
+  };
+
+  this.player.options_ = {'data-player': playerId};
+  this.player.id_ = playerId;
+  this.player.mediainfo = {id: mediaInfoId};
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, `${playerId}-${mediaInfoId}`, 'multiple macro name overrides should work correctly');
+});
+
+QUnit.test('pageVariable macro names can be overridden', function(assert) {
+  window.pageVariableTest = 'globalValue';
+
+  const string = '{{OVERRIDDEN_PAGE_VARIABLE}}';
+  const customMacros = {
+    macroNameOverrides: {
+      '{pageVariable.pageVariableTest}': '{{OVERRIDDEN_PAGE_VARIABLE}}'
+    }
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, 'globalValue', 'pageVariable macros should be overridden correctly');
+  delete window.pageVariableTest;
+});
+
+QUnit.test('mediainfo.custom_fields macros can be overridden', function(assert) {
+  this.player.mediainfo = {
+    custom_fields: { // eslint-disable-line
+      customFieldTest: 'testValue'
+    }
+  };
+
+  const string = '{{OVERRIDDEN_CUSTOM_FIELD}}';
+  const customMacros = {
+    macroNameOverrides: {
+      '{mediainfo.custom_fields.customFieldTest}': '{{OVERRIDDEN_CUSTOM_FIELD}}'
+    }
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, 'testValue', 'mediainfo.custom_fields macros should be overridden correctly');
+  delete this.mediainfo;
+});
+
+QUnit.test('TCF macro names can be overridden', function(assert) {
+  const dummyData = {
+    cmpId: 10,
+    cmpVersion: 27,
+    gdprApplies: true,
+    tcfPolicyVersion: 2,
+    eventStatus: 'cmpuishown',
+    cmpStatus: 'loaded',
+    listenerId: null,
+    tcString: 'abcdefg',
+    isServiceSpecific: true,
+    useNonStandardStacks: false,
+    purposeOneTreatment: false,
+    publisherCC: 'DE'
+  };
+
+  const oldtcf = window.__tcfapi;
+
+  // Stub of TCF API, enough to register an event listener. The callback is called immediately and on change to consent data.
+  // https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md
+  window.__tcfapi = function(cmd, version, cb) {
+    if (cmd === 'addEventListener') {
+      cb(dummyData, true);
+    }
+  };
+
+  this.player.ads.listenToTcf();
+
+  const string = '{{GDPR_APPLIES}}&{{GDPR_APPLIES_INT}}&{{TCF_STRING}}';
+  const customMacros = {
+    macroNameOverrides: {
+      '{tcf.gdprApplies}': '{{GDPR_APPLIES}}',
+      '{tcf.tcString}': '{{TCF_STRING}}',
+      '{tcf.gdprAppliesInt}': '{{GDPR_APPLIES_INT}}'
+    }
+  };
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.equal(result, 'true&1&abcdefg', 'tcf macro names correctly overridden');
+
+  window.__tcfapi = oldtcf;
+});
