@@ -39,6 +39,7 @@ function start(player) {
   // poster if content element is reused for ad playback.
   player.ads.removeNativePoster();
 
+  // Ensure ads are watched at x1 speed and speed cannot be changed for the duration of the ad
   player.ads.preAdPlaybackRate_ = player.playbackRate();
   player.playbackRate(1);
   if (player.controlBar.playbackRateMenuButton) {
@@ -79,6 +80,7 @@ function end(player, callback) {
     callback();
   }
 
+  // Reset playback
   player.playbackRate(player.ads.preAdPlaybackRate_);
   if (player.controlBar.playbackRateMenuButton) {
     player.controlBar.playbackRateMenuButton.show();
