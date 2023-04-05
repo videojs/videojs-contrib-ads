@@ -42,8 +42,12 @@ function start(player) {
   // Ensure ads are watched at x1 speed and speed cannot be changed for the duration of the ad
   player.ads.preAdPlaybackRate_ = player.playbackRate();
   player.playbackRate(1);
-  if (player.controlBar.playbackRateMenuButton) {
+  if (player.controlBar.playbackRateMenuButton.playbackRateSupported &&
+      !player.controlBar.playbackRateMenuButton.hasClass('vjs-hidden')) {
     player.controlBar.playbackRateMenuButton.hide();
+    player.ads.showPlaybackMenuOnAdEnd_ = true;
+  } else {
+    player.ads.showPlaybackMenuOnAdEnd_ = false;
   }
 }
 
@@ -82,7 +86,7 @@ function end(player, callback) {
 
   // Reset playback
   player.playbackRate(player.ads.preAdPlaybackRate_);
-  if (player.controlBar.playbackRateMenuButton) {
+  if (player.ads.showPlaybackMenuOnAdEnd_) {
     player.controlBar.playbackRateMenuButton.show();
   }
 }
