@@ -1012,14 +1012,15 @@ if (videojs.browser.IS_IOS) {
   });
 }
 
-QUnit.test('playback rate is set to previous value when ad finishes', function(assert) {
+QUnit.test('playback rate is always x1 during an ad break and the previous value when ad completes', function(assert) {
   const preAdPlaybackRate = 4;
 
   this.player.playbackRates([1, preAdPlaybackRate]);
+  this.player.playbackRate(preAdPlaybackRate);
+  assert.strictEqual(this.player.playbackRate(), 4, 'Playback rate is x4 before ad');
 
   this.player.trigger('adsready');
   this.player.trigger('play');
-  this.player.playbackRate(preAdPlaybackRate);
 
   this.player.ads.startLinearAdMode();
   assert.strictEqual(this.player.playbackRate(), 1, 'Playback rate is x1 during ad playback updated');
@@ -1030,7 +1031,7 @@ QUnit.test('playback rate is set to previous value when ad finishes', function(a
 
 QUnit.test('playback rate menu is hidden during ad playback if playbackrate supported', function(assert) {
   this.player.playbackRates([1, 2]);
-  assert.ok(this.player.playbackRateMenuButton.playbackRateSupported());
+  assert.ok(this.player.controlBar.playbackRateMenuButton.playbackRateSupported());
   this.player.trigger('adsready');
   this.player.trigger('play');
 
