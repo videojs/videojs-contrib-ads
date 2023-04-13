@@ -41,8 +41,12 @@ Replaces macros in a given string with their corresponding values.
 | {player.widthInt}        | The current player width as int       |
 | {player.heightInt}       | The current player height as int      |
 | {player.duration}        | The duration of current video *       |
-| {player.durationInt}     | The duration as int *                  |
+| {player.durationInt}     | The duration as int *                 |
+| {player.live}            | `1` if live, `0` if VOD *             |
+| {player.autoplay}        | `1` if set to autoplay, `0` if not    |
+| {player.muted}           | `1` if muted, `0` if not              |
 | {player.pageUrl}         | The page URL ** ***                   |
+| {player.language}        | The current language of the player    |
 | {timestamp}              | Current epoch time                    |
 | {document.referrer}      | Value of document.referrer ***        |
 | {window.location.href}   | Value of window.location.href         |
