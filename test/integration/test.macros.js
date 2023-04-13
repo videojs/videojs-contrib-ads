@@ -86,6 +86,82 @@ QUnit.test('player.durationInt', function(assert) {
   assert.equal(result, 5, 'float diration returns as int');
 });
 
+QUnit.test('player.live', function(assert) {
+  this.player.duration = function() {
+    return Infinity;
+  };
+  let result = this.player.ads.adMacroReplacement('{player.live}');
+
+  assert.equal(result, 1, 'Infinity duration returns 1');
+
+  this.player.duration = function() {
+    return 100;
+  };
+  result = this.player.ads.adMacroReplacement('{player.live}');
+
+  assert.equal(result, 0, 'finite duration returns 0');
+
+  this.player.duration = function() {
+    return NaN;
+  };
+  result = this.player.ads.adMacroReplacement('{player.live}');
+
+  assert.equal(result, 0, 'NaN duration returns 0');
+});
+
+QUnit.test('player.autoplay', function(assert) {
+  this.player.autoplay = function() {
+    return true;
+  };
+  let result = this.player.ads.adMacroReplacement('{player.autoplay}');
+
+  assert.equal(result, 1, 'true value returns 1');
+
+  this.player.autoplay = function() {
+    return false;
+  };
+  result = this.player.ads.adMacroReplacement('{player.autoplay}');
+
+  assert.equal(result, 0, 'false value returns 0');
+
+  this.player.autoplay = function() {
+    return 'muted';
+  };
+  result = this.player.ads.adMacroReplacement('{player.autoplay}');
+
+  assert.equal(result, 1, 'string value returns 1');
+});
+
+QUnit.test('player.muted', function(assert) {
+  this.player.muted = function() {
+    return true;
+  };
+  let result = this.player.ads.adMacroReplacement('{player.muted}');
+
+  assert.equal(result, 1, 'true value returns 1');
+
+  this.player.muted = function() {
+    return false;
+  };
+  result = this.player.ads.adMacroReplacement('{player.muted}');
+
+  assert.equal(result, 0, 'false value returns 0');
+});
+
+QUnit.test('player.language', function(assert) {
+  this.player.language = function() {
+    return 'en-us';
+  };
+  let result = this.player.ads.adMacroReplacement('{player.language}');
+
+  assert.equal(result, 'en-us', 'returns correct lang');
+
+  this.player.language = function() {};
+  result = this.player.ads.adMacroReplacement('{player.language}');
+
+  assert.equal(result, '', 'returns empty string if lang undefined');
+});
+
 QUnit.test('player.pageUrl', function(assert) {
   const result = this.player.ads.adMacroReplacement('{player.pageUrl}');
 
