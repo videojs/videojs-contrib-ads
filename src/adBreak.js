@@ -42,7 +42,9 @@ function start(player) {
   // Ensure ads are watched at x1 speed and speed cannot be changed for the duration of the ad
   player.ads.preAdPlaybackRate_ = player.playbackRate();
   player.playbackRate(1);
-  if (player.controlBar.playbackRateMenuButton.playbackRateSupported &&
+  if (player.controlBar &&
+      player.controlBar.playbackRateMenuButton &&
+      player.controlBar.playbackRateMenuButton.playbackRateSupported &&
       !player.controlBar.playbackRateMenuButton.hasClass('vjs-hidden')) {
     player.controlBar.playbackRateMenuButton.hide();
     player.ads.showPlaybackMenuOnAdEnd_ = true;
