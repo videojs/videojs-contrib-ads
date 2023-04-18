@@ -1,3 +1,19 @@
+<a name="7.2.0"></a>
+# [7.2.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.1.0...v7.2.0) (2023-04-18)
+
+### Features
+
+* Add additional static macros ([#549](https://github.com/videojs/videojs-contrib-ads/issues/549)) ([5ae0a47](https://github.com/videojs/videojs-contrib-ads/commit/5ae0a47))
+* refactor macro logic and add support for disableDefaultMacros and macroNameOverrides parameters ([#544](https://github.com/videojs/videojs-contrib-ads/issues/544)) ([dc64fcb](https://github.com/videojs/videojs-contrib-ads/commit/dc64fcb))
+
+### Bug Fixes
+
+* playback rate should be 1 while ad is playing ([#548](https://github.com/videojs/videojs-contrib-ads/issues/548)) ([9b0dfcf](https://github.com/videojs/videojs-contrib-ads/commit/9b0dfcf))
+
+### Code Refactoring
+
+* minor improvements in macro.js ([#546](https://github.com/videojs/videojs-contrib-ads/issues/546)) ([933e243](https://github.com/videojs/videojs-contrib-ads/commit/933e243))
+
 <a name="7.1.0"></a>
 # [7.1.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.0.0...v7.1.0) (2023-02-22)
 
