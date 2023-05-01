@@ -85,9 +85,9 @@ A macro such as {pageVariable.foobar} allows the user access the value of any pr
 | Undefined | Logs warning and returns empty string |
 | Other     | Logs warning and returns empty string |
 
-### Consent Macros
+## Consent Macros
 
-## TCF macros
+### TCF macros
 
 If a CMP supporting the [GDPR Transparency and Consent Framework][tcf] is in use additional tcf macros are made available. The syntax is `{tcf.*}`, with `*` being a property in the [tcData][tcdata] object. Most commonly used will be:
 
@@ -100,7 +100,7 @@ Since `gdprApplies` is a boolean and many ad servers expect the value as an int,
 
 If the player is in an iframe, a proxy will be added if any parent frame is detected to gain consent with the postmessage API. The CMP must be loaded first.
 
-## US Privacy macros
+### US Privacy macros
 
 Similar to TCF, if a CMP supporting the [US Privacy API][usp] is in use, additional macros related to US Privacy are made available. At this time, one macro is supported.
 
