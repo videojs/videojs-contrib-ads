@@ -102,16 +102,17 @@ If the player is in an iframe, a proxy will be added if any parent frame is dete
 
 ## US Privacy macros
 
-Similar to TCF, if a CMP supporting the [US Privacy API][usp] is in use additional macros related to US Privacy are made available. At this time, only one macro is supported.
+Similar to TCF, if a CMP supporting the [US Privacy API][usp] is in use, additional macros related to US Privacy are made available. At this time, one macro is supported.
 
 | Name                     | Value                                       |
 |:-------------------------|:--------------------------------------------|
 | {usp.uspString}          | The US Privacy consent string, ex. '1YNN'   |
 
-The USP API works a bit differently than TCF. In order to ensure that the `adMacroReplacement()` call replaces the macro with the most up-to-date consent string, it is recommended that the integrator first call `player.ads.updateUsPrivacyString()`, which is asynchronous due to how the USP API works.
+The USP API works a bit differently than TCF. In order to ensure that `adMacroReplacement()` replaces the macro with the most up-to-date consent string, it is recommended that the integrator first call `player.ads.updateUsPrivacyString()`, which is asynchronous due to how the USP API works. This plugin will automatically update the consent string at the time of initialization, but any changes to the consent string after initialization will only be picked up by calling `player.ads.updateUsPrivacyString()` again.
 
 ```js
-player.ads.updateUsPrivacyString(() => {
+player.ads.updateUsPrivacyString((privacyString) => {
+  // This will now use the most current privacy string. You can also do something here with the `privacyString` directly.
   player.ads.adMacroReplacement('http://example.com/vmap.xml?usp={usp.uspString}');
 });
 ```
