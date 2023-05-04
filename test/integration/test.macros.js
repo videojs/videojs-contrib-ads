@@ -497,7 +497,6 @@ QUnit.test('mediainfo.custom_fields macros can be overridden', function(assert) 
   const result = this.player.ads.adMacroReplacement(string, false, customMacros);
 
   assert.strictEqual(result, 'testValue', 'mediainfo.custom_fields macros should be overridden correctly');
-  delete this.mediainfo;
 });
 
 QUnit.test('TCF macro names can be overridden', function(assert) {
@@ -554,5 +553,5 @@ QUnit.test('disableDefaultMacros and macroNameOverrides customMacro properties s
 
   const result = this.player.ads.adMacroReplacement(string, false, customMacros);
 
-  assert.strictEqual(result, string, 'default macros should not be replaced');
+  assert.strictEqual(result, string, 'special customMacros properties should not be replaced');
 });

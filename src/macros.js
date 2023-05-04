@@ -59,21 +59,6 @@ const getDefaultValues = function(string) {
   return {defaults, modifiedString};
 };
 
-const processMacroNameOverrides = function(string, macroNameOverrides) {
-  const foundOverrides = {};
-
-  for (const defaultMacro in macroNameOverrides) {
-    const customMacro = macroNameOverrides[defaultMacro];
-
-    if (string.includes(customMacro)) {
-      foundOverrides[defaultMacro] = customMacro;
-      string = string.replace(new RegExp(customMacro, 'g'), defaultMacro);
-    }
-  }
-
-  return {string, foundOverrides};
-};
-
 const getStaticMacros = function(player) {
   return {
     '{player.id}': player.options_['data-player'] || player.id_,
@@ -112,9 +97,17 @@ const getTcfMacros = function(tcDataObj) {
   return tcfMacros;
 };
 
-const getPageVariableMacros = function(string, defaults) {
-  const pageVariables = string.match(/{pageVariable\.([^}]+)}/g);
+// This extracts and evaluates variables from the `window` object for macro replacement. While replaceMacros() handles generic macro name
+// overriding for other macro types, this function also needs to reference the overrides in order to map custom macro names in the string
+// to their corresponding default pageVariable names, so they can be evaluated on the `window` and stored for later replacement in replaceMacros().
+const getPageVariableMacros = function(string, defaults, macroNameOverrides) {
+  const pageVarRegex = new RegExp('{pageVariable\\.([^}]+)}', 'g');
   const pageVariablesMacros = {};
+
+  // Aggregate any default pageVariable macros found in the string with any pageVariable macros that have custom names specified in
+  // macroNameOverrides.
+  const pageVariables = (string.match(pageVarRegex) || []).concat(Object.keys(macroNameOverrides)
+    .filter(macroName => pageVarRegex.test(macroName) && string.includes(macroNameOverrides[macroName])));
 
   if (!pageVariables) {
     return;
@@ -169,6 +162,7 @@ const replaceMacros = function(string, macros, uriEncode, overrides = {}) {
 
     string = string.split(resolvedMacroName).join(uriEncodeIfNeeded(macros[macroName], uriEncode));
   }
+
   return string;
 };
 
@@ -198,12 +192,9 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
   delete customMacros.macroNameOverrides;
 
   const macros = customMacros;
-  const {string: updatedString, macrosToOverride} = processMacroNameOverrides(string, macroNameOverrides);
-
-  string = updatedString;
 
   if (disableDefaultMacros) {
-    return replaceMacros(string, macros, uriEncode, macrosToOverride);
+    return replaceMacros(string, macros, uriEncode, macroNameOverrides);
   }
 
   // Get macros with defaults e.g. {x=y}, store the values in `defaults` and replace with standard macros in the string
@@ -217,11 +208,11 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
     getStaticMacros(this),
     getMediaInfoMacros(this.mediainfo, defaults),
     getTcfMacros(tcData),
-    getPageVariableMacros(string, defaults)
+    getPageVariableMacros(string, defaults, macroNameOverrides)
   );
 
   // Perform macro replacement
-  string = replaceMacros(string, macros, uriEncode, macrosToOverride);
+  string = replaceMacros(string, macros, uriEncode, macroNameOverrides);
 
   // Replace any remaining default values that have not already been replaced. This includes mediainfo custom fields.
   for (const macro in defaults) {
