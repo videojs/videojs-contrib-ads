@@ -2,6 +2,8 @@ import QUnit from 'qunit';
 import window from 'global/window';
 import document from 'global/document';
 import sharedModuleHooks from './lib/shared-module-hooks.js';
+import sinon from 'sinon';
+import videojs from 'video.js';
 
 QUnit.module('Ad Macros', sharedModuleHooks({}));
 
@@ -554,4 +556,64 @@ QUnit.test('disableDefaultMacros and macroNameOverrides customMacro properties s
   const result = this.player.ads.adMacroReplacement(string, false, customMacros);
 
   assert.strictEqual(result, string, 'special customMacros properties should not be replaced');
+});
+
+// **********************************************************************************************************************************************
+// **********************************************************************************************************************************************
+
+QUnit.test('regex macro should be replaced when passed in customMacros', function(assert) {
+  const string = 'Test: {{url.foo}}';
+  const customMacros = {
+    'r:{{[\\s]*url.foo[\\s]*}}': 'someValue'
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, 'Test: someValue', 'regex macro should be replaced correctly');
+});
+
+QUnit.test('regex macro should override default macro', function(assert) {
+  const string = '{player.id} : {{url.foo}}';
+  const playerId = 'somePlayerId';
+  const customMacros = {
+    macroNameOverrides: {
+      '{player.id}': 'r:{{[\\s]*url.foo[\\s]*}}'
+    }
+  };
+
+  this.player.options_ = {'data-player': playerId};
+  this.player.id_ = playerId;
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, '{player.id} : somePlayerId', 'regex macro should override default macro correctly');
+});
+
+QUnit.test('regex macro should replace multiple instances of the pattern', function(assert) {
+  const string = 'Test: {{url.foo}} and {{url.foo}}';
+  const customMacros = {
+    'r:{{[\\s]*url.foo[\\s]*}}': 'someValue'
+  };
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, 'Test: someValue and someValue', 'regex macro should replace multiple instances of the pattern');
+});
+
+QUnit.test('replaceMacros() should log a warning when invalid regex is passed', function(assert) {
+  const string = 'Test: {player.id} - {{url.foo}}';
+  const playerId = 'somePlayerId';
+  const customMacros = {
+    'r:{[\\]}': 'someValue'
+  };
+  const vjsWarnSpy = sinon.spy(videojs.log, 'warn');
+
+  this.player.options_ = {'data-player': playerId};
+  this.player.id_ = playerId;
+
+  const result = this.player.ads.adMacroReplacement(string, false, customMacros);
+
+  assert.strictEqual(result, 'Test: somePlayerId - {{url.foo}}', 'regex macro should not be replaced, but others should be');
+  assert.ok(vjsWarnSpy.calledOnce, 'console.warn should be called once');
+  vjsWarnSpy.restore();
 });
