@@ -98,7 +98,7 @@ Since `gdprApplies` is a boolean and many ad servers expect the value as an int,
 
 If the player is in an iframe, a proxy will be added if any parent frame is detected to gain consent with the postmessage API. The CMP must be loaded first.
 
-### Default values in macros
+### Default Values in Macros
 
 A default value can be provided within a macro in the format `{MACRO=DEFAULT}`, in which case this value will be used where not resolvable e.g. `http://example.com/ad/{pageVariable.adConf=1234}` becomes `http://example.com/ad/1234` if `window.adConf` is undefined. If a blank default is given, there will be a blank param, `http://example.com/ad?config={pageVariable.adConf=}&a=b` becomes `http://example.com/ad?config=&a=b` if `window.adConf` is unset.
 
@@ -143,6 +143,36 @@ const replacedString = player.ads.adMacroReplacement(stringWithMacros, false, cu
 ```
 
 In this case, the `replacedString` would not replace the `{player.id}` macro but would replace the custom `{myVar}` macro.
+
+## Regex Macros
+Regular expressions can be used to match complex patterns and replace them with either dynamic values or existing default macro values. One use case for this feature is to support tokens with ambiguous whitespace. For example, `{{url.foo}}` vs. `{{ url.foo }}`
+
+### Replacing Regex Macros with Custom Values
+To replace a regex macro with a custom value, pass a key-value pair in the `customMacros` parameter with key in the format `'r:<REGEX_PATTERN>'`. The value will be used as the replacement for any macros in the string that match the provided regex.
+
+```js
+const someValue = 'customValue';
+const stringWithMacros = "http://example.com/ad?foo={{ url.foo }}&foo2={{url.foo}}";
+
+const replacedString = player.ads.adMacroReplacement(stringWithMacros, false, {
+  'r:{{[\\s]*url.foo[\\s]*}}': someValue
+});
+```
+In this example, the `replacedString` will replace both the `{{url.foo}}` and `{{ url.foo }}` macro with the value of `someValue`.
+
+### Overriding Default Macro Names with Regex Macros
+You can also override a default macro name with a regex macro by passing a key-value pair to the `macroNameOverrides` property of the `customMacros` parameter with the key representing the default macro name and the value in the format `'r:<REGEX_PATTERN>'`. Any macros in the string that match the regex will be replaced with the value that would normally replace the provided default macro.
+
+```js
+const stringWithMacros = "http://example.com/ad?duration={{ url.foo }}";
+
+const replacedString = player.ads.adMacroReplacement(stringWithMacros, false, {
+  macroNameOverrides: {
+    '{player.duration}': 'r:{{[\\s]*url.foo[\\s]*}}'
+  }
+});
+```
+In this example, the `replacedString` will replace the `{{ url.foo }}` macro with the value that normally replaces the `{player.duration}` macro.
 
 [tcf]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md
 [tcdata]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md#tcdata

@@ -558,9 +558,6 @@ QUnit.test('disableDefaultMacros and macroNameOverrides customMacro properties s
   assert.strictEqual(result, string, 'special customMacros properties should not be replaced');
 });
 
-// **********************************************************************************************************************************************
-// **********************************************************************************************************************************************
-
 QUnit.test('regex macro should be replaced when passed in customMacros', function(assert) {
   const string = 'Test: {{url.foo}}';
   const customMacros = {
@@ -590,14 +587,14 @@ QUnit.test('regex macro should override default macro', function(assert) {
 });
 
 QUnit.test('regex macro should replace multiple instances of the pattern', function(assert) {
-  const string = 'Test: {{url.foo}} and {{url.foo}}';
+  const string = 'Test: {{url.foo}} and {{url.foo}} and {{ url.foo }}';
   const customMacros = {
     'r:{{[\\s]*url.foo[\\s]*}}': 'someValue'
   };
 
   const result = this.player.ads.adMacroReplacement(string, false, customMacros);
 
-  assert.strictEqual(result, 'Test: someValue and someValue', 'regex macro should replace multiple instances of the pattern');
+  assert.strictEqual(result, 'Test: someValue and someValue and someValue', 'regex macro should replace multiple instances of the pattern');
 });
 
 QUnit.test('replaceMacros() should log a warning when invalid regex is passed', function(assert) {
@@ -614,6 +611,6 @@ QUnit.test('replaceMacros() should log a warning when invalid regex is passed', 
   const result = this.player.ads.adMacroReplacement(string, false, customMacros);
 
   assert.strictEqual(result, 'Test: somePlayerId - {{url.foo}}', 'regex macro should not be replaced, but others should be');
-  assert.ok(vjsWarnSpy.calledOnce, 'console.warn should be called once');
+  assert.ok(vjsWarnSpy.calledOnce, 'videojs.log.warn should be called once');
   vjsWarnSpy.restore();
 });
