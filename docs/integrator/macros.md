@@ -85,6 +85,8 @@ A macro such as {pageVariable.foobar} allows the user access the value of any pr
 | Undefined | Logs warning and returns empty string |
 | Other     | Logs warning and returns empty string |
 
+## Consent Macros
+
 ### TCF macros
 
 If a CMP supporting the [GDPR Transparency and Consent Framework][tcf] is in use additional tcf macros are made available. The syntax is `{tcf.*}`, with `*` being a property in the [tcData][tcdata] object. Most commonly used will be:
@@ -98,7 +100,24 @@ Since `gdprApplies` is a boolean and many ad servers expect the value as an int,
 
 If the player is in an iframe, a proxy will be added if any parent frame is detected to gain consent with the postmessage API. The CMP must be loaded first.
 
-### Default Values in Macros
+### US Privacy macros
+
+Similar to TCF, if a CMP supporting the [US Privacy API][usp] is in use, additional macros related to US Privacy are made available. At this time, one macro is supported.
+
+| Name                     | Value                                       |
+|:-------------------------|:--------------------------------------------|
+| {usp.uspString}          | The US Privacy consent string, ex. '1YNN'   |
+
+The USP API works a bit differently than TCF. In order to ensure that `adMacroReplacement()` replaces the macro with the most up-to-date consent string, it is recommended that the integrator first call `player.ads.updateUsPrivacyString()`, which is asynchronous due to how the USP API works. This plugin will automatically update the consent string at the time of initialization, but any changes to the consent string after initialization will only be picked up by calling `player.ads.updateUsPrivacyString()` again.
+
+```js
+player.ads.updateUsPrivacyString((privacyString) => {
+  // This will now use the most current privacy string. You can also do something here with the `privacyString` directly.
+  player.ads.adMacroReplacement('http://example.com/vmap.xml?usp={usp.uspString}');
+});
+```
+
+### Default values in macros
 
 A default value can be provided within a macro in the format `{MACRO=DEFAULT}`, in which case this value will be used where not resolvable e.g. `http://example.com/ad/{pageVariable.adConf=1234}` becomes `http://example.com/ad/1234` if `window.adConf` is undefined. If a blank default is given, there will be a blank param, `http://example.com/ad?config={pageVariable.adConf=}&a=b` becomes `http://example.com/ad?config=&a=b` if `window.adConf` is unset.
 
@@ -175,5 +194,6 @@ const replacedString = player.ads.adMacroReplacement(stringWithMacros, false, {
 In this example, the `replacedString` will replace the `{{ url.foo }}` macro with the value that normally replaces the `{player.duration}` macro.
 
 [tcf]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md
+[usp]: https://github.com/InteractiveAdvertisingBureau/USPrivacy
 [tcdata]: https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md#tcdata
 [referrer-policy]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy

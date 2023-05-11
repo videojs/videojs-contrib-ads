@@ -406,6 +406,44 @@ QUnit.test('tcfMacros', function(assert) {
   window.__tcfapi = oldtcf;
 });
 
+QUnit.test('US Privacy macros', function(assert) {
+  const done = assert.async();
+  const olduspapi = window.__uspapi;
+
+  window.__uspapi = function(cmd, version, cb) {
+    if (cmd === 'getUSPData') {
+      cb({uspString: '1YNN'}, true);
+    }
+  };
+
+  this.player.ads.updateUsPrivacyString(() => {
+    assert.equal(
+      this.player.ads.adMacroReplacement('usp={usp.uspString}'),
+      'usp=1YNN',
+      'us privacy macro replaced correctly'
+    );
+
+    // Update the __uspapi function to return a new uspString
+    window.__uspapi = function(cmd, version, cb) {
+      if (cmd === 'getUSPData') {
+        cb({uspString: '1YNY'}, true);
+      }
+    };
+
+    // Call updateUsPrivacyString() again to update the uspString
+    this.player.ads.updateUsPrivacyString(() => {
+      assert.equal(
+        this.player.ads.adMacroReplacement('usp={usp.uspString}'),
+        'usp=1YNY',
+        'us privacy macro replaced correctly after updating the uspString'
+      );
+
+      window.__uspapi = olduspapi;
+      done();
+    });
+  });
+});
+
 QUnit.test('default macros should not be replaced when disableDefaultMacros is true', function(assert) {
   const string = '{player.id}';
   const customMacros = {
