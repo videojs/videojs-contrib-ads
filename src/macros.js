@@ -8,7 +8,8 @@ import document from 'global/document';
 
 import videojs from 'video.js';
 
-import { tcData } from './tcf.js';
+import {tcData} from './tcf.js';
+import {getCurrentUspString} from './usPrivacy.js';
 
 const uriEncodeIfNeeded = function(value, uriEncode) {
   return uriEncode ? encodeURIComponent(value) : value;
@@ -110,6 +111,10 @@ const getTcfMacros = function(tcDataObj) {
   tcfMacros['{tcf.gdprAppliesInt}'] = tcDataObj.gdprApplies ? 1 : 0;
 
   return tcfMacros;
+};
+
+const getUspMacros = () => {
+  return {'{usp.uspString}': getCurrentUspString()};
 };
 
 const getPageVariableMacros = function(string, defaults) {
@@ -217,6 +222,7 @@ export default function adMacroReplacement(string, uriEncode = false, customMacr
     getStaticMacros(this),
     getMediaInfoMacros(this.mediainfo, defaults),
     getTcfMacros(tcData),
+    getUspMacros(),
     getPageVariableMacros(string, defaults)
   );
 
