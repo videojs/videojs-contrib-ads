@@ -158,7 +158,7 @@ const getPageVariableMacros = function(string, defaults, macroNameOverrides) {
 
 const replaceMacros = function(string, macros, uriEncode, overrides = {}) {
   for (const macroName in macros) {
-    // The resolvedMacroName is the macro as it appears in the actual string
+    // The resolvedMacroName is the macro as it is expected to appear in the actual string, or regex if it has been provided.
     const resolvedMacroName = overrides.hasOwnProperty(macroName) ? overrides[macroName] : macroName;
 
     if (resolvedMacroName.startsWith('r:')) {
@@ -167,7 +167,7 @@ const replaceMacros = function(string, macros, uriEncode, overrides = {}) {
 
         string = string.replace(regex, uriEncodeIfNeeded(macros[macroName], uriEncode));
       } catch (error) {
-        videojs.log.warn('Unable to replace regex macro. Please verify that you are passing valid regex.');
+        videojs.log.warn(`Unable to replace macro with regex "${resolvedMacroName}". The provided regex may be invalid.`);
       }
     } else {
       string = string.split(resolvedMacroName).join(uriEncodeIfNeeded(macros[macroName], uriEncode));
