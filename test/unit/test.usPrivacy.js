@@ -131,6 +131,24 @@ QUnit.module('US Privacy - obtainUsPrivacyString()', () => {
   });
 });
 
+QUnit.test('should call callback with null when __uspapi and __uspapiLocator are not available in any window', (assert) => {
+  const done = assert.async();
+
+  const customWindow = {
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    postMessage: () => {}
+  };
+
+  customWindow.parent = customWindow;
+  customWindow.top = customWindow;
+
+  obtainUsPrivacyString((result) => {
+    assert.equal(result, null, 'null is returned when no __uspapi or __uspapiLocator are present');
+    done();
+  }, customWindow);
+});
+
 QUnit.module('US Privacy - getCurrentUspString()', () => {
 
   QUnit.test('should return the latest uspString', (assert) => {

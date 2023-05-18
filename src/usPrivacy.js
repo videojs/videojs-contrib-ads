@@ -11,7 +11,13 @@ const findUspApiLocatorWindow = (windowObj) => {
     targetWindow = targetWindow.parent;
   }
 
-  return windowObj.top;
+  // Check for the __uspapiLocator frame in the top window
+  if (windowObj.top.frames && windowObj.top.frames.__uspapiLocator) {
+    return windowObj.top;
+  }
+
+  // Return null if no __uspapiLocator frame is found in any window
+  return null;
 };
 
 let uspString = '';
@@ -32,6 +38,14 @@ export const obtainUsPrivacyString = (callback, windowObj = window) => {
       callback(privacyString);
     });
   } else {
+    const targetWindow = findUspApiLocatorWindow(windowObj);
+
+    // If no __uspapiLocator frame is found, execute the callback with a null privacy string
+    if (!targetWindow) {
+      callback(null);
+      return;
+    }
+
     const uniqueId = Math.random().toString(36).substring(2);
     const message = {
       __uspapiCall: {
@@ -60,8 +74,6 @@ export const obtainUsPrivacyString = (callback, windowObj = window) => {
     };
 
     windowObj.addEventListener('message', handleMessageEvent, false);
-
-    const targetWindow = findUspApiLocatorWindow(windowObj);
 
     targetWindow.postMessage(message, '*');
   }
