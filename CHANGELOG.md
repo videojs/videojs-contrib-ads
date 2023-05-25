@@ -1,3 +1,10 @@
+<a name="7.3.1"></a>
+## [7.3.1](https://github.com/videojs/videojs-contrib-ads/compare/v7.3.0...v7.3.1) (2023-05-25)
+
+### Bug Fixes
+
+* updateUsPrivacyString() callback not invoked when USP API not in use in any window ([#553](https://github.com/videojs/videojs-contrib-ads/issues/553)) ([1f49440](https://github.com/videojs/videojs-contrib-ads/commit/1f49440))
+
 <a name="7.3.0"></a>
 # [7.3.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.1.0...v7.3.0) (2023-05-15)
 
