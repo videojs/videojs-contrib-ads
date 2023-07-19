@@ -4,16 +4,24 @@ const findUspApiLocatorWindow = (windowObj) => {
   let targetWindow = windowObj.parent;
 
   while (targetWindow !== windowObj.top) {
-    if (targetWindow.frames && targetWindow.frames.__uspapiLocator) {
-      return targetWindow;
+    try {
+      if (targetWindow.frames && targetWindow.frames.__uspapiLocator) {
+        return targetWindow;
+      }
+    } catch (ignore) {
+      // do nothing
     }
 
     targetWindow = targetWindow.parent;
   }
 
   // Check for the __uspapiLocator frame in the top window
-  if (windowObj.top.frames && windowObj.top.frames.__uspapiLocator) {
-    return windowObj.top;
+  try {
+    if (windowObj.top.frames && windowObj.top.frames.__uspapiLocator) {
+      return windowObj.top;
+    }
+  } catch (ignore) {
+    // do nothing
   }
 
   // Return null if no __uspapiLocator frame is found in any window
