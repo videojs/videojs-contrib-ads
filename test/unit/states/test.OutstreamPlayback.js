@@ -30,4 +30,7 @@ QUnit.module('OutstreamPlayback', {
     this.adBreakEndStub.restore();
   }
 });
-// transitions to outstream done after endlinearadmode??s
+
+QUnit.test('transitions to OutstreamDone on ad end', function(assert) {
+
+});
