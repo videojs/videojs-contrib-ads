@@ -14,12 +14,14 @@ class OutstreamPending extends AdState {
     return 'OutstreamPending';
   }
 
-  init() {}
+  init() {
+    this.adsReady = false;
+  }
 
   // todo...
   onPlay(player) {
     const OutstreamPlayback = States.getState('OutstreamPlayback');
-    const OutstreamDone = States.getState('OustreamDone');
+    const OutstreamDone = States.getState('OutstreamDone');
 
     player.ads.debug('Received play event (OutstreamPending)');
     if (this.adsReady) {
@@ -27,7 +29,6 @@ class OutstreamPending extends AdState {
     } else {
       this.transitionTo(OutstreamDone);
     }
-
   }
 
   onAdsReady(player) {

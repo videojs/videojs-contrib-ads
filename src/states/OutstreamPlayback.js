@@ -1,4 +1,5 @@
 import States from '../states.js';
+import adBreak from '../adBreak.js';
 
 const AdState = States.getState('AdState');
 
@@ -16,10 +17,38 @@ class OutstreamPlayback extends AdState {
 
   init() {}
 
-  endLinearAdMode() {
-    const OutstreamDone = States.getState('OutstreamDone');
+  handleAdsReady() {
+    this.adsReady = true;
+  }
 
-    this.transitionTo(OutstreamDone);
+  startLinearAdMode() {
+    const player = this.player;
+
+    if (this.adsReady && !player.ads.inAdBreak()) {
+      adBreak.start(player);
+    }
+
+  }
+
+  onAdStarted(player) {
+    player.removeClass('vjs-ad-loading');
+  }
+
+  endLinearAdMode() {
+    if (this.inAdBreak()) {
+      this.player.removeClass('vjs-ad-loading');
+
+      const OutstreamDone = States.getState('OutstreamDone');
+
+      adBreak.end(this.player);
+      this.transitionTo(OutstreamDone);
+    }
+  }
+
+  // is skipping an ad an option???
+
+  skipLinearAdMode() {
+    // TODO
   }
 
 }

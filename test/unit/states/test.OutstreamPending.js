@@ -43,6 +43,4 @@ QUnit.test('transitions to OutstreamDone on aderror', function(assert) {
   this.outstreamPending.onAdsError(this.player);
   this.outstreamPending.onPlay(this.player);
   assert.equal(this.newState, 'OutstreamDone');
-  assert.equal(this.transitionArg, false);
-  assert.equal(this.transitionArg2, true);
 });

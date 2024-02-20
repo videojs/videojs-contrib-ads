@@ -19,7 +19,10 @@ QUnit.module('OutstreamPlayback', {
       }
     };
 
-    this.adroll = new OutstreamPlayback(this.player);
+    this.outstreamPlayback = new OutstreamPlayback(this.player);
+    this.outstreamPlayback.transitionTo = (newState) => {
+      this.newState = newState.name;
+    };
 
     this.adBreakStartStub = sinon.stub(adBreak, 'start');
     this.adBreakEndStub = sinon.stub(adBreak, 'end');
@@ -32,5 +35,7 @@ QUnit.module('OutstreamPlayback', {
 });
 
 QUnit.test('transitions to OutstreamDone on ad end', function(assert) {
-
+  this.outstreamPlayback.init(this.player);
+  this.outstreamPlayback.endLinearAdMode();
+  assert.equal(this.newState, 'OutstreamDone');
 });
