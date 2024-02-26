@@ -276,7 +276,6 @@ const contribAdsPlugin = function(options) {
   });
 
   // Event handling for the current state.
-  // TODO: Ensure we handle event metadata correctly.
   player.on([
     'play', 'playing', 'ended',
     'adsready', 'adscanceled', 'adskip', 'adserror', 'adtimeout', 'adended',

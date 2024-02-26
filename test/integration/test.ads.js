@@ -1042,3 +1042,5 @@ QUnit.test('playback rate menu is hidden during ad playback if playbackrate supp
   this.player.ads.endLinearAdMode();
   assert.notOk(this.player.controlBar.playbackRateMenuButton.hasClass('vjs-hidden'), 'Playback rate menu is shown when ad finishes');
 });
+
+// TODO: Test `error()` functionality
