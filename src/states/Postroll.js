@@ -118,7 +118,7 @@ class Postroll extends AdState {
     player.ads.debug('Postroll abort (adserror)');
 
     player.ads.error({
-      type: videojs.Error.AdsPostrollError
+      errorType: videojs.Error.AdsPostrollError
     });
 
     // In the future, we may not want to do this automatically.

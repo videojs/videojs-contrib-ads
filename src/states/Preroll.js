@@ -136,7 +136,7 @@ class Preroll extends AdState {
     videojs.log('adserror (Preroll)');
 
     player.ads.error({
-      type: videojs.Error.AdsPrerollError
+      errorType: videojs.Error.AdsPrerollError
     });
 
     // In the future, we may not want to do this automatically.

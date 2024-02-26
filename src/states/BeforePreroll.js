@@ -68,7 +68,7 @@ class BeforePreroll extends ContentState {
     this.player.ads.debug('adserror (BeforePreroll)');
 
     this.player.ads.error({
-      type: videojs.Error.BeforePrerollError
+      errorType: videojs.Error.BeforePrerollError
     });
 
     this.shouldResumeToContent = true;

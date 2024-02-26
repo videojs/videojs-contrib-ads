@@ -238,13 +238,12 @@ export default function getAds(player) {
      *
      * @fires Player#vjsadserror
      *
-     * @param {Object} [err]
+     * @param {import('video.js/dist/types/media-error').ErrorMetadata|null} [err]
      *      The error to be set. This can either be a string
      *      of the error type, or it can be an object containing the
      *      type, along with error metadata.
      *      If nothing is passed in, this function will return the current error.
-     * @param {string} err.type The error type.
-     * @param {Object} [err.metadata] An object containing custom metadata for the error.
+     * @param {string} err.errorType The error type.
      *
      * @return {Object|null|undefined}
      *      The current ads error. The function will return undefined if the function
@@ -267,7 +266,7 @@ export default function getAds(player) {
 
       // TODO: log error
       // do we want warn instead? Do we want to log here, or leave that up to when `error` is called?
-      videojs.log.error(`An error with Ads occured. Type: ${err.type}.`);
+      videojs.log.error(`An error with Ads occured. Type: ${err.errorType}.`);
 
       /**
        * @event Player#vjsadserror

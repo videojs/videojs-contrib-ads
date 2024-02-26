@@ -50,7 +50,7 @@ class Midroll extends AdState {
    */
   onAdsError(player) {
     player.ads.error({
-      type: videojs.Error.AdsMidrollError
+      errorType: videojs.Error.AdsMidrollError
     });
 
     // In the future, we may not want to do this automatically.
