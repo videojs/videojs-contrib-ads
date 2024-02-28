@@ -255,8 +255,8 @@ export default function getAds(player) {
         return this._error || null;
       }
 
-      // If `err` is null, reset the ads error.
-      if (err === null) {
+      // If `err` is null or not a valid error, reset the ads error.
+      if (err === null || !err.errorType) {
         this._error = null;
 
         return;
