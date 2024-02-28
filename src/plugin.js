@@ -30,6 +30,9 @@ import './states/Postroll.js';
 import './states/ContentPlayback.js';
 import './states/StitchedContentPlayback.js';
 import './states/StitchedAdRoll.js';
+import './states/OutstreamPending.js';
+import './states/OutstreamPlayback.js';
+import './states/OutstreamDone.js';
 
 const { isMiddlewareMediatorSupported } = playMiddlewareFeature;
 const VIDEO_EVENTS = videojs.getTech('Html5').Events;
@@ -217,11 +220,15 @@ const contribAdsPlugin = function(options) {
   // But first, cast to boolean.
   settings.stitchedAds = !!settings.stitchedAds;
   // TODO - here we set the initial state of the player. If settings.player_mode=outstream -> initialise with OutstreamPlayback
-  if (settings.stitchedAds) {
-    player.ads._state = new (States.getState('StitchedContentPlayback'))(player);
-  } else {
-    player.ads._state = new (States.getState('BeforePreroll'))(player);
-  }
+  // if (settings.stitchedAds) {
+  //   player.ads._state = new (States.getState('StitchedContentPlayback'))(player);
+  // } else {
+  //   player.ads._state = new (States.getState('BeforePreroll'))(player);
+  // }
+
+  player.ads._state = new (States.getState('OutstreamPending'))(player);
+
+  // set player.ads._state to Outstream somehow
 
   player.ads._state.init(player);
 

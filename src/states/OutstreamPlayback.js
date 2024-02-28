@@ -1,3 +1,4 @@
+import videojs from 'video.js';
 import States from '../states.js';
 import adBreak from '../adBreak.js';
 
@@ -15,10 +16,43 @@ class OutstreamPlayback extends AdState {
     return 'OutstreamPlayback';
   }
 
-  init() {}
+  init(player, adsReady, shouldResumeToContent) {
+    this.waitingForAdBreak = true;
+    player.addClass('vjs-ad-loading');
+
+    if (adsReady) {
+      this.handleAdsReady();
+    }
+  }
+
+  onAdsReady(player) {
+    if (!player.ads.inAdBreak()) {
+      player.ads.debug('Received adsready event (Preroll)');
+      this.handleAdsReady();
+    } else {
+      videojs.log.warn('Unexpected adsready event (Preroll)');
+    }
+  }
+
+  /*
+   * An ad has actually started playing.
+   * Remove the loading spinner.
+   */
+  onAdStarted(player) {
+    player.removeClass('vjs-ad-loading');
+  }
 
   handleAdsReady() {
     this.adsReady = true;
+    this.readyForOutstreamPlayback();
+  }
+
+  readyForOutstreamPlayback() {
+    const player = this.player;
+
+    this.afterLoadStart(() => {
+      player.trigger('readyforpreroll');
+    });
   }
 
   startLinearAdMode() {
@@ -42,6 +76,20 @@ class OutstreamPlayback extends AdState {
 
       adBreak.end(this.player);
       this.transitionTo(OutstreamDone);
+    }
+  }
+
+  afterLoadStart(callback) {
+    const player = this.player;
+
+    if (player.ads._hasThereBeenALoadStartDuringPlayerLife) {
+      callback();
+    } else {
+      player.ads.debug('Waiting for loadstart...');
+      player.one('loadstart', () => {
+        player.ads.debug('Received loadstart event');
+        callback();
+      });
     }
   }
 

@@ -5,6 +5,7 @@ const AdState = States.getState('AdState');
 /**
  * this is the initial outstream state flow
  */
+// TODO: this._state is not defined?? how tf do i define it
 class OutstreamPending extends AdState {
 
   /**
@@ -14,8 +15,9 @@ class OutstreamPending extends AdState {
     return 'OutstreamPending';
   }
 
-  init() {
+  init(player) {
     this.adsReady = false;
+    this.shouldResumeToContent = false;
   }
 
   // todo...
@@ -25,7 +27,7 @@ class OutstreamPending extends AdState {
 
     player.ads.debug('Received play event (OutstreamPending)');
     if (this.adsReady) {
-      this.transitionTo(OutstreamPlayback);
+      this.transitionTo(OutstreamPlayback, this.adsReady, this.shouldResumeToContent);
     } else {
       this.transitionTo(OutstreamDone);
     }
