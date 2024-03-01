@@ -17,20 +17,13 @@ class OutstreamPending extends AdState {
 
   init(player) {
     this.adsReady = false;
-    this.shouldResumeToContent = false;
   }
 
-  // todo...
   onPlay(player) {
     const OutstreamPlayback = States.getState('OutstreamPlayback');
-    const OutstreamDone = States.getState('OutstreamDone');
 
     player.ads.debug('Received play event (OutstreamPending)');
-    if (this.adsReady) {
-      this.transitionTo(OutstreamPlayback, this.adsReady, this.shouldResumeToContent);
-    } else {
-      this.transitionTo(OutstreamDone);
-    }
+    this.transitionTo(OutstreamPlayback, this.adsReady);
   }
 
   onAdsReady(player) {
@@ -38,11 +31,9 @@ class OutstreamPending extends AdState {
     this.adsReady = true;
   }
 
-  // when an ad fails -> we should transition straight to AdsDone
   onAdsError() {
     this.player.ads.debug('adserror (OutstreamPending)');
     this.adsReady = false;
-    //  transition to AdsDone
   }
 }
 

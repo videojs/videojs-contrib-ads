@@ -8,6 +8,7 @@ import OutstreamDone from '../../../src/states/OutstreamDone.js';
  */
 QUnit.module('OutstreamDone', {
   beforeEach() {
+    this.events = [];
     this.player = {
       trigger: (event) => {
         this.events.push(event);

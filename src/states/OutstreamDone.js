@@ -15,7 +15,10 @@ class OutstreamDone extends AdState {
     return 'OutstreamDone';
   }
 
-  init() {}
+  init(player) {
+    player.ads._contentHasEnded = true;
+    player.trigger('ended');
+  }
 
   /*
    * Midrolls do not play after ads are done.

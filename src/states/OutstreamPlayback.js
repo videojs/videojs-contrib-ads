@@ -16,12 +16,13 @@ class OutstreamPlayback extends AdState {
     return 'OutstreamPlayback';
   }
 
-  init(player, adsReady, shouldResumeToContent) {
-    this.waitingForAdBreak = true;
+  init(player, adsReady) {
     player.addClass('vjs-ad-loading');
 
     if (adsReady) {
       this.handleAdsReady();
+    } else {
+      this.abort(player);
     }
   }
 
@@ -32,6 +33,13 @@ class OutstreamPlayback extends AdState {
     } else {
       videojs.log.warn('Unexpected adsready event (Preroll)');
     }
+  }
+
+  abort(player) {
+    const OutstreamDone = States.getState('OutstreamDone');
+
+    player.removeClass('vjs-ad-loading');
+    this.transitionTo(OutstreamDone);
   }
 
   /*
@@ -51,6 +59,7 @@ class OutstreamPlayback extends AdState {
     const player = this.player;
 
     this.afterLoadStart(() => {
+      // TODO - trigger another event readyforoutstreamad
       player.trigger('readyforpreroll');
     });
   }
@@ -74,8 +83,9 @@ class OutstreamPlayback extends AdState {
 
       const OutstreamDone = States.getState('OutstreamDone');
 
-      adBreak.end(this.player);
-      this.transitionTo(OutstreamDone);
+      adBreak.end(this.player, () => {
+        this.transitionTo(OutstreamDone);
+      });
     }
   }
 
@@ -96,7 +106,6 @@ class OutstreamPlayback extends AdState {
   // is skipping an ad an option???
 
   skipLinearAdMode() {
-    // TODO
   }
 
 }

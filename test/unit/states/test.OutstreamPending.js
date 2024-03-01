@@ -22,10 +22,6 @@ QUnit.module('OutstreamPending', {
     this.outstreamPending.transitionTo = (newState) => {
       this.newState = newState.name;
     };
-  },
-
-  afterEach() {
-
   }
 });
 
