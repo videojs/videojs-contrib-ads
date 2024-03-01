@@ -219,14 +219,14 @@ const contribAdsPlugin = function(options) {
   // The setter is deprecated, so this does not use it.
   // But first, cast to boolean.
   settings.stitchedAds = !!settings.stitchedAds;
-  // TODO - here we set the initial state of the player. If settings.player_mode=outstream -> initialise with OutstreamPlayback
-  // if (settings.stitchedAds) {
-  //   player.ads._state = new (States.getState('StitchedContentPlayback'))(player);
-  // } else {
-  //   player.ads._state = new (States.getState('BeforePreroll'))(player);
-  // }
-
-  player.ads._state = new (States.getState('OutstreamPending'))(player);
+  // TODO this condition depends on player-core config
+  if (settings.playerMode === 'outstream') {
+    player.ads._state = new (States.getState('OutstreamPending'))(player);
+  } else if (settings.stitchedAds) {
+    player.ads._state = new (States.getState('StitchedContentPlayback'))(player);
+  } else {
+    player.ads._state = new (States.getState('BeforePreroll'))(player);
+  }
 
   // set player.ads._state to Outstream somehow
 

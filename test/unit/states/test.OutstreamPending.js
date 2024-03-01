@@ -19,8 +19,9 @@ QUnit.module('OutstreamPending', {
     };
 
     this.outstreamPending = new OutstreamPending(this.player);
-    this.outstreamPending.transitionTo = (newState) => {
+    this.outstreamPending.transitionTo = (newState, arg) => {
       this.newState = newState.name;
+      this.transitionArg = arg;
     };
   }
 });
@@ -34,9 +35,10 @@ QUnit.test('transitions to OutstreamPlayback on adsready', function(assert) {
   assert.equal(this.newState, 'OutstreamPlayback');
 });
 
-QUnit.test('transitions to OutstreamDone on aderror', function(assert) {
+QUnit.test('sets adsReady to false on adserror', function(assert) {
   this.outstreamPending.init(this.player);
   this.outstreamPending.onAdsError(this.player);
+  assert.equal(this.outstreamPending.adsReady, false);
   this.outstreamPending.onPlay(this.player);
-  assert.equal(this.newState, 'OutstreamDone');
+  assert.equal(this.newState, 'OutstreamPlayback');
 });

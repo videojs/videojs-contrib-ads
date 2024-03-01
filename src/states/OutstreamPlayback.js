@@ -5,7 +5,8 @@ import adBreak from '../adBreak.js';
 const AdState = States.getState('AdState');
 
 /**
- * this state is for the outstream ad playing
+ * This state is for waiting for ads in an outstream player,
+ * playing ads, and transitioning to OutstreamDone after ads have played.
  */
 class OutstreamPlayback extends AdState {
 
@@ -16,6 +17,10 @@ class OutstreamPlayback extends AdState {
     return 'OutstreamPlayback';
   }
 
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player, adsReady) {
     player.addClass('vjs-ad-loading');
 

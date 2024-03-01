@@ -20,8 +20,14 @@ QUnit.module('OutstreamDone', {
   }
 });
 
-QUnit.skip('sets _smth on init', function(assert) {
+QUnit.test('sets _contentHasEnded on init', function(assert) {
+  this.outstreamDone.init(this.player);
+  assert.equal(this.player.ads._contentHasEnded, true, 'content has ended');
+});
 
+QUnit.test('ended event on init', function(assert) {
+  this.outstreamDone.init(this.player);
+  assert.equal(this.events[0], 'ended', 'content has ended');
 });
 
 QUnit.test('does not play more ads', function(assert) {

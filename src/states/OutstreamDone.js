@@ -4,7 +4,9 @@ import States from '../states.js';
 const AdState = States.getState('AdState');
 
 /**
- * this state is for when the outstream ad is completed (no content plays in an outstream player)
+ * This is the final state for a player in outstream mode. There
+ * should be no more ads playing once the player has transitioned
+ * to this state.
  */
 class OutstreamDone extends AdState {
 
@@ -15,6 +17,10 @@ class OutstreamDone extends AdState {
     return 'OutstreamDone';
   }
 
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player) {
     player.ads._contentHasEnded = true;
     player.trigger('ended');

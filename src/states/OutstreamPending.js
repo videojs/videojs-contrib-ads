@@ -3,9 +3,10 @@ import States from '../states.js';
 const AdState = States.getState('AdState');
 
 /**
- * this is the initial outstream state flow
+ * This is the initial state for a player in outstream mode. Once a 'play' event
+ * is seen, we enter the OutstreamPlayback state. If any errors occur, we go
+ * straight from OutstreamPlayback to OutstreamDone.
  */
-// TODO: this._state is not defined?? how tf do i define it
 class OutstreamPending extends AdState {
 
   /**
@@ -15,6 +16,10 @@ class OutstreamPending extends AdState {
     return 'OutstreamPending';
   }
 
+  /*
+   * For state transitions to work correctly, initialization should
+   * happen here, not in a constructor.
+   */
   init(player) {
     this.adsReady = false;
   }
