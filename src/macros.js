@@ -174,7 +174,8 @@ const replaceMacros = function(string, macros, uriEncode, overrides = {}, player
       } catch (error) {
         player.ads.error({
           errorType: videojs.Error.AdsMacroReplacementFailed,
-          macro: macroName
+          macro: macroName,
+          error
         });
 
         videojs.log.warn(`Unable to replace macro with regex "${resolvedMacroName}". The provided regex may be invalid.`);

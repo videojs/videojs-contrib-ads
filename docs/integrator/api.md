@@ -91,14 +91,14 @@ The error will be in the form of an object. This object must contain a `errorTyp
 
 To get the current ads error, the `error` function should be called with no parameters. Returns `null` if there is no error.
 ```js
-const currentAd = player.ads.error();
+const currentAdError = player.ads.error();
 ```
 
 To set the current ads error, the `error` function should be called with a valid error.
 ```js
-const ad = { errorType: 'ads-error-type' }
+const adError = { errorType: 'ads-error-type' }
 
-player.ads.error(ad);
+player.ads.error(adError);
 ```
 
 To clear the current ads error, the `error` function should be called with a `null` value.

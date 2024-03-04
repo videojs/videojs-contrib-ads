@@ -264,15 +264,16 @@ export default function getAds(player) {
 
       this._error = err;
 
-      // TODO: log error
-      // do we want warn instead? Do we want to log here, or leave that up to when `error` is called?
       videojs.log.error(`An error with Ads occured. Type: ${err.errorType}.`);
 
       /**
        * @event Player#vjsadserror
        * @type {Event}
        */
-      player.trigger('vjsadserror');
+      player.trigger({
+        type: 'vjsadserror',
+        error: this._error
+      });
     }
 
   };
