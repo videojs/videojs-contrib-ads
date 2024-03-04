@@ -197,7 +197,8 @@ export function restorePlayerSnapshot(player, callback) {
         resume();
       } catch (e) {
         player.ads.error({
-          errorType: videojs.Error.AdsResumeContentFailed
+          errorType: videojs.Error.AdsResumeContentFailed,
+          error: e
         });
 
         videojs.log.warn('Failed to resume the content after an advertisement', e);
