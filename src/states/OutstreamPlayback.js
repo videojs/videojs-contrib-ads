@@ -106,6 +106,14 @@ class OutstreamPlayback extends AdState {
     });
   }
 
+  onAdsCanceled(player) {
+    player.ads.debug('adscanceled (OutstreamPlaybac)');
+
+    this.afterLoadStart(() => {
+      this.abort(player);
+    });
+  }
+
   endLinearAdMode() {
     if (this.inAdBreak()) {
       this.player.removeClass('vjs-ad-loading');
@@ -139,7 +147,7 @@ class OutstreamPlayback extends AdState {
     const player = this.player;
     const OutstreamDone = States.getState('OutstreamDone');
 
-    if (player.ads.inAdBreak()) {
+    if (this.inAdBreak()) {
       videojs.log.warn('Unexpected skipLinearAdMode invocation');
     } else {
       this.afterLoadStart(() => {
