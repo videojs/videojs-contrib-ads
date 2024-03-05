@@ -228,8 +228,6 @@ const contribAdsPlugin = function(options) {
     player.ads._state = new (States.getState('BeforePreroll'))(player);
   }
 
-  // set player.ads._state to Outstream somehow
-
   player.ads._state.init(player);
 
   player.ads.cueTextTracks = cueTextTracks;

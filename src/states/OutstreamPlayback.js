@@ -82,6 +82,30 @@ class OutstreamPlayback extends AdState {
     player.removeClass('vjs-ad-loading');
   }
 
+  /*
+   * An ad error occured. Transition straight to OutstreamDone
+   */
+  onAdsError(player) {
+    videojs.log('adserror (OutstreamPlayback)');
+    if (this.inAdBreak()) {
+      player.ads.endLinearAdMode();
+    } else {
+      this.afterLoadStart(() => {
+        this.abort(player);
+      });
+    }
+  }
+
+  /*
+   * Outstream ad took too long! Play content instead.
+   */
+  onAdTimeout(player) {
+    this.afterLoadStart(() => {
+      player.ads.debug('adtimeout (OutstreamPlayback)');
+      this.abort(player);
+    });
+  }
+
   endLinearAdMode() {
     if (this.inAdBreak()) {
       this.player.removeClass('vjs-ad-loading');
@@ -108,9 +132,23 @@ class OutstreamPlayback extends AdState {
     }
   }
 
-  // is skipping an ad an option???
-
+  /**
+   * Ad plugin has skipped ad - transition to OutstreamDone
+   */
   skipLinearAdMode() {
+    const player = this.player;
+    const OutstreamDone = States.getState('OutstreamDone');
+
+    if (player.ads.inAdBreak()) {
+      videojs.log.warn('Unexpected skipLinearAdMode invocation');
+    } else {
+      this.afterLoadStart(() => {
+        player.trigger('adskip');
+        player.ads.debug('skipLinearAdMode (OutstreamPlayback)');
+
+        this.transitionTo(OutstreamDone);
+      });
+    }
   }
 
 }
