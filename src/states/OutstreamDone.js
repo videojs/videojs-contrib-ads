@@ -27,7 +27,7 @@ class OutstreamDone extends AdState {
   }
 
   /*
-   * Midrolls do not play after ads are done.
+   * No more ads should play after this state.
    */
   startLinearAdMode() {
     videojs.log.warn('Unexpected startLinearAdMode invocation (OutstreamDone)');

@@ -64,7 +64,7 @@ class OutstreamPlayback extends AdState {
     const player = this.player;
 
     this.afterLoadStart(() => {
-      // TODO - trigger another event readyforoutstreamad
+      // TODO - trigger another event (ie) readyforoutstreamad
       player.trigger('readyforpreroll');
     });
   }
@@ -158,7 +158,6 @@ class OutstreamPlayback extends AdState {
       });
     }
   }
-
 }
 
 States.registerState('OutstreamPlayback', OutstreamPlayback);
