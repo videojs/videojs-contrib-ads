@@ -64,8 +64,7 @@ class OutstreamPlayback extends AdState {
     const player = this.player;
 
     this.afterLoadStart(() => {
-      // TODO - trigger another event (ie) readyforoutstreamad
-      player.trigger('readyforpreroll');
+      player.trigger('readyforoutstream');
     });
   }
 
@@ -76,6 +75,33 @@ class OutstreamPlayback extends AdState {
       adBreak.start(player);
     }
 
+  }
+  /*
+   * Cleanup timeouts and spinner.
+   */
+  cleanup(player) {
+    if (!player.ads._hasThereBeenALoadStartDuringPlayerLife) {
+      videojs.log.warn('Leaving OutstreamPlayback state before loadstart event can cause issues.');
+    }
+    this.cleanupPartial(player);
+  }
+
+  /*
+   * Performs cleanup tasks without depending on a state transition. This is
+   * used mainly in cases where a preroll failed.
+   */
+  cleanupPartial(player) {
+    player.removeClass('vjs-ad-loading');
+    player.removeClass('vjs-ad-content-resuming');
+    this.clearTimeout(player);
+  }
+
+  /*
+   * Clear the outstream ad timeout and nulls out the pointer.
+   */
+  clearTimeout(player) {
+    player.clearTimeout(this._timeout);
+    this._timeout = null;
   }
 
   onAdStarted(player) {
@@ -153,7 +179,6 @@ class OutstreamPlayback extends AdState {
       this.afterLoadStart(() => {
         player.trigger('adskip');
         player.ads.debug('skipLinearAdMode (OutstreamPlayback)');
-
         this.transitionTo(OutstreamDone);
       });
     }

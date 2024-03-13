@@ -8,7 +8,6 @@ const AdState = States.getState('AdState');
  * straight from OutstreamPlayback to OutstreamDone.
  */
 class OutstreamPending extends AdState {
-
   /**
    * Allows state name to be logged after minification
    */
