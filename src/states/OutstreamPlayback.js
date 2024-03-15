@@ -76,6 +76,7 @@ class OutstreamPlayback extends AdState {
     }
 
   }
+
   /*
    * Cleanup timeouts and spinner.
    */
