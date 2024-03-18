@@ -22,7 +22,6 @@ class OutstreamDone extends AdState {
    * happen here, not in a constructor.
    */
   init(player) {
-    player.ads._contentHasEnded = true;
     player.trigger('ended');
   }
 
