@@ -1,3 +1,10 @@
+<a name="7.5.0"></a>
+# [7.5.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.4.0...v7.5.0) (2024-03-19)
+
+### Features
+
+* outstream mode ([#569](https://github.com/videojs/videojs-contrib-ads/issues/569)) ([b16c8cb](https://github.com/videojs/videojs-contrib-ads/commit/b16c8cb))
+
 <a name="7.4.0"></a>
 # [7.4.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.3.5...v7.4.0) (2024-03-04)
 
