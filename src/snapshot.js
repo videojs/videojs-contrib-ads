@@ -51,7 +51,10 @@ export function getPlayerSnapshot(player) {
       track,
       mode: track.mode
     });
-    track.mode = 'disabled';
+
+    if (track.kind !== 'metadata') {
+      track.mode = 'disabled';
+    }
   }
   snapshotObject.suppressedTracks = suppressedTracks;
 
