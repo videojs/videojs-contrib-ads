@@ -1,3 +1,10 @@
+<a name="7.5.1"></a>
+## [7.5.1](https://github.com/videojs/videojs-contrib-ads/compare/v7.5.0...v7.5.1) (2024-04-23)
+
+### Chores
+
+* move ad errors from videojs ([#570](https://github.com/videojs/videojs-contrib-ads/issues/570)) ([d7631ed](https://github.com/videojs/videojs-contrib-ads/commit/d7631ed))
+
 <a name="7.5.0"></a>
 # [7.5.0](https://github.com/videojs/videojs-contrib-ads/compare/v7.4.0...v7.5.0) (2024-03-19)
 
