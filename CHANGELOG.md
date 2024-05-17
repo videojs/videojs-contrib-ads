@@ -1,3 +1,10 @@
+<a name="7.5.2"></a>
+## [7.5.2](https://github.com/videojs/videojs-contrib-ads/compare/v7.5.1...v7.5.2) (2024-05-17)
+
+### Bug Fixes
+
+* use different 0s MP4 that works on Android ([#571](https://github.com/videojs/videojs-contrib-ads/issues/571)) ([72bb0dc](https://github.com/videojs/videojs-contrib-ads/commit/72bb0dc))
+
 <a name="7.5.1"></a>
 ## [7.5.1](https://github.com/videojs/videojs-contrib-ads/compare/v7.5.0...v7.5.1) (2024-04-23)
 
