@@ -272,7 +272,7 @@ const contribAdsPlugin = function(options) {
       for (let i = 0; i < textTrackList.length; i++) {
         const track = textTrackList[i];
 
-        if (track.mode === 'showing') {
+        if (track.mode === 'showing' && track.kind !== 'metadata') {
           track.mode = 'disabled';
         }
       }
